@@ -1,0 +1,11 @@
+<template>
+  <div>
+    <ComeDown />
+  </div>
+</template>
+<script setup>
+definePageMeta({
+  layout: "timer",
+});
+import ComeDown from '../components/timer/ComeDown'
+</script>
