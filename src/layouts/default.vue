@@ -1,19 +1,24 @@
 <template>
-  <main class="min-h-screen">
-    <div class="">
-      <Header/>
-    </div>
-    <main class="min-h-[70vh] mb-12">
-      <slot></slot>
+  <div class="min-h-screen flex flex-col bg-gray-50 text-gray-800">
+    <!-- Navbar -->
+    <Navbar />
+
+    <!-- Page Content -->
+    <main class="flex-1 container mx-auto px-4 py-6">
+      <slot />
     </main>
-    <Footer/>
-  </main>
+
+    <!-- Footer -->
+    <Footer />
+  </div>
 </template>
 
-<script setup>
-import Header from "~/components/common/Header.vue";
-import Footer from "~/components/common/Footer.vue";
-import { useAuthStore } from "~/stores/auth";
-const authStore = useAuthStore();
-authStore.getUser();
+<script setup lang="ts">
+// Import layout components
+import Navbar from '@/components/layout/Navbar.vue'
+import Footer from '@/components/layout/Footer.vue'
 </script>
+
+<style scoped>
+/* You can add layout-specific styles here if needed */
+</style>

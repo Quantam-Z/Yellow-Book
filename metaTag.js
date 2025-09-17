@@ -1,8 +1,8 @@
 export const metaInfo = {
-  siteName: "কারিগরি পাঠশালা",
+  siteName: "Yellow-Book",
   description:
-    "কারিগরি পাঠশালা",
+    "Yellow-Book",
   siteDescription:
-    "কারিগরি পাঠশালা",
+    "Yellow-Book",
   siteLogo: "https://i.ibb.co.com/S71gvVgr/logo2.png",
 };
