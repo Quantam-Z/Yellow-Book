@@ -4,8 +4,8 @@
           <div :class="$style.frameParent">
                 <div :class="$style.frameGroup">
                       <div :class="$style.logoWrapper">
-                            <img :class="$style.logoIcon" alt="" />
-                      </div>
+                        <img :class="$style.logoIcon" src="/logo/logo.png" alt="Logo" />
+                    </div>
                       <div :class="$style.frameContainer">
                             <div :class="$style.categoryParent">
                                   <div :class="$style.category">Category</div>
@@ -33,42 +33,68 @@
                             <div :class="$style.reliableSupportFrom">Reliable support from real people, solving everyday problems with care, speed, and integrity.</div>
                       </div>
                       <div :class="$style.frameParent2">
-                            <div :class="$style.frameWrapper">
-                                  <div :class="$style.nomadicTravelWrapper">
-                                        <div :class="$style.nomadicTravel">Nomadic Travel</div>
-                                  </div>
-                            </div>
-                            <div :class="$style.searchParent">
+                        <div :class="$style.frameWrapper">
+  <div :class="$style.nomadicTravelWrapper">
+    <!-- Shows updated selection -->
+    <div :class="$style.nomadicTravel">{{ selectedSearch }}</div>
+  </div>
+</div>
+                            <div :class="$style.searchParent" @click="toggleDropdown">
                                   <div :class="$style.popularListing">Search</div>
-                                  <img :class="$style.searchIcon" alt="" />
+                                  <img :class="$style.searchIcon" src="/logo/Search.svg"  alt="" />
                             </div>
                       </div>
                 </div>
           </div>
-          <div :class="$style.frameParent3">
-                <div :class="$style.ellipseParentFrameWrapper">
+          <div :class="$style.frameParent3" v-if="showDropdown">
+                <div v-for="(item, index) in searchData" 
+                     :key="index"
+                     @click="selectSearch(item)"
+                     :class="[
+                       index === 0 ? $style.ellipseParentFrameWrapper : 
+                       index === searchData.length - 1 ? $style.frameWrapper4 : 
+                       $style.frameWrapper2
+                     ]">
                       <div :class="$style.nomadicTravelWrapper">
-                            <div :class="$style.nomadicTravel">Nomadic Travel</div>
-                      </div>
-                </div>
-                <div :class="$style.frameWrapper2">
-                      <div :class="$style.nomadicTravelWrapper">
-                            <div :class="$style.nomadicTravel">Altai Tours</div>
-                      </div>
-                </div>
-                <div :class="$style.frameWrapper2">
-                      <div :class="$style.nomadicTravelWrapper">
-                            <div :class="$style.nomadicTravel">Steppe Adventure</div>
-                      </div>
-                </div>
-                <div :class="$style.frameWrapper4">
-                      <div :class="$style.nomadicTravelWrapper">
-                            <div :class="$style.nomadicTravel">Discover Mongolia</div>
+                            <div :class="$style.nomadicTravel">{{ item }}</div>
                       </div>
                 </div>
           </div>
     </div>
 </template>
+
+<script>
+export default {
+  name: 'ResponsiveLandingPage',
+  data() {
+    return {
+      showDropdown: false,
+      selectedSearch: 'Nomadic Travel',
+      searchData: [
+        'Nomadic Travel',
+        'Altai Tours', 
+        'Steppe Adventure',
+        'Discover Mongolia',
+        'Desert Expeditions',
+        'Mountain Hiking',
+        'Cultural Tours',
+        'Wildlife Safari',
+        'City Exploration',
+        'Beach Resort'
+      ]
+    }
+  },
+  methods: {
+    toggleDropdown() {
+      this.showDropdown = !this.showDropdown;
+    },
+    selectSearch(item) {
+      this.selectedSearch = item;
+      this.showDropdown = false;
+    }
+  }
+}
+</script>
 
 <style module>
 .ellipseParent {
@@ -308,6 +334,7 @@
     padding: 10px;
     gap: 8px;
     font-size: 18px;
+    cursor: pointer;
 }
 
 .searchIcon {
@@ -330,6 +357,8 @@
     align-items: flex-start;
     text-align: center;
     font-size: 14px;
+    background-color: #fff;
+    z-index: 10;
 }
 
 .ellipseParentFrameWrapper {
@@ -342,6 +371,11 @@
     justify-content: center;
     padding: 10px;
     box-sizing: border-box;
+    cursor: pointer;
+}
+
+.ellipseParentFrameWrapper:hover {
+    background-color: #e3f2fd;
 }
 
 .frameWrapper2 {
@@ -355,6 +389,11 @@
     align-items: flex-start;
     justify-content: center;
     padding: 10px;
+    cursor: pointer;
+}
+
+.frameWrapper2:hover {
+    background-color: #f0f0f0;
 }
 
 .frameWrapper4 {
@@ -368,6 +407,11 @@
     justify-content: center;
     padding: 10px;
     box-sizing: border-box;
+    cursor: pointer;
+}
+
+.frameWrapper4:hover {
+    background-color: #f0f0f0;
 }
 
 /* Responsive Media Queries */

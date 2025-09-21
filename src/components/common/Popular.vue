@@ -1,89 +1,92 @@
+<script setup lang="ts">
+import { Star, MapPin } from 'lucide-vue-next'
+</script>
+
 <template>
-    <div :class="$style.popularListingsParent">
-          <div :class="$style.popularListings">Popular listings</div>
-          <div :class="$style.frameParent">
-                <div :class="$style.agencyCardParent">
-                      <img :class="$style.agencyCardIcon" alt="" />
-                      <div :class="$style.frameWrapper">
-                            <div :class="$style.frameGroup">
-                                  <div :class="$style.frameContainer">
-                                        <div :class="$style.revolutionizingTechnologyParent">
-                                              <div :class="$style.revolutionizingTechnology">Revolutionizing Technology</div>
-                                              <div :class="$style.innovativeTechnologySolution">Innovative technology solutions for modern businesses</div>
-                                        </div>
-                                        <div :class="$style.frameDiv">
-                                              <img :class="$style.frameIcon" alt="" />
-                                              <img :class="$style.frameIcon" alt="" />
-                                              <img :class="$style.frameIcon" alt="" />
-                                              <img :class="$style.frameIcon" alt="" />
-                                              <img :class="$style.frameIcon" alt="" />
-                                        </div>
-                                  </div>
-                                  <div :class="$style.pinFillParent">
-                                        <img :class="$style.pinFillIcon" alt="" />
-                                        <div :class="$style.ulaanbaatarMongolia">Ulaanbaatar, Mongolia</div>
-                                  </div>
-                            </div>
-                      </div>
+  <div :class="$style.popularListingsParent">
+    <div :class="$style.popularListings">Popular listings</div>
+
+    <div :class="$style.frameParent">
+      <!-- Card 1 -->
+      <div :class="$style.agencyCardParent">
+        <img :class="$style.agencyCardIcon" src="https://via.placeholder.com/400x250" alt="listing" />
+        <div :class="$style.frameWrapper">
+          <div :class="$style.frameGroup">
+            <div :class="$style.frameContainer">
+              <div :class="$style.revolutionizingTechnologyParent">
+                <div :class="$style.revolutionizingTechnology">Revolutionizing Technology</div>
+                <div :class="$style.innovativeTechnologySolution">
+                  Innovative technology solutions for modern businesses
                 </div>
-                <div :class="$style.agencyCardParent">
-                      <img :class="$style.agencyCardIcon" alt="" />
-                      <div :class="$style.frameWrapper">
-                            <div :class="$style.frameGroup">
-                                  <div :class="$style.frameContainer">
-                                        <div :class="$style.revolutionizingTechnologyParent">
-                                              <div :class="$style.popularListingsParentRevolutionizingTechnology">Revolutionizing Technology</div>
-                                              <div :class="$style.innovativeTechnologySolution">Innovative technology solutions for modern businesses</div>
-                                        </div>
-                                        <div :class="$style.frameDiv">
-                                              <img :class="$style.frameIcon" alt="" />
-                                              <img :class="$style.frameIcon" alt="" />
-                                              <img :class="$style.frameIcon" alt="" />
-                                              <img :class="$style.frameIcon" alt="" />
-                                              <img :class="$style.frameIcon" alt="" />
-                                        </div>
-                                  </div>
-                                  <div :class="$style.pinFillParent">
-                                        <img :class="$style.pinFillIcon" alt="" />
-                                        <div :class="$style.ulaanbaatarMongolia">Ulaanbaatar, Mongolia</div>
-                                  </div>
-                            </div>
-                      </div>
-                </div>
-                <div :class="$style.agencyCardParent">
-                      <img :class="$style.agencyCardIcon" alt="" />
-                      <div :class="$style.frameWrapper">
-                            <div :class="$style.frameGroup">
-                                  <div :class="$style.frameContainer">
-                                        <div :class="$style.revolutionizingTechnologyParent">
-                                              <div :class="$style.popularListingsParentRevolutionizingTechnology">Revolutionizing Technology</div>
-                                              <div :class="$style.innovativeTechnologySolution">Innovative technology solutions for modern businesses</div>
-                                        </div>
-                                        <div :class="$style.frameDiv">
-                                              <img :class="$style.frameIcon" alt="" />
-                                              <img :class="$style.frameIcon" alt="" />
-                                              <img :class="$style.frameIcon" alt="" />
-                                              <img :class="$style.frameIcon" alt="" />
-                                              <img :class="$style.frameIcon" alt="" />
-                                        </div>
-                                  </div>
-                                  <div :class="$style.pinFillParent">
-                                        <img :class="$style.pinFillIcon" alt="" />
-                                        <div :class="$style.ulaanbaatarMongolia">Ulaanbaatar, Mongolia</div>
-                                  </div>
-                            </div>
-                      </div>
-                </div>
+              </div>
+              <div :class="$style.frameDiv">
+                <Star v-for="i in 5" :key="i" :class="$style.starIcon" />
+              </div>
+            </div>
+            <div :class="$style.pinFillParent">
+              <MapPin :class="$style.pinFillIcon" />
+              <div :class="$style.ulaanbaatarMongolia">Ulaanbaatar, Mongolia</div>
+            </div>
           </div>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div :class="$style.agencyCardParent">
+        <img :class="$style.agencyCardIcon" src="https://via.placeholder.com/400x250" alt="listing" />
+        <div :class="$style.frameWrapper">
+          <div :class="$style.frameGroup">
+            <div :class="$style.frameContainer">
+              <div :class="$style.revolutionizingTechnologyParent">
+                <div :class="$style.revolutionizingTechnology">Creative Agency</div>
+                <div :class="$style.innovativeTechnologySolution">
+                  Building modern brands with style and vision
+                </div>
+              </div>
+              <div :class="$style.frameDiv">
+                <Star v-for="i in 4" :key="i" :class="$style.starIcon" />
+              </div>
+            </div>
+            <div :class="$style.pinFillParent">
+              <MapPin :class="$style.pinFillIcon" />
+              <div :class="$style.ulaanbaatarMongolia">Tokyo, Japan</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div :class="$style.agencyCardParent">
+        <img :class="$style.agencyCardIcon" src="https://via.placeholder.com/400x250" alt="listing" />
+        <div :class="$style.frameWrapper">
+          <div :class="$style.frameGroup">
+            <div :class="$style.frameContainer">
+              <div :class="$style.revolutionizingTechnologyParent">
+                <div :class="$style.revolutionizingTechnology">Food & Beverage</div>
+                <div :class="$style.innovativeTechnologySolution">
+                  Fresh, organic, and delicious products
+                </div>
+              </div>
+              <div :class="$style.frameDiv">
+                <Star v-for="i in 5" :key="i" :class="$style.starIcon" />
+              </div>
+            </div>
+            <div :class="$style.pinFillParent">
+              <MapPin :class="$style.pinFillIcon" />
+              <div :class="$style.ulaanbaatarMongolia">Berlin, Germany</div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 </template>
 
 <style module>
-
 .popularListingsParent {
   width: 100%;
-  max-width: 1200px;       /* keeps content centered on large screens */
-  margin: 0 auto;          /* center container */
+  max-width: 1200px;
+  margin: 60px auto 0;     /* <-- added top margin */
   position: relative;
   display: flex;
   flex-direction: column;
@@ -93,7 +96,7 @@
   font-size: 30px;
   color: #212121;
   font-family: 'Plus Jakarta Sans';
-  padding: 0 20px;         /* add padding for smaller screens */
+  padding: 0 20px;
   box-sizing: border-box;
 }
 
@@ -107,8 +110,8 @@
 .frameParent {
   width: 100%;
   display: flex;
-  flex-wrap: wrap;           /* allow wrapping */
-  justify-content: center;   /* center cards */
+  flex-wrap: wrap;
+  justify-content: center;
   align-items: flex-start;
   gap: 24px;
   font-size: 20px;
@@ -116,14 +119,20 @@
 }
 
 .agencyCardParent {
-  flex: 1 1 300px;           /* flexible responsive cards */
-  max-width: 384px;          /* prevent stretching */
+  flex: 1 1 300px;
+  max-width: 384px;
   border-radius: 16px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   background: #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transition: transform 0.2s ease;
+}
+
+.agencyCardParent:hover {
+  transform: translateY(-6px);
 }
 
 .agencyCardIcon {
@@ -167,8 +176,7 @@
   gap: 16px;
 }
 
-.revolutionizingTechnology,
-.popularListingsParentRevolutionizingTechnology {
+.revolutionizingTechnology {
   width: 100%;
   line-height: 122%;
   text-transform: capitalize;
@@ -188,28 +196,28 @@
 .frameDiv {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 4px;
 }
 
-.frameIcon {
-  width: 24px;
-  height: 24px;
-  border-radius: 1px;
+.starIcon {
+  width: 22px;
+  height: 22px;
+  color: #f5c518;
 }
 
 .pinFillParent {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   text-align: left;
   font-size: 16px;
   color: #757575;
 }
 
 .pinFillIcon {
-  width: 24px;
-  height: 24px;
-  object-fit: cover;
+  width: 20px;
+  height: 20px;
+  color: #007bff;
 }
 
 .ulaanbaatarMongolia {
@@ -218,79 +226,16 @@
   font-weight: 500;
 }
 
-/* Responsive Media Queries */
-@media (max-width: 992px) {
-  .popularListingsParent {
-    gap: 36px;
-    font-size: 28px;
-  }
-  .agencyCardIcon {
-    height: 260px;
-  }
-}
-
+/* Responsive */
 @media (max-width: 768px) {
-  .popularListingsParent {
-    gap: 32px;
-    font-size: 24px;
-  }
   .frameParent {
-    flex-direction: column;   /* stack vertically */
+    flex-direction: column;
     gap: 24px;
   }
   .agencyCardParent {
     width: 100%;
     max-width: 384px;
-    margin: 0 auto;          /* center single card */
+    margin: 0 auto;
   }
 }
-
-@media (max-width: 576px) {
-  .popularListingsParent {
-    gap: 28px;
-    font-size: 22px;
-    padding: 0 15px;
-  }
-  .agencyCardIcon {
-    height: 220px;
-  }
-}
-
-@media (max-width: 480px) {
-  .popularListingsParent {
-    gap: 24px;
-    font-size: 20px;
-    padding: 0 10px;
-  }
-  .agencyCardIcon {
-    height: 200px;
-  }
-  .revolutionizingTechnology,
-  .popularListingsParentRevolutionizingTechnology {
-    font-size: 16px;
-  }
-  .innovativeTechnologySolution {
-    font-size: 13px;
-  }
-  .pinFillParent {
-    font-size: 14px;
-  }
-}
-
-@media (max-width: 360px) {
-  .popularListingsParent {
-    font-size: 18px;
-  }
-  .agencyCardIcon {
-    height: 180px;
-  }
-  .revolutionizingTechnology,
-  .popularListingsParentRevolutionizingTechnology {
-    font-size: 15px;
-  }
-  .innovativeTechnologySolution {
-    font-size: 12px;
-  }
-}
-
 </style>

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import Carusal from '~/components/common/Carusal.vue';
 import Catagory from '~/components/common/Catagory.vue';
 import Frequent from '~/components/common/Frequent.vue';
 import Popular from '~/components/common/Popular.vue';
@@ -8,18 +7,10 @@ import Popular from '~/components/common/Popular.vue';
 
 <template>
   <div>
-    <!-- Navbar -->
     <Navbar />
-
     <Catagory /> 
-
     <Popular />
-
     <Frequent />
-
-  
-
-    <!-- Footer -->
     <Footer />
   </div>
 </template>
