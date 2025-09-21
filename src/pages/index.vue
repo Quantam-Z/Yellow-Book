@@ -1,27 +1,23 @@
+<script setup lang="ts">
+import Carusal from '~/components/common/Carusal.vue';
+import Catagory from '~/components/common/Catagory.vue';
+import Frequent from '~/components/common/Frequent.vue';
+import Popular from '~/components/common/Popular.vue';
+
+</script>
+
 <template>
   <div>
     <!-- Navbar -->
     <Navbar />
 
-    <!-- Hero Section -->
-    <section class="hero">
-      <div class="container text-center">
-        <h1>Discover Amazing Places</h1>
-        <p>Find companies, tours, and experiences around the world.</p>
-        <NuxtLink to="/auth/register" class="btn">Get Started</NuxtLink>
-      </div>
-    </section>
+    <Catagory /> 
 
-    <!-- About Section -->
-    <section class="about">
-      <div class="container">
-        <h2>About Yellow Book</h2>
-        <p>
-          Yellow Book is your go-to platform for discovering amazing tourism experiences.
-          Explore companies, read reviews, and plan your next adventure.
-        </p>
-      </div>
-    </section>
+    <Popular />
+
+    <Frequent />
+
+  
 
     <!-- Footer -->
     <Footer />

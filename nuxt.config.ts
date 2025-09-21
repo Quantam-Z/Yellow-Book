@@ -4,6 +4,7 @@ import { metaInfo } from "./metaTag";
 export default defineNuxtConfig({
   srcDir: "./src/",
   ssr: true,
+
   app: {
     head: {
       charset: "utf-8",
@@ -41,21 +42,25 @@ export default defineNuxtConfig({
     ],
     },
   },
+
   nitro: {
     preset: "vercel-edge",
   },
+
   modules: ["@nuxtjs/tailwindcss", "@formkit/nuxt", "@pinia/nuxt", "nuxt-icon"],
-  plugins: [{ src: "~/plugins/katex.js", mode: "client", ssr: false }],
+ 
   css: [
     // '~/assets/css/main.css',
     "~/assets/scss/main.scss",
     "awesome-notifications/dist/style.css",
   ],
+
   formkit: {
     defaultConfig: true,
     configFile: "./src/config/formkit.config.js",
     // ^ this is now a full config replacement, not override.
   },
+
   pwa: {
     meta: {
       title: metaInfo.siteName,
@@ -72,6 +77,7 @@ export default defineNuxtConfig({
       enabled: false,
     },
   },
+
   vue: {
     compilerOptions: {
       directiveTransforms: {
@@ -82,6 +88,7 @@ export default defineNuxtConfig({
       },
     },
   },
+
   runtimeConfig: {
     public: {
       gtagId: 'G-HXRZKQV1EN',
@@ -89,4 +96,6 @@ export default defineNuxtConfig({
       apiBaseUrl: process.env.NUXT_API_BASE_URL || "http://127.0.0.1:8000/api/",
     },
   },
+
+  compatibilityDate: "2025-09-18",
 });
