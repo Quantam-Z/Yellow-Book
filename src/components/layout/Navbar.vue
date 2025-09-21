@@ -19,7 +19,7 @@
                             </div>
                       </div>
                       <div :class="$style.frameDiv">
-                            <div :class="$style.loginWrapper">
+                            <div :class="$style.loginWrapper" @click="openLoginModal">
                                   <div :class="$style.popularListing">Login</div>
                             </div>
                             <div :class="$style.button">
@@ -34,15 +34,14 @@
                       </div>
                       <div :class="$style.frameParent2">
                         <div :class="$style.frameWrapper">
-  <div :class="$style.nomadicTravelWrapper">
-    <!-- Shows updated selection -->
-    <div :class="$style.nomadicTravel">{{ selectedSearch }}</div>
-  </div>
-</div>
-                            <div :class="$style.searchParent" @click="toggleDropdown">
-                                  <div :class="$style.popularListing">Search</div>
-                                  <img :class="$style.searchIcon" src="/logo/Search.svg"  alt="" />
-                            </div>
+                          <div :class="$style.nomadicTravelWrapper">
+                            <div :class="$style.nomadicTravel">{{ selectedSearch }}</div>
+                          </div>
+                        </div>
+                        <div :class="$style.searchParent" @click="toggleDropdown">
+                              <div :class="$style.popularListing">Search</div>
+                              <img :class="$style.searchIcon" src="/logo/Search.svg"  alt="" />
+                        </div>
                       </div>
                 </div>
           </div>
@@ -60,16 +59,25 @@
                       </div>
                 </div>
           </div>
+          
+          <!-- Login Modal -->
+          <LoginModal :isOpen="showLoginModal" @close="closeLoginModal" />
     </div>
 </template>
 
 <script>
+import LoginModal from '~/components/common/LoginModal.vue'
+
 export default {
   name: 'ResponsiveLandingPage',
+  components: {
+    LoginModal
+  },
   data() {
     return {
       showDropdown: false,
       selectedSearch: 'Nomadic Travel',
+      showLoginModal: false,
       searchData: [
         'Nomadic Travel',
         'Altai Tours', 
@@ -91,7 +99,21 @@ export default {
     selectSearch(item) {
       this.selectedSearch = item;
       this.showDropdown = false;
+    },
+    openLoginModal() {
+      this.showLoginModal = true;
+    },
+    closeLoginModal() {
+      this.showLoginModal = false;
     }
+  },
+  mounted() {
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!this.$el.contains(e.target)) {
+        this.showDropdown = false;
+      }
+    });
   }
 }
 </script>
@@ -229,6 +251,7 @@ export default {
     align-items: center;
     justify-content: center;
     padding: 16px 36px;
+    cursor: pointer;
 }
 
 .button {
