@@ -1,15 +1,10 @@
-<script setup lang="ts">
-import { Star, MapPin } from 'lucide-vue-next'
-</script>
-
 <template>
   <div :class="$style.popularListingsParent">
     <div :class="$style.popularListings">Popular listings</div>
 
     <div :class="$style.frameParent">
-      <!-- Card 1 -->
       <div :class="$style.agencyCardParent">
-        <img :class="$style.agencyCardIcon" src="https://via.placeholder.com/400x250" alt="listing" />
+        <img :class="$style.agencyCardIcon" src="/logo/p1.png" alt="listing" />
         <div :class="$style.frameWrapper">
           <div :class="$style.frameGroup">
             <div :class="$style.frameContainer">
@@ -31,9 +26,8 @@ import { Star, MapPin } from 'lucide-vue-next'
         </div>
       </div>
 
-      <!-- Card 2 -->
       <div :class="$style.agencyCardParent">
-        <img :class="$style.agencyCardIcon" src="https://via.placeholder.com/400x250" alt="listing" />
+        <img :class="$style.agencyCardIcon" src="/logo/p2.png" alt="listing" />
         <div :class="$style.frameWrapper">
           <div :class="$style.frameGroup">
             <div :class="$style.frameContainer">
@@ -55,9 +49,8 @@ import { Star, MapPin } from 'lucide-vue-next'
         </div>
       </div>
 
-      <!-- Card 3 -->
       <div :class="$style.agencyCardParent">
-        <img :class="$style.agencyCardIcon" src="https://via.placeholder.com/400x250" alt="listing" />
+        <img :class="$style.agencyCardIcon" src="/logo/p3.png" alt="listing" />
         <div :class="$style.frameWrapper">
           <div :class="$style.frameGroup">
             <div :class="$style.frameContainer">
@@ -82,11 +75,15 @@ import { Star, MapPin } from 'lucide-vue-next'
   </div>
 </template>
 
+<script setup lang="ts">
+import { Star, MapPin } from 'lucide-vue-next';
+</script>
+
 <style module>
 .popularListingsParent {
   width: 100%;
   max-width: 1200px;
-  margin: 60px auto 0;     /* <-- added top margin */
+  margin: 60px auto 0;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -112,14 +109,14 @@ import { Star, MapPin } from 'lucide-vue-next'
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  align-items: flex-start;
+  align-items: stretch; /* Key change: align-items to stretch */
   gap: 24px;
   font-size: 20px;
   color: #000;
 }
 
 .agencyCardParent {
-  flex: 1 1 300px;
+  flex: 1 1 300px; /* This sets the base size and flexibility */
   max-width: 384px;
   border-radius: 16px;
   overflow: hidden;
@@ -127,7 +124,7 @@ import { Star, MapPin } from 'lucide-vue-next'
   flex-direction: column;
   align-items: flex-start;
   background: #fff;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   transition: transform 0.2s ease;
 }
 
@@ -146,6 +143,8 @@ import { Star, MapPin } from 'lucide-vue-next'
   width: 100%;
   background-color: #fff;
   display: flex;
+  flex-direction: column; /* Key change: set to column */
+  flex-grow: 1; /* Key change: allow wrapper to grow to fill space */
   align-items: flex-end;
   justify-content: center;
   padding: 16px;
@@ -230,7 +229,7 @@ import { Star, MapPin } from 'lucide-vue-next'
 @media (max-width: 768px) {
   .frameParent {
     flex-direction: column;
-    gap: 24px;
+    align-items: center;
   }
   .agencyCardParent {
     width: 100%;

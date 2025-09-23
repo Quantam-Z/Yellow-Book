@@ -9,11 +9,10 @@
               <User :class="$style.frameIcon" />
               <div :class="$style.button">User</div>
             </div>
-            <div :class="$style.frameDiv" @click.stop="handleBusinessClick">
-  <Building :class="$style.frameIcon" />
-  <div :class="$style.button">Business</div>
-</div>
-
+            <div :class="$style.frameDiv" @click="goToBusiness">
+              <Building :class="$style.frameIcon" />
+              <div :class="$style.button">Business</div>
+            </div>
           </div>
         </div>
         <X :class="$style.closeIcon" @click="closeModal" />
@@ -78,8 +77,6 @@
 
 <script>
 import { User, Building, X } from 'lucide-vue-next'
-// Assuming BuisnessReg is a separate component you've created
-// import BuisnessReg from '~/components/modal/BuisnessReg.vue'
 
 export default {
   name: 'LoginModal',
@@ -94,379 +91,745 @@ export default {
       default: false
     }
   },
-  // Add the new 'open-business-reg' event to the emits option
-  emits: ['close', 'open-business-reg'],
+  emits: ['close'],
   methods: {
     closeModal() {
       this.$emit('close')
     },
-    // Define the new method to handle the click
-    handleBusinessClick() {
-      // Emit the custom event to the parent component
-      this.$emit('open-business-reg')
+    // The previous goToBusiness method was attempting to use a global $nuxt object
+    // which is not always available or the correct way in a standard Vue/Nuxt setup.
+    // The standard way to access the router is via `this.$router`.
+    goToBusiness() {
+      this.closeModal()
+      // Use this.$router.push() for navigation.
+      this.$router.push('/auth/register')
     }
   }
 }
 </script>
 
- 
-    <style module>
-    .modalOverlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: rgba(0, 0, 0, 0.5);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      padding: 20px;
-      box-sizing: border-box;
-    }
-    
-    .frameParent {
-      position: relative;
-      border-radius: 12px;
-      background-color: #fff;
-      width: 100%;
-      max-width: 500px;
-      max-height: 90vh;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      padding: 20px;
-      box-sizing: border-box;
-      gap: 32px;
-      text-align: left;
-      font-size: 20px;
-      color: #424242;
-      font-family: 'Plus Jakarta Sans';
-    }
-    
-    .frameGroup {
-      align-self: stretch;
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 20px;
-    }
-    
-    .chooseYourRoleParent {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 16px;
-    }
-    
-    .chooseYourRole {
-      align-self: stretch;
-      position: relative;
-      line-height: 130%;
-      text-transform: capitalize;
-      font-weight: 600;
-    }
-    
-    .frameContainer {
-      align-self: stretch;
-      display: flex;
-      align-items: center;
-      gap: 18px;
-      font-size: 16px;
-      color: #616161;
-    }
-    
-    .frameDiv {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-    
-    .frameIcon {
-      width: 24px;
-      height: 24px;
-      color: #616161;
-    }
-    
-    .closeIcon {
-      width: 24px;
-      height: 24px;
-      color: #616161;
-      cursor: pointer;
-      flex-shrink: 0;
-    }
-    
-    .closeIcon:hover {
-      color: #212121;
-    }
-    
-    .button {
-      position: relative;
-      line-height: 160%;
-      text-transform: capitalize;
-      font-weight: 500;
-    }
-    
-    .frameParent3 {
-      align-self: stretch;
-      box-shadow: 0px 4px 16px rgba(168, 168, 168, 0.24);
-      border-radius: 8px;
-      background-color: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 16px;
-      gap: 32px;
-      font-size: 16px;
-    }
-    
-    .loginAsATouristParent {
-      width: 100%;
-      max-width: 376px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 16px;
-      text-align: center;
-      font-size: 24px;
-    }
-    
-    .button3 {
-      align-self: stretch;
-      position: relative;
-      font-size: 16px;
-      line-height: 160%;
-      text-transform: capitalize;
-      font-weight: 500;
-      color: #616161;
-    }
-    
-    .buttonParent {
-      width: 100%;
-      max-width: 440px;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 16px;
-    }
-    
-    .button4 {
-      align-self: stretch;
-      border-radius: 4px;
-      background-color: #f6fafd;
-      border: 1px solid #dbe7ff;
-      box-sizing: border-box;
-      height: 46px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 12px 24px;
-      gap: 12px;
-      cursor: pointer;
-      transition: background-color 0.2s ease;
-    }
-    
-    .button4:hover {
-      background-color: #e3f2fd;
-    }
-    
-    .icon {
-      width: 20px;
-      height: 20px;
-      flex-shrink: 0;
-    }
-    
-    .lineParent {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-      text-align: center;
-      color: #9e9e9e;
-      width: 100%;
-    }
-    
-    .frameChild {
-      flex: 1;
-      position: relative;
-      border-top: 1px solid #dbe7ff;
-      box-sizing: border-box;
-      height: 1px;
-    }
-    
-    .emailCodeLoginParent {
-      align-self: stretch;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 24px;
-    }
-    
-    .emailCodeLogin {
-      align-self: stretch;
-      position: relative;
-      font-size: 20px;
-      line-height: 130%;
-      text-transform: capitalize;
-      font-weight: 600;
-    }
-    
-    .buttonGroup {
-      align-self: stretch;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 16px;
-    }
-    
-    .button10 {
-      align-self: stretch;
-      position: relative;
-      line-height: 160%;
-      text-transform: capitalize;
-      font-weight: 500;
-    }
-    
-    .button11 {
-      align-self: stretch;
-      border-radius: 4px;
-      background-color: #eee;
-      border: 1px solid #bdbdbd;
-      box-sizing: border-box;
-      height: 46px;
-      display: flex;
-      align-items: center;
-      padding: 12px 10px;
-      color: #9e9e9e;
-    }
-    
-    .button12 {
-      position: relative;
-      line-height: 160%;
-      text-transform: capitalize;
-      font-weight: 500;
-    }
-    
-    .button13 {
-      align-self: stretch;
-      border-radius: 4px;
-      background-color: #fcc207;
-      height: 48px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 18px 36px;
-      box-sizing: border-box;
-      text-align: center;
-      color: #212121;
-      cursor: pointer;
-      transition: background-color 0.2s ease;
-    }
-    
-    .button13:hover {
-      background-color: #e5b106;
-    }
-    
-    .button14 {
-      position: relative;
-      line-height: 130%;
-      text-transform: capitalize;
-      font-weight: 600;
-    }
-    
-    .frameParent4 {
-      display: flex;
-      align-items: flex-start;
-      justify-content: center;
-      gap: 32px;
-      font-size: 14px;
-    }
-    
-    .buttonWrapper {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    
-    .button15 {
-      position: relative;
-      line-height: 170%;
-      text-transform: capitalize;
-      cursor: pointer;
-      color: #616161;
-    }
-    
-    .button15:hover {
-      color: #212121;
-    }
-    
-    .buttonContainer {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    
-    /* Responsive Media Queries */
-    @media (max-width: 768px) {
-      .modalOverlay {
-        padding: 10px;
-      }
-      
-      .frameParent {
-        max-width: 100%;
-        padding: 16px;
-        gap: 24px;
-      }
-      
-      .frameGroup {
-        gap: 10px;
-      }
-      
-      .frameContainer {
-        flex-direction: column;
-        gap: 12px;
-        align-items: flex-start;
-      }
-      
-      .frameDiv {
-        gap: 8px;
-      }
-      
-      .frameParent3 {
-        padding: 12px;
-        gap: 24px;
-      }
-      
-      .loginAsATouristParent {
-        font-size: 20px;
-      }
-      
-      .frameParent4 {
-        flex-direction: column;
-        gap: 16px;
-        align-items: center;
-      }
-    }
-    
-    @media (max-width: 576px) {
-      .frameParent {
-        font-size: 18px;
-      }
-      
-      .loginAsATouristParent {
-        font-size: 18px;
-      }
-      
-      .button4 {
-        padding: 10px 16px;
-        font-size: 14px;
-      }
-      
-      .button13 {
-        padding: 16px 24px;
-      }
-    }
-    </style>
+<style module>
+
+.modalOverlay {
+
+position: fixed;
+
+top: 0;
+
+left: 0;
+
+right: 0;
+
+bottom: 0;
+
+background-color: rgba(0, 0, 0, 0.5);
+
+display: flex;
+
+align-items: center;
+
+justify-content: center;
+
+z-index: 1000;
+
+padding: 20px;
+
+box-sizing: border-box;
+
+}
+
+
+
+.frameParent {
+
+position: relative;
+
+border-radius: 12px;
+
+background-color: #fff;
+
+width: 100%;
+
+max-width: 500px;
+
+max-height: 90vh;
+
+overflow-y: auto;
+
+display: flex;
+
+flex-direction: column;
+
+align-items: flex-start;
+
+padding: 20px;
+
+box-sizing: border-box;
+
+gap: 32px;
+
+text-align: left;
+
+font-size: 20px;
+
+color: #424242;
+
+font-family: 'Plus Jakarta Sans';
+
+}
+
+
+
+.frameGroup {
+
+align-self: stretch;
+
+display: flex;
+
+align-items: flex-start;
+
+justify-content: space-between;
+
+gap: 20px;
+
+}
+
+
+
+.chooseYourRoleParent {
+
+flex: 1;
+
+display: flex;
+
+flex-direction: column;
+
+align-items: flex-start;
+
+gap: 16px;
+
+}
+
+
+
+.chooseYourRole {
+
+align-self: stretch;
+
+position: relative;
+
+line-height: 130%;
+
+text-transform: capitalize;
+
+font-weight: 600;
+
+}
+
+
+
+.frameContainer {
+
+align-self: stretch;
+
+display: flex;
+
+align-items: center;
+
+gap: 18px;
+
+font-size: 16px;
+
+color: #616161;
+
+}
+
+
+
+.frameDiv {
+
+display: flex;
+
+align-items: center;
+
+gap: 4px;
+
+cursor: pointer;
+
+padding: 8px;
+
+border-radius: 4px;
+
+transition: background-color 0.2s ease;
+
+}
+
+
+
+.frameDiv:hover {
+
+background-color: rgba(24, 119, 242, 0.1);
+
+}
+
+
+
+.frameIcon {
+
+width: 24px;
+
+height: 24px;
+
+color: #616161;
+
+}
+
+
+
+.closeIcon {
+
+width: 24px;
+
+height: 24px;
+
+color: #616161;
+
+cursor: pointer;
+
+flex-shrink: 0;
+
+}
+
+
+
+.closeIcon:hover {
+
+color: #212121;
+
+}
+
+
+
+.button {
+
+position: relative;
+
+line-height: 160%;
+
+text-transform: capitalize;
+
+font-weight: 500;
+
+}
+
+
+
+.frameParent3 {
+
+align-self: stretch;
+
+box-shadow: 0px 4px 16px rgba(168, 168, 168, 0.24);
+
+border-radius: 8px;
+
+background-color: #fff;
+
+display: flex;
+
+flex-direction: column;
+
+align-items: center;
+
+padding: 16px;
+
+gap: 32px;
+
+font-size: 16px;
+
+}
+
+
+
+.loginAsATouristParent {
+
+width: 100%;
+
+max-width: 376px;
+
+display: flex;
+
+flex-direction: column;
+
+align-items: center;
+
+gap: 16px;
+
+text-align: center;
+
+font-size: 24px;
+
+}
+
+
+
+.button3 {
+
+align-self: stretch;
+
+position: relative;
+
+font-size: 16px;
+
+line-height: 160%;
+
+text-transform: capitalize;
+
+font-weight: 500;
+
+color: #616161;
+
+}
+
+
+
+.buttonParent {
+
+width: 100%;
+
+max-width: 440px;
+
+display: flex;
+
+flex-direction: column;
+
+align-items: flex-start;
+
+gap: 16px;
+
+}
+
+
+
+.button4 {
+
+align-self: stretch;
+
+border-radius: 4px;
+
+background-color: #f6fafd;
+
+border: 1px solid #dbe7ff;
+
+box-sizing: border-box;
+
+height: 46px;
+
+display: flex;
+
+align-items: center;
+
+justify-content: center;
+
+padding: 12px 24px;
+
+gap: 12px;
+
+cursor: pointer;
+
+transition: background-color 0.2s ease;
+
+}
+
+
+
+.button4:hover {
+
+background-color: #e3f2fd;
+
+}
+
+
+
+.icon {
+
+width: 20px;
+
+height: 20px;
+
+flex-shrink: 0;
+
+}
+
+
+
+.lineParent {
+
+display: flex;
+
+align-items: center;
+
+justify-content: center;
+
+gap: 16px;
+
+text-align: center;
+
+color: #9e9e9e;
+
+width: 100%;
+
+}
+
+
+
+.frameChild {
+
+flex: 1;
+
+position: relative;
+
+border-top: 1px solid #dbe7ff;
+
+box-sizing: border-box;
+
+height: 1px;
+
+}
+
+
+
+.emailCodeLoginParent {
+
+align-self: stretch;
+
+display: flex;
+
+flex-direction: column;
+
+align-items: flex-start;
+
+gap: 24px;
+
+}
+
+
+
+.emailCodeLogin {
+
+align-self: stretch;
+
+position: relative;
+
+font-size: 20px;
+
+line-height: 130%;
+
+text-transform: capitalize;
+
+font-weight: 600;
+
+}
+
+
+
+.buttonGroup {
+
+align-self: stretch;
+
+display: flex;
+
+flex-direction: column;
+
+align-items: flex-start;
+
+gap: 16px;
+
+}
+
+
+
+.button10 {
+
+align-self: stretch;
+
+position: relative;
+
+line-height: 160%;
+
+text-transform: capitalize;
+
+font-weight: 500;
+
+}
+
+
+
+.button11 {
+
+align-self: stretch;
+
+border-radius: 4px;
+
+background-color: #eee;
+
+border: 1px solid #bdbdbd;
+
+box-sizing: border-box;
+
+height: 46px;
+
+display: flex;
+
+align-items: center;
+
+padding: 12px 10px;
+
+color: #9e9e9e;
+
+}
+
+
+
+.button12 {
+
+position: relative;
+
+line-height: 160%;
+
+text-transform: capitalize;
+
+font-weight: 500;
+
+}
+
+
+
+.button13 {
+
+align-self: stretch;
+
+border-radius: 4px;
+
+background-color: #fcc207;
+
+height: 48px;
+
+display: flex;
+
+align-items: center;
+
+justify-content: center;
+
+padding: 18px 36px;
+
+box-sizing: border-box;
+
+text-align: center;
+
+color: #212121;
+
+cursor: pointer;
+
+transition: background-color 0.2s ease;
+
+}
+
+
+
+.button13:hover {
+
+background-color: #e5b106;
+
+}
+
+
+
+.button14 {
+
+position: relative;
+
+line-height: 130%;
+
+text-transform: capitalize;
+
+font-weight: 600;
+
+}
+
+
+
+.frameParent4 {
+
+display: flex;
+
+align-items: flex-start;
+
+justify-content: center;
+
+gap: 32px;
+
+font-size: 14px;
+
+}
+
+
+
+.buttonWrapper {
+
+display: flex;
+
+align-items: center;
+
+justify-content: center;
+
+}
+
+
+
+.button15 {
+
+position: relative;
+
+line-height: 170%;
+
+text-transform: capitalize;
+
+cursor: pointer;
+
+color: #616161;
+
+}
+
+
+
+.button15:hover {
+
+color: #212121;
+
+}
+
+
+
+.buttonContainer {
+
+display: flex;
+
+align-items: center;
+
+justify-content: center;
+
+}
+
+
+
+/* Responsive Media Queries */
+
+@media (max-width: 768px) {
+
+.modalOverlay {
+
+padding: 10px;
+
+}
+
+
+.frameParent {
+
+max-width: 100%;
+
+padding: 16px;
+
+gap: 24px;
+
+}
+
+
+.frameGroup {
+
+gap: 10px;
+
+}
+
+
+.frameContainer {
+
+flex-direction: column;
+
+gap: 12px;
+
+align-items: flex-start;
+
+}
+
+
+.frameDiv {
+
+gap: 8px;
+
+}
+
+
+.frameParent3 {
+
+padding: 12px;
+
+gap: 24px;
+
+}
+
+
+.loginAsATouristParent {
+
+font-size: 20px;
+
+}
+
+
+.frameParent4 {
+
+flex-direction: column;
+
+gap: 16px;
+
+align-items: center;
+
+}
+
+}
+
+
+
+@media (max-width: 576px) {
+
+.frameParent {
+
+font-size: 18px;
+
+}
+
+
+.loginAsATouristParent {
+
+font-size: 18px;
+
+}
+
+
+.button4 {
+
+padding: 10px 16px;
+
+font-size: 14px;
+
+}
+
+
+.button13 {
+
+padding: 16px 24px;
+
+}
+
+}
+
+</style>

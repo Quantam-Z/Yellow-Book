@@ -1,5 +1,5 @@
 <template>
-    <div :class="$style.frameParent">
+    <!-- <div :class="$style.frameParent">
           <div :class="$style.frameGroup">
                 <div :class="$style.chooseYourRoleParent">
                       <div :class="$style.chooseYourRole">Choose your role</div>
@@ -61,7 +61,7 @@
                       </div>
                 </div>
           </div>
-    </div>
+    </div> -->
 </template>
 <style  module>.frameParent {
     position: relative;
