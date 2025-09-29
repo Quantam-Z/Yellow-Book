@@ -11,35 +11,29 @@ export default defineNuxtConfig({
       viewport: "width=device-width, initial-scale=1",
       title: metaInfo.siteName,
       meta: [
-        {
-          name: "description",
-          content: metaInfo.description,
-        },
-        {
-          name: "description",
-          content: metaInfo.siteDescription,
-        },
+        { name: "description", content: metaInfo.description },
+        { name: "description", content: metaInfo.siteDescription },
         { property: "og:title", content: metaInfo.siteName },
         { property: "og:description", content: metaInfo.siteDescription },
         { property: "og:image", content: metaInfo.siteLogo },
       ],
       script: [
         {
-            hid: 'gtm',
-            innerHTML: `(function (w, d, s, l, i) {
+          key: "gtm",  // ✅ changed from hid to key
+          innerHTML: `(function (w, d, s, l, i) {
             w[l] = w[l] || [];
             w[l].push({
-            'gtm.start': new Date().getTime(), event: 'gtm.js'
-             });
+              'gtm.start': new Date().getTime(), event: 'gtm.js'
+            });
             var f = d.getElementsByTagName(s)[0],
-            j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : '';
+                j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : '';
             j.async = true;
             j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
             f.parentNode.insertBefore(j, f);
-            })(window, document, 'script', 'dataLayer', 'GTM-KSJ3PR2X');`,
-            type: 'text/javascript'
+          })(window, document, 'script', 'dataLayer', 'GTM-KSJ3PR2X');`,
+          type: "text/javascript"
         }
-    ],
+      ],
     },
   },
 
@@ -48,9 +42,8 @@ export default defineNuxtConfig({
   },
 
   modules: ["@nuxtjs/tailwindcss", "@formkit/nuxt", "@pinia/nuxt", "nuxt-icon"],
- 
+
   css: [
-    // '~/assets/css/main.css',
     "~/assets/scss/main.scss",
     "awesome-notifications/dist/style.css",
   ],
@@ -58,14 +51,13 @@ export default defineNuxtConfig({
   formkit: {
     defaultConfig: true,
     configFile: "./src/config/formkit.config.js",
-    // ^ this is now a full config replacement, not override.
   },
 
   pwa: {
     meta: {
       title: metaInfo.siteName,
       ogSiteName: metaInfo.siteName,
-      description:  metaInfo.siteDescription,
+      description: metaInfo.siteDescription,
       author: "Author.",
     },
     manifest: {
@@ -73,9 +65,7 @@ export default defineNuxtConfig({
       short_name: "",
       lang: "en",
     },
-    workbox: {
-      enabled: false,
-    },
+    workbox: { enabled: false },
   },
 
   vue: {
@@ -91,9 +81,9 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      gtagId: 'G-HXRZKQV1EN',
+      gtagId: "G-HXRZKQV1EN",
       siteName: "Yellow-Book",
-      apiBaseUrl: process.env.NUXT_API_BASE_URL || "http://127.0.0.1:8000/api/",
+      apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000/api/",
     },
   },
 
