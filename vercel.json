@@ -1,6 +1,10 @@
 {
-    "buildCommand": "npm run build",
-    "outputDirectory": ".output/public",
-    "framework": "nuxt"
+    "version": 2,
+    "builds": [
+      { "src": "nuxt.config.*", "use": "@vercel/node" }
+    ],
+    "routes": [
+      { "src": "/(.*)", "dest": "/" }
+    ]
   }
   
