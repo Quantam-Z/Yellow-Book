@@ -1,11 +1,7 @@
-import {useAuthStore} from "~/stores/auth";
+// src/middleware/auth.js
+import { useAuthStore } from '~/stores/auth'
 
 export default defineNuxtRouteMiddleware((to, from) => {
-  const authStore = useAuthStore()
-  const {token} = authStore
-  if (process.server && !authStore.token) { /// IN server only check for token ....
-    return navigateTo('/auth/login?next=' + to.fullPath)
-  } else if (process.client && !token) { // while in client check for both token and user data ...
-    return navigateTo('/auth/login?next=' + to.fullPath)
-  }
+  const auth = useAuthStore()
+  if (!auth.user) return navigateTo('/login')
 })
