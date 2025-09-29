@@ -19,8 +19,8 @@ export default defineNuxtConfig({
       ],
       script: [
         {
-          key: "gtm",  // ✅ changed from hid to key
-          innerHTML: `(function (w, d, s, l, i) {
+          key: "gtm",
+          children: `(function (w, d, s, l, i) {
             w[l] = w[l] || [];
             w[l].push({
               'gtm.start': new Date().getTime(), event: 'gtm.js'
@@ -83,7 +83,7 @@ export default defineNuxtConfig({
     public: {
       gtagId: "G-HXRZKQV1EN",
       siteName: "Yellow-Book",
-      apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000/api/",
+      apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8000/api/",
     },
   },
 
