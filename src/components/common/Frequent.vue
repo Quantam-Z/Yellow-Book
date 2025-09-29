@@ -1,248 +1,177 @@
+<script setup>
+import { ref } from 'vue';
+
+// Define the reactive data for the FAQs
+const faqs = ref([
+  {
+    id: 1,
+    question: 'What is Yellow Book?',
+    answer: 'Yellow Book is a platform where users can discover, review, and connect with companies from different categories such as travel agencies, restaurants, and more.',
+    open: true, // Start the first one open
+  },
+  {
+    id: 2,
+    question: 'How can I register my company?',
+    answer: 'You can register your company by navigating to the "Register" section, filling out the company profile form, and submitting it for verification by our team.',
+    open: false,
+  },
+  {
+    id: 3,
+    question: 'Are all companies verified?',
+    answer: 'We have a multi-step verification process for all listed companies, including checking legal documents and contact information to ensure reliability and user trust.',
+    open: false,
+  },
+  {
+    id: 4,
+    question: 'How do reviews work?',
+    answer: 'Users can submit reviews for companies they have interacted with. Reviews are moderated for fairness and relevance before being published. Companies can respond to reviews directly.',
+    open: false,
+  },
+]);
+
+// Function to toggle the open state of an FAQ item
+const toggleFaq = (faqId) => {
+  // Use map to create a new array, ensuring reactivity
+  faqs.value = faqs.value.map(faq => {
+    if (faq.id === faqId) {
+      // Toggle the open state of the clicked item
+      return { ...faq, open: !faq.open };
+    }
+    // Optionally close others, but here we just toggle the clicked one
+    return faq;
+  });
+};
+</script>
+
 <template>
-      <div :class="$style.frameParent">
-            <div :class="$style.frequentlyAskedQuestionsParent">
-                  <div :class="$style.frequentlyAskedQuestions">Frequently Asked Questions</div>
-                  <div :class="$style.everythingYouNeed">Everything you need to know about using Yellow Book.</div>
-            </div>
-            <div :class="$style.frameGroup">
-                  <div :class="$style.frameContainer">
-                        <div :class="$style.whatIsYellowBookParent">
-                              <div :class="$style.whatIsYellow">What is Yellow Book?</div>
-                                    <svg :class="$style.frameChild" viewBox="0 0 24 24" fill="currentColor">
-                                      <path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z"/>
-                                    </svg>
-                                    </div>
-                                    <div :class="$style.yellowBookIsAPlatformWherWrapper">
-                                          <div :class="$style.yellowBookIs">Yellow Book is a platform where users can discover, review, and connect with companies from different categories such as travel agencies, restaurants, and more.</div>
-                                    </div>
-                                    </div>
-                                    <div :class="$style.frameWrapper">
-                                          <div :class="$style.whatIsYellowBookParent">
-                                                <div :class="$style.whatIsYellow">How can I register my company?</div>
-                                                      <svg :class="$style.frameChild" viewBox="0 0 24 24" fill="currentColor">
-                                                        <path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"/>
-                                                      </svg>
-                                                      </div>
-                                                      </div>
-                                                      <div :class="$style.frameWrapper">
-                                                            <div :class="$style.whatIsYellowBookParent">
-                                                                  <div :class="$style.whatIsYellow">Are all companies verified?</div>
-                                                                        <svg :class="$style.frameChild" viewBox="0 0 24 24" fill="currentColor">
-                                                                          <path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"/>
-                                                                        </svg>
-                                                                        </div>
-                                                                        </div>
-                                                                        <div :class="$style.frameWrapper">
-                                                                              <div :class="$style.whatIsYellowBookParent">
-                                                                                    <div :class="$style.whatIsYellow">How do reviews work?</div>
-                                                                                          <svg :class="$style.frameChild" viewBox="0 0 24 24" fill="currentColor">
-                                                                                            <path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"/>
-                                                                                          </svg>
-                                                                                          </div>
-                                                                                          </div>
-                                                                                          </div>
-                                                                                          </div>
-  </template>
-  
-  <style module>
-  .frameParent {
-        width: 100%;
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 44px;
-        text-align: center;
-        font-size: 30px;
-        color: #212121;
-        font-family: 'Plus Jakarta Sans';
-        margin-top: 80px;
+  <div class="w-full relative flex flex-col items-center gap-[44px] text-center text-[30px] text-[#212121] font-['Plus_Jakarta_Sans'] mt-20">
+    <div class="self-stretch flex flex-col items-start gap-4">
+      <div class="self-stretch relative leading-[126%] capitalize font-semibold">Frequently Asked Questions</div>
+      <div class="self-stretch relative text-[16px] leading-[160%] capitalize font-medium text-[#9e9e9e]">Everything you need to know about using Yellow Book.</div>
+    </div>
+    
+    <div class="w-[588px] flex flex-col items-start gap-4 text-[18px]">
+      <div 
+        v-for="faq in faqs" 
+        :key="faq.id" 
+        class="self-stretch rounded-[8px] bg-[#feecb2] flex flex-col items-start transition-all duration-300 cursor-pointer"
+        :class="faq.open ? 'p-[10px_16px] gap-1' : 'p-[10px_16px] gap-0'"
+      >
+        <div 
+          class="self-stretch flex items-center justify-between gap-[10px]"
+          @click="toggleFaq(faq.id)"
+          role="button"
+          :aria-expanded="faq.open"
+          :aria-controls="`faq-answer-${faq.id}`"
+        >
+          <div class="relative leading-[160%] capitalize font-semibold text-left flex-grow">{{ faq.question }}</div>
+          
+          <svg 
+            class="w-11 h-11 rounded-[22px] bg-white p-[10px] box-border text-[#212121] transition-transform duration-300 flex-shrink-0"
+            :class="{ 'rotate-180': !faq.open }"
+            viewBox="0 0 24 24" 
+            fill="currentColor"
+          >
+            <path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z"/>
+          </svg>
+        </div>
+        
+        <div 
+          v-if="faq.open"
+          :id="`faq-answer-${faq.id}`"
+          class="self-stretch flex items-center py-[10px] text-left text-[16px] text-[#424242]"
+        >
+          <div class="flex-1 relative leading-[160%] capitalize font-medium">{{ faq.answer }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style>
+/* Responsive Media Queries */
+@media (max-width: 1200px) {
+  .w-full\.relative\.flex\.flex-col\.items-center\.gap-\[44px\] {
+    margin-top: 60px;
   }
-  
-  .frequentlyAskedQuestionsParent {
-        align-self: stretch;
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 16px;
+  .w-\[588px\] {
+    width: 100%;
+    max-width: 588px;
   }
-  
-  .frequentlyAskedQuestions {
-        align-self: stretch;
-        position: relative;
-        line-height: 126%;
-        text-transform: capitalize;
-        font-weight: 600;
+}
+
+@media (max-width: 992px) {
+  .w-full\.relative\.flex\.flex-col\.items-center\.gap-\[44px\] {
+    gap: 36px;
+    font-size: 28px;
+    margin-top: 50px;
   }
-  
-  .everythingYouNeed {
-        align-self: stretch;
-        position: relative;
-        font-size: 16px;
-        line-height: 160%;
-        text-transform: capitalize;
-        font-weight: 500;
-        color: #9e9e9e;
+  .w-\[588px\] {
+    font-size: 16px;
   }
-  
-  .frameGroup {
-        width: 588px;
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 16px;
-        font-size: 18px;
+  .w-11\.h-11 {
+    width: 40px;
+    height: 40px;
   }
-  
-  .frameContainer {
-        align-self: stretch;
-        border-radius: 8px;
-        background-color: #feecb2;
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 10px 16px;
-        gap: 4px;
+}
+
+@media (max-width: 768px) {
+  .w-full\.relative\.flex\.flex-col\.items-center\.gap-\[44px\] {
+    gap: 32px;
+    font-size: 24px;
+    margin-top: 40px;
+    padding: 0 20px;
+    box-sizing: border-box;
   }
-  
-  .whatIsYellowBookParent {
-        align-self: stretch;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 0px;
+  .w-\[588px\] {
+    width: 100%;
   }
-  
-  .whatIsYellow {
-        position: relative;
-        line-height: 160%;
-        text-transform: capitalize;
-        font-weight: 600;
+  .self-stretch\.rounded-\[8px\]\.bg-\[#feecb2\] {
+    padding: 12px 16px;
   }
-  
-  .frameChild {
-        width: 44px;
-        border-radius: 22px;
-        height: 44px;
-        background-color: #fff;
-        padding: 10px;
-        box-sizing: border-box;
-        color: #212121;
+  .w-11\.h-11 {
+    width: 36px;
+    height: 36px;
   }
-  
-  .yellowBookIsAPlatformWherWrapper {
-        align-self: stretch;
-        display: flex;
-        align-items: center;
-        padding: 10px 0px;
-        text-align: left;
-        font-size: 16px;
-        color: #424242;
+}
+
+@media (max-width: 576px) {
+  .w-full\.relative\.flex\.flex-col\.items-center\.gap-\[44px\] {
+    gap: 28px;
+    font-size: 22px;
+    margin-top: 30px;
+    padding: 0 15px;
   }
-  
-  .yellowBookIs {
-        flex: 1;
-        position: relative;
-        line-height: 160%;
-        text-transform: capitalize;
-        font-weight: 500;
+  .w-\[588px\] {
+    font-size: 16px;
+    gap: 12px;
   }
-  
-  .frameWrapper {
-        align-self: stretch;
-        border-radius: 8px;
-        background-color: #feecb2;
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 10px 16px;
+  .self-stretch\.rounded-\[8px\]\.bg-\[#feecb2\] {
+    padding: 10px 14px;
   }
-  
-  /* Responsive Media Queries */
-  @media (max-width: 1200px) {
-        .frameParent {
-              margin-top: 60px;
-        }
-        .frameGroup {
-              width: 100%;
-              max-width: 588px;
-        }
+  .relative\.leading-\[160\%\]\.capitalize\.font-semibold {
+    font-size: 16px;
   }
-  
-  @media (max-width: 992px) {
-        .frameParent {
-              gap: 36px;
-              font-size: 28px;
-              margin-top: 50px;
-        }
-        .frameGroup {
-              font-size: 16px;
-        }
-        .frameChild {
-              width: 40px;
-              height: 40px;
-        }
+  .w-11\.h-11 {
+    width: 32px;
+    height: 32px;
   }
-  
-  @media (max-width: 768px) {
-        .frameParent {
-              gap: 32px;
-              font-size: 24px;
-              margin-top: 40px;
-              padding: 0 20px;
-              box-sizing: border-box;
-        }
-        .frameGroup {
-              width: 100%;
-        }
-        .frameContainer,
-        .frameWrapper {
-              padding: 12px 16px;
-        }
-        .frameChild {
-              width: 36px;
-              height: 36px;
-        }
+}
+
+@media (max-width: 480px) {
+  .w-full\.relative\.flex\.flex-col\.items-center\.gap-\[44px\] {
+    font-size: 20px;
+    margin-top: 25px;
+    padding: 0 10px;
   }
-  
-  @media (max-width: 576px) {
-        .frameParent {
-              gap: 28px;
-              font-size: 22px;
-              margin-top: 30px;
-              padding: 0 15px;
-        }
-        .frameGroup {
-              font-size: 16px;
-              gap: 12px;
-        }
-        .frameContainer,
-        .frameWrapper {
-              padding: 10px 14px;
-        }
-        .whatIsYellow {
-              font-size: 16px;
-        }
-        .frameChild {
-              width: 32px;
-              height: 32px;
-        }
+  .w-\[588px\] {
+    font-size: 15px;
   }
-  
-  @media (max-width: 480px) {
-        .frameParent {
-              font-size: 20px;
-              margin-top: 25px;
-              padding: 0 10px;
-        }
-        .frameGroup {
-              font-size: 15px;
-        }
-        .everythingYouNeed {
-              font-size: 14px;
-        }
-        .yellowBookIsAPlatformWherWrapper {
-              font-size: 14px;
-        }
+  .self-stretch\.relative\.text-\[16px\]\.leading-\[160\%\] {
+    font-size: 14px;
   }
-  </style>
+  .self-stretch\.flex\.items-center\.py-\[10px\] {
+    font-size: 14px;
+  }
+}
+</style>

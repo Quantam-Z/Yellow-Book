@@ -37,7 +37,8 @@
     font-size: 16px;
     color: #000;
     font-family: 'Plus Jakarta Sans';
-    padding: 8px 12px;
+    padding: 8px 15px;
+    margin-left: 10px;
     box-sizing: border-box;
   }
   

@@ -3,157 +3,49 @@ import { PawPrint, Sparkles, Utensils, Plane, Laptop, MoreHorizontal } from 'luc
 </script>
 
 <template>
-  <div :class="$style.categorysParent">
-    <div :class="$style.categorys">Category's</div>
-    <div :class="$style.frameParent">
-      <div :class="$style.frameGroup">
-        <div :class="$style.frameContainer">
-          <PawPrint :class="$style.icon" />
-          <div :class="$style.animalsPets">Animals & Pets</div>
+  <div class="w-full relative flex flex-col items-center gap-8 text-center text-[30px] text-[#212121] p-10 font-['Plus_Jakarta_Sans']">
+    <div class="self-stretch relative leading-[126%] capitalize font-semibold">Category's</div>
+    <div class="self-stretch flex flex-col items-start gap-6 text-[20px] text-[#757575]">
+      <div class="self-stretch flex items-center gap-6">
+        <div class="flex-1 w-full relative rounded-lg border-gainsboro border-solid border-[1px] box-border h-[200px] flex flex-col items-center justify-center p-5 gap-[22px] text-center text-xl text-gray font-plus-jakarta-sans">
+          <PawPrint class="w-[52px] h-[52px] text-black" />
+          <div class="self-stretch relative leading-[130%] capitalize font-medium">Animals & Pets</div>
         </div>
-        <div :class="$style.frameContainer">
-          <Sparkles :class="$style.icon" />
-          <div :class="$style.animalsPets">Beauty & Well-beings</div>
+        <div class="flex-1 w-full relative rounded-lg border-gainsboro border-solid border-[1px] box-border h-[200px] flex flex-col items-center justify-center p-5 gap-[22px] text-center text-xl text-gray font-plus-jakarta-sans">
+          <Sparkles class="w-[52px] h-[52px] text-black" />
+          <div class="self-stretch relative leading-[130%] capitalize font-medium">Beauty & Well-beings</div>
         </div>
-        <div :class="$style.categorysParentFrameParent">
-          <Utensils :class="$style.icon" />
-          <div :class="$style.animalsPets">Food & Beverage</div>
+        <div class="flex-1 w-full relative rounded-lg border-gainsboro border-solid border-[1px] box-border h-[200px] flex flex-col items-center justify-center p-5 gap-[22px] text-center text-xl text-gray font-plus-jakarta-sans">
+          <Utensils class="w-[52px] h-[52px] text-black" />
+          <div class="self-stretch relative leading-[130%] capitalize font-medium">Food & Beverage</div>
         </div>
       </div>
 
-      <div :class="$style.frameParent2">
-        <div :class="$style.frameContainer">
-          <Plane :class="$style.icon" />
-          <div :class="$style.animalsPets">Tourism & Hospitality</div>
+      <div class="self-stretch flex items-center gap-6 text-[#212121]">
+        <div class="flex-1 w-full relative rounded-lg border-gainsboro border-solid border-[1px] box-border h-[200px] flex flex-col items-center justify-center p-5 gap-[22px] text-center text-xl text-gray font-plus-jakarta-sans">
+          <Plane class="w-[52px] h-[52px] text-black" />
+          <div class="self-stretch relative leading-[130%] capitalize font-medium">Tourism & Hospitality</div>
         </div>
-        <div :class="$style.frameContainer">
-          <Laptop :class="$style.icon" />
-          <div :class="$style.animalsPets">IT & Software</div>
+        <div class="flex-1 w-full relative rounded-lg border-gainsboro border-solid border-[1px] box-border h-[200px] flex flex-col items-center justify-center p-5 gap-[22px] text-center text-xl text-gray font-plus-jakarta-sans">
+          <Laptop class="w-[52px] h-[52px] text-black" />
+          <div class="self-stretch relative leading-[130%] capitalize font-medium">IT & Software</div>
         </div>
-        <div :class="$style.frameParent5">
-          <MoreHorizontal :class="$style.icon" />
-          <div :class="$style.animalsPets">More</div>
+        <div class="flex-1 w-full relative rounded-lg border-gainsboro border-solid border-[1px] box-border h-[200px] flex flex-col items-center justify-center p-5 gap-[22px] text-center text-xl text-gray font-plus-jakarta-sans">
+          <MoreHorizontal class="w-[52px] h-[52px] text-black" />
+          <div class="self-stretch relative leading-[130%] capitalize font-medium">More</div>
         </div>
       </div>
     </div>
   </div>
 </template>
 
-<style module>
-.categorysParent {
-  width: 100%;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 32px;
-  text-align: center;
-  font-size: 30px;
-  color: #212121;
-  font-family: 'Plus Jakarta Sans';
-}
-
-.categorys {
-  align-self: stretch;
-  position: relative;
-  line-height: 126%;
-  text-transform: capitalize;
-  font-weight: 600;
-}
-
-.frameParent {
-  align-self: stretch;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 24px;
-  font-size: 20px;
-  color: #757575;
-}
-
-.frameGroup {
-  align-self: stretch;
-  display: flex;
-  align-items: center;
-  gap: 24px;
-}
-
-.frameContainer {
-  flex: 1;
-  border-radius: 8px;
-  border: 1px solid #e0e0e0;
-  box-sizing: border-box;
-  height: 200px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  gap: 22px;
-}
-
-.animalsPets {
-  align-self: stretch;
-  position: relative;
-  line-height: 130%;
-  text-transform: capitalize;
-  font-weight: 500;
-}
-
-.categorysParentFrameParent {
-  flex: 1;
-  border-radius: 8px;
-  border: 1px solid #e0e0e0;
-  box-sizing: border-box;
-  height: 200px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  gap: 22px;
-  color: #212121;
-}
-
-.frameParent2 {
-  align-self: stretch;
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  color: #212121;
-}
-
-.frameParent5 {
-  flex: 1;
-  border-radius: 8px;
-  border: 1px solid #e0e0e0;
-  box-sizing: border-box;
-  height: 200px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  gap: 22px;
-  color: #757575;
-}
-
-/* Icon styling */
-.icon {
-  width: 52px;
-  height: 52px;
-  color: #007bff;
-}
-
+<style>
 /* Responsive Media Queries */
 @media (max-width: 1200px) {
-  .frameGroup,
-  .frameParent2 {
+  .self-stretch\.flex\.items-center\.gap-6 {
     gap: 20px;
   }
-  .frameContainer,
-  .categorysParentFrameParent,
-  .frameParent5 {
+  .flex-1\.rounded-\[8px\]\.border\.border-\[#e0e0e0\]\.box-border\.h-\[200px\] {
     height: 180px;
     padding: 18px;
     gap: 20px;
@@ -161,123 +53,110 @@ import { PawPrint, Sparkles, Utensils, Plane, Laptop, MoreHorizontal } from 'luc
 }
 
 @media (max-width: 992px) {
-  .categorysParent {
+  .w-full\.relative\.flex\.flex-col\.items-center\.gap-8 {
     gap: 28px;
     font-size: 28px;
   }
-  .frameParent {
+  .self-stretch\.flex\.flex-col\.items-start\.gap-6 {
     gap: 20px;
     font-size: 18px;
   }
-  .frameGroup,
-  .frameParent2 {
+  .self-stretch\.flex\.items-center\.gap-6 {
     gap: 16px;
   }
-  .frameContainer,
-  .categorysParentFrameParent,
-  .frameParent5 {
+  .flex-1\.rounded-\[8px\]\.border\.border-\[#e0e0e0\]\.box-border\.h-\[200px\] {
     height: 160px;
     padding: 16px;
     gap: 18px;
   }
-  .icon {
+  .w-\[52px\]\.h-\[52px\] {
     width: 48px;
     height: 48px;
   }
 }
 
 @media (max-width: 768px) {
-  .categorysParent {
+  .w-full\.relative\.flex\.flex-col\.items-center\.gap-8 {
     gap: 24px;
     font-size: 24px;
     padding: 0 20px;
     box-sizing: border-box;
   }
-  .frameParent {
+  .self-stretch\.flex\.flex-col\.items-start\.gap-6 {
     gap: 16px;
   }
-  .frameGroup,
-  .frameParent2 {
+  .self-stretch\.flex\.items-center\.gap-6 {
     flex-direction: column;
     gap: 16px;
   }
-  .frameContainer,
-  .categorysParentFrameParent,
-  .frameParent5 {
+  .flex-1\.rounded-\[8px\]\.border\.border-\[#e0e0e0\]\.box-border\.h-\[200px\] {
     width: 100%;
     height: 140px;
     padding: 16px;
     gap: 16px;
   }
-  .icon {
+  .w-\[52px\]\.h-\[52px\] {
     width: 44px;
     height: 44px;
   }
 }
 
 @media (max-width: 576px) {
-  .categorysParent {
+  .w-full\.relative\.flex\.flex-col\.items-center\.gap-8 {
     gap: 20px;
     font-size: 22px;
     padding: 0 15px;
   }
-  .frameParent {
+  .self-stretch\.flex\.flex-col\.items-start\.gap-6 {
     font-size: 16px;
   }
-  .frameGroup,
-  .frameParent2 {
+  .self-stretch\.flex\.items-center\.gap-6 {
     gap: 12px;
   }
-  .frameContainer,
-  .categorysParentFrameParent,
-  .frameParent5 {
+  .flex-1\.rounded-\[8px\]\.border\.border-\[#e0e0e0\]\.box-border\.h-\[200px\] {
     height: 120px;
     padding: 14px;
     gap: 14px;
   }
-  .icon {
+  .w-\[52px\]\.h-\[52px\] {
     width: 40px;
     height: 40px;
   }
 }
 
 @media (max-width: 480px) {
-  .categorysParent {
+  .w-full\.relative\.flex\.flex-col\.items-center\.gap-8 {
     gap: 18px;
     font-size: 20px;
     padding: 0 10px;
   }
-  .frameParent {
+  .self-stretch\.flex\.flex-col\.items-start\.gap-6 {
     font-size: 15px;
   }
-  .frameContainer,
-  .categorysParentFrameParent,
-  .frameParent5 {
+  .flex-1\.rounded-\[8px\]\.border\.border-\[#e0e0e0\]\.box-border\.h-\[200px\] {
     height: 110px;
     padding: 12px;
     gap: 12px;
   }
-  .icon {
+  .w-\[52px\]\.h-\[52px\] {
     width: 36px;
     height: 36px;
   }
 }
 
 @media (max-width: 360px) {
-  .categorysParent {
+  .w-full\.relative\.flex\.flex-col\.items-center\.gap-8 {
     font-size: 18px;
   }
-  .frameParent {
+  .self-stretch\.flex\.flex-col\.items-start\.gap-6 {
     font-size: 14px;
   }
-  .frameContainer,
-  .categorysParentFrameParent,
-  .frameParent5 {
+  .flex-1\.rounded-\[8px\]\.border\.border-\[#e0e0e0\]\.box-border\.h-\[200px\] {
     height: 100px;
     padding: 10px;
     gap: 10px;
   }
-  .icon {
+  .w-\[52px\]\.h-\[52px\] {
     width: 32px;
     height: 32px;
   }

@@ -394,7 +394,8 @@
   
   <style scoped>
   .reviews-container {
-    width: 100%;
+    width: 95%;
+    margin-left: 30px;
     display: flex;
     gap: 20px;
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;

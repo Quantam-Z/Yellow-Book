@@ -1,61 +1,61 @@
 <template>
-    <div :class="$style.ellipseParent">
-          <div :class="$style.frameChild" />
-          <div :class="$style.frameParent">
-                <div :class="$style.frameGroup">
-                      <div :class="$style.logoWrapper">
-                        <img :class="$style.logoIcon" src="/logo/logo.png" alt="Logo" />
+    <div class="w-full relative h-[577px] overflow-hidden flex-shrink-0 text-left text-base text-[#616161] font-['Plus_Jakarta_Sans']">
+          <div class="absolute bottom-0 left-[calc(50%-4744px)] rounded-full bg-[#fff9e6] w-[9487px] h-[9487px]" />
+          <div class="absolute top-[26px] left-[120px] w-[1200px] flex flex-col items-center gap-[77px]">
+                <div class="self-stretch flex items-center gap-[189px]">
+                      <div class="w-[118px] rounded-[4px] bg-white flex flex-col items-start p-2 box-border">
+                        <img class="self-stretch max-w-full overflow-hidden h-[26.9px] flex-shrink-0 object-cover" src="/logo/logo.png" alt="Logo" />
                     </div>
-                      <div :class="$style.frameContainer">
-                            <div :class="$style.categoryParent">
-                                  <div :class="$style.category">Category</div>
-                                  <div :class="$style.frameItem" />
+                      <div class="flex items-center">
+                            <div class="w-[120px] flex flex-col items-center py-1 box-border gap-[10px] text-[#212121]">
+                                  <div class="relative leading-[160%] capitalize font-semibold">Category</div>
+                                  <div class="w-[37px] relative rounded-[2px] bg-[#212121] h-[2px]" />
                             </div>
-                            <div :class="$style.popularListingWrapper">
-                                  <div :class="$style.popularListing">Popular listing</div>
+                            <div class="h-[32px] flex items-start justify-center p-1 box-border">
+                                  <div class="relative leading-[160%] capitalize font-medium">Popular listing</div>
                             </div>
-                            <div :class="$style.faqWrapper">
-                                  <div :class="$style.popularListing">FAQ</div>
+                            <div class="w-[120px] h-[32px] flex items-start justify-center p-1 box-border text-center">
+                                  <div class="relative leading-[160%] capitalize font-medium">FAQ</div>
                             </div>
                       </div>
-                      <div :class="$style.frameDiv">
-                            <div :class="$style.loginWrapper" @click="openLoginModal">
-                                  <div :class="$style.popularListing">Login</div>
+                      <div class="flex items-center gap-[17px] text-[#212121]">
+                            <div class="self-stretch rounded-[4px] flex items-center justify-center p-4 cursor-pointer" @click="openLoginModal">
+                                  <div class="relative leading-[160%] capitalize font-medium">Login</div>
                             </div>
-                            <div :class="$style.button">
-                                  <div :class="$style.ellipseParentButton">List Your Agency</div>
+                            <div class="rounded-[4px] border border-[#212121] box-border h-[48px] flex items-center justify-center p-[18px_36px] text-center">
+                                  <div class="relative leading-[130%] capitalize font-semibold">List Your Agency</div>
                             </div>
                       </div>
                 </div>
-                <div :class="$style.ellipseParentFrameParent">
-                      <div :class="$style.trustedHelpRightWhenYouNParent">
-                            <div :class="$style.trustedHelpRight">Trusted Help, Right When You Need It</div>
-                            <div :class="$style.reliableSupportFrom">Reliable support from real people, solving everyday problems with care, speed, and integrity.</div>
+                <div class="w-[676px] flex flex-col items-start gap-[35px] text-center text-[46px] text-[#212121]">
+                      <div class="self-stretch flex flex-col items-center justify-center gap-[26px]">
+                            <div class="w-[574px] relative leading-[122%] capitalize font-medium inline-block">Trusted Help, Right When You Need It</div>
+                            <div class="w-[536px] relative text-base leading-[130%] capitalize text-[#616161] inline-block">Reliable support from real people, solving everyday problems with care, speed, and integrity.</div>
                       </div>
-                      <div :class="$style.frameParent2">
-                        <div :class="$style.frameWrapper">
-                          <div :class="$style.nomadicTravelWrapper">
-                            <div :class="$style.nomadicTravel">{{ selectedSearch }}</div>
+                      <div class="self-stretch backdrop-blur-[16px] rounded-[16px] bg-[#feecb2] flex items-center p-4 gap-[24px] text-[14px]">
+                        <div class="self-stretch flex-1 rounded-[8px] bg-[#fff9e6] flex flex-col items-start justify-center p-[10px]">
+                          <div class="self-stretch flex items-center">
+                            <div class="relative leading-[170%] capitalize">{{ selectedSearch }}</div>
                           </div>
                         </div>
-                        <div :class="$style.searchParent" @click="toggleDropdown">
-                              <div :class="$style.popularListing">Search</div>
-                              <img :class="$style.searchIcon" src="/logo/Search.svg"  alt="" />
+                        <div class="rounded-[8px] bg-[#fcc207] border-b-2 border-[#e5b106] flex items-center p-[10px] gap-[8px] text-[18px] cursor-pointer" @click="toggleDropdown">
+                              <div class="relative leading-[160%] capitalize font-medium">Search</div>
+                              <img class="w-6 h-6 relative" src="/logo/Search.svg" alt="" />
                         </div>
                       </div>
                 </div>
           </div>
-          <div :class="$style.frameParent3" v-if="showDropdown">
+          <div class="absolute top-[401px] left-[398px] rounded-[8px] border border-[#fee38d] box-border w-[507px] overflow-hidden flex flex-col items-start text-center text-[14px] bg-white z-10" v-if="showDropdown">
                 <div v-for="(item, index) in searchData" 
                      :key="index"
                      @click="selectSearch(item)"
                      :class="[
-                       index === 0 ? $style.ellipseParentFrameWrapper : 
-                       index === searchData.length - 1 ? $style.frameWrapper4 : 
-                       $style.frameWrapper2
+                       index === 0 ? 'self-stretch bg-[#f6fafd] h-[44px] flex flex-col items-start justify-center p-[10px] box-border cursor-pointer hover:bg-[#e3f2fd]' : 
+                       index === searchData.length - 1 ? 'self-stretch rounded-[0px_0px_8px_8px] bg-[#fafafa] h-[44px] flex flex-col items-start justify-center p-[10px] box-border cursor-pointer hover:bg-[#f0f0f0]' : 
+                       'self-stretch bg-[#fafafa] border-b border-[#e0e0e0] box-border h-[44px] flex flex-col items-start justify-center p-[10px] cursor-pointer hover:bg-[#f0f0f0]'
                      ]">
-                      <div :class="$style.nomadicTravelWrapper">
-                            <div :class="$style.nomadicTravel">{{ item }}</div>
+                      <div class="self-stretch flex items-center">
+                            <div class="relative leading-[170%] capitalize">{{ item }}</div>
                       </div>
                 </div>
           </div>
@@ -118,385 +118,67 @@ export default {
 }
 </script>
 
-<style module>
-.ellipseParent {
-    width: 100%;
-    position: relative;
-    height: 577px;
-    overflow: hidden;
-    flex-shrink: 0;
-    text-align: left;
-    font-size: 16px;
-    color: #616161;
-    font-family: 'Plus Jakarta Sans';
-}
-
-.frameChild {
-    position: absolute;
-    bottom: 0px;
-    left: calc(50% - 4744px);
-    border-radius: 50%;
-    background-color: #fff9e6;
-    width: 9487px;
-    height: 9487px;
-}
-
-.frameParent {
-    position: absolute;
-    top: 26px;
-    left: 120px;
-    width: 1200px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 77px;
-}
-
-.frameGroup {
-    align-self: stretch;
-    display: flex;
-    align-items: center;
-    gap: 189px;
-}
-
-.logoWrapper {
-    width: 118px;
-    border-radius: 4px;
-    background-color: #fff;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 8px;
-    box-sizing: border-box;
-}
-
-.logoIcon {
-    align-self: stretch;
-    max-width: 100%;
-    overflow: hidden;
-    height: 26.9px;
-    flex-shrink: 0;
-    object-fit: cover;
-}
-
-.frameContainer {
-    display: flex;
-    align-items: center;
-}
-
-.categoryParent {
-    width: 120px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 4px 0px;
-    box-sizing: border-box;
-    gap: 10px;
-    color: #212121;
-}
-
-.category {
-    position: relative;
-    line-height: 160%;
-    text-transform: capitalize;
-    font-weight: 600;
-}
-
-.frameItem {
-    width: 37px;
-    position: relative;
-    border-radius: 2px;
-    background-color: #212121;
-    height: 2px;
-}
-
-.popularListingWrapper {
-    height: 32px;
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    padding: 4px 10px;
-    box-sizing: border-box;
-}
-
-.popularListing {
-    position: relative;
-    line-height: 160%;
-    text-transform: capitalize;
-    font-weight: 500;
-}
-
-.faqWrapper {
-    width: 120px;
-    height: 32px;
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    padding: 4px 10px;
-    box-sizing: border-box;
-    text-align: center;
-}
-
-.frameDiv {
-    display: flex;
-    align-items: center;
-    gap: 17px;
-    color: #212121;
-}
-
-.loginWrapper {
-    align-self: stretch;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 16px 36px;
-    cursor: pointer;
-}
-
-.button {
-    border-radius: 4px;
-    border: 1px solid #212121;
-    box-sizing: border-box;
-    height: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 18px 36px;
-    text-align: center;
-}
-
-.ellipseParentButton {
-    position: relative;
-    line-height: 130%;
-    text-transform: capitalize;
-    font-weight: 600;
-}
-
-.ellipseParentFrameParent {
-    width: 676px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 35px;
-    text-align: center;
-    font-size: 46px;
-    color: #212121;
-}
-
-.trustedHelpRightWhenYouNParent {
-    align-self: stretch;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 26px;
-}
-
-.trustedHelpRight {
-    width: 574px;
-    position: relative;
-    line-height: 122%;
-    text-transform: capitalize;
-    font-weight: 500;
-    display: inline-block;
-}
-
-.reliableSupportFrom {
-    width: 536px;
-    position: relative;
-    font-size: 16px;
-    line-height: 130%;
-    text-transform: capitalize;
-    color: #616161;
-    display: inline-block;
-}
-
-.frameParent2 {
-    align-self: stretch;
-    backdrop-filter: blur(16px);
-    border-radius: 16px;
-    background-color: #feecb2;
-    display: flex;
-    align-items: center;
-    padding: 16px;
-    gap: 24px;
-    font-size: 14px;
-}
-
-.frameWrapper {
-    align-self: stretch;
-    flex: 1;
-    border-radius: 8px;
-    background-color: #fff9e6;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    padding: 10px;
-}
-
-.nomadicTravelWrapper {
-    align-self: stretch;
-    display: flex;
-    align-items: center;
-}
-
-.nomadicTravel {
-    position: relative;
-    line-height: 170%;
-    text-transform: capitalize;
-}
-
-.searchParent {
-    border-radius: 8px;
-    background-color: #fcc207;
-    border-bottom: 2px solid #e5b106;
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    gap: 8px;
-    font-size: 18px;
-    cursor: pointer;
-}
-
-.searchIcon {
-    width: 24px;
-    position: relative;
-    height: 24px;
-}
-
-.frameParent3 {
-    position: absolute;
-    top: 401px;
-    left: 398px;
-    border-radius: 8px;
-    border: 1px solid #fee38d;
-    box-sizing: border-box;
-    width: 507px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    text-align: center;
-    font-size: 14px;
-    background-color: #fff;
-    z-index: 10;
-}
-
-.ellipseParentFrameWrapper {
-    align-self: stretch;
-    background-color: #f6fafd;
-    height: 44px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    padding: 10px;
-    box-sizing: border-box;
-    cursor: pointer;
-}
-
-.ellipseParentFrameWrapper:hover {
-    background-color: #e3f2fd;
-}
-
-.frameWrapper2 {
-    align-self: stretch;
-    background-color: #fafafa;
-    border-bottom: 1px solid #e0e0e0;
-    box-sizing: border-box;
-    height: 44px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    padding: 10px;
-    cursor: pointer;
-}
-
-.frameWrapper2:hover {
-    background-color: #f0f0f0;
-}
-
-.frameWrapper4 {
-    align-self: stretch;
-    border-radius: 0px 0px 8px 8px;
-    background-color: #fafafa;
-    height: 44px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    padding: 10px;
-    box-sizing: border-box;
-    cursor: pointer;
-}
-
-.frameWrapper4:hover {
-    background-color: #f0f0f0;
-}
-
+<style>
 /* Responsive Media Queries */
 @media (max-width: 1440px) {
-    .frameParent {
+    .absolute.top-\[26px\].left-\[120px\] {
         left: 5%;
         width: 90%;
     }
-    .frameGroup {
+    .self-stretch.flex.items-center.gap-\[189px\] {
         gap: 10%;
     }
-    .frameParent3 {
+    .absolute.top-\[401px\].left-\[398px\] {
         left: 25%;
     }
 }
 
 @media (max-width: 1200px) {
-    .frameParent {
+    .absolute.top-\[26px\].left-\[120px\] {
         left: 3%;
         width: 94%;
     }
-    .frameGroup {
+    .self-stretch.flex.items-center.gap-\[189px\] {
         gap: 5%;
     }
-    .frameParent3 {
+    .absolute.top-\[401px\].left-\[398px\] {
         left: 20%;
         width: 60%;
     }
 }
 
 @media (max-width: 992px) {
-    .frameParent {
+    .absolute.top-\[26px\].left-\[120px\] {
         left: 2%;
         width: 96%;
     }
-    .frameGroup {
+    .self-stretch.flex.items-center.gap-\[189px\] {
         gap: 3%;
         flex-wrap: wrap;
         justify-content: space-between;
     }
-    .ellipseParentFrameParent {
+    .w-\[676px\] {
         width: 100%;
     }
-    .trustedHelpRight {
+    .w-\[574px\] {
         width: 100%;
         font-size: 36px;
     }
-    .reliableSupportFrom {
+    .w-\[536px\] {
         width: 100%;
     }
-    .frameParent3 {
+    .absolute.top-\[401px\].left-\[398px\] {
         left: 15%;
         width: 70%;
     }
 }
 
 @media (max-width: 768px) {
-    .ellipseParent {
+    .w-full.relative.h-\[577px\] {
         height: auto;
         min-height: 100vh;
     }
-    .frameParent {
+    .absolute.top-\[26px\].left-\[120px\] {
         position: relative;
         left: 0;
         top: 20px;
@@ -504,32 +186,32 @@ export default {
         padding: 0 20px;
         box-sizing: border-box;
     }
-    .frameGroup {
+    .self-stretch.flex.items-center.gap-\[189px\] {
         flex-direction: column;
         gap: 20px;
         align-items: stretch;
     }
-    .frameContainer {
+    .flex.items-center {
         justify-content: center;
         flex-wrap: wrap;
         gap: 15px;
     }
-    .frameDiv {
+    .flex.items-center.gap-\[17px\] {
         justify-content: center;
         flex-wrap: wrap;
         gap: 10px;
     }
-    .ellipseParentFrameParent {
+    .w-\[676px\] {
         font-size: 32px;
     }
-    .trustedHelpRight {
+    .w-\[574px\] {
         font-size: 32px;
     }
-    .frameParent2 {
+    .self-stretch.backdrop-blur-\[16px\] {
         flex-direction: column;
         gap: 15px;
     }
-    .frameParent3 {
+    .absolute.top-\[401px\].left-\[398px\] {
         position: relative;
         top: 50px;
         left: 0;
@@ -539,55 +221,55 @@ export default {
 }
 
 @media (max-width: 576px) {
-    .frameParent {
+    .absolute.top-\[26px\].left-\[120px\] {
         padding: 0 15px;
         gap: 40px;
     }
-    .frameContainer {
+    .flex.items-center {
         flex-direction: column;
         gap: 10px;
     }
-    .frameDiv {
+    .flex.items-center.gap-\[17px\] {
         flex-direction: column;
         gap: 15px;
     }
-    .loginWrapper {
+    .self-stretch.rounded-\[4px\].flex.items-center.justify-center.p-4 {
         padding: 12px 20px;
     }
-    .button {
+    .rounded-\[4px\].border.border-\[#212121\].box-border.h-\[48px\] {
         padding: 14px 20px;
     }
-    .ellipseParentFrameParent {
+    .w-\[676px\] {
         font-size: 28px;
         gap: 25px;
     }
-    .trustedHelpRight {
+    .w-\[574px\] {
         font-size: 28px;
     }
-    .reliableSupportFrom {
+    .w-\[536px\] {
         font-size: 14px;
     }
-    .frameParent2 {
+    .self-stretch.backdrop-blur-\[16px\] {
         padding: 12px;
         gap: 12px;
     }
-    .frameParent3 {
+    .absolute.top-\[401px\].left-\[398px\] {
         top: 30px;
         font-size: 12px;
     }
 }
 
 @media (max-width: 480px) {
-    .frameParent {
+    .absolute.top-\[26px\].left-\[120px\] {
         padding: 0 10px;
     }
-    .ellipseParentFrameParent {
+    .w-\[676px\] {
         font-size: 24px;
     }
-    .trustedHelpRight {
+    .w-\[574px\] {
         font-size: 24px;
     }
-    .frameParent2 {
+    .self-stretch.backdrop-blur-\[16px\] {
         padding: 10px;
     }
 }
