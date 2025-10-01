@@ -34,17 +34,22 @@ const categories = [
                 hover:scale-[1.02] 
                 transition-all 
                 duration-300
-                aspect-square 
+                
+                h-[150px] sm:h-[180px] lg:h-[200px] 
+                
                 flex flex-col items-center justify-center 
-                p-4 sm:p-6 md:p-8 
-                gap-4 sm:gap-6 
+                
+                p-3 sm:p-5 md:p-6 
+                
+                gap-2 sm:gap-3 
+                
                 cursor-pointer
             "
             style="border: 1px solid #333333;"
         >
           <component 
               :is="category.icon" 
-              class="w-10 h-10 sm:w-12 sm:h-12 md:w-[52px] md:h-[52px] text-black transition-colors"
+              class="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-black transition-colors"
           />
           
           <div class="text-sm sm:text-base md:text-xl leading-[130%] capitalize font-medium text-[#212121]">
