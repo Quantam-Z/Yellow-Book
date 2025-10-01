@@ -1,18 +1,25 @@
+<!-- src/pages/dashboard/admin/index.vue -->
 <template>
-  <!-- Page content goes here -->
-  <div
-    class="w-full relative rounded-num-8 flex flex-col items-start p-num-24 box-border gap-7 
-           bg-cover bg-no-repeat bg-[top] text-left text-num-16 text-gray-200 font-plus-jakarta-sans"
-  >
+  <div class="w-full space-y-6">
     <WelcomeComponent />
+    
+    <!-- Activity and Review in a row -->
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+      <RecentActivity />
+      <RecentReview />
+    </div>
+    
+    <RecentCompany />
   </div>
 </template>
 
-<script setup lang="ts">
-import WelcomeComponent from '@/components/common/Admin/Welcome.vue';
+<script setup>
+import WelcomeComponent from "@/components/common/Admin/Welcome.vue";
+import RecentActivity from "~/components/common/Admin/RecentActivity.vue";
+import RecentCompany from "~/components/common/Admin/RecentCompany.vue";
+import RecentReview from "~/components/common/Admin/RecentReview.vue";
 
-// Tell Nuxt to use adminpanel layout
 definePageMeta({
-  layout: 'adminpanel',
+  layout: "adminpanel",
 });
 </script>
