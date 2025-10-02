@@ -1,7 +1,7 @@
 <template>
   	<div class="frame-parent">
     		<div class="logo-wrapper">
-      			<img class="logo-icon" alt="" />
+      			<img class="logo-icon" src="/logo/logo.png" />
     		</div>
     		<div class="frame-group">
       			<img class="frame-child" alt="" />
