@@ -14,7 +14,7 @@
   </template>
   
   <script setup>
-  import Sidebar from '/components/agencyprofileLayout/Sidebar.vue'
-  import Header from '/components/agencyprofileLayout/Header.vue'
+  import Sidebar from '@/components/agencyprofileLayout/Sidebar.vue'
+  import Header from '@/components/agencyprofileLayout/Header.vue'
   </script>
   
