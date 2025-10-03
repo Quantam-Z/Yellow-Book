@@ -1,9 +1,9 @@
 <template>
   <div
-    class="w-full rounded-lg flex flex-col items-start p-6 gap-7 bg-gradient-to-r from-blue-500 to-blue-700 text-left font-plus-jakarta-sans text-gray-900"
+    class="w-full rounded-lg bg-gradient-to-br from-purple-100 via-pink-50 to-blue-400 p-4 mb-4"
   >
     <!-- Title -->
-    <h2 class="text-3xl font-bold text-white">Welcome back, Jane</h2>
+    <h2 class="text-3xl font-bold text-black">Welcome back, Jane</h2>
 
     <!-- Search Bar -->
     <div

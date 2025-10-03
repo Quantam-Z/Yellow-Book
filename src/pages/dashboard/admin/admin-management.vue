@@ -1,14 +1,12 @@
 <template>
   <div class="w-full space-y-6">
-    <!-- Modal -->
-    <AddCompany :isOpen="isModalOpen" @close="closeModal" />
-
+    <AdminManagement />
    </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import AddCompany from '~/components/modal/AddCompany.vue';
+import AdminManagement from '@/components/common/Admin/adminManagement.vue'
 
 // Modal state
 const isModalOpen = ref(false);

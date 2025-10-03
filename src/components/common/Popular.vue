@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Star, MapPin } from 'lucide-vue-next';
+import { useRouter } from 'vue-router';
 
 // Define the data structure for the popular listings
 const popularListings = [
@@ -24,11 +25,15 @@ const popularListings = [
         rating: 5,
         location: "Berlin, Germany"
     },
-   
 ];
 
 // Helper function to generate an array for rating stars
 const getStars = (rating: number) => Array(rating).fill(0);
+
+const router = useRouter();
+const goToAgency = () => {
+    router.push('/agency'); // navigate to src/pages/agency.vue
+};
 </script>
 
 <template>
@@ -36,11 +41,11 @@ const getStars = (rating: number) => Array(rating).fill(0);
     <div class="self-stretch leading-[126%] capitalize font-semibold">Popular listings</div>
 
     <div class="w-full flex flex-wrap justify-center items-stretch gap-6 text-[20px] text-black">
-      
       <div 
           v-for="(listing, index) in popularListings"
           :key="index"
-          class="flex-1 basis-[300px] max-w-full sm:max-w-[384px] rounded-[16px] overflow-hidden flex flex-col items-start bg-white shadow-[0_4px_12px_rgba(0,0,0,0.08)] transition-transform duration-200 hover:-translate-y-[6px]"
+          class="flex-1 basis-[300px] max-w-full sm:max-w-[384px] rounded-[16px] overflow-hidden flex flex-col items-start bg-white shadow-[0_4px_12px_rgba(0,0,0,0.08)] transition-transform duration-200 hover:-translate-y-[6px] cursor-pointer"
+          @click="goToAgency"
       >
         <img class="self-stretch max-w-full h-[288px] object-cover" :src="listing.image" :alt="listing.title" />
         
@@ -65,11 +70,3 @@ const getStars = (rating: number) => Array(rating).fill(0);
     </div>
   </div>
 </template>
-
-<style>
-/* Removed old CSS media queries as the layout is handled by Tailwind's responsive classes:
-    - flex-wrap allows wrapping.
-    - flex-1 and basis-[300px] handle width distribution.
-    - sm:max-w-[384px] ensures cards don't get too wide on mid-size screens.
-*/
-</style>
