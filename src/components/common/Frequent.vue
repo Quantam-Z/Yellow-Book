@@ -29,22 +29,18 @@ const faqs = ref([
   },
 ]);
 
-// Function to toggle the open state of an FAQ item
 const toggleFaq = (faqId) => {
-  // Use map to create a new array, ensuring reactivity
   faqs.value = faqs.value.map(faq => {
     if (faq.id === faqId) {
-      // Toggle the open state of the clicked item
       return { ...faq, open: !faq.open };
     }
-    // Optionally close others, but here we just toggle the clicked one
     return faq;
   });
 };
 </script>
 
 <template>
-  <div class="w-full relative flex flex-col items-center gap-[44px] text-center text-[30px] text-[#212121] font-['Plus_Jakarta_Sans'] mt-20">
+  <div class="w-full relative flex flex-col items-center gap-[44px] text-center text-[30px] text-[#212121] font-['Plus_Jakarta_Sans'] mt-20 mb-7">
     <div class="self-stretch flex flex-col items-start gap-4">
       <div class="self-stretch relative leading-[126%] capitalize font-semibold">Frequently Asked Questions</div>
       <div class="self-stretch relative text-[16px] leading-[160%] capitalize font-medium text-[#9e9e9e]">Everything you need to know about using Yellow Book.</div>

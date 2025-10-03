@@ -1,5 +1,9 @@
 <script setup lang="ts">
+import { useRouter } from 'vue-router'
 import { PawPrint, Sparkles, Utensils, Plane, Laptop, MoreHorizontal } from 'lucide-vue-next'
+
+// Router instance
+const router = useRouter()
 
 // Define the categories data structure
 const categories = [
@@ -10,6 +14,12 @@ const categories = [
     { name: 'IT & Software', icon: Laptop, color: 'text-black' },
     { name: 'More', icon: MoreHorizontal, color: 'text-black' },
 ]
+
+// Navigate to the category page
+const goToCategory = (categoryName: string) => {
+  // Pass the category name as a query parameter if you want
+  router.push({ path: '/catagory', query: { name: categoryName } })
+}
 </script>
 
 <template>
@@ -24,25 +34,20 @@ const categories = [
         <div 
             v-for="category in categories"
             :key="category.name"
+            @click="goToCategory(category.name)"
             class="
                 w-full 
                 relative 
                 rounded-xl 
-                
                 hover:border-[#fcc207] 
                 hover:shadow-lg 
                 hover:scale-[1.02] 
                 transition-all 
                 duration-300
-                
                 h-[150px] sm:h-[180px] lg:h-[200px] 
-                
                 flex flex-col items-center justify-center 
-                
                 p-3 sm:p-5 md:p-6 
-                
                 gap-2 sm:gap-3 
-                
                 cursor-pointer
             "
             style="border: 1px solid #333333;"
@@ -56,13 +61,13 @@ const categories = [
               {{ category.name }}
           </div>
         </div>
+
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-/* Style Module for component-specific styles. */
 .category-section {
   font-family: 'Plus Jakarta Sans', sans-serif;
 }
