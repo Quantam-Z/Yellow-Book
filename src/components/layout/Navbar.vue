@@ -4,7 +4,7 @@
         <div class="absolute bottom-0 left-[calc(50%-4744px)] rounded-full bg-[#fff9e6] w-[9487px] h-[9487px]" />
         <div class="relative z-10 w-full h-full px-4 sm:px-6 md:px-12 lg:px-[120px] py-4 sm:py-6 flex flex-col">
           <div class="flex items-center justify-between mb-6 sm:mb-12 md:mb-16">
-          <div class="w-[120px] sm:w-[118px] md:w-[118px] rounded-[4px] bg-white flex flex-col items-start p-2 box-border">
+          <div class="w-[120px] sm:w-[118px] md:w-[118px] rounded-[4px]  flex flex-col items-start p-2 box-border">
             <img class="self-stretch max-w-full overflow-hidden h-[34px] sm:h-[30px] md:h-[30px] flex-shrink-0 object-cover" src="/logo/logo.png" alt="Logo" />
           </div>
   
