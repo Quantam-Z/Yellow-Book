@@ -15,6 +15,8 @@
     		</div>
   	</div>
 </template>
+
+
 <style  scoped>.frame-parent {
   	width: 100%;
   	position: relative;
