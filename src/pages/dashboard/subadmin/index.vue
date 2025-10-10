@@ -5,7 +5,7 @@
 </template>
 
 <script setup>
-import Dashboard from '~/components/common/SubAdmin/Dashboard.vue';
+import Dashboard from '~/components/SubAdmin/Dashboard.vue';
 
 
 

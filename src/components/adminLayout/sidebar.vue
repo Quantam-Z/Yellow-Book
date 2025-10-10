@@ -1,19 +1,23 @@
 <template>
   <div class="flex">
+    <!-- Fixed Hamburger Button - Hidden when sidebar is open -->
     <button
-      @click="isOpen = !isOpen"
-      class="md:hidden fixed top-3 left-4 z-50 p-1 rounded-lg bg-white border shadow-md"
-      aria-label="Toggle navigation menu"
+      v-if="!isOpen"
+      @click="isOpen = true"
+      class="md:hidden fixed top-2 left-4 z-50 p-2 rounded-lg bg-white border border-gray-300 shadow-lg hover:shadow-xl duration-200"
+      aria-label="Open navigation menu"
     >
-      <component :is="isOpen ? X : Menu" class="w-6 h-6 text-gray-700" />
+      <Menu class="w-5 h-5 text-gray-700" />
     </button>
 
+    <!-- Mobile Overlay -->
     <div
       v-if="isOpen"
-      class="fixed inset-0 bg-black bg-opacity-40 z-30 md:hidden"
-      @click="closeOnMobile"
+      class="fixed inset-0 bg-black bg-opacity-30 z-30 md:hidden"
+      @click="closeSidebar"
     />
 
+    <!-- Sidebar -->
     <aside
       class="w-[280px] min-h-screen bg-white border-r border-[#eee] shadow-[4px_12px_23px_rgba(0,0,0,0.08)] py-6 px-4 flex flex-col justify-between
              fixed md:static top-0 left-0 h-full z-40 transition-transform duration-300 ease-in-out"
@@ -28,7 +32,7 @@
           :class="{
             'bg-[#f3f3f3] font-semibold': $route.path === item.to
           }"
-          @click="closeOnMobile"
+          @click="closeSidebar"
         >
           <component :is="item.icon" class="w-[22px] h-[22px]" />
           <span class="leading-[130%] capitalize">{{ item.label }}</span>
@@ -46,7 +50,7 @@
           :class="{
             'bg-[#f3f3f3] font-semibold': $route.path === item.to
           }"
-          @click="closeOnMobile"
+          @click="closeSidebar"
         >
           <component :is="item.icon" class="w-[22px] h-[22px]" />
           <span class="leading-[130%] capitalize">{{ item.label }}</span>
@@ -65,14 +69,10 @@ import {
   Shield,
   Settings,
   LogOut,
-  // NEW: Import Menu and X icons
-  Menu,
-  X
+  Menu
 } from "lucide-vue-next";
-// NEW: Import ref for state management
-import { ref } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 
-// NEW: State for sidebar visibility
 const isOpen = ref(false);
 
 const mainMenu = [
@@ -88,18 +88,48 @@ const bottomMenu = [
   { label: "Logout", icon: LogOut, to: "/logout" },
 ];
 
-// NEW: Function to close the sidebar only on small screens
-const closeOnMobile = () => {
-  // Use a check against Tailwind's 'md' breakpoint (768px)
+// Close sidebar function
+const closeSidebar = () => {
   if (window.innerWidth < 768) {
     isOpen.value = false;
   }
 };
+
+// Handle escape key press
+const handleEscapeKey = (event) => {
+  if (event.key === 'Escape' && isOpen.value) {
+    closeSidebar();
+  }
+};
+
+// Handle resize
+const handleResize = () => {
+  if (window.innerWidth >= 768) {
+    isOpen.value = false;
+  }
+};
+
+// Add event listeners
+onMounted(() => {
+  document.addEventListener('keydown', handleEscapeKey);
+  window.addEventListener('resize', handleResize);
+});
+
+// Remove event listeners
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleEscapeKey);
+  window.removeEventListener('resize', handleResize);
+});
 </script>
 
 <style scoped>
-/* Removes the underline for all NuxtLinks in this sidebar */
+/* Remove underline for all NuxtLinks */
 a {
   text-decoration: none !important;
+}
+
+/* Ensure hamburger stays fixed during scroll */
+button {
+  position: fixed;
 }
 </style>

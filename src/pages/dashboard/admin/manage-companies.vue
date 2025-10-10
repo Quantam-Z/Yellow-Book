@@ -1,29 +1,25 @@
 <template>
   <div class="w-full space-y-6">
-    <!-- Modal -->
-    <AddCompany :isOpen="isModalOpen" @close="closeModal" />
-
-   </div>
+    <AdminManagement />
+    <!-- <AddCompany :isOpen="isModalOpen" @close="closeModal" /> -->
+  </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import AddCompany from '~/components/modal/AddCompany.vue';
+// import AddCompany from '~/components/modal/AddCompany.vue';
+import AdminManagement from '@/components/Admin/CompanyManagement.vue';
 
-// Modal state
-const isModalOpen = ref(false);
+// const isModalOpen = ref(false);
 
-// Open modal automatically on page load
-onMounted(() => {
-  isModalOpen.value = true;
-});
+// onMounted(() => {
+//   isModalOpen.value = true;
+// });
 
-// Close modal function
-function closeModal() {
-  isModalOpen.value = false;
-}
+// function closeModal() {
+//   isModalOpen.value = false;
+// }
 
-// Page layout
 definePageMeta({
   layout: "adminpanel",
 });

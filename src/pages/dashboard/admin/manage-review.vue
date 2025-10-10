@@ -6,7 +6,7 @@
   </template>
   
   <script setup>
-import ReviewManagement from '~/components/common/Admin/ReviewManagement.vue';
+import ReviewManagement from '~/components/Admin/ReviewManagement.vue';
   
   // Page layout
   definePageMeta({

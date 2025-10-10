@@ -7,7 +7,7 @@
   <script setup>
   
   
-  import review from '@/components/common/AgencyProfile/review.vue';
+  import review from '@/components/AgencyProfile/review.vue';
   
   definePageMeta({
     layout: "agencyprofile",
