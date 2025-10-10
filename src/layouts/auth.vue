@@ -1,7 +1,6 @@
 <template>
   <main class="min-h-screen">
     <div class="">
-      <Header/>
     </div>
     <main class=" pt-32">
       <slot></slot>
@@ -10,7 +9,7 @@
 </template>
 
 <script setup>
-import Header from "~/components/common/Header.vue";
+// import Header from "~/components/common/Header.vue";
 </script>
 
 
