@@ -7,7 +7,7 @@
   <script setup>
   
   
-  import mycompanie from '@/components/common/AgencyProfile/mycompany.vue';
+  import mycompanie from '@/components/AgencyProfile/mycompany.vue';
 
   definePageMeta({
     layout: "agencyprofile",

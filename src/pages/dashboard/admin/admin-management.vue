@@ -6,22 +6,18 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import AdminManagement from '@/components/common/Admin/adminManagement.vue'
+import AdminManagement from '@/components/Admin/adminManagement.vue'
 
-// Modal state
 const isModalOpen = ref(false);
 
-// Open modal automatically on page load
 onMounted(() => {
   isModalOpen.value = true;
 });
 
-// Close modal function
 function closeModal() {
   isModalOpen.value = false;
 }
 
-// Page layout
 definePageMeta({
   layout: "adminpanel",
 });

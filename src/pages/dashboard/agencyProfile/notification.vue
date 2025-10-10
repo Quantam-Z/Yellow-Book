@@ -7,7 +7,7 @@
 <script setup>
 
 
-import notification from '@/components/common/AgencyProfile/Notification.vue';
+import notification from '@/components/AgencyProfile/Notification.vue';
 
 definePageMeta({
   layout: "agencyprofile",

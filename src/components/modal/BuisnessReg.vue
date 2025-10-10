@@ -152,21 +152,24 @@
 
             <div class="flex flex-col gap-2 flex-1">
               <label class="text-[16px] font-medium text-[#424242] capitalize">Company Category</label>
-              <div class="relative" @click="toggleDropdown('category')">
-                <div class="h-[46px] px-3 border border-[#bdbdbd] rounded bg-[#fafafa] flex items-center justify-between cursor-pointer text-[#424242] text-[16px] font-medium capitalize hover:bg-[#f0f0f0]">
-                  <span>{{ formData.category || 'Select Category' }}</span>
-                  <svg class="w-6 h-6 text-[#9e9e9e] flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+              <div class="relative">
+                <div 
+                  class="h-[46px] px-3 border border-[#bdbdbd] rounded bg-[#eee] flex items-center justify-between cursor-pointer text-[16px] text-[#424242] outline-none transition-colors duration-200 focus:border-[#1877f2] focus:bg-white"
+                  @click="toggleDropdown('category')"
+                >
+                  <span :class="{'text-[#9e9e9e]': !formData.category}">{{ formData.category || 'Select Category' }}</span>
+                  <svg class="w-6 h-6 text-[#9e9e9e] flex-shrink-0 transition-transform duration-200" :class="{'rotate-180': dropdowns.category}" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z"/>
                   </svg>
                 </div>
-                <div v-if="dropdowns.category" class="absolute top-full left-0 right-0 bg-white border border-[#bdbdbd] border-t-0 rounded-b z-10 max-h-[200px] overflow-y-auto">
-                  <div class="px-3 py-3 cursor-pointer text-[14px] text-[#424242] flex items-center gap-2 border-b border-[#f0f0f0] bg-[#f6fafd] transition-colors duration-200 hover:bg-[#e3f2fd]" @click="selectOption('category', 'Travel & Tourism')">
+                <div v-if="dropdowns.category" class="absolute top-full left-0 right-0 bg-white border border-[#bdbdbd] border-t-0 rounded-b z-10 max-h-[200px] overflow-y-auto shadow-lg">
+                  <div class="px-3 py-3 cursor-pointer text-[16px] text-[#424242] flex items-center gap-2 border-b border-[#f0f0f0] transition-colors duration-200 hover:bg-[#e3f2fd]" @click="selectOption('category', 'Travel & Tourism')">
                     Travel & Tourism
                   </div>
-                  <div class="px-3 py-3 cursor-pointer text-[14px] text-[#424242] flex items-center gap-2 border-b border-[#f0f0f0] bg-[#f6fafd] transition-colors duration-200 hover:bg-[#e3f2fd]" @click="selectOption('category', 'Hospitality')">
+                  <div class="px-3 py-3 cursor-pointer text-[16px] text-[#424242] flex items-center gap-2 border-b border-[#f0f0f0] transition-colors duration-200 hover:bg-[#e3f2fd]" @click="selectOption('category', 'Hospitality')">
                     Hospitality
                   </div>
-                  <div class="px-3 py-3 cursor-pointer text-[14px] text-[#424242] flex items-center gap-2 bg-[#f6fafd] transition-colors duration-200 hover:bg-[#e3f2fd]" @click="selectOption('category', 'Adventure Tours')">
+                  <div class="px-3 py-3 cursor-pointer text-[16px] text-[#424242] flex items-center gap-2 transition-colors duration-200 hover:bg-[#e3f2fd]" @click="selectOption('category', 'Adventure Tours')">
                     Adventure Tours
                   </div>
                 </div>
@@ -175,21 +178,24 @@
 
             <div class="flex flex-col gap-2 flex-1">
               <label class="text-[16px] font-medium text-[#424242] capitalize">Type of Service</label>
-              <div class="relative" @click="toggleDropdown('service')">
-                <div class="h-[46px] px-3 border border-[#bdbdbd] rounded bg-[#fafafa] flex items-center justify-between cursor-pointer text-[#424242] text-[16px] font-medium capitalize hover:bg-[#f0f0f0]">
-                  <span>{{ formData.service || 'Select Service' }}</span>
-                  <svg class="w-6 h-6 text-[#9e9e9e] flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+              <div class="relative">
+                <div 
+                  class="h-[46px] px-3 border border-[#bdbdbd] rounded bg-[#eee] flex items-center justify-between cursor-pointer text-[16px] text-[#424242] outline-none transition-colors duration-200 focus:border-[#1877f2] focus:bg-white"
+                  @click="toggleDropdown('service')"
+                >
+                  <span :class="{'text-[#9e9e9e]': !formData.service}">{{ formData.service || 'Select Service' }}</span>
+                  <svg class="w-6 h-6 text-[#9e9e9e] flex-shrink-0 transition-transform duration-200" :class="{'rotate-180': dropdowns.service}" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z"/>
                   </svg>
                 </div>
-                <div v-if="dropdowns.service" class="absolute top-full left-0 right-0 bg-white border border-[#bdbdbd] border-t-0 rounded-b z-10 max-h-[200px] overflow-y-auto">
-                  <div class="px-3 py-3 cursor-pointer text-[14px] text-[#424242] flex items-center gap-2 border-b border-[#f0f0f0] bg-[#f6fafd] transition-colors duration-200 hover:bg-[#e3f2fd]" @click="selectOption('service', 'Tour Packages')">
+                <div v-if="dropdowns.service" class="absolute top-full left-0 right-0 bg-white border border-[#bdbdbd] border-t-0 rounded-b z-10 max-h-[200px] overflow-y-auto shadow-lg">
+                  <div class="px-3 py-3 cursor-pointer text-[16px] text-[#424242] flex items-center gap-2 border-b border-[#f0f0f0] transition-colors duration-200 hover:bg-[#e3f2fd]" @click="selectOption('service', 'Tour Packages')">
                     Tour Packages
                   </div>
-                  <div class="px-3 py-3 cursor-pointer text-[14px] text-[#424242] flex items-center gap-2 border-b border-[#f0f0f0] bg-[#f6fafd] transition-colors duration-200 hover:bg-[#e3f2fd]" @click="selectOption('service', 'Transportation')">
+                  <div class="px-3 py-3 cursor-pointer text-[16px] text-[#424242] flex items-center gap-2 border-b border-[#f0f0f0] transition-colors duration-200 hover:bg-[#e3f2fd]" @click="selectOption('service', 'Transportation')">
                     Transportation
                   </div>
-                  <div class="px-3 py-3 cursor-pointer text-[14px] text-[#424242] flex items-center gap-2 bg-[#f6fafd] transition-colors duration-200 hover:bg-[#e3f2fd]" @click="selectOption('service', 'Accommodation')">
+                  <div class="px-3 py-3 cursor-pointer text-[16px] text-[#424242] flex items-center gap-2 transition-colors duration-200 hover:bg-[#e3f2fd]" @click="selectOption('service', 'Accommodation')">
                     Accommodation
                   </div>
                 </div>
@@ -198,21 +204,24 @@
 
             <div class="flex flex-col gap-2 flex-1">
               <label class="text-[16px] font-medium text-[#424242] capitalize">Company Destination</label>
-              <div class="relative" @click="toggleDropdown('destination')">
-                <div class="h-[46px] px-3 border border-[#bdbdbd] rounded bg-[#fafafa] flex items-center justify-between cursor-pointer text-[#424242] text-[16px] font-medium capitalize hover:bg-[#f0f0f0]">
-                  <span>{{ formData.destination || 'Select Destination' }}</span>
-                  <svg class="w-6 h-6 text-[#9e9e9e] flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+              <div class="relative">
+                <div 
+                  class="h-[46px] px-3 border border-[#bdbdbd] rounded bg-[#eee] flex items-center justify-between cursor-pointer text-[16px] text-[#424242] outline-none transition-colors duration-200 focus:border-[#1877f2] focus:bg-white"
+                  @click="toggleDropdown('destination')"
+                >
+                  <span :class="{'text-[#9e9e9e]': !formData.destination}">{{ formData.destination || 'Select Destination' }}</span>
+                  <svg class="w-6 h-6 text-[#9e9e9e] flex-shrink-0 transition-transform duration-200" :class="{'rotate-180': dropdowns.destination}" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z"/>
                   </svg>
                 </div>
-                <div v-if="dropdowns.destination" class="absolute top-full left-0 right-0 bg-white border border-[#bdbdbd] border-t-0 rounded-b z-10 max-h-[200px] overflow-y-auto">
-                  <div class="px-3 py-3 cursor-pointer text-[14px] text-[#424242] flex items-center gap-2 border-b border-[#f0f0f0] bg-[#f6fafd] transition-colors duration-200 hover:bg-[#e3f2fd]" @click="selectOption('destination', 'Ulaanbaatar')">
+                <div v-if="dropdowns.destination" class="absolute top-full left-0 right-0 bg-white border border-[#bdbdbd] border-t-0 rounded-b z-10 max-h-[200px] overflow-y-auto shadow-lg">
+                  <div class="px-3 py-3 cursor-pointer text-[16px] text-[#424242] flex items-center gap-2 border-b border-[#f0f0f0] transition-colors duration-200 hover:bg-[#e3f2fd]" @click="selectOption('destination', 'Ulaanbaatar')">
                     Ulaanbaatar
                   </div>
-                  <div class="px-3 py-3 cursor-pointer text-[14px] text-[#424242] flex items-center gap-2 border-b border-[#f0f0f0] bg-[#f6fafd] transition-colors duration-200 hover:bg-[#e3f2fd]" @click="selectOption('destination', 'Gobi Desert')">
+                  <div class="px-3 py-3 cursor-pointer text-[16px] text-[#424242] flex items-center gap-2 border-b border-[#f0f0f0] transition-colors duration-200 hover:bg-[#e3f2fd]" @click="selectOption('destination', 'Gobi Desert')">
                     Gobi Desert
                   </div>
-                  <div class="px-3 py-3 cursor-pointer text-[14px] text-[#424242] flex items-center gap-2 bg-[#f6fafd] transition-colors duration-200 hover:bg-[#e3f2fd]" @click="selectOption('destination', 'Altai Mountains')">
+                  <div class="px-3 py-3 cursor-pointer text-[16px] text-[#424242] flex items-center gap-2 transition-colors duration-200 hover:bg-[#e3f2fd]" @click="selectOption('destination', 'Altai Mountains')">
                     Altai Mountains
                   </div>
                 </div>
@@ -222,34 +231,40 @@
             <div class="flex gap-4">
               <div class="flex flex-col gap-2 flex-1">
                 <label class="text-[16px] font-medium text-[#424242] capitalize">Number of Employees</label>
-                <div class="relative" @click="toggleDropdown('employees')">
-                  <div class="h-[46px] px-3 border border-[#bdbdbd] rounded bg-[#fafafa] flex items-center justify-between cursor-pointer text-[#424242] text-[16px] font-medium capitalize hover:bg-[#f0f0f0]">
-                    <span>{{ formData.employees || '00' }}</span>
-                    <svg class="w-6 h-6 text-[#9e9e9e] flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                <div class="relative">
+                  <div 
+                    class="h-[46px] px-3 border border-[#bdbdbd] rounded bg-[#eee] flex items-center justify-between cursor-pointer text-[16px] text-[#424242] outline-none transition-colors duration-200 focus:border-[#1877f2] focus:bg-white"
+                    @click="toggleDropdown('employees')"
+                  >
+                    <span :class="{'text-[#9e9e9e]': !formData.employees}">{{ formData.employees || 'Select Employees' }}</span>
+                    <svg class="w-6 h-6 text-[#9e9e9e] flex-shrink-0 transition-transform duration-200" :class="{'rotate-180': dropdowns.employees}" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z"/>
                     </svg>
                   </div>
-                  <div v-if="dropdowns.employees" class="absolute top-full left-0 right-0 bg-white border border-[#bdbdbd] border-t-0 rounded-b z-10 max-h-[200px] overflow-y-auto">
-                    <div class="px-3 py-3 cursor-pointer text-[14px] text-[#424242] flex items-center gap-2 border-b border-[#f0f0f0] bg-[#f6fafd] transition-colors duration-200 hover:bg-[#e3f2fd]" @click="selectOption('employees', '1–10')">1–10</div>
-                    <div class="px-3 py-3 cursor-pointer text-[14px] text-[#424242] flex items-center gap-2 border-b border-[#f0f0f0] bg-[#f6fafd] transition-colors duration-200 hover:bg-[#e3f2fd]" @click="selectOption('employees', '11–30')">11–30</div>
-                    <div class="px-3 py-3 cursor-pointer text-[14px] text-[#424242] flex items-center gap-2 bg-[#f6fafd] transition-colors duration-200 hover:bg-[#e3f2fd]" @click="selectOption('employees', '31–50')">31–50</div>
+                  <div v-if="dropdowns.employees" class="absolute top-full left-0 right-0 bg-white border border-[#bdbdbd] border-t-0 rounded-b z-10 max-h-[200px] overflow-y-auto shadow-lg">
+                    <div class="px-3 py-3 cursor-pointer text-[16px] text-[#424242] flex items-center gap-2 border-b border-[#f0f0f0] transition-colors duration-200 hover:bg-[#e3f2fd]" @click="selectOption('employees', '1–10')">1–10</div>
+                    <div class="px-3 py-3 cursor-pointer text-[16px] text-[#424242] flex items-center gap-2 border-b border-[#f0f0f0] transition-colors duration-200 hover:bg-[#e3f2fd]" @click="selectOption('employees', '11–30')">11–30</div>
+                    <div class="px-3 py-3 cursor-pointer text-[16px] text-[#424242] flex items-center gap-2 transition-colors duration-200 hover:bg-[#e3f2fd]" @click="selectOption('employees', '31–50')">31–50</div>
                   </div>
                 </div>
               </div>
 
               <div class="flex flex-col gap-2 flex-1">
                 <label class="text-[16px] font-medium text-[#424242] capitalize">Annual Revenue</label>
-                <div class="relative" @click="toggleDropdown('revenue')">
-                  <div class="h-[46px] px-3 border border-[#bdbdbd] rounded bg-[#fafafa] flex items-center justify-between cursor-pointer text-[#424242] text-[16px] font-medium capitalize hover:bg-[#f0f0f0]">
-                    <span>{{ formData.revenue || '00 MNT' }}</span>
-                    <svg class="w-6 h-6 text-[#9e9e9e] flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                <div class="relative">
+                  <div 
+                    class="h-[46px] px-3 border border-[#bdbdbd] rounded bg-[#eee] flex items-center justify-between cursor-pointer text-[16px] text-[#424242] outline-none transition-colors duration-200 focus:border-[#1877f2] focus:bg-white"
+                    @click="toggleDropdown('revenue')"
+                  >
+                    <span :class="{'text-[#9e9e9e]': !formData.revenue}">{{ formData.revenue || 'Select Revenue' }}</span>
+                    <svg class="w-6 h-6 text-[#9e9e9e] flex-shrink-0 transition-transform duration-200" :class="{'rotate-180': dropdowns.revenue}" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z"/>
                     </svg>
                   </div>
-                  <div v-if="dropdowns.revenue" class="absolute top-full left-0 right-0 bg-white border border-[#bdbdbd] border-t-0 rounded-b z-10 max-h-[200px] overflow-y-auto">
-                    <div class="px-3 py-3 cursor-pointer text-[14px] text-[#424242] flex items-center gap-2 border-b border-[#f0f0f0] bg-[#f6fafd] transition-colors duration-200 hover:bg-[#e3f2fd]" @click="selectOption('revenue', '< 10M MNT')">&lt; 10M MNT</div>
-                    <div class="px-3 py-3 cursor-pointer text-[14px] text-[#424242] flex items-center gap-2 border-b border-[#f0f0f0] bg-[#f6fafd] transition-colors duration-200 hover:bg-[#e3f2fd]" @click="selectOption('revenue', '10M - 50M MNT')">10M - 50M MNT</div>
-                    <div class="px-3 py-3 cursor-pointer text-[14px] text-[#424242] flex items-center gap-2 bg-[#f6fafd] transition-colors duration-200 hover:bg-[#e3f2fd]" @click="selectOption('revenue', '> 50M MNT')">&gt; 50M MNT</div>
+                  <div v-if="dropdowns.revenue" class="absolute top-full left-0 right-0 bg-white border border-[#bdbdbd] border-t-0 rounded-b z-10 max-h-[200px] overflow-y-auto shadow-lg">
+                    <div class="px-3 py-3 cursor-pointer text-[16px] text-[#424242] flex items-center gap-2 border-b border-[#f0f0f0] transition-colors duration-200 hover:bg-[#e3f2fd]" @click="selectOption('revenue', '< 10M MNT')">&lt; 10M MNT</div>
+                    <div class="px-3 py-3 cursor-pointer text-[16px] text-[#424242] flex items-center gap-2 border-b border-[#f0f0f0] transition-colors duration-200 hover:bg-[#e3f2fd]" @click="selectOption('revenue', '10M - 50M MNT')">10M - 50M MNT</div>
+                    <div class="px-3 py-3 cursor-pointer text-[16px] text-[#424242] flex items-center gap-2 transition-colors duration-200 hover:bg-[#e3f2fd]" @click="selectOption('revenue', '> 50M MNT')">&gt; 50M MNT</div>
                   </div>
                 </div>
               </div>
@@ -321,26 +336,29 @@
             <div class="flex gap-4">
               <div class="flex flex-col gap-2 flex-1">
                 <label class="text-[16px] font-medium text-[#424242] capitalize">Country</label>
-                <div class="relative" @click="toggleCountryDropdown">
-                  <div class="h-[46px] px-3 border border-[#bdbdbd] rounded bg-[#fafafa] flex items-center justify-between cursor-pointer text-[#424242] text-[16px] font-medium capitalize hover:bg-[#f0f0f0]">
+                <div class="relative">
+                  <div 
+                    class="h-[46px] px-3 border border-[#bdbdbd] rounded bg-[#eee] flex items-center justify-between cursor-pointer text-[16px] text-[#424242] outline-none transition-colors duration-200 focus:border-[#1877f2] focus:bg-white"
+                    @click="toggleDropdown('country')"
+                  >
                     <div class="flex items-center gap-2">
                       <span>{{ selectedFlag || '🇲🇳' }}</span>
-                      <span>{{ formData.country || 'Mongolia' }}</span>
+                      <span :class="{'text-[#9e9e9e]': !formData.country}">{{ formData.country || 'Select Country' }}</span>
                     </div>
-                    <svg class="w-6 h-6 text-[#9e9e9e] flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                    <svg class="w-6 h-6 text-[#9e9e9e] flex-shrink-0 transition-transform duration-200" :class="{'rotate-180': dropdowns.country}" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z"/>
                     </svg>
                   </div>
-                  <div v-if="showCountryDropdown" class="absolute top-full left-0 right-0 bg-white border border-[#bdbdbd] border-t-0 rounded-b z-10 max-h-[200px] overflow-y-auto">
-                    <div class="px-3 py-3 cursor-pointer text-[14px] text-[#424242] flex items-center gap-2 border-b border-[#f0f0f0] bg-[#f6fafd] transition-colors duration-200 hover:bg-[#e3f2fd]" @click="selectCountry('Mongolia', '🇲🇳')">
+                  <div v-if="dropdowns.country" class="absolute top-full left-0 right-0 bg-white border border-[#bdbdbd] border-t-0 rounded-b z-10 max-h-[200px] overflow-y-auto shadow-lg">
+                    <div class="px-3 py-3 cursor-pointer text-[16px] text-[#424242] flex items-center gap-2 border-b border-[#f0f0f0] transition-colors duration-200 hover:bg-[#e3f2fd]" @click="selectCountry('Mongolia', '🇲🇳')">
                       <span>🇲🇳</span>
                       <span>Mongolia</span>
                     </div>
-                    <div class="px-3 py-3 cursor-pointer text-[14px] text-[#424242] flex items-center gap-2 border-b border-[#f0f0f0] bg-[#f6fafd] transition-colors duration-200 hover:bg-[#e3f2fd]" @click="selectCountry('China', '🇨🇳')">
+                    <div class="px-3 py-3 cursor-pointer text-[16px] text-[#424242] flex items-center gap-2 border-b border-[#f0f0f0] transition-colors duration-200 hover:bg-[#e3f2fd]" @click="selectCountry('China', '🇨🇳')">
                       <span>🇨🇳</span>
                       <span>China</span>
                     </div>
-                    <div class="px-3 py-3 cursor-pointer text-[14px] text-[#424242] flex items-center gap-2 bg-[#f6fafd] transition-colors duration-200 hover:bg-[#e3f2fd]" @click="selectCountry('Russia', '🇷🇺')">
+                    <div class="px-3 py-3 cursor-pointer text-[16px] text-[#424242] flex items-center gap-2 transition-colors duration-200 hover:bg-[#e3f2fd]" @click="selectCountry('Russia', '🇷🇺')">
                       <span>🇷🇺</span>
                       <span>Russia</span>
                     </div>
@@ -350,11 +368,11 @@
 
               <div class="flex flex-col gap-2 flex-1">
                 <label class="text-[16px] font-medium text-[#424242] capitalize">Phone Number</label>
-                <div class="flex items-center h-[46px] border border-[#bdbdbd] rounded bg-[#eee] overflow-hidden">
-                  <span class="px-3 bg-[#f0f0f0] text-[#424242] font-medium border-r border-[#bdbdbd] flex-shrink-0">{{ formData.countryCode || '+976' }}</span>
+                <div class="flex items-center h-[46px] border border-[#bdbdbd] rounded bg-[#eee] overflow-hidden transition-colors duration-200 focus-within:border-[#1877f2] focus-within:bg-white">
+                  <span class="px-3 bg-[#f0f0f0] text-[#424242] font-medium border-r border-[#bdbdbd] flex-shrink-0 h-full flex items-center">{{ formData.countryCode || '+976' }}</span>
                   <input 
                     type="tel" 
-                    class="h-auto px-3 border-none bg-transparent text-[16px] text-[#424242] outline-none flex-1 placeholder:text-[#9e9e9e]"
+                    class="h-full px-3 border-none bg-transparent text-[16px] text-[#424242] outline-none flex-1 placeholder:text-[#9e9e9e]"
                     placeholder="12345678" 
                     v-model="formData.phoneNumber" 
                     required
@@ -388,14 +406,14 @@ export default {
     return {
       currentStep: 1,
       isChecked: false,
-      showCountryDropdown: false,
       selectedFlag: '🇲🇳',
       dropdowns: {
         category: false,
         service: false,
         destination: false,
         employees: false,
-        revenue: false
+        revenue: false,
+        country: false
       },
       formData: {
         email: '',
@@ -411,7 +429,7 @@ export default {
         firstName: '',
         lastName: '',
         jobTitle: '',
-        country: 'Mongolia',
+        country: '',
         countryCode: '+976',
         phoneNumber: ''
       }
@@ -433,17 +451,18 @@ export default {
       }
     },
     toggleDropdown(type) {
+      // Close all other dropdowns first
       Object.keys(this.dropdowns).forEach(key => {
-        this.dropdowns[key] = false
+        if (key !== type) {
+          this.dropdowns[key] = false
+        }
       })
-      this.dropdowns[type] = true
+      // Toggle the clicked dropdown
+      this.dropdowns[type] = !this.dropdowns[type]
     },
     selectOption(type, value) {
       this.formData[type] = value
       this.dropdowns[type] = false
-    },
-    toggleCountryDropdown() {
-      this.showCountryDropdown = !this.showCountryDropdown
     },
     selectCountry(country, flag) {
       this.formData.country = country
@@ -454,7 +473,7 @@ export default {
         'Russia': '+7'
       }
       this.formData.countryCode = countryCodes[country]
-      this.showCountryDropdown = false
+      this.dropdowns.country = false
     },
     completeRegistration() {
       this.$emit('complete', this.formData)
@@ -463,7 +482,6 @@ export default {
     resetForm() {
       this.currentStep = 1
       this.isChecked = false
-      this.showCountryDropdown = false
       this.selectedFlag = '🇲🇳'
       Object.keys(this.dropdowns).forEach(key => {
         this.dropdowns[key] = false
@@ -482,16 +500,28 @@ export default {
         firstName: '',
         lastName: '',
         jobTitle: '',
-        country: 'Mongolia',
+        country: '',
         countryCode: '+976',
         phoneNumber: ''
       }
+    },
+    handleClickOutside(event) {
+      // Close dropdowns when clicking outside
+      Object.keys(this.dropdowns).forEach(key => {
+        this.dropdowns[key] = false
+      })
     }
+  },
+  mounted() {
+    document.addEventListener('click', this.handleClickOutside)
+  },
+  beforeUnmount() {
+    document.removeEventListener('click', this.handleClickOutside)
   }
 }
 </script>
 
-<style>
+<style scoped>
 /* Responsive Design */
 @media (max-width: 768px) {
   .fixed.inset-0.bg-black.bg-opacity-50.flex.items-center.justify-center.z-50.p-5 {
@@ -563,5 +593,10 @@ export default {
   .flex.items-center.h-\[46px\] {
     height: 42px;
   }
+}
+
+/* Dropdown animations */
+.rotate-180 {
+  transform: rotate(180deg);
 }
 </style>

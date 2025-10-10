@@ -7,7 +7,7 @@
   <script setup>
   
   
-  import settings from '@/components/common/AgencyProfile/settings.vue';
+  import settings from '@/components/AgencyProfile/settings.vue';
 
   definePageMeta({
     layout: "agencyprofile",

@@ -7,7 +7,7 @@
   
   <script setup>
 
-  import myprofile from '~/components/common/SubAdmin/myprofile.vue';
+  import myprofile from '~/components/SubAdmin/myprofile.vue';
   definePageMeta({
     layout: "subadminpanel",
   });

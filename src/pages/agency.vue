@@ -2,18 +2,24 @@
     <div>
       <AgencyHead />
       <CommonAgencyProfile />
-      <CommonAgencyDetails />
-      <CommonAgencyContact />
-      <CommonAgencyReview />
+      <AgencyDetails />
+      <AgencyContact />
+      <AgencyReview />
       <Footer />
 
     </div>
   </template>
   
   <script setup lang="ts">
-  import CommonAgencyProfile from '~/components/common/Agency/AgencyProfile.vue';
-import AgencyHead from '~/components/common/Agency/AgencyHead.vue';
-import Footer from '~/components/layout/Footer.vue';
+  import CommonAgencyProfile from '@/components/Agency/AgencyProfile.vue';
+import AgencyHead from '@/components/Agency/AgencyHead.vue';
+import AgencyDetails from '@/components/Agency/AgencyDetails.vue';
+import AgencyContact from '@/components/Agency/AgencyContact.vue';
+import AgencyReview from '@/components/Agency/AgencyReview.vue';
+
+
+
+import Footer from '@/components/layout/Footer.vue';
 
   
   definePageMeta({

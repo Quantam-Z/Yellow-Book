@@ -6,7 +6,7 @@
   </template>
   
   <script setup>
-  import AssignCompanies from '~/components/common/SubAdmin/assigincompanies.vue'
+  import AssignCompanies from '~/components/SubAdmin/assigincompanies.vue'
   
   definePageMeta({
     layout: "subadminpanel",
