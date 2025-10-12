@@ -7,7 +7,7 @@ import Star from '~/components/common/Star.vue';
 </script>
 
 <template>
-  <div>
+  <div class="flex flex-col gap-10">
     <Navbar />
     <Catagory /> 
     <Popular />

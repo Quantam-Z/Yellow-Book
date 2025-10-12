@@ -1,23 +1,14 @@
 <template>
   <div class="relative w-full flex flex-col lg:flex-row items-start gap-4 lg:gap-6 p-3 lg:p-5 min-h-screen bg-gray-50 text-center text-[16px] lg:text-[18px] text-dimgray font-plus-jakarta-sans">
     
-    <!-- Mobile Header - Filters and Sort in Same Row -->
-    <div class="lg:hidden w-full flex justify-between items-center mb-4">
+    <!-- Mobile Header - Centered Sort and Filter -->
+    <div class="lg:hidden w-full flex justify-center items-center mb-4">
       <div class="flex items-center gap-3">
-        <component 
-          :is="currentCategory?.icon" 
-          :class="['w-6 h-6', currentCategory?.color || 'text-black']" 
-        />
-        <div class="text-xl font-bold text-gray-800 capitalize">
-          {{ currentCategory?.name || 'Loading...' }}
-        </div>
-      </div>
-      <div class="flex items-center gap-2">
         <!-- Sort Button -->
         <div class="relative">
           <button 
             @click="toggleSortDropdown"
-            class="flex items-center gap-2 bg-white border border-gainsboro border-solid rounded-[4px] px-3 py-2 hover:border-gray-400 transition-colors text-sm"
+            class="flex items-center gap-2 bg-white border border-gainsboro border-solid rounded-[4px] px-4 py-2 hover:border-gray-400 transition-colors text-sm"
           >
             <span class="text-dimgray leading-[160%] capitalize font-medium">Sort</span>
             <div class="flex flex-col gap-0.5 w-3">
@@ -27,10 +18,10 @@
             </div>
           </button>
           
-          <!-- Mobile Sort Dropdown -->
+          <!-- Mobile Sort Dropdown - Centered -->
           <div 
             v-if="showSortOptions"
-            class="absolute top-full right-0 mt-1 w-[280px] rounded-[4px] bg-white border border-gainsboro border-solid box-border overflow-hidden flex flex-col items-start z-[4] text-center text-dimgray shadow-lg"
+            class="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 w-[280px] rounded-[4px] bg-white border border-gainsboro border-solid box-border overflow-hidden flex flex-col items-start z-[4] text-center text-dimgray shadow-lg"
           >
             <div class="w-full flex flex-col items-start gap-2">
               <div class="self-stretch bg-ghostwhite flex flex-col items-start p-3 text-left text-[14px] text-darkslategray">
@@ -62,7 +53,7 @@
         <!-- Filter Toggle Button -->
         <button 
           @click="showMobileFilters = !showMobileFilters"
-          class="flex items-center gap-2 bg-white border border-gainsboro border-solid rounded-[4px] px-3 py-2 text-sm"
+          class="flex items-center gap-2 bg-white border border-gainsboro border-solid rounded-[4px] px-4 py-2 text-sm"
         >
           <span>Filters</span>
           <svg class="w-4 h-4" :class="{'rotate-180': showMobileFilters}" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -81,6 +72,17 @@
       }"
     >
       
+      <!-- Category Name Display (Inside Filters) -->
+      <div class="lg:hidden w-full flex items-center gap-3 mb-2">
+        <component 
+          :is="currentCategory?.icon" 
+          :class="['w-6 h-6', currentCategory?.color || 'text-black']" 
+        />
+        <div class="text-xl font-bold text-gray-800 capitalize">
+          {{ currentCategory?.name || 'Loading...' }}
+        </div>
+      </div>
+
       <!-- Price Range Filter -->
       <div class="self-stretch rounded-lg bg-white border border-gainsboro border-solid flex flex-col items-start p-3 lg:p-[10px] relative gap-4">
         <div class="w-full flex items-center justify-between gap-0 z-[0]">

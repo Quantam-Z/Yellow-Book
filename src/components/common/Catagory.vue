@@ -23,7 +23,7 @@ const goToCategory = (categoryName: string) => {
 </script>
 
 <template>
-  <div class="category-section w-full relative flex flex-col items-center gap-8 text-center text-[#212121] py-10 px-4 sm:px-6 md:px-10 lg:px-20 z-0">
+  <div class="category-section w-full relative flex flex-col items-center gap-8 text-center text-[#212121]  px-4 sm:px-6 md:px-10 lg:px-20 z-0">
     <div class="text-2xl sm:text-3xl lg:text-[30px] leading-[126%] capitalize font-semibold">
       Category's
     </div>

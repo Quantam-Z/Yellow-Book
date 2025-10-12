@@ -1,8 +1,6 @@
 <template>
   <div class="w-full font-plus-jakarta-sans">
-    <!-- Header Section with Gradient Background -->
     <div class="w-full rounded-lg bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 p-4 mb-4">
-      <!-- Header -->
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
         <h1 class="text-xl md:text-2xl font-bold text-gray-900">Admin Management</h1>
         <NuxtLink
@@ -13,7 +11,6 @@
         </NuxtLink>
       </div>
 
-      <!-- Search Bar -->
       <div class="w-full relative rounded-lg bg-gray-50 border-white border-solid border box-border flex items-center p-4 gap-3">
         <Search class="w-6 h-6 text-gray-400 flex-shrink-0" />
         <input
@@ -26,7 +23,6 @@
       </div>
     </div>
 
-    <!-- Stats Cards - Responsive Grid -->
     <div class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
       <div class="rounded-lg bg-white border border-gray-200 flex items-center p-4 gap-3">
         <div class="h-11 w-11 rounded bg-blue-100 flex items-center justify-center flex-shrink-0">
