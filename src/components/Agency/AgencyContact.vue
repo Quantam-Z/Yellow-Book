@@ -135,7 +135,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { 
   Building, 
   Globe, 
@@ -148,6 +148,8 @@ import {
   Tag, 
   ExternalLink 
 } from 'lucide-vue-next';
+
+import { computed } from 'vue';
 
 const props = defineProps<{
   website?: string,

@@ -7,7 +7,7 @@
   </div>
  </template>
 
- <script setup>
+ <script setup lang="ts">
  const props = defineProps<{ about?: string }>();
  const defaultAbout = 'Discover our agency — delivering quality services with excellence.';
  </script>

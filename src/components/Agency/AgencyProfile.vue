@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { Star } from "lucide-vue-next";
 import { computed } from 'vue';
 
