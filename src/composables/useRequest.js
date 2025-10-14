@@ -1,121 +1,99 @@
 import useToken from "~/composables/useToken";
 
+/**
+ * Reusable API client built on top of $fetch with
+ * - Automatic baseURL from runtime config
+ * - Auth token injection (Bearer)
+ * - Safe JSON/FormData handling
+ * - Optional success/error toasts
+ */
+const createClient = () => {
+  const { public: publicConfig } = useRuntimeConfig();
 
-const $api = {
-  async get(url, __ = {showSuccess: false, showError: false, successMessage: 'Success', errorMessage: ''}) { /// Performs GET request ...
-    const config = useRuntimeConfig()
-    const {data, pending, error, refresh} = await useFetch(url, {
-      baseURL: config.public.apiBaseUrl, // Set the api base url from .env ...
-      onRequest({request, options}) {
-        // Set the request headers
-        options.headers = options.headers || {}
-        const token = useToken()
-        if (token) options.headers.Authorization = `Bearer ${token}`
-        options.headers.Accept = 'application/json' // Proper case per Fetch
-      },
-      onRequestError({request, options, error}) {
-        // Handle the request errors
-      },
-      onResponse({request, response, options}) {
-        // Process the response data
-        if (response.status === 200 && __.showSuccess) dispatchSuccess(__.successMessage || 'Success!') // Success Message ...
-        return response._data
-      },
-      onResponseError({request, response, options}) {
-        // Handle the response errors
-        if (__.showError) dispatchError(response, __.errorMessage) // Show Error Toast ...
-      }
-    })
-    return {data, pending, refresh, error}
-  },
-  async post(url, payload, __ = {showSuccess: true, showError: true, successMessage: 'Success', errorMessage: ''}) { /// Performs POST and PUT request ...
-    const config = useRuntimeConfig()
-    const {data, pending, error, refresh} = await useFetch(url, {
-      baseURL: config.public.apiBaseUrl, // Set the api base url from .env ...
-      onRequest({request, options}) {
-        // Set the request headers
-        options.body = payload
-        options.method = 'POST'
-        options.headers = options.headers || {}
-        const token = useToken()
-        if (token) options.headers.Authorization = `Bearer ${token}`
-        // Content-Type should be set only for JSON; for FormData, let browser set boundary
-        if (payload && !(payload instanceof FormData)) {
-          options.headers['Content-Type'] = 'application/json'
-          options.body = typeof payload === 'string' ? payload : JSON.stringify(payload)
-        }
-        options.headers.Accept = 'application/json'
-      },
-      onRequestError({request, options, error}) {
+  const withAuthHeaders = (headers = {}) => {
+    const token = useToken();
+    const authHeaders = {};
+    if (token) authHeaders.Authorization = `Bearer ${token}`;
+    return { Accept: "application/json", ...authHeaders, ...headers };
+  };
 
-        // Handle the request errors
-      },
-      onResponse({request, response, options}) {
-        // Process the response data
-        if (response.status === 200 && __.showSuccess) dispatchSuccess(__.successMessage || 'Success!') // Success Message ...
-        return response._data
-      },
-      onResponseError({request, response, options}) {
-        // Handle the response errors
-        if (__.showError) dispatchError(response, __.errorMessage) // Show Error Toast ...
-      }
-    })
-    return {data, pending, error, refresh}
-  },
-  async delete(url, __ = {showSuccess: true, showError: true, successMessage: 'Success', errorMessage: ''}) { /// Performs DELETE request ...
-    const config = useRuntimeConfig()
-    const {data, pending, error, refresh} = await useFetch(url, {
-      baseURL: config.public.apiBaseUrl, // Set the api base url from .env ...
-      onRequest({request, options}) {
-        // Set the request headers
-        options.method = 'DELETE'
-        options.headers = options.headers || {}
-        const token = useToken()
-        if (token) options.headers.Authorization = `Bearer ${token}`
-        options.headers.Accept = 'application/json'
-      },
-      onRequestError({request, options, error}) {
-        // Handle the request errors
-      },
-      onResponse({request, response, options}) {
-        // Process the response data
-        if (response.status === 200 && __.showSuccess) dispatchSuccess(__.successMessage || 'Success!') // Success Message ...
-        return response._data
-      },
-      onResponseError({request, response, options}) {
-        // Handle the response errors
-        if (__.showError) dispatchError(response, __.errorMessage) // Show Error Toast ...
-      }
-    })
-    return {data, pending, error, refresh}
-  },
-  
+  const showSuccess = (message) => {
+    if (process.server) return;
+    try {
+      const { $awn } = useNuxtApp();
+      $awn?.success(message || "Success");
+    } catch (_) {}
+  };
 
-}
+  const showError = (err, fallbackMessage) => {
+    if (process.server) return;
+    const response = err?.response || {};
+    const status = response.status || err?.status;
+    const data = response._data || err?.data || err;
+    const statusText = response.statusText || err?.statusText;
+    const detail = data?.message || data?.error || "";
+    const message =
+      fallbackMessage ||
+      (status
+        ? `${statusText || "Error"} (${status})${detail ? ": " + detail : ""}`
+        : detail || "Something went wrong");
 
+    try {
+      const { $awn } = useNuxtApp();
+      $awn?.alert(message);
+    } catch (_) {}
+  };
 
-const dispatchSuccess = (message) => {
-  if (process.server) return //
-  const {$awn} = useNuxtApp()
-  $awn.success(message) // Toast ...
-}
+  const request = async (method, url, payload, options = {}) => {
+    const {
+      toast = { showSuccess: false, showError: true, successMessage: "" },
+      headers,
+      query,
+    } = options;
 
-const dispatchError = (err, errorMessage) => {
-  if (process.server) return
-  let error = err._data ? err._data : err
-  let message = ''
+    const isFormData = typeof FormData !== "undefined" && payload instanceof FormData;
+    const body =
+      payload && !isFormData && method !== "GET"
+        ? typeof payload === "string"
+          ? payload
+          : JSON.stringify(payload)
+        : payload;
 
-  if ([401, 403, 422, 500, 429].includes(err.status)) {
-    message = err?.statusText + '! ' + error?.message
-  } else if (err.status === 419) {
-    message = 'CORES Error! ' + error?.message
-  } else {
-    message = errorMessage || 'Some Error Occurred!'
-  }
+    try {
+      const data = await $fetch(url, {
+        baseURL: publicConfig.apiBaseUrl,
+        method,
+        body,
+        headers: isFormData
+          ? withAuthHeaders(headers)
+          : withAuthHeaders({ "Content-Type": "application/json", ...headers }),
+        query,
+        retry: 0,
+        onRequest({ options }) {
+          // Ensure headers object exists for downstream manipulations
+          options.headers = options.headers || {};
+        },
+      });
 
-  const {$awn} = useNuxtApp()
-  $awn.alert(message) /// Toast ...
-}
+      if (toast?.showSuccess) showSuccess(toast.successMessage || "Success");
+      return data;
+    } catch (err) {
+      if (toast?.showError !== false) showError(err, toast?.errorMessage);
+      throw err;
+    }
+  };
 
+  return {
+    get: (url, options) => request("GET", url, undefined, options),
+    post: (url, payload, options) => request("POST", url, payload, options),
+    put: (url, payload, options) => request("PUT", url, payload, options),
+    patch: (url, payload, options) => request("PATCH", url, payload, options),
+    delete: (url, options) => request("DELETE", url, undefined, options),
+    request,
+  };
+};
 
-export default $api
+// Singleton instance per runtime for convenience
+const $api = createClient();
+
+export default $api;
