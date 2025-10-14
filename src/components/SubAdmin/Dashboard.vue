@@ -79,12 +79,7 @@
                   <div class="flex items-center gap-1">
                     <span class="font-medium">Rating:</span>
                     <div class="flex items-center gap-1">
-                      <Star 
-                        v-for="star in 5" 
-                        :key="star"
-                        class="w-3 h-3"
-                        :class="star <= review.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'"
-                      />
+                      <RatingStars :value="review.rating" :size-class="'w-3 h-3'" />
                       <span class="ml-1 text-xs">{{ review.rating }} Star</span>
                     </div>
                   </div>
@@ -232,7 +227,7 @@
 </template>
 
 <script setup>
-import { Star } from 'lucide-vue-next';
+import RatingStars from '@/components/common/RatingStars.vue'
 import CompanyVerificationModal from '@/components/modal/VerifyReview.vue';
 import ReviewModal from '@/components/modal/ReviewModal.vue';
 
@@ -244,49 +239,12 @@ definePageMeta({
 const selectedCompany = ref(null);
 const selectedReview = ref(null);
 
-// Sample data
-const companies = [
-  { id: 1, name: "Innovate Solutions", category: "Tech", assignedDate: "2024-10-22" },
-  { id: 2, name: "Global Enterprises", category: "Finance", assignedDate: "2024-10-21" },
-  { id: 3, name: "Tech Startup Inc", category: "Technology", assignedDate: "2024-10-20" },
-  { id: 4, name: "Creative Agency Co", category: "Marketing", assignedDate: "2024-10-19" },
-];
+// Load sample data from stubs
+const { data: companiesData } = await useFetch('/stubs/subadminAssignedCompanies.json')
+const companies = companiesData.value || []
 
-const reviews = [
-  { 
-    id: 1, 
-    text: "Absolutely fantastic service from start to finish. Highly recommend!", 
-    company: "Innovate Solutions", 
-    date: "2024-10-22", 
-    time: "10:30 PM", 
-    rating: 5,
-    reviewerName: "John Doe",
-    email: "john.doe@example.com",
-    companyName: "Innovate Solutions"
-  },
-  { 
-    id: 2, 
-    text: "Great product quality and excellent customer support team.", 
-    company: "Global Enterprises", 
-    date: "2024-10-21", 
-    time: "02:15 PM", 
-    rating: 4,
-    reviewerName: "Jane Smith",
-    email: "jane.smith@example.com",
-    companyName: "Global Enterprises"
-  },
-  { 
-    id: 3, 
-    text: "Very professional and delivered on time with excellent quality work.", 
-    company: "Tech Startup Inc", 
-    date: "2024-10-20", 
-    time: "09:45 AM", 
-    rating: 5,
-    reviewerName: "Mike Johnson",
-    email: "mike.johnson@example.com",
-    companyName: "Tech Startup Inc"
-  },
-];
+const { data: reviewsData } = await useFetch('/stubs/subadminReviews.json')
+const reviews = reviewsData.value || []
 
 const recentActivities = [
   { type: 'verification', description: 'Verified Creative Design Studio', time: '2h ago' },

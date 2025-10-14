@@ -12,7 +12,7 @@
       <div class="flex items-center justify-between p-3 sm:p-4 md:p-5 rounded-lg bg-white border shadow-sm">
         <div class="min-w-0 flex-1">
           <p class="text-gray-600 font-medium text-xs sm:text-sm md:text-base truncate">Total Reviews</p>
-          <p class="text-xl sm:text-2xl md:text-3xl font-semibold truncate">458</p>
+          <p class="text-xl sm:text-2xl md:text-3xl font-semibold truncate">{{ dashboard.totalReviews }}</p>
         </div>
         <MessageSquare class="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-purple-500 flex-shrink-0 ml-2" />
       </div>
@@ -20,7 +20,7 @@
       <div class="flex items-center justify-between p-3 sm:p-4 md:p-5 rounded-lg bg-white border shadow-sm">
         <div class="min-w-0 flex-1">
           <p class="text-gray-600 font-medium text-xs sm:text-sm md:text-base truncate">Average Rating</p>
-          <p class="text-xl sm:text-2xl md:text-3xl font-semibold truncate">4.8</p>
+          <p class="text-xl sm:text-2xl md:text-3xl font-semibold truncate">{{ dashboard.averageRating }}</p>
         </div>
         <Star class="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-yellow-500 flex-shrink-0 ml-2" />
       </div>
@@ -28,7 +28,7 @@
       <div class="flex items-center justify-between p-3 sm:p-4 md:p-5 rounded-lg bg-white border shadow-sm">
         <div class="min-w-0 flex-1">
           <p class="text-gray-600 font-medium text-xs sm:text-sm md:text-base truncate">Verification</p>
-          <p class="text-xl sm:text-2xl md:text-3xl font-semibold text-green-600 truncate">Verified</p>
+          <p class="text-xl sm:text-2xl md:text-3xl font-semibold text-green-600 truncate">{{ dashboard.verificationStatus }}</p>
         </div>
         <ShieldCheck class="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-green-500 flex-shrink-0 ml-2" />
       </div>
@@ -36,7 +36,7 @@
       <div class="flex items-center justify-between p-3 sm:p-4 md:p-5 rounded-lg bg-white border shadow-sm">
         <div class="min-w-0 flex-1">
           <p class="text-gray-600 font-medium text-xs sm:text-sm md:text-base truncate">Profile Complete</p>
-          <p class="text-xl sm:text-2xl md:text-3xl font-semibold truncate">458</p>
+          <p class="text-xl sm:text-2xl md:text-3xl font-semibold truncate">{{ dashboard.profileComplete }}</p>
         </div>
         <UserCheck class="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-blue-500 flex-shrink-0 ml-2" />
       </div>
@@ -97,14 +97,9 @@
                 {{ review.reviewer }}
               </td>
               <td class="px-3 sm:px-4 py-2">
-                <div class="flex items-center gap-1">
-                  <Star
-                    v-for="i in 5"
-                    :key="i"
-                    class="h-3 w-3 sm:h-4 sm:w-4"
-                    :class="i <= review.rating ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300'"
-                  />
-                </div>
+            <div class="flex items-center gap-1">
+              <RatingStars :value="review.rating" :size-class="'h-3 w-3 sm:h-4 sm:w-4'" />
+            </div>
               </td>
               <td class="px-3 sm:px-4 py-2 text-gray-600 text-xs sm:text-sm max-w-xs truncate">
                 {{ review.comment }}
@@ -128,7 +123,8 @@
 </template>
 
 <script setup>
-import { Star, ShieldCheck, MessageSquare, UserCheck } from "lucide-vue-next";
+import { ShieldCheck, MessageSquare, UserCheck } from "lucide-vue-next";
+import RatingStars from '@/components/common/RatingStars.vue'
 import {
   Chart as ChartJS,
   Title,
@@ -180,33 +176,17 @@ const chartOptions = {
   }
 };
 
-// Reviews data
-const reviews = [
-  {
-    reviewer: "John Doe",
-    rating: 4,
-    comment: "Great experience! Very responsive and professional service. Would definitely recommend to others.",
-    date: "2 days ago"
-  },
-  {
-    reviewer: "Jane Smith",
-    rating: 5,
-    comment: "Excellent service, exceeded expectations. The team was very helpful throughout the process.",
-    date: "5 days ago"
-  },
-  {
-    reviewer: "Mike Johnson",
-    rating: 3,
-    comment: "Good service but had some delays in communication. Overall satisfied with the outcome.",
-    date: "1 week ago"
-  },
-  {
-    reviewer: "Sarah Wilson",
-    rating: 5,
-    comment: "Outstanding experience from start to finish. Highly professional and efficient service.",
-    date: "1 week ago"
-  }
-];
+// Reviews data from stub
+const { data: latestReviewsData } = await useFetch('/stubs/agencyReviews.json')
+const reviews = computed(() => (latestReviewsData.value || []).slice(0, 4).map(r => ({
+  reviewer: r.reviewerName,
+  rating: r.rating,
+  comment: r.content,
+  date: r.date
+})))
+
+// Dashboard stats
+const { data: dashboard } = await useFetch('/stubs/agencyDashboard.json')
 </script>
 
 <style scoped>
