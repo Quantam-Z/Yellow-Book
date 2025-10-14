@@ -27,104 +27,25 @@
           
           <!-- Notifications List -->
           <div class="self-stretch flex flex-col items-start">
-            
-            <!-- Notification 1 - New Review -->
-            <div class="self-stretch bg-white border-b border-gray-200 flex items-start justify-between p-5 hover:bg-gray-50 transition-colors">
+            <div 
+              v-for="n in notifications" 
+              :key="n.id"
+              class="self-stretch bg-white border-b border-gray-200 flex items-start justify-between p-5 hover:bg-gray-50 transition-colors"
+            >
               <div class="flex items-start gap-3">
-                <div class="h-11 w-11 rounded-full bg-green-100 flex items-center justify-center">
-                  <Star class="w-5 h-5 text-green-600" />
+                <div class="h-11 w-11 rounded-full flex items-center justify-center" :class="n.bgColor">
+                  <component :is="n.icon" class="w-5 h-5" :class="n.iconColor" />
                 </div>
                 <div class="flex-1 flex flex-col items-start gap-3">
                   <div class="flex flex-col items-start gap-1">
-                    <div class="text-sm font-medium text-gray-800 capitalize">New Review Received</div>
-                    <div class="text-sm text-gray-600">Sarah Johnson left a 5-star review for your company</div>
+                    <div class="text-sm font-medium text-gray-800 capitalize">{{ n.title }}</div>
+                    <div class="text-sm text-gray-600">{{ n.message }}</div>
                   </div>
-                  <div class="text-xs text-gray-500">2 hours ago</div>
+                  <div class="text-xs text-gray-500">{{ n.time }}</div>
                 </div>
               </div>
-              <div class="w-2 h-2 rounded-full bg-blue-500 mt-2"></div>
+              <div v-if="n.unread" class="w-2 h-2 rounded-full bg-blue-500 mt-2"></div>
             </div>
-  
-            <!-- Notification 2 - Verification -->
-            <div class="self-stretch bg-white border-b border-gray-200 flex items-start p-5 hover:bg-gray-50 transition-colors">
-              <div class="flex items-start gap-3">
-                <div class="h-11 w-11 rounded-full bg-blue-100 flex items-center justify-center">
-                  <BadgeCheck class="w-5 h-5 text-blue-600" />
-                </div>
-                <div class="flex-1 flex flex-col items-start gap-3">
-                  <div class="flex flex-col items-start gap-1">
-                    <div class="text-sm font-medium text-gray-800 capitalize">Company Verification Complete</div>
-                    <div class="text-sm text-gray-600">Your company profile has been successfully verified</div>
-                  </div>
-                  <div class="text-xs text-gray-500">1 day ago</div>
-                </div>
-              </div>
-            </div>
-  
-            <!-- Notification 3 - Profile Reminder -->
-            <div class="self-stretch bg-white border-b border-gray-200 flex items-start p-5 hover:bg-gray-50 transition-colors">
-              <div class="flex items-start gap-3">
-                <div class="h-11 w-11 rounded-full bg-yellow-100 flex items-center justify-center">
-                  <AlertCircle class="w-5 h-5 text-yellow-600" />
-                </div>
-                <div class="flex-1 flex flex-col items-start gap-3">
-                  <div class="flex flex-col items-start gap-1">
-                    <div class="text-sm font-medium text-gray-800 capitalize">Profile Update Reminder</div>
-                    <div class="text-sm text-gray-600">Complete your profile to improve visibility (85% complete)</div>
-                  </div>
-                  <div class="text-xs text-gray-500">2 days ago</div>
-                </div>
-              </div>
-            </div>
-  
-            <!-- Notification 4 - Platform Announcement -->
-            <div class="self-stretch bg-white border-b border-gray-200 flex items-start p-5 hover:bg-gray-50 transition-colors">
-              <div class="flex items-start gap-3">
-                <div class="h-11 w-11 rounded-full bg-purple-100 flex items-center justify-center">
-                  <Megaphone class="w-5 h-5 text-purple-600" />
-                </div>
-                <div class="flex-1 flex flex-col items-start gap-3">
-                  <div class="flex flex-col items-start gap-1">
-                    <div class="text-sm font-medium text-gray-800 capitalize">Platform Announcement</div>
-                    <div class="text-sm text-gray-600">New features have been added to the dashboard</div>
-                  </div>
-                  <div class="text-xs text-gray-500">3 days ago</div>
-                </div>
-              </div>
-            </div>
-  
-            <!-- Notification 5 - New Message -->
-            <div class="self-stretch bg-white border-b border-gray-200 flex items-start p-5 hover:bg-gray-50 transition-colors">
-              <div class="flex items-start gap-3">
-                <div class="h-11 w-11 rounded-full bg-indigo-100 flex items-center justify-center">
-                  <MessageCircle class="w-5 h-5 text-indigo-600" />
-                </div>
-                <div class="flex-1 flex flex-col items-start gap-3">
-                  <div class="flex flex-col items-start gap-1">
-                    <div class="text-sm font-medium text-gray-800 capitalize">New Message</div>
-                    <div class="text-sm text-gray-600">You have a new message from a potential client</div>
-                  </div>
-                  <div class="text-xs text-gray-500">4 days ago</div>
-                </div>
-              </div>
-            </div>
-  
-            <!-- Notification 6 - Payment Received -->
-            <div class="self-stretch bg-white flex items-start p-5 hover:bg-gray-50 transition-colors">
-              <div class="flex items-start gap-3">
-                <div class="h-11 w-11 rounded-full bg-green-100 flex items-center justify-center">
-                  <DollarSign class="w-5 h-5 text-green-600" />
-                </div>
-                <div class="flex-1 flex flex-col items-start gap-3">
-                  <div class="flex flex-col items-start gap-1">
-                    <div class="text-sm font-medium text-gray-800 capitalize">Payment Received</div>
-                    <div class="text-sm text-gray-600">Your invoice #INV-001 has been paid</div>
-                  </div>
-                  <div class="text-xs text-gray-500">1 week ago</div>
-                </div>
-              </div>
-            </div>
-  
           </div>
         </div>
       </div>
@@ -139,87 +60,36 @@
     AlertCircle, 
     Megaphone, 
     MessageCircle, 
-    DollarSign,
-    CheckCircle,
-    Trash2
+    DollarSign
   } from 'lucide-vue-next';
   import { ref } from 'vue';
-  
-  // Notifications data
-  const notifications = ref([
-    {
-      id: 1,
-      title: "New Review Received",
-      message: "Sarah Johnson left a 5-star review for your company",
-      time: "2 hours ago",
-      icon: Star,
-      iconColor: "text-green-600",
-      bgColor: "bg-green-100",
-      unread: true
-    },
-    {
-      id: 2,
-      title: "Company Verification Complete",
-      message: "Your company profile has been successfully verified",
-      time: "1 day ago",
-      icon: BadgeCheck,
-      iconColor: "text-blue-600",
-      bgColor: "bg-blue-100",
-      unread: false
-    },
-    {
-      id: 3,
-      title: "Profile Update Reminder",
-      message: "Complete your profile to improve visibility (85% complete)",
-      time: "2 days ago",
-      icon: AlertCircle,
-      iconColor: "text-yellow-600",
-      bgColor: "bg-yellow-100",
-      unread: false
-    },
-    {
-      id: 4,
-      title: "Platform Announcement",
-      message: "New features have been added to the dashboard",
-      time: "3 days ago",
-      icon: Megaphone,
-      iconColor: "text-purple-600",
-      bgColor: "bg-purple-100",
-      unread: false
-    },
-    {
-      id: 5,
-      title: "New Message",
-      message: "You have a new message from a potential client",
-      time: "4 days ago",
-      icon: MessageCircle,
-      iconColor: "text-indigo-600",
-      bgColor: "bg-indigo-100",
-      unread: false
-    },
-    {
-      id: 6,
-      title: "Payment Received",
-      message: "Your invoice #INV-001 has been paid",
-      time: "1 week ago",
-      icon: DollarSign,
-      iconColor: "text-green-600",
-      bgColor: "bg-green-100",
-      unread: false
-    }
-  ]);
-  
+
+  // Map icon names from stub to actual components
+  const iconMap = { Star, BadgeCheck, AlertCircle, Megaphone, MessageCircle, DollarSign };
+
+  // Load notifications from stub JSON and keep them mutable for actions
+  const notifications = ref([]);
+  const { data: notificationsData } = await useFetch('/stubs/agencyNotifications.json');
+  notifications.value = (notificationsData.value || []).map(n => ({
+    id: n.id,
+    title: n.title,
+    message: n.message,
+    time: n.time,
+    icon: iconMap[n.icon] || MessageCircle,
+    iconColor: n.iconColor || 'text-gray-600',
+    bgColor: n.bgColor || 'bg-gray-100',
+    unread: Boolean(n.unread),
+  }));
+
   // Methods
   const markAllAsRead = () => {
     notifications.value.forEach(notification => {
       notification.unread = false;
     });
-    console.log('All notifications marked as read');
   };
-  
+
   const clearAllNotifications = () => {
     notifications.value = [];
-    console.log('All notifications cleared');
   };
   </script>
   

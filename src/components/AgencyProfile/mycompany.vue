@@ -297,21 +297,21 @@ import { ref } from 'vue';
 
 // --- Form Data State ---
 const companyData = ref({
-  name: 'Tech Solutions Inc.',
-  website: 'https://techsolutions.com',
-  employees: '10-20',
-  firstName: 'John',
-  jobTitle: 'CEO & Founder',
-  category: 'Software Development',
-  email: 'contact@techsolutions.com',
-  phone: '+1 (555) 123-4567',
-  revenue: '$1M-$10M',
-  lastName: 'Doe',
-  industry: 'Technology',
-  location: 'San Francisco, CA',
-  tagline: 'Innovative technology solutions for modern businesses',
-  description: `We are a leading technology company specializing in custom software development, cloud solutions, and digital transformation services. Our team of experienced developers and consultants work closely with clients to deliver innovative solutions that drive business growth.`,
-  services: `Custom Software Development, Cloud Migration, Mobile App Development, DevOps Services, Technical Consulting, API Integration`,
+  name: '',
+  website: '',
+  employees: '',
+  firstName: '',
+  jobTitle: '',
+  category: '',
+  email: '',
+  phone: '',
+  revenue: '',
+  lastName: '',
+  industry: '',
+  location: '',
+  tagline: '',
+  description: '',
+  services: '',
 });
 
 const isEditing = ref(false);
