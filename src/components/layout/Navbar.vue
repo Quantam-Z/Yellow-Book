@@ -7,7 +7,7 @@
           <img class="self-stretch max-w-full overflow-hidden h-[34px] sm:h-[30px] md:h-[30px] flex-shrink-0 object-cover" src="/logo/logo.png" alt="Logo" />
         </div>
 
-        <div class="hidden lg:flex items-center gap-8">
+        <div class="hidden lg:flex items-center gap-8 navbar-links">
           <div
             v-for="(item, index) in effectiveMenuItems"
             :key="index"
@@ -15,7 +15,7 @@
           >
             <NuxtLink
               :to="item.to"
-              class="relative leading-[160%] text-base"
+              class="relative leading-[160%] text-base no-underline"
               :class="isActive(item.to) ? 'font-medium text-[#212121]' : 'font-normal text-[#616161]'"
             >
               {{ item.label }}
@@ -73,13 +73,13 @@
               </button>
             </div>
 
-            <nav class="flex-1 flex flex-col space-y-2 text-lg">
+            <nav class="flex-1 flex flex-col space-y-2 text-lg navbar-mobile">
               <NuxtLink
                 v-for="(item, index) in effectiveMenuItems"
                 :key="index"
                 :to="item.to"
                 @click="handleMobileNavigate"
-                class="py-4 px-4 rounded-lg transition-colors border-b border-gray-100"
+                class="py-4 px-4 rounded-lg transition-colors border-b border-gray-100 no-underline"
                 :class="isActive(item.to) ? 'text-[#212121] font-semibold bg-[#fff9e6]' : 'text-[#616161] hover:bg-[#fff9e6]'"
               >
                 {{ item.label }}
@@ -238,6 +238,11 @@ export default {
 </script>
 
 <style scoped>
+.navbar-links :deep(a),
+.navbar-mobile :deep(a) {
+  text-decoration: none !important;
+}
+
 .mobile-height { height: 100vh; min-height: 100vh; }
 @media (max-width: 1023px) { 
   .mobile-height { 
