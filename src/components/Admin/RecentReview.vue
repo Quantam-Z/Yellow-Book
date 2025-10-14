@@ -97,23 +97,11 @@
 
 <script setup>
 import { Star, MoreHorizontal } from 'lucide-vue-next';
+import { getStatusClass } from '~/composables/useStatusClass'
 
-const reviews = [
-  { reviewer: 'Wade Warren', rating: '4.5', date: '12-June-2025', review: 'Great service and quick response time. Very satisfied with the overall experience.', status: 'Pending' },
-  { reviewer: 'Esther Howard', rating: '5.0', date: '11-June-2025', review: 'Excellent experience, highly recommend their services to everyone.', status: 'Approved' },
-  { reviewer: 'Cameron Williamson', rating: '3.5', date: '10-June-2025', review: 'Good overall but could improve communication and response time.', status: 'Pending' },
-  { reviewer: 'Brooklyn Simmons', rating: '4.0', date: '09-June-2025', review: 'Very professional and courteous staff. Will use again.', status: 'Approved' },
-  { reviewer: 'Savannah Nguyen', rating: '2.5', date: '08-June-2025', review: 'Not satisfied with the service quality and pricing.', status: 'Rejected' },
-];
-
-const getStatusClass = (status) => {
-  switch(status) {
-    case 'Pending': return 'text-amber-500 bg-amber-50';
-    case 'Approved': return 'text-green-500 bg-green-50';
-    case 'Rejected': return 'text-red-500 bg-red-50';
-    default: return 'text-gray-500 bg-gray-50';
-  }
-};
+// Load recent reviews from stub
+const { data: reviewsData } = await useFetch('/stubs/recentReviews.json')
+const reviews = reviewsData.value || []
 </script>
 
 <style scoped>

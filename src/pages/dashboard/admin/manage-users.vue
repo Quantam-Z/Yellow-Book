@@ -6,7 +6,7 @@
 </template>
 
 <script setup>
-import ManageUsers from '~/components/Admin/manageUsers.vue';
+import ManageUsers from '~/components/Admin/ManageUsers.vue';
 
 // Page layout
 definePageMeta({
