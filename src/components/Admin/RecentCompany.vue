@@ -99,58 +99,11 @@
 
 <script setup>
 import { MoreHorizontal } from 'lucide-vue-next';
+import { getStatusClass } from '~/composables/useStatusClass'
 
-const rows = [
-  {
-    name: 'ABC Company',
-    date: '12-June-2025',
-    phone: '65421231465',
-    website: 'www.yourwebsite.com',
-    category: 'Technology',
-    status: 'Pending'
-  },
-  {
-    name: 'XYZ Enterprises',
-    date: '15-June-2025',
-    phone: '9876543210',
-    website: 'www.xyz.com',
-    category: 'Consulting',
-    status: 'Approved'
-  },
-  {
-    name: 'Stellar Solutions',
-    date: '20-June-2025',
-    phone: '1234567890',
-    website: 'www.stellar.com',
-    category: 'Software',
-    status: 'Pending'
-  },
-  {
-    name: 'Nova Dynamics',
-    date: '22-June-2025',
-    phone: '1122334455',
-    website: 'www.nova.com',
-    category: 'Marketing',
-    status: 'Rejected'
-  },
-  {
-    name: 'Apex Innovations',
-    date: '25-June-2025',
-    phone: '9988776655',
-    website: 'www.apex.com',
-    category: 'Finance',
-    status: 'Pending'
-  }
-];
-
-const getStatusClass = (status) => {
-  switch(status) {
-    case 'Pending': return 'text-amber-500 bg-amber-50';
-    case 'Approved': return 'text-green-500 bg-green-50';
-    case 'Rejected': return 'text-red-500 bg-red-50';
-    default: return 'text-gray-500 bg-gray-50';
-  }
-};
+// Load recent companies from stub
+const { data: rowsData } = await useFetch('/stubs/recentCompanies.json')
+const rows = rowsData.value || []
 </script>
 
 <style scoped>

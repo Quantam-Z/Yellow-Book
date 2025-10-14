@@ -6,7 +6,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import AdminManagement from '@/components/Admin/adminManagement.vue'
+import AdminManagement from '@/components/Admin/AdminManagement.vue'
 
 const isModalOpen = ref(false);
 

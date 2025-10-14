@@ -306,6 +306,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import { getStatusClass, getRoleClass } from '~/composables/useStatusClass'
 import { Search, Eye, CheckCircle, ChevronDown, Edit, Trash2, Users, UserCheck, UserX, Shield } from "lucide-vue-next";
 
 // Stats data
@@ -316,97 +317,9 @@ const stats = ref({
   superAdmins: 0
 });
 
-// Admins data
-const admins = ref([
-  { 
-    id: 1, 
-    name: "John Smith", 
-    email: "john.smith@company.com", 
-    role: "Super Admin", 
-    status: "Active", 
-    verified: true, 
-    createdOn: "2024-01-15", 
-    lastLogin: "2024-03-20", 
-    selected: false 
-  },
-  { 
-    id: 2, 
-    name: "Sarah Johnson", 
-    email: "sarah.j@company.com", 
-    role: "Admin", 
-    status: "Active", 
-    verified: true, 
-    createdOn: "2024-02-10", 
-    lastLogin: "2024-03-19", 
-    selected: false 
-  },
-  { 
-    id: 3, 
-    name: "Mike Chen", 
-    email: "mike.chen@company.com", 
-    role: "Moderator", 
-    status: "Inactive", 
-    verified: false, 
-    createdOn: "2024-01-25", 
-    lastLogin: "2024-03-15", 
-    selected: false 
-  },
-  { 
-    id: 4, 
-    name: "Emily Davis", 
-    email: "emily.davis@company.com", 
-    role: "Support", 
-    status: "Active", 
-    verified: true, 
-    createdOn: "2024-03-01", 
-    lastLogin: "2024-03-20", 
-    selected: false 
-  },
-  { 
-    id: 5, 
-    name: "Robert Wilson", 
-    email: "robert.w@company.com", 
-    role: "Admin", 
-    status: "Suspended", 
-    verified: true, 
-    createdOn: "2024-01-08", 
-    lastLogin: "2024-03-10", 
-    selected: false 
-  },
-  { 
-    id: 6, 
-    name: "Lisa Brown", 
-    email: "lisa.brown@company.com", 
-    role: "Super Admin", 
-    status: "Active", 
-    verified: true, 
-    createdOn: "2024-02-20", 
-    lastLogin: "2024-03-21", 
-    selected: false 
-  },
-  { 
-    id: 7, 
-    name: "David Miller", 
-    email: "david.m@company.com", 
-    role: "Moderator", 
-    status: "Active", 
-    verified: false, 
-    createdOn: "2024-03-05", 
-    lastLogin: "2024-03-18", 
-    selected: false 
-  },
-  { 
-    id: 8, 
-    name: "Amanda Taylor", 
-    email: "amanda.t@company.com", 
-    role: "Support", 
-    status: "Inactive", 
-    verified: true, 
-    createdOn: "2024-02-15", 
-    lastLogin: "2024-03-12", 
-    selected: false 
-  },
-]);
+// Admins data from stub
+const { data: adminsData } = await useFetch('/stubs/admins.json')
+const admins = ref((adminsData.value || []).map(a => ({ ...a, selected: false })))
 
 // Search and filters
 const searchQuery = ref('');
@@ -417,8 +330,21 @@ const filters = ref({
   timeRange: ''
 });
 
-// Filtered admins
-const filteredAdmins = ref([...admins.value]);
+// Filtered admins without copying entire arrays
+const filteredAdmins = computed(() => {
+  const q = (searchQuery.value || '').toLowerCase()
+  const role = filters.value.role
+  const status = filters.value.status
+  return admins.value.filter(admin => {
+    if (q) {
+      const matches = admin.name.toLowerCase().includes(q) || admin.email.toLowerCase().includes(q) || admin.role.toLowerCase().includes(q)
+      if (!matches) return false
+    }
+    if (role && admin.role !== role) return false
+    if (status && admin.status !== status) return false
+    return true
+  })
+})
 
 // Action handlers
 const openAddModal = () => {
@@ -427,31 +353,7 @@ const openAddModal = () => {
 };
 
 // Filter function
-const filterAdmins = () => {
-  let result = [...admins.value];
-  
-  // Search filter
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase();
-    result = result.filter(admin => 
-      admin.name.toLowerCase().includes(query) || 
-      admin.email.toLowerCase().includes(query) ||
-      admin.role.toLowerCase().includes(query)
-    );
-  }
-  
-  // Role filter
-  if (filters.value.role) {
-    result = result.filter(admin => admin.role === filters.value.role);
-  }
-  
-  // Status filter
-  if (filters.value.status) {
-    result = result.filter(admin => admin.status === filters.value.status);
-  }
-  
-  filteredAdmins.value = result;
-};
+const filterAdmins = () => {}
 
 // Select all checkbox
 const toggleSelectAll = () => {
@@ -460,35 +362,7 @@ const toggleSelectAll = () => {
   });
 };
 
-// Get status class
-const getStatusClass = (status) => {
-  switch(status) {
-    case 'Active':
-      return 'bg-green-100 text-green-700';
-    case 'Inactive':
-      return 'bg-gray-100 text-gray-700';
-    case 'Suspended':
-      return 'bg-red-100 text-red-700';
-    default:
-      return 'bg-gray-100 text-gray-700';
-  }
-};
-
-// Get role class
-const getRoleClass = (role) => {
-  switch(role) {
-    case 'Super Admin':
-      return 'bg-purple-100 text-purple-700';
-    case 'Admin':
-      return 'bg-blue-100 text-blue-700';
-    case 'Moderator':
-      return 'bg-orange-100 text-orange-700';
-    case 'Support':
-      return 'bg-teal-100 text-teal-700';
-    default:
-      return 'bg-gray-100 text-gray-700';
-  }
-};
+// Status and role classes centralized in composable
 
 // Format date
 const formatDate = (dateString) => {

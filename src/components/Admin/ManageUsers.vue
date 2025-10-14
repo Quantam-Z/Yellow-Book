@@ -340,6 +340,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import { getStatusClass, getStatusShort, getSignupMethodClass } from '~/composables/useStatusClass'
 import { Search, Calendar, Eye, CheckCircle, ChevronDown, Users, Mail, Share2, ChevronLeft, ChevronRight, Filter } from "lucide-vue-next";
 
 // Stats data
@@ -350,21 +351,9 @@ const stats = ref({
   emailSignups: 60
 });
 
-// Users data
-const users = ref([
-  { id: 1, name: "John Doe", email: "john.doe@example.com", signupMethod: "Google", signupDate: "2024-01-15", status: "Active", verified: true, selected: false },
-  { id: 2, name: "Jane Smith", email: "jane.smith@example.com", signupMethod: "Email", signupDate: "2024-01-14", status: "Active", verified: true, selected: false },
-  { id: 3, name: "Mike Johnson", email: "mike.johnson@example.com", signupMethod: "Facebook", signupDate: "2024-01-13", status: "Inactive", verified: false, selected: false },
-  { id: 4, name: "Sarah Wilson", email: "sarah.wilson@example.com", signupMethod: "Google", signupDate: "2024-01-12", status: "Active", verified: true, selected: false },
-  { id: 5, name: "David Brown", email: "david.brown@example.com", signupMethod: "Twitter", signupDate: "2024-01-11", status: "Suspended", verified: false, selected: false },
-  { id: 6, name: "Emily Davis", email: "emily.davis@example.com", signupMethod: "Email", signupDate: "2024-01-10", status: "Active", verified: true, selected: false },
-  { id: 7, name: "Chris Lee", email: "chris.lee@example.com", signupMethod: "Google", signupDate: "2024-01-09", status: "Pending", verified: false, selected: false },
-  { id: 8, name: "Amanda Taylor", email: "amanda.taylor@example.com", signupMethod: "Facebook", signupDate: "2024-01-08", status: "Active", verified: true, selected: false },
-  { id: 9, name: "Robert Wilson", email: "robert.wilson@example.com", signupMethod: "Email", signupDate: "2024-01-07", status: "Active", verified: false, selected: false },
-  { id: 10, name: "Lisa Anderson", email: "lisa.anderson@example.com", signupMethod: "Google", signupDate: "2024-01-06", status: "Inactive", verified: true, selected: false },
-  { id: 11, name: "James Martinez", email: "james.martinez@example.com", signupMethod: "Twitter", signupDate: "2024-01-05", status: "Active", verified: false, selected: false },
-  { id: 12, name: "Jennifer Thomas", email: "jennifer.thomas@example.com", signupMethod: "Email", signupDate: "2024-01-04", status: "Active", verified: true, selected: false },
-]);
+// Users data from stub
+const { data: usersData } = await useFetch('/stubs/users.json')
+const users = ref((usersData.value || []).map(u => ({ ...u, selected: false })))
 
 // Search and filters
 const searchQuery = ref('');
@@ -378,48 +367,36 @@ const filters = ref({
   signupMethod: ''
 });
 
-// Get unique signup methods
+// Get unique signup methods efficiently
 const signupMethods = computed(() => {
-  return [...new Set(users.value.map(u => u.signupMethod))];
-});
+  const seen = new Set()
+  for (const u of users.value) seen.add(u.signupMethod)
+  return Array.from(seen)
+})
 
-// Filtered users
-const filteredUsers = ref([...users.value]);
+// Filtered users as computed to avoid copies
+const filteredUsers = computed(() => {
+  const q = (searchQuery.value || '').toLowerCase()
+  const status = filters.value.status
+  const signupMethod = filters.value.signupMethod
+  const from = filters.value.dateFrom
+  const to = filters.value.dateTo
+
+  return users.value.filter(user => {
+    if (q) {
+      const matches = user.name.toLowerCase().includes(q) || user.email.toLowerCase().includes(q)
+      if (!matches) return false
+    }
+    if (status && user.status !== status) return false
+    if (signupMethod && user.signupMethod !== signupMethod) return false
+    if (from && user.signupDate < from) return false
+    if (to && user.signupDate > to) return false
+    return true
+  })
+})
 
 // Filter function
-const filterUsers = () => {
-  let result = [...users.value];
-  
-  // Search filter
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase();
-    result = result.filter(user => 
-      user.name.toLowerCase().includes(query) || 
-      user.email.toLowerCase().includes(query)
-    );
-  }
-  
-  // Status filter
-  if (filters.value.status) {
-    result = result.filter(user => user.status === filters.value.status);
-  }
-  
-  // Signup method filter
-  if (filters.value.signupMethod) {
-    result = result.filter(user => user.signupMethod === filters.value.signupMethod);
-  }
-  
-  // Date range filter
-  if (filters.value.dateFrom) {
-    result = result.filter(user => user.signupDate >= filters.value.dateFrom);
-  }
-  
-  if (filters.value.dateTo) {
-    result = result.filter(user => user.signupDate <= filters.value.dateTo);
-  }
-  
-  filteredUsers.value = result;
-};
+const filterUsers = () => {}
 
 // Select all checkbox
 const toggleSelectAll = () => {
@@ -428,48 +405,7 @@ const toggleSelectAll = () => {
   });
 };
 
-// Get status class
-const getStatusClass = (status) => {
-  switch(status) {
-    case 'Active':
-      return 'bg-green-100 text-green-700';
-    case 'Inactive':
-      return 'bg-gray-100 text-gray-700';
-    case 'Suspended':
-      return 'bg-red-100 text-red-700';
-    case 'Pending':
-      return 'bg-amber-100 text-amber-700';
-    default:
-      return 'bg-gray-100 text-gray-700';
-  }
-};
-
-// Get short status for mobile
-const getStatusShort = (status) => {
-  switch(status) {
-    case 'Active': return 'Act';
-    case 'Inactive': return 'Ina';
-    case 'Suspended': return 'Sus';
-    case 'Pending': return 'Pen';
-    default: return status;
-  }
-};
-
-// Get signup method class
-const getSignupMethodClass = (method) => {
-  switch(method) {
-    case 'Google':
-      return 'bg-red-50 text-red-600';
-    case 'Facebook':
-      return 'bg-blue-50 text-blue-600';
-    case 'Twitter':
-      return 'bg-sky-50 text-sky-600';
-    case 'Email':
-      return 'bg-orange-50 text-orange-600';
-    default:
-      return 'bg-gray-50 text-gray-600';
-  }
-};
+// Status and signup method helpers are centralized in composable
 
 // Format date
 const formatDate = (dateString) => {

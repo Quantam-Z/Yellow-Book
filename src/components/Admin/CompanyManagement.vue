@@ -300,6 +300,7 @@
 
 <script setup>
 import { ref, computed } from 'vue';
+import { getStatusClass, getStatusShort } from '~/composables/useStatusClass'
 import { Search, Calendar, Eye, CheckCircle, ChevronDown, ChevronLeft, ChevronRight, Filter, Phone, Globe } from "lucide-vue-next";
 import AddCompany from '@/components/modal/AddCompany.vue';
 
@@ -315,21 +316,9 @@ const closeModal = () => {
   isModalOpen.value = false;
 };
 
-// Initial data
-const companies = ref([
-  { id: 1, name: "ABC Company", website: "www.yourwebsite.com", mobile: "556265485", category: "Technology", status: "Approved", verified: false, selected: false },
-  { id: 2, name: "XYZ Corporation", website: "www.xyzcorp.com", mobile: "556265486", category: "Finance", status: "Pending", verified: false, selected: false },
-  { id: 3, name: "Tech Solutions Ltd", website: "www.techsolutions.com", mobile: "556265487", category: "Technology", status: "Approved", verified: true, selected: false },
-  { id: 4, name: "Global Enterprises", website: "www.globalent.com", mobile: "556265488", category: "Manufacturing", status: "Approved", verified: false, selected: false },
-  { id: 5, name: "Digital Innovations", website: "www.digiinnov.com", mobile: "556265489", category: "Technology", status: "Rejected", verified: false, selected: false },
-  { id: 6, name: "Smart Systems Inc", website: "www.smartsystems.com", mobile: "556265490", category: "IT Services", status: "Approved", verified: false, selected: false },
-  { id: 7, name: "Future Tech Labs", website: "www.futuretech.com", mobile: "556265491", category: "Research", status: "Pending", verified: false, selected: false },
-  { id: 8, name: "Cloud Solutions Pro", website: "www.cloudsol.com", mobile: "556265492", category: "Cloud Services", status: "Approved", verified: false, selected: false },
-  { id: 9, name: "Data Analytics Corp", website: "www.dataanalytics.com", mobile: "556265493", category: "Analytics", status: "Approved", verified: false, selected: false },
-  { id: 10, name: "Cyber Security Ltd", website: "www.cybersec.com", mobile: "556265494", category: "Security", status: "Pending", verified: false, selected: false },
-  { id: 11, name: "Web Design Studio", website: "www.webdesign.com", mobile: "556265495", category: "Design", status: "Approved", verified: false, selected: false },
-  { id: 12, name: "Mobile App Developers", website: "www.mobileapp.com", mobile: "556265496", category: "Technology", status: "Approved", verified: false, selected: false },
-]);
+// Load companies from JSON stub (SSR-friendly)
+const { data: companiesData } = await useFetch('/stubs/companies.json')
+const companies = ref((companiesData.value || []).map(c => ({ ...c, selected: false })))
 
 // Search and filters
 const searchQuery = ref('');
@@ -342,39 +331,32 @@ const filters = ref({
   category: ''
 });
 
-// Get unique categories
+// Get unique categories without extra spread copies
 const categories = computed(() => {
-  return [...new Set(companies.value.map(c => c.category))];
-});
+  const seen = new Set()
+  for (const c of companies.value) seen.add(c.category)
+  return Array.from(seen)
+})
 
-// Filtered companies
-const filteredCompanies = ref([...companies.value]);
+// Computed filter to avoid unnecessary array copies
+const filteredCompanies = computed(() => {
+  const query = (searchQuery.value || '').toLowerCase()
+  const status = filters.value.status
+  const category = filters.value.category
 
-// Filter function
-const filterCompanies = () => {
-  let result = [...companies.value];
-  
-  // Search filter
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase();
-    result = result.filter(company => 
-      company.name.toLowerCase().includes(query) || 
-      company.category.toLowerCase().includes(query)
-    );
-  }
-  
-  // Status filter
-  if (filters.value.status) {
-    result = result.filter(company => company.status === filters.value.status);
-  }
-  
-  // Category filter
-  if (filters.value.category) {
-    result = result.filter(company => company.category === filters.value.category);
-  }
-  
-  filteredCompanies.value = result;
-};
+  return companies.value.filter(company => {
+    if (query) {
+      const matchesQuery = company.name.toLowerCase().includes(query) || company.category.toLowerCase().includes(query)
+      if (!matchesQuery) return false
+    }
+    if (status && company.status !== status) return false
+    if (category && company.category !== category) return false
+    return true
+  })
+})
+
+// No-op to keep template bindings; computed handles filtering
+const filterCompanies = () => {}
 
 // Select all checkbox
 const toggleSelectAll = () => {
@@ -383,29 +365,7 @@ const toggleSelectAll = () => {
   });
 };
 
-// Get status class
-const getStatusClass = (status) => {
-  switch(status) {
-    case 'Approved':
-      return 'bg-green-100 text-green-700';
-    case 'Pending':
-      return 'bg-amber-100 text-amber-700';
-    case 'Rejected':
-      return 'bg-red-100 text-red-700';
-    default:
-      return 'bg-gray-100 text-gray-700';
-  }
-};
-
-// Get short status for mobile
-const getStatusShort = (status) => {
-  switch(status) {
-    case 'Approved': return 'App';
-    case 'Pending': return 'Pen';
-    case 'Rejected': return 'Rej';
-    default: return status;
-  }
-};
+// Status helpers are centralized in composable
 
 // Action handlers
 const viewCompany = (company) => {
