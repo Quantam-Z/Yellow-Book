@@ -27,7 +27,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ArrowLeft, ChevronRight } from "lucide-vue-next";
 import { useRouter } from 'vue-router';
 import { computed } from 'vue';
