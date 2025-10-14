@@ -1,7 +1,7 @@
 <template>
-  <div :class="$style.aboutTheAgencyParent">
-    <div :class="$style.aboutTheAgency">About the Agency</div>
-    <div :class="$style.mongoliaExplorerTravel">
+  <div class="w-[95%] mx-auto my-2 bg-[#fff5f5] border border-[#eee] box-border flex flex-col items-start p-8 gap-6 text-left text-2xl text-[#424242] font-plus-jakarta-sans sm:p-6 sm:text-xl md:p-5">
+    <div class="leading-[130%] capitalize font-medium text-xl sm:text-lg">About the Agency</div>
+    <div class="w-full text-base leading-[160%] capitalize font-medium text-[#616161] sm:text-[15px] sm:leading-[150%]">
       {{ about || defaultAbout }}
     </div>
   </div>
@@ -12,74 +12,3 @@
  const defaultAbout = 'Discover our agency — delivering quality services with excellence.';
  </script>
 
-<style module>
-.aboutTheAgencyParent {
-  width: 95%;              /* ✅ Set width */
-  margin: 10px auto;       /* ✅ Center horizontally + keep top/bottom margin */
-  background-color: #fff5f5;
-  border: 1px solid #eee;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 32px;
-  gap: 24px;
-  text-align: left;
-  font-size: 24px;
-  color: #424242;
-  font-family: 'Plus Jakarta Sans';
-}
-
-.aboutTheAgency {
-  line-height: 130%;
-  text-transform: capitalize;
-  font-weight: 500;
-}
-
-.mongoliaExplorerTravel {
-  align-self: stretch;
-  font-size: 16px;
-  line-height: 160%;
-  text-transform: capitalize;
-  font-weight: 500;
-  color: #616161;
-}
-
-/* ✅ Responsive Styles */
-@media (max-width: 1024px) {
-  .aboutTheAgencyParent {
-    padding: 24px;
-    font-size: 20px;
-  }
-}
-
-@media (max-width: 768px) {
-  .aboutTheAgencyParent {
-    padding: 20px;
-    gap: 16px;
-  }
-  .aboutTheAgency {
-    font-size: 18px;
-  }
-  .mongoliaExplorerTravel {
-    font-size: 15px;
-    line-height: 150%;
-  }
-}
-
-@media (max-width: 480px) {
-  .aboutTheAgencyParent {
-    padding: 16px;
-    gap: 12px;
-  }
-  .aboutTheAgency {
-    font-size: 16px;
-    text-align: center;
-    width: 100%;
-  }
-  .mongoliaExplorerTravel {
-    font-size: 14px;
-    text-align: justify;
-  }
-}
-</style>

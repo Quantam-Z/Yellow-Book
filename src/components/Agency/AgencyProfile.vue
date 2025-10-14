@@ -29,29 +29,29 @@ const logoImageSrc = computed(() => props.logoImage || '/logo/image7.png');
         alt="Main background" 
       />
       <img 
-        class="absolute bottom-[-100px] left-1/2 transform -translate-x-1/2 w-1/5 max-w-[200px] h-auto aspect-square object-cover rounded-lg" 
+        class="absolute -bottom-24 left-1/2 -translate-x-1/2 w-1/5 max-w-[200px] h-auto aspect-square object-cover rounded-lg sm:w-1/3" 
         :src="logoImageSrc" 
         alt="Overlay logo" 
       />
     </div>
 
     <!-- Content Section -->
-    <div class="flex flex-col items-center gap-5 pt-32">
+    <div class="flex flex-col items-center gap-5 pt-32 sm:pt-28">
       <!-- Title and Description -->
       <div class="flex flex-col items-center gap-4">
-        <h1 class="text-4xl lg:text-5xl font-bold leading-tight capitalize">
+        <h1 class="text-4xl lg:text-5xl font-bold leading-tight capitalize sm:text-3xl">
           {{ safeAgencyName }}
         </h1>
-        <p class="text-base text-gray-600 leading-relaxed text-center max-w-2xl">
+        <p class="text-base text-gray-600 leading-relaxed text-center max-w-2xl sm:text-sm">
           {{ taglineText }}
         </p>
       </div>
 
       <!-- Rating Section -->
-      <div class="flex items-center gap-2 text-base text-gray-600">
+      <div class="flex items-center gap-2 text-base text-gray-600 sm:text-sm">
         <!-- Stars -->
         <div class="flex items-center">
-          <Star v-for="n in 5" :key="n" class="w-6 h-6 text-black" />
+          <Star v-for="n in 5" :key="n" class="w-6 h-6 text-black sm:w-5 sm:h-5" />
         </div>
         <!-- Rating Number -->
         <b class="leading-relaxed capitalize">{{ roundedRating }}</b>
@@ -63,30 +63,5 @@ const logoImageSrc = computed(() => props.logoImage || '/logo/image7.png');
 </template>
 
 <style scoped>
-.font-plus-jakarta-sans {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-}
-
-/* Tablet */
-@media (max-width: 1024px) {
-  .text-4xl {
-    font-size: 2rem;
-  }
-  .w-1\/5 {
-    width: 25%;
-  }
-}
-
-/* Mobile */
-@media (max-width: 640px) {
-  .text-4xl {
-    font-size: 1.5rem;
-  }
-  .w-1\/5 {
-    width: 35%;
-  }
-  .text-base {
-    font-size: 0.9rem;
-  }
-}
+.font-plus-jakarta-sans { font-family: 'Plus Jakarta Sans', sans-serif; }
 </style>

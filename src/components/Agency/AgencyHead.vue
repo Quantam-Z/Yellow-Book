@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full flex flex-wrap items-center gap-2 lg:gap-3 px-4 lg:px-6 py-2 text-base text-black font-plus-jakarta-sans">
+  <div class="w-full flex items-center gap-2 lg:gap-3 px-4 lg:px-6 py-2 text-base text-black font-plus-jakarta-sans overflow-x-auto whitespace-nowrap sm:whitespace-normal sm:flex-wrap">
     <!-- Back Button -->
     <button 
       @click="goBack"
@@ -10,7 +10,7 @@
     </button>
 
     <!-- Breadcrumb -->
-    <div class="flex flex-1 flex-wrap items-center gap-2 text-gray-600 min-w-0">
+    <div class="flex flex-1 items-center gap-2 text-gray-600 min-w-0 overflow-x-auto whitespace-nowrap sm:whitespace-normal sm:flex-wrap">
       <!-- Static Agency label -->
       <div class="flex items-center gap-1">
         <span class="text-sm lg:text-base capitalize whitespace-nowrap">Agency</span>
@@ -50,29 +50,5 @@ const goBack = () => {
 </script>
 
 <style scoped>
-.font-plus-jakarta-sans {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-}
-
-/* Mobile horizontal scroll for breadcrumbs */
-@media (max-width: 480px) {
-  .flex-wrap {
-    flex-wrap: nowrap !important;
-    overflow-x: auto;
-    gap: 8px;
-  }
-
-  .flex-wrap > * {
-    flex-shrink: 0;
-  }
-
-  .flex-wrap::-webkit-scrollbar {
-    display: none;
-  }
-
-  .flex-wrap {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-}
+.font-plus-jakarta-sans { font-family: 'Plus Jakarta Sans', sans-serif; }
 </style>
