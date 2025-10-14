@@ -22,13 +22,16 @@
               <div class="font-medium hidden sm:block">:</div>
             </div>
             <a 
-              href="https://www.MongoliaExplorerTravel.com" 
+              v-if="website"
+              :href="computedWebsiteHref" 
               target="_blank" 
+              rel="noopener noreferrer"
               class="flex items-center text-blue-600 hover:underline break-all"
             >
-              www.Mongolia Explorer Travel.com
+              {{ website }}
               <ExternalLink class="w-4 h-4 ml-1" />
             </a>
+            <span v-else class="break-words text-gray-500">Not provided</span>
           </div>
 
           <div class="flex items-center gap-3 w-full flex-wrap">
@@ -39,7 +42,7 @@
               </div>
               <div class="font-medium hidden sm:block">:</div>
             </div>
-            <div class="break-words text-gray-700">+976 1234 5678</div>
+            <div class="break-words text-gray-700">{{ phone || 'Not provided' }}</div>
           </div>
 
           <div class="flex items-center gap-3 w-full flex-wrap">
@@ -50,7 +53,7 @@
               </div>
               <div class="font-medium hidden sm:block">:</div>
             </div>
-            <div class="break-words text-gray-700">contact@techsolutions.com</div>
+            <div class="break-words text-gray-700">{{ email || 'Not provided' }}</div>
           </div>
 
           <div class="flex items-center gap-3 w-full flex-wrap">
@@ -61,7 +64,7 @@
               </div>
               <div class="font-medium hidden sm:block">:</div>
             </div>
-            <div class="break-words text-gray-700">Ulaanbaatar, Mongolia</div>
+            <div class="break-words text-gray-700">{{ location || 'Not provided' }}</div>
           </div>
 
           <div class="flex items-center gap-3 w-full flex-wrap">
@@ -72,7 +75,7 @@
               </div>
               <div class="font-medium hidden sm:block">:</div>
             </div>
-            <div class="break-words text-gray-700">$1M-$10M</div>
+            <div class="break-words text-gray-700">{{ revenue || 'Not provided' }}</div>
           </div>
 
           <div class="flex items-center gap-3 w-full flex-wrap">
@@ -83,7 +86,7 @@
               </div>
               <div class="font-medium hidden sm:block">:</div>
             </div>
-            <div class="break-words text-gray-700">10-20</div>
+            <div class="break-words text-gray-700">{{ employees || 'Not provided' }}</div>
           </div>
 
           <div class="flex items-center gap-3 w-full flex-wrap">
@@ -94,7 +97,7 @@
               </div>
               <div class="font-medium hidden sm:block">:</div>
             </div>
-            <div class="break-words text-gray-700">Software Development</div>
+            <div class="break-words text-gray-700">{{ industry || 'Not provided' }}</div>
           </div>
 
           <div class="flex items-center gap-3 w-full flex-wrap">
@@ -105,7 +108,7 @@
               </div>
               <div class="font-medium hidden sm:block">:</div>
             </div>
-            <div class="break-words text-gray-700">Technology</div>
+            <div class="break-words text-gray-700">{{ category || 'Not provided' }}</div>
           </div>
 
         </div>
@@ -116,16 +119,16 @@
       >
         <div class="flex flex-col items-center gap-4 w-full">
           
-          <img class="w-36 h-36 rounded-full object-cover shadow-md" src="/profile.png" alt="Cameron Williamson" />
+          <img class="w-36 h-36 rounded-full object-cover shadow-md" :src="profileImage || '/profile.png'" :alt="ownerName || 'Owner'" />
           
           <div class="flex flex-col items-center justify-center gap-2.5">
-            <div class="text-xl font-semibold text-gray-800">Cameron Williamson</div>
-            <div class="text-base text-gray-500 text-center">CEO & Founder</div>
+            <div class="text-xl font-semibold text-gray-800">{{ ownerName || 'Owner' }}</div>
+            <div class="text-base text-gray-500 text-center">{{ ownerTitle || '' }}</div>
           </div>
         </div>
         
         <div class="text-base leading-relaxed italic text-gray-700 text-center">
-          "I'm a dedicated agency owner passionate about delivering trusted services, building client relationships, and helping everyday users solve real-world problems with care and integrity"
+          "{{ ownerBio || '' }}"
         </div>
       </div>
     </div>
@@ -145,6 +148,27 @@ import {
   Tag, 
   ExternalLink 
 } from 'lucide-vue-next';
+
+const props = defineProps<{
+  website?: string,
+  phone?: string,
+  email?: string,
+  location?: string,
+  revenue?: string,
+  employees?: string,
+  industry?: string,
+  category?: string,
+  profileImage?: string,
+  ownerName?: string,
+  ownerTitle?: string,
+  ownerBio?: string,
+}>();
+
+const computedWebsiteHref = computed(() => {
+  const raw = props.website || '';
+  if (!raw) return '';
+  return raw.startsWith('http://') || raw.startsWith('https://') ? raw : `https://${raw}`;
+});
 </script>
 
 <style scoped>

@@ -1,13 +1,22 @@
 <script setup>
 import { Star } from "lucide-vue-next";
-import { ref, onMounted } from 'vue';
+import { computed } from 'vue';
 
-const agencyName = ref("Creative Agency");
+const props = defineProps<{
+  agencyName?: string,
+  rating?: number,
+  ratingCount?: number,
+  tagline?: string,
+  heroImage?: string,
+  logoImage?: string,
+}>();
 
-onMounted(() => {
-  const params = new URLSearchParams(window.location.search);
-  agencyName.value = decodeURIComponent(params.get("title") || "Creative Agency");
-});
+const safeAgencyName = computed(() => props.agencyName || 'Agency');
+const roundedRating = computed(() => Number(props.rating || 0).toFixed(1));
+const ratingCountText = computed(() => `(${Number(props.ratingCount || 0)} reviews)`);
+const taglineText = computed(() => props.tagline || '');
+const heroImageSrc = computed(() => props.heroImage || '/logo/image6.png');
+const logoImageSrc = computed(() => props.logoImage || '/logo/image7.png');
 </script>
 
 <template>
@@ -16,12 +25,12 @@ onMounted(() => {
     <div class="relative w-full max-w-7xl">
       <img 
         class="w-full h-auto object-cover  rounded-lg" 
-        src="/logo/image6.png" 
+        :src="heroImageSrc" 
         alt="Main background" 
       />
       <img 
         class="absolute bottom-[-100px] left-1/2 transform -translate-x-1/2 w-1/5 max-w-[200px] h-auto aspect-square object-cover rounded-lg" 
-        src="/logo/image7.png" 
+        :src="logoImageSrc" 
         alt="Overlay logo" 
       />
     </div>
@@ -31,10 +40,10 @@ onMounted(() => {
       <!-- Title and Description -->
       <div class="flex flex-col items-center gap-4">
         <h1 class="text-4xl lg:text-5xl font-bold leading-tight capitalize">
-          {{ agencyName }}
+          {{ safeAgencyName }}
         </h1>
         <p class="text-base text-gray-600 leading-relaxed text-center max-w-2xl">
-          Innovative technology solutions for modern businesses
+          {{ taglineText }}
         </p>
       </div>
 
@@ -42,16 +51,12 @@ onMounted(() => {
       <div class="flex items-center gap-2 text-base text-gray-600">
         <!-- Stars -->
         <div class="flex items-center">
-          <Star class="w-6 h-6 text-black" />
-          <Star class="w-6 h-6 text-black" />
-          <Star class="w-6 h-6 text-black" />
-          <Star class="w-6 h-6 text-black" />
-          <Star class="w-6 h-6 text-black" />
+          <Star v-for="n in 5" :key="n" class="w-6 h-6 text-black" />
         </div>
         <!-- Rating Number -->
-        <b class="leading-relaxed capitalize">4.8</b>
+        <b class="leading-relaxed capitalize">{{ roundedRating }}</b>
         <!-- Reviews -->
-        <span class="leading-relaxed font-medium text-gray-500">(458 reviews)</span>
+        <span class="leading-relaxed font-medium text-gray-500">{{ ratingCountText }}</span>
       </div>
     </div>
   </div>

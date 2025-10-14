@@ -29,17 +29,15 @@
 
 <script setup>
 import { ArrowLeft, ChevronRight } from "lucide-vue-next";
-import { useRouter, useRoute } from 'vue-router';
+import { useRouter } from 'vue-router';
 import { computed } from 'vue';
 
-const router = useRouter();
-const route = useRoute();
+const props = defineProps<{ agencyName?: string }>();
 
-// Extract "title" query param dynamically
-const agencyName = computed(() => {
-  const rawTitle = route.query.title;
-  return rawTitle ? decodeURIComponent(rawTitle).replace(/\+/g, ' ') : null;
-});
+const router = useRouter();
+
+// Prefer prop value; keep computed for reactivity
+const agencyName = computed(() => props.agencyName || '');
 
 // Back button logic
 const goBack = () => {
