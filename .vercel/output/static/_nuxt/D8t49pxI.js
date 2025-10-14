@@ -1,0 +1,1 @@
+import{u as i}from"./Di2IQxnr.js";import{a6 as a,G as n}from"#entry";import"./BJ2ClxiI.js";const d=a(t=>{const e=i();e.token||e.hydrateFromStorage?.();const o=!!e?.user?.email_verified_at;if(!e.isAuthenticated||!o){const r=encodeURIComponent(t.fullPath||"/");return n(`/profile?next=${r}`)}});export{d as default};

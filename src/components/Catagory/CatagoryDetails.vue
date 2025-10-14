@@ -304,7 +304,7 @@
       <!-- Listings Container -->
       <div class="w-full space-y-4">
         <div 
-          v-for="listing in displayedListings" 
+          v-for="listing in paginatedListings" 
           :key="listing.id" 
           class="self-stretch rounded-[4px] bg-white border border-gainsboro border-solid flex flex-col items-start p-4 lg:p-5"
         >
@@ -415,20 +415,28 @@
           Clear Filters
         </button>
       </div>
+
+      <!-- Pagination -->
+      <div class="w-full flex items-center justify-center mt-4" v-if="totalPages > 1">
+        <Pagination v-model="currentPage" :totalPages="totalPages" />
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
+import Pagination from '@/components/common/Pagination.vue';
 import { categoryService } from '@/services/categoryService';
 import { useListingsFilter } from '@/composables/useListingsFilter';
 import { getStatusClass } from '@/utils/filterUtils';
 
 export default {
   name: 'CategoryPage',
+  components: { Pagination },
   
   setup() {
+    const route = useRoute();
     const currentCategory = ref(null);
     const allListings = ref([]);
     const loading = ref(true);
@@ -485,6 +493,13 @@ export default {
           label: `Max: $${f.maxPrice}` 
         });
       }
+      if (f.query) {
+        activeFilters.push({
+          type: 'query',
+          value: f.query,
+          label: `Search: ${f.query}`
+        });
+      }
       
       return activeFilters;
     });
@@ -492,6 +507,27 @@ export default {
     const displayedListings = computed(() => 
       hasActiveFilters.value ? filteredListings.value : allListings.value
     );
+
+    // Pagination state driven by route
+    const pageSize = ref(5);
+    const currentPage = ref(1);
+    const totalItems = computed(() => displayedListings.value.length);
+    const totalPages = computed(() => Math.max(1, Math.ceil(totalItems.value / pageSize.value)));
+    const paginatedListings = computed(() => {
+      // Clamp current page when totalPages decreases
+      if (currentPage.value > totalPages.value) currentPage.value = totalPages.value;
+      if (currentPage.value < 1) currentPage.value = 1;
+      const start = (currentPage.value - 1) * pageSize.value;
+      return displayedListings.value.slice(start, start + pageSize.value);
+    });
+
+    const syncFromRoute = () => {
+      const q = typeof route.query.q === 'string' ? route.query.q : '';
+      if (q !== filters.value.query) toggleFilter('query', q);
+      const page = parseInt(String(route.query.page || '1'));
+      currentPage.value = Number.isFinite(page) && page > 0 ? page : 1;
+    };
+    syncFromRoute();
 
     // Load category data
     const setCategoryFromURL = () => {
@@ -514,6 +550,7 @@ export default {
     // Methods
     const handlePriceChange = () => {
       toggleFilter('maxPrice', currentPrice.value);
+      currentPage.value = 1;
     };
 
     const setEmergencyService = (value) => {
@@ -521,6 +558,7 @@ export default {
       if (showMobileFilters.value) {
         showMobileFilters.value = false;
       }
+      currentPage.value = 1;
     };
 
     const toggleService = (service) => {
@@ -528,6 +566,7 @@ export default {
       if (showMobileFilters.value) {
         showMobileFilters.value = false;
       }
+      currentPage.value = 1;
     };
 
     const toggleSpecialization = (specialization) => {
@@ -535,11 +574,13 @@ export default {
       if (showMobileFilters.value) {
         showMobileFilters.value = false;
       }
+      currentPage.value = 1;
     };
 
     const toggleRating = (rating) => {
       toggleFilter('ratings', parseInt(rating));
       showSortOptions.value = false;
+      currentPage.value = 1;
     };
 
     const removeActiveFilter = (type, value) => {
@@ -553,6 +594,11 @@ export default {
       clearFilters();
       currentPrice.value = maxPrice.value;
       showMobileFilters.value = false;
+      // also clear query and reset pagination in route
+      const next = { ...route.query };
+      delete next.q;
+      delete next.page;
+      navigateTo({ query: next }, { replace: true });
     };
 
     const toggleSortDropdown = (event) => {
@@ -562,6 +608,7 @@ export default {
 
     const applyMobileFilters = () => {
       showMobileFilters.value = false;
+      currentPage.value = 1;
     };
 
     const handleClickOutside = (event) => {
@@ -574,6 +621,7 @@ export default {
     onMounted(() => {
       setCategoryFromURL();
       document.addEventListener('click', handleClickOutside);
+      syncFromRoute();
     });
 
     onUnmounted(() => {
@@ -582,12 +630,19 @@ export default {
 
     // Watch for route changes
     watch(
-      () => window.location.search,
+      () => route.query,
       () => {
         setCategoryFromURL();
-        clearAllFilters();
-      }
+        syncFromRoute();
+      },
+      { deep: true }
     );
+
+    // keep route query.page in sync with currentPage changes
+    watch(currentPage, (val) => {
+      const next = { ...route.query, page: String(val) };
+      navigateTo({ query: next }, { replace: true });
+    });
 
     return {
       currentCategory,
@@ -601,6 +656,9 @@ export default {
       hasActiveFilters,
       activeFiltersDisplay,
       displayedListings,
+      paginatedListings,
+      currentPage,
+      totalPages,
       filters,
       handlePriceChange,
       setEmergencyService,

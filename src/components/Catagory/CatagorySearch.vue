@@ -4,7 +4,7 @@
       <div :class="$style.mainCategory">Main Category</div>
       <b :class="$style.itSoftware">{{ categoryName }}</b>
     </div>
-    <div :class="$style.frameGroup">
+    <form :class="$style.frameGroup" @submit.prevent="applySearch">
       <div :class="$style.dellDuotoneParent">
         <svg :class="$style.dellDuotoneIcon" viewBox="0 0 24 24" fill="none">
           <path
@@ -15,9 +15,15 @@
             stroke-linejoin="round"
           />
         </svg>
-        <div :class="$style.search">Search</div>
+        <input
+          :class="$style.searchInput"
+          type="text"
+          v-model="searchText"
+          placeholder="Search by name, location, website..."
+          @keyup.enter="applySearch"
+        />
       </div>
-      <div :class="$style.searchParent">
+      <button type="submit" :class="$style.searchParent">
         <div :class="$style.search2">Search</div>
         <svg :class="$style.dellDuotoneIcon" viewBox="0 0 24 24" fill="none">
           <path
@@ -28,20 +34,43 @@
             stroke-linejoin="round"
           />
         </svg>
-      </div>
-    </div>
+      </button>
+    </form>
   </div>
+  
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
+
+const route = useRoute();
+const router = useRouter();
 
 const categoryName = ref("Loading...");
+const searchText = ref("");
+
+const applySearch = () => {
+  const q = searchText.value.trim();
+  const nextQuery = { ...route.query };
+  if (q) nextQuery.q = q; else delete nextQuery.q;
+  // reset pagination when searching
+  delete nextQuery.page;
+  router.push({ query: nextQuery });
+};
 
 onMounted(() => {
-  const params = new URLSearchParams(window.location.search);
-  categoryName.value = decodeURIComponent(params.get("name") || "Unknown");
+  categoryName.value = decodeURIComponent(String(route.query.name || "Unknown"));
+  searchText.value = typeof route.query.q === 'string' ? route.query.q : '';
 });
+
+// reflect route query updates into input field
+watch(
+  () => route.query.q,
+  (q) => {
+    searchText.value = typeof q === 'string' ? q : '';
+  }
+);
 </script>
 
 <style module>
@@ -102,6 +131,16 @@ onMounted(() => {
   align-items: center;
   gap: 4px;
   flex: 1;
+}
+
+.searchInput {
+  width: 100%;
+  border: none;
+  outline: none;
+  padding: 12px 8px;
+  font-size: 16px;
+  color: #212121;
+  background: transparent;
 }
 
 .dellDuotoneIcon {

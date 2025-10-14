@@ -1,0 +1,1 @@
+import{u as o}from"./Di2IQxnr.js";import{a6 as a,G as i}from"#entry";import"./BJ2ClxiI.js";const d=a(e=>{const t=o();if(t.token||t.hydrateFromStorage?.(),t.isAuthenticated){const r=e.query?.next?String(e.query.next):"/";return i(r)}});export{d as default};

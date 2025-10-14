@@ -6,18 +6,20 @@ export function useListingsFilter(listings) {
     specializations: new Set(),
     emergencyService: null,
     maxPrice: Infinity,
-    ratings: new Set()
+    ratings: new Set(),
+    query: ''
   });
 
   const filteredListings = computed(() => {
-    const { services, specializations, emergencyService, maxPrice, ratings } = filters.value;
+    const { services, specializations, emergencyService, maxPrice, ratings, query } = filters.value;
     const listingsData = listings.value;
     
     if (services.size === 0 && 
         specializations.size === 0 && 
         emergencyService === null && 
         maxPrice === Infinity && 
-        ratings.size === 0) {
+        ratings.size === 0 &&
+        !query) {
       return listingsData;
     }
 
@@ -27,6 +29,11 @@ export function useListingsFilter(listings) {
       if (emergencyService !== null && listing.emergencyService !== emergencyService) return false;
       if (maxPrice < Infinity && listing.price > maxPrice) return false;
       if (ratings.size > 0 && !ratings.has(Math.floor(listing.rating))) return false;
+      if (query) {
+        const q = String(query).toLowerCase();
+        const hay = `${listing.name} ${listing.location} ${listing.website}`.toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
       return true;
     });
   });
@@ -36,6 +43,8 @@ export function useListingsFilter(listings) {
       filters.value[filterType] = filters.value[filterType] === value ? null : value;
     } else if (filterType === 'maxPrice') {
       filters.value[filterType] = value;
+    } else if (filterType === 'query') {
+      filters.value.query = value || '';
     } else {
       const filterSet = filters.value[filterType];
       if (filterSet.has(value)) {
@@ -51,6 +60,8 @@ export function useListingsFilter(listings) {
       filters.value[filterType] = null;
     } else if (filterType === 'maxPrice') {
       filters.value[filterType] = Infinity;
+    } else if (filterType === 'query') {
+      filters.value.query = '';
     } else {
       filters.value[filterType].delete(value);
     }
@@ -62,6 +73,7 @@ export function useListingsFilter(listings) {
     filters.value.ratings.clear();
     filters.value.emergencyService = null;
     filters.value.maxPrice = Infinity;
+    filters.value.query = '';
   };
 
   return {
