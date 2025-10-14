@@ -1,23 +1,22 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { categoryService } from '@/services/categoryService'
 import { PawPrint, Sparkles, Utensils, Plane, Laptop, MoreHorizontal } from 'lucide-vue-next'
 
-// Router instance
 const router = useRouter()
 
-// Define the categories data structure
-const categories = [
-    { name: 'Animals & Pets', icon: PawPrint, color: 'text-black' },
-    { name: 'Beauty & Well-beings', icon: Sparkles, color: 'text-black' },
-    { name: 'Food & Beverage', icon: Utensils, color: 'text-black' },
-    { name: 'Tourism & Hospitality', icon: Plane, color: 'text-black' },
-    { name: 'IT & Software', icon: Laptop, color: 'text-black' },
-    { name: 'More', icon: MoreHorizontal, color: 'text-black' },
-]
+// Map icon names from data to actual components
+const iconMap: Record<string, any> = { PawPrint, Sparkles, Utensils, Plane, Laptop, MoreHorizontal }
 
-// Navigate to the category page
+const categories = computed(() => {
+  return categoryService.getCategories().map(cat => ({
+    ...cat,
+    icon: iconMap[cat.icon] || MoreHorizontal
+  }))
+})
+
 const goToCategory = (categoryName: string) => {
-  // Pass the category name as a query parameter if you want
   router.push({ path: '/catagory', query: { name: categoryName } })
 }
 </script>
