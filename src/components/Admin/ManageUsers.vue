@@ -418,17 +418,14 @@ const formatDate = (dateString) => {
 
 // Action handlers
 const openAddModal = () => {
-  console.log('Open add user modal');
   // Add your modal logic here
 };
 
 const viewUser = (user) => {
-  console.log('View user:', user);
   // Add your view logic here
 };
 
 const changeStatus = (user) => {
-  console.log('Change status for:', user);
   // Add your status change logic here
 };
 

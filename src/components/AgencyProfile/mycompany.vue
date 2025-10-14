@@ -318,10 +318,8 @@ const isEditing = ref(false);
 
 // --- Form Submission Handler ---
 const saveChanges = () => {
-    console.log('Saving changes...');
     // In a real application, you would send companyData.value to an API endpoint here.
-    console.log(companyData.value);
-    alert('Profile changes simulated and logged to console!');
+    alert('Profile changes simulated.');
     // Optional: set isEditing to false after save
     isEditing.value = false; 
 };

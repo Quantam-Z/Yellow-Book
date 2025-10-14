@@ -1,1 +1,0 @@
-import{c as t,o,a as e,ap as n}from"#entry";const r={class:"min-h-screen"},l={class:"pt-32"},i={__name:"auth",setup(c){return(a,s)=>(o(),t("main",r,[s[0]||(s[0]=e("div",{class:""},null,-1)),e("main",l,[n(a.$slots,"default")])]))}};export{i as default};

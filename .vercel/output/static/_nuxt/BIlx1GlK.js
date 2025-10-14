@@ -1,1 +1,0 @@
-import{u as a}from"./Di2IQxnr.js";import{a6 as n,G as r}from"#entry";import"./BJ2ClxiI.js";const d=n(e=>{const t=a();if(t.token||t.hydrateFromStorage?.(),!t.isAuthenticated){const o=encodeURIComponent(e.fullPath||"/");return r(`/auth/login?next=${o}`)}});export{d as default};

@@ -207,7 +207,6 @@
   
   const updatePassword = () => {
     // Handle password update logic here
-    console.log('Updating password:', passwordData);
     // You can add API call or validation here
   };
   
@@ -219,7 +218,6 @@
       sms: smsNotifications.value,
       marketing: marketingEmails.value
     };
-    console.log('Saving all changes:', { passwordData, notificationPreferences });
     // You can add API call here
   };
   </script>

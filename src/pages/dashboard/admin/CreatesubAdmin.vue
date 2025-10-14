@@ -361,8 +361,6 @@ const submitForm = async () => {
   if (validateStep2()) {
     try {
       // Simulate API call
-      console.log('Submitting form:', formData.value);
-      
       // Show success message
       showSuccess.value = true;
       setTimeout(() => {
@@ -371,7 +369,6 @@ const submitForm = async () => {
       }, 2000);
       
     } catch (error) {
-      console.error('Error submitting form:', error);
       alert('An error occurred. Please try again.');
     }
   }

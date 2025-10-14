@@ -266,7 +266,6 @@ const resetFilters = () => {
 }
 
 const approveReview = (id) => { 
-  console.log('Approved review', id) 
   // In a real app, you'd update the review status
 }
 

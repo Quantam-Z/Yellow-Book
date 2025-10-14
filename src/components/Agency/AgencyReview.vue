@@ -222,7 +222,6 @@ function submitReview() {
     alert('Please provide both rating and review text');
     return;
   }
-  console.log('Submitting review:', { rating: newReviewRating.value, text: newReviewText.value });
   newReviewRating.value = 0;
   newReviewText.value = '';
 }

@@ -270,7 +270,6 @@ const resetFilters = () => {
 }
 
 const approveReview = (id) => { 
-  console.log('Approved review', id) 
 }
 
 const deleteReview = (id) => { 
