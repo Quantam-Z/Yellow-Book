@@ -185,8 +185,14 @@ const reviews = computed(() => (latestReviewsData.value || []).slice(0, 4).map(r
   date: r.date
 })))
 
-// Dashboard stats
-const { data: dashboard } = await useFetch('/stubs/agencyDashboard.json')
+// Dashboard stats (with safe defaults to avoid null access during SSR)
+const { data: dashboardData } = await useFetch('/stubs/agencyDashboard.json')
+const dashboard = computed(() => dashboardData.value ?? {
+  totalReviews: 0,
+  averageRating: 0,
+  verificationStatus: '—',
+  profileComplete: 0,
+})
 </script>
 
 <style scoped>
