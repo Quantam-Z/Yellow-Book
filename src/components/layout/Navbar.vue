@@ -8,16 +8,19 @@
         </div>
 
         <div class="hidden lg:flex items-center gap-8">
-          <div class="flex flex-col items-center gap-[4px] text-[#212121] cursor-pointer">
-  <div class="relative leading-[160%] font-medium text-base">Category</div>
-  <div class="w-[30px] bg-[#212121] h-[2px]"></div>
-</div>
-
-          <div class="flex items-center justify-center cursor-pointer">
-            <div class="relative leading-[160%] font-normal text-base text-[#616161]">Popular Listing</div>
-          </div>
-          <div class="flex items-center justify-center cursor-pointer">
-            <div class="relative leading-[160%] font-normal text-base text-[#616161]">FAQ</div>
+          <div
+            v-for="(item, index) in effectiveMenuItems"
+            :key="index"
+            class="flex flex-col items-center gap-[4px] cursor-pointer"
+          >
+            <NuxtLink
+              :to="item.to"
+              class="relative leading-[160%] text-base"
+              :class="isActive(item.to) ? 'font-medium text-[#212121]' : 'font-normal text-[#616161]'"
+            >
+              {{ item.label }}
+            </NuxtLink>
+            <div v-if="isActive(item.to)" class="w-[30px] bg-[#212121] h-[2px]"></div>
           </div>
         </div>
 
@@ -25,9 +28,12 @@
           <div class="flex items-center justify-center cursor-pointer" @click="openLoginModal">
             <div class="relative leading-[160%] font-normal text-base">Login</div>
           </div>
-          <div class="relative rounded border-gray border-solid border-[1px] box-border w-full h-12 flex items-center justify-center py-[18px] px-9 text-center text-base text-gray font-plus-jakarta-sans">
-<div class="relative leading-[130%] capitalize font-semibold">List Your Agency</div>
-</div>
+          <NuxtLink
+            :to="ctaLink"
+            class="relative rounded border-gray border-solid border-[1px] box-border w-full h-12 flex items-center justify-center py-[18px] px-9 text-center text-base text-gray font-plus-jakarta-sans"
+          >
+            <div class="relative leading-[130%] capitalize font-semibold">List Your Agency</div>
+          </NuxtLink>
 
         </div>
 
@@ -68,9 +74,16 @@
             </div>
 
             <nav class="flex-1 flex flex-col space-y-2 text-lg">
-              <a href="#" class="py-4 px-4 text-[#212121] font-semibold hover:bg-[#fff9e6] rounded-lg transition-colors border-b border-gray-100">Category</a>
-              <a href="#" class="py-4 px-4 text-[#616161] hover:bg-[#fff9e6] rounded-lg transition-colors border-b border-gray-100">Popular listing</a>
-              <a href="#" class="py-4 px-4 text-[#616161] hover:bg-[#fff9e6] rounded-lg transition-colors border-b border-gray-100">FAQ</a>
+              <NuxtLink
+                v-for="(item, index) in effectiveMenuItems"
+                :key="index"
+                :to="item.to"
+                @click="handleMobileNavigate"
+                class="py-4 px-4 rounded-lg transition-colors border-b border-gray-100"
+                :class="isActive(item.to) ? 'text-[#212121] font-semibold bg-[#fff9e6]' : 'text-[#616161] hover:bg-[#fff9e6]'"
+              >
+                {{ item.label }}
+              </NuxtLink>
             </nav>
 
             <div class="space-y-3 mt-auto pt-6 border-t border-gray-200">
@@ -145,6 +158,20 @@ import LoginModal from '~/components/common/LoginModal.vue'
 export default {
   name: 'ResponsiveLandingPage',
   components: { LoginModal },
+  props: {
+    menuItems: {
+      type: Array,
+      default: () => ([
+        { label: 'Category', to: '/catagory' },
+        { label: 'Popular Listing', to: '/agency' },
+        { label: 'FAQ', to: '/contact' },
+      ])
+    },
+    ctaLink: {
+      type: [String, Object],
+      default: '/auth/register'
+    }
+  },
   data() {
     return {
       showDropdown: false,
@@ -153,7 +180,18 @@ export default {
       isMobileMenuOpen: false,
       searchData: [
         'Nomadic Travel','Altai Tours','Steppe Adventure','Discover Mongolia','Desert Expeditions','Mountain Hiking','Cultural Tours','Wildlife Safari','City Exploration','Beach Resort'
-      ]
+      ],
+      _onDocClick: null,
+    }
+  },
+  computed: {
+    effectiveMenuItems(){
+      if (Array.isArray(this.menuItems) && this.menuItems.length > 0) return this.menuItems;
+      return [
+        { label: 'Category', to: '/catagory' },
+        { label: 'Popular Listing', to: '/agency' },
+        { label: 'FAQ', to: '/contact' },
+      ];
     }
   },
   methods: {
@@ -161,16 +199,40 @@ export default {
     selectSearch(item){ this.selectedSearch=item; this.showDropdown=false; },
     openLoginModal(){ this.showLoginModal=true; this.isMobileMenuOpen=false; },
     closeLoginModal(){ this.showLoginModal=false; },
-    toggleMobileMenu(){ this.isMobileMenuOpen=!this.isMobileMenuOpen; }
+    toggleMobileMenu(){
+      this.isMobileMenuOpen = !this.isMobileMenuOpen;
+      if (process.client) {
+        document.body.classList.toggle('menu-open', this.isMobileMenuOpen);
+      }
+    },
+    handleMobileNavigate(){
+      this.isMobileMenuOpen = false;
+      if (process.client) {
+        document.body.classList.remove('menu-open');
+      }
+    },
+    isActive(to){
+      try {
+        const targetPath = typeof to === 'string' ? to : (to && (to.path || to.to || to.href)) || '';
+        return this.$route && this.$route.path === targetPath;
+      } catch (e) {
+        return false;
+      }
+    }
   },
   mounted(){
-    document.addEventListener('click', (e)=>{
+    this._onDocClick = (e) => {
       const searchContainer=this.$refs.searchContainer;
-      if(searchContainer&&!searchContainer.contains(e.target)) this.showDropdown=false;
-    });
+      if (searchContainer && !searchContainer.contains(e.target)) this.showDropdown=false;
+    };
+    if (process.client) {
+      document.addEventListener('click', this._onDocClick);
+    }
   },
   beforeUnmount(){
-    document.removeEventListener('click', ()=>{});
+    if (process.client && this._onDocClick) {
+      document.removeEventListener('click', this._onDocClick);
+    }
   }
 }
 </script>
