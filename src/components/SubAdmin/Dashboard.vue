@@ -266,7 +266,6 @@ const closeCompanyVerification = () => {
 };
 
 const handleCompanyApprove = ({ companyId, verification }) => {
-  console.log('Approving company:', companyId, verification);
   // Remove company from list after approval
   const index = companies.findIndex(c => c.id === companyId);
   if (index !== -1) {
@@ -276,7 +275,6 @@ const handleCompanyApprove = ({ companyId, verification }) => {
 };
 
 const handleCompanyReject = ({ companyId, verification }) => {
-  console.log('Rejecting company:', companyId, verification);
   // Remove company from list after rejection
   const index = companies.findIndex(c => c.id === companyId);
   if (index !== -1) {
@@ -295,7 +293,6 @@ const closeReviewModeration = () => {
 };
 
 const handleReviewApprove = (reviewId) => {
-  console.log('Approving review:', reviewId);
   // Remove review from list after approval
   const index = reviews.findIndex(r => r.id === reviewId);
   if (index !== -1) {
@@ -305,7 +302,6 @@ const handleReviewApprove = (reviewId) => {
 };
 
 const handleReviewReject = (reviewId) => {
-  console.log('Rejecting review:', reviewId);
   // Remove review from list after rejection
   const index = reviews.findIndex(r => r.id === reviewId);
   if (index !== -1) {
@@ -315,13 +311,11 @@ const handleReviewReject = (reviewId) => {
 };
 
 const handleReviewHold = (reviewId) => {
-  console.log('Putting review on hold:', reviewId);
   // You might want to keep the review in the list but mark it as on hold
   closeReviewModeration();
 };
 
 const handleReviewBan = (reviewId) => {
-  console.log('Banning reviewer for review:', reviewId);
   // Remove review from list after banning reviewer
   const index = reviews.findIndex(r => r.id === reviewId);
   if (index !== -1) {

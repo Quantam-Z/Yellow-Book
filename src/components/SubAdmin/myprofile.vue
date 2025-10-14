@@ -176,7 +176,6 @@
     methods: {
       updateProfile() {
         // Simulate API call
-        console.log('Updating profile:', this.profile);
         this.showMessage = true;
         this.messageText = 'Profile updated successfully!';
         this.messageType = 'success';
@@ -208,9 +207,6 @@
           }, 3000);
           return;
         }
-        
-        // Simulate API call
-        console.log('Updating password:', this.password);
         this.showMessage = true;
         this.messageText = 'Password updated successfully!';
         this.messageType = 'success';

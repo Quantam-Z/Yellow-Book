@@ -8,6 +8,7 @@ yarn-error.log*
 .nuxt/
 .output/
 dist/
+.vercel/
 
 # Local env files
 .env

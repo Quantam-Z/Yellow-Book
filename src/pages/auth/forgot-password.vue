@@ -24,7 +24,6 @@ import { ref } from 'vue'
 const email = ref('')
 
 const forgotPassword = () => {
-  console.log('Reset password link sent to:', email.value)
-  // TODO: call your API here
+  // Call your API here
 }
 </script>

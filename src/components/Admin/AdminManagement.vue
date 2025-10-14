@@ -348,7 +348,6 @@ const filteredAdmins = computed(() => {
 
 // Action handlers
 const openAddModal = () => {
-  console.log('Open add admin modal');
   // Add your modal logic here
 };
 
@@ -385,22 +384,18 @@ const updateStats = () => {
 
 // Action handlers
 const viewAdmin = (admin) => {
-  console.log('View admin:', admin);
   // Add your view logic here
 };
 
 const editAdmin = (admin) => {
-  console.log('Edit admin:', admin);
   // Add your edit logic here
 };
 
 const deleteAdmin = (admin) => {
-  console.log('Delete admin:', admin);
   // Add your delete logic here
 };
 
 const changeStatus = (admin) => {
-  console.log('Change status for:', admin);
   // Add your status change logic here
 };
 

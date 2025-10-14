@@ -272,7 +272,6 @@ const previousStep = () => {
 };
 
 const submitForm = () => {
-  console.log('Form submitted:', formData.value);
   // Add your form submission logic here
   emit('close');
   resetFormAndSteps();

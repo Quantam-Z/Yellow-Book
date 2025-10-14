@@ -369,12 +369,10 @@ const toggleSelectAll = () => {
 
 // Action handlers
 const viewCompany = (company) => {
-  console.log('View company:', company);
   alert(`Viewing: ${company.name}`);
 };
 
 const changeStatus = (company) => {
-  console.log('Change status for:', company);
   // Cycle through statuses
   const statuses = ['Approved', 'Pending', 'Rejected'];
   const currentIndex = statuses.indexOf(company.status);

@@ -368,17 +368,14 @@ const goToPage = (page) => {
 
 // Action handlers
 const viewCompany = (company) => {
-  console.log('View company:', company);
   // Add your view logic here
 };
 
 const editCompany = (company) => {
-  console.log('Edit company:', company);
   // Add your edit logic here
 };
 
 const changeStatus = (company) => {
-  console.log('Change status for:', company);
   // Add your status change logic here
 };
 </script>

@@ -168,13 +168,11 @@
   
   const updateProfile = () => {
     // Handle profile update logic here
-    console.log('Updating profile:', profileData);
     // You can add API call or state management here
   };
   
   const saveChanges = () => {
     // Handle save changes logic here
-    console.log('Saving changes:', profileData);
     // You can add API call or state management here
   };
   </script>

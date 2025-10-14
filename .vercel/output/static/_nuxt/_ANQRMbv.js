@@ -1,1 +1,0 @@
-import{_ as a,c as s,o as t,a as o,ap as c}from"#entry";const r={},n={class:"min-h-screen flex flex-col bg-gray-50 text-gray-800"},l={class:"flex-1 container mx-auto px-4 py-6"};function _(e,f){return t(),s("div",n,[o("main",l,[c(e.$slots,"default")])])}const i=a(r,[["render",_]]);export{i as default};
