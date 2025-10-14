@@ -2,10 +2,15 @@
   <div :class="$style.aboutTheAgencyParent">
     <div :class="$style.aboutTheAgency">About the Agency</div>
     <div :class="$style.mongoliaExplorerTravel">
-      Mongolia Explorer Travel specializes in authentic Mongolian adventures, offering unique cultural experiences and breathtaking wilderness tours. With over 8 years of expertise, we provide unforgettable journeys through the vast steppes, dramatic landscapes, and rich nomadic heritage of Mongolia.
+      {{ about || defaultAbout }}
     </div>
   </div>
-</template>
+ </template>
+
+ <script setup>
+ const props = defineProps<{ about?: string }>();
+ const defaultAbout = 'Discover our agency — delivering quality services with excellence.';
+ </script>
 
 <style module>
 .aboutTheAgencyParent {

@@ -1,41 +1,35 @@
 <script setup lang="ts">
 import { Star, MapPin } from 'lucide-vue-next';
 import { useRouter } from 'vue-router';
+import { computed } from 'vue';
+import { categoryService } from '@/services/categoryService';
 
-// Router instance
 const router = useRouter();
 
-// Define agency listings
-const agencies = [
-  {
-    title: "Revolutionizing Technology",
-    description: "Innovative technology solutions for modern businesses",
-    image: "/logo/p1.png",
-    rating: 5,
-    location: "Ulaanbaatar, Mongolia"
-  },
-  {
-    title: "Creative Agency",
-    description: "Building modern brands with style and vision",
-    image: "/logo/p2.png",
-    rating: 4,
-    location: "Tokyo, Japan"
-  },
-  {
-    title: "Food & Beverage",
-    description: "Fresh, organic, and delicious products",
-    image: "/logo/p3.png",
-    rating: 5,
-    location: "Berlin, Germany"
-  },
-];
+// Source from listings.json
+const listings = categoryService.getListings();
 
-// Helper for star icons
-const getStars = (rating: number) => Array(rating).fill(0);
+// Map to Popular card model (fallbacks for images)
+const agencies = computed(() =>
+  listings.slice(0, 6).map((l) => ({
+    title: l.name,
+    description: `${l.serviceType} • ${l.category}`,
+    image: '/logo/p1.png',
+    rating: Math.round(l.rating || 0),
+    location: l.location,
+    slug: categoryService.slugifyName(l.name),
+  }))
+);
 
-// Navigate to agency page dynamically with title as query
-const goToAgency = (title: string) => {
-  router.push({ path: '/agency', query: { title } });
+const getStars = (rating: number) => Array(Math.max(0, Math.min(5, rating))).fill(0);
+
+// Prefer slug; fall back to title for compatibility
+const goToAgency = (title: string, slug?: string, id?: number | string) => {
+  const query: Record<string, string> = {};
+  if (slug) query.slug = slug;
+  else if (title) query.title = title;
+  if (id != null) query.id = String(id);
+  router.push({ path: '/agency', query });
 };
 </script>
 
@@ -50,7 +44,7 @@ const goToAgency = (title: string) => {
         v-for="(agency, index) in agencies"
         :key="index"
         class="flex-1 basis-[300px] max-w-full sm:max-w-[384px] rounded-xl overflow-hidden flex flex-col cursor-pointer bg-white shadow-md transition-transform duration-200 hover:-translate-y-2"
-        @click="goToAgency(agency.title)"
+        @click="goToAgency(agency.title, agency.slug)"
       >
         <!-- Agency Image -->
         <img class="w-full h-[250px] sm:h-[280px] object-cover" :src="agency.image" :alt="agency.title" />
