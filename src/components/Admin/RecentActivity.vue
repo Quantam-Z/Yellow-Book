@@ -37,33 +37,13 @@
   <script setup>
   import { Plus, CheckCircle, MessageSquare, UserPlus, Building2 } from 'lucide-vue-next';
   
-  const activities = [
-    {
-      icon: Building2,
-      title: 'New company added: Stellar Solutions',
-      time: '2 hours ago'
-    },
-    {
-      icon: CheckCircle,
-      title: 'Company verified: Aurora Enterprises',
-      time: '4 hours ago'
-    },
-    {
-      icon: MessageSquare,
-      title: 'Review submitted for Zenith Corp',
-      time: '6 hours ago'
-    },
-    {
-      icon: Building2,
-      title: 'New company added: Apex Innovations',
-      time: '8 hours ago'
-    },
-    {
-      icon: CheckCircle,
-      title: 'Company verified: Nova Dynamics',
-      time: '10 hours ago'
-    },
-  ];
+  const iconMap = { Building2, CheckCircle, MessageSquare };
+  const { data: activitiesData } = await useFetch('/stubs/recentActivities.json')
+  const activities = (activitiesData.value || []).map(a => ({
+    icon: iconMap[a.icon] || MessageSquare,
+    title: a.title,
+    time: a.time
+  }))
   </script>
   
   <style scoped>

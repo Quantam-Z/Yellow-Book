@@ -32,7 +32,7 @@
           <div class="grid grid-cols-6 gap-4 px-4 py-3 hover:bg-gray-50 transition-colors text-sm text-gray-700">
             <div class="text-left truncate">{{ review.reviewer }}</div>
             <div class="text-left flex items-center gap-1">
-              <Star class="w-4 h-4 fill-amber-500 text-amber-500" />
+              <RatingStars :value="Number(review.rating)" :size-class="'w-4 h-4'" />
               <span>{{ review.rating }}</span>
             </div>
             <div class="text-left truncate">{{ review.date }}</div>
@@ -66,7 +66,7 @@
           <div class="flex flex-col">
             <h3 class="font-semibold text-gray-900 text-base">{{ review.reviewer }}</h3>
             <div class="flex items-center gap-1 mt-1">
-              <Star class="w-4 h-4 fill-amber-500 text-amber-500" />
+              <RatingStars :value="Number(review.rating)" :size-class="'w-4 h-4'" />
               <span class="text-sm text-gray-600">{{ review.rating }}</span>
             </div>
           </div>
@@ -96,7 +96,8 @@
 </template>
 
 <script setup>
-import { Star, MoreHorizontal } from 'lucide-vue-next';
+import { MoreHorizontal } from 'lucide-vue-next';
+import RatingStars from '@/components/common/RatingStars.vue'
 import { getStatusClass } from '~/composables/useStatusClass'
 
 // Load recent reviews from stub

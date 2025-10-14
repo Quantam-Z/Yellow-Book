@@ -22,12 +22,7 @@
       <div class="text-center sm:text-right">
         <div class="text-2xl sm:text-3xl font-bold text-gray-900">{{ overallRating }}</div>
         <div class="flex justify-center sm:justify-end gap-1 mt-1">
-          <Star
-            v-for="i in 5"
-            :key="i"
-            class="w-4 h-4 sm:w-5 sm:h-5"
-            :class="i <= Math.round(overallRating) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'"
-          />
+          <RatingStars :value="Number(overallRating)" :size-class="'w-4 h-4 sm:w-5 sm:h-5'" />
         </div>
         <div class="text-sm text-gray-500">Based on {{ totalReviews }} reviews</div>
       </div>
@@ -85,12 +80,7 @@
 
               <td class="px-4 py-3 text-center">
                 <div class="flex justify-center gap-1">
-                  <Star
-                    v-for="star in 5"
-                    :key="star"
-                    class="w-4 h-4"
-                    :class="star <= review.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'"
-                  />
+                  <RatingStars :value="review.rating" />
                 </div>
               </td>
 
@@ -143,12 +133,7 @@
               </div>
             </div>
             <div class="flex gap-1">
-              <Star
-                v-for="star in 5"
-                :key="star"
-                class="w-3 h-3"
-                :class="star <= review.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'"
-              />
+              <RatingStars :value="review.rating" :size-class="'w-3 h-3'" />
             </div>
           </div>
 
@@ -214,7 +199,8 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { Pencil, Star, CheckCircle, Trash2, Filter, Plus } from 'lucide-vue-next'
+import { Pencil, CheckCircle, Trash2, Filter, Plus } from 'lucide-vue-next'
+import RatingStars from '@/components/common/RatingStars.vue'
 
 const reviews = ref([])
 const selectedRating = ref('')
@@ -223,17 +209,8 @@ const reviewsPerPage = 10
 const dateFrom = ref('')
 const dateTo = ref('')
 
-// Dummy reviews
-const sampleReviews = [
-  { id: 1, reviewerName: 'Alice Johnson', rating: 5, date: '2023-11-15', time: '2:30 PM', content: 'Amazing service, highly recommend! The team was professional and delivered beyond expectations.' },
-  { id: 2, reviewerName: 'Bob Smith', rating: 4, date: '2023-11-14', time: '10:15 AM', content: 'Good experience, will use again. Quick response time and quality work.' },
-  { id: 3, reviewerName: 'Charlie Davis', rating: 3, date: '2023-11-13', time: '1:45 PM', content: 'It was okay, not great, not bad. Average service for the price paid.' },
-  { id: 4, reviewerName: 'Diana Prince', rating: 5, date: '2023-11-12', time: '11:00 AM', content: 'Absolutely loved it, exceeded expectations! Will definitely come back.' },
-  { id: 5, reviewerName: 'Ethan Clark', rating: 2, date: '2023-11-11', time: '4:10 PM', content: 'Service was slow and not very helpful. Expected better communication.' },
-  { id: 6, reviewerName: 'Fiona Lee', rating: 1, date: '2023-11-10', time: '9:00 AM', content: 'Very disappointed, would not recommend. Poor quality and unprofessional.' },
-  { id: 7, reviewerName: 'George Wilson', rating: 5, date: '2023-11-09', time: '3:20 PM', content: 'Outstanding service! Went above and beyond to help us achieve our goals.' },
-  { id: 8, reviewerName: 'Hannah Brown', rating: 4, date: '2023-11-08', time: '2:00 PM', content: 'Great experience overall. Minor issues but quickly resolved by support.' }
-]
+// Load reviews from stubs
+const { data: reviewsData } = await useFetch('/stubs/agencyReviews.json')
 
 // Format date
 const formatDate = (date) => {
@@ -306,7 +283,7 @@ const loadMoreReviews = () => {
 
 // Init
 onMounted(() => { 
-  reviews.value = sampleReviews 
+  reviews.value = reviewsData.value || [] 
 })
 </script>
 

@@ -1,0 +1,10 @@
+[
+  { "id": 1, "reviewerName": "Alice Johnson", "rating": 5, "date": "2024-11-15", "time": "2:30 PM", "content": "Amazing service, highly recommend! The team was professional and delivered beyond expectations." },
+  { "id": 2, "reviewerName": "Bob Smith", "rating": 4, "date": "2024-11-14", "time": "10:15 AM", "content": "Good experience, will use again. Quick response time and quality work." },
+  { "id": 3, "reviewerName": "Charlie Davis", "rating": 3, "date": "2024-11-13", "time": "1:45 PM", "content": "It was okay, not great, not bad. Average service for the price paid." },
+  { "id": 4, "reviewerName": "Diana Prince", "rating": 5, "date": "2024-11-12", "time": "11:00 AM", "content": "Absolutely loved it, exceeded expectations! Will definitely come back." },
+  { "id": 5, "reviewerName": "Ethan Clark", "rating": 2, "date": "2024-11-11", "time": "4:10 PM", "content": "Service was slow and not very helpful. Expected better communication." },
+  { "id": 6, "reviewerName": "Fiona Lee", "rating": 1, "date": "2024-11-10", "time": "9:00 AM", "content": "Very disappointed, would not recommend. Poor quality and unprofessional." },
+  { "id": 7, "reviewerName": "George Wilson", "rating": 5, "date": "2024-11-09", "time": "3:20 PM", "content": "Outstanding service! Went above and beyond to help us achieve our goals." },
+  { "id": 8, "reviewerName": "Hannah Brown", "rating": 4, "date": "2024-11-08", "time": "2:00 PM", "content": "Great experience overall. Minor issues but quickly resolved by support." }
+]

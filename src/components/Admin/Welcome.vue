@@ -1,8 +1,8 @@
 <template>
-  <div
-    class="w-full rounded-lg bg-gradient-to-br from-purple-100 via-pink-50 to-blue-400 p-4 mb-4"
-  >
-    <h2 class="text-3xl font-bold text-black">Welcome back, Jane</h2>
+    <div
+      class="w-full rounded-lg bg-gradient-to-br from-purple-100 via-pink-50 to-blue-400 p-4 mb-4"
+    >
+      <h2 class="text-3xl font-bold text-black">Welcome back, {{ adminStats?.welcomeName || 'User' }}</h2>
 
     <div
       class="w-full rounded-lg bg-white/30 border border-white flex items-center px-4 py-3 gap-3 text-gray-200 mb-4"
@@ -18,7 +18,7 @@
             <Building class="w-5 h-5 text-blue-600" />
             <span class="capitalize">Registered Companies</span>
           </div>
-          <b class="text-3xl text-gray-900">1,234</b>
+          <b class="text-3xl text-gray-900">{{ adminStats?.registeredCompanies ?? 0 }}</b>
         </div>
 
         <div class="flex-1 min-w-[158px] bg-white rounded-lg p-6 flex flex-col gap-6 shadow">
@@ -26,7 +26,7 @@
             <Clock class="w-5 h-5 text-yellow-600" />
             <span class="capitalize">Pending Verifications</span>
           </div>
-          <b class="text-3xl text-gray-900">23</b>
+          <b class="text-3xl text-gray-900">{{ adminStats?.pendingVerifications ?? 0 }}</b>
         </div>
 
         <div class="flex-1 min-w-[158px] bg-white rounded-lg p-6 flex flex-col gap-6 shadow">
@@ -34,7 +34,7 @@
             <XCircle class="w-5 h-5 text-red-600" />
             <span class="capitalize">Rejected Verifications</span>
           </div>
-          <b class="text-3xl text-gray-900">1,211</b>
+          <b class="text-3xl text-gray-900">{{ adminStats?.rejectedVerifications ?? 0 }}</b>
         </div>
       </div>
 
@@ -44,7 +44,7 @@
             <Star class="w-5 h-5 text-indigo-600" />
             <span class="capitalize">Total Reviews</span>
           </div>
-          <b class="text-3xl text-gray-900">5,678</b>
+          <b class="text-3xl text-gray-900">{{ adminStats?.totalReviews ?? 0 }}</b>
         </div>
 
         <div class="flex-1 min-w-[158px] bg-white rounded-lg p-6 flex flex-col gap-6 shadow">
@@ -52,7 +52,7 @@
             <Hourglass class="w-5 h-5 text-orange-600" />
             <span class="capitalize">Pending Reviews</span>
           </div>
-          <b class="text-3xl text-gray-900">5,678</b>
+          <b class="text-3xl text-gray-900">{{ adminStats?.pendingReviews ?? 0 }}</b>
         </div>
 
         <div class="flex-1 min-w-[158px] bg-white rounded-lg p-6 flex flex-col gap-6 shadow">
@@ -60,7 +60,7 @@
             <Users class="w-5 h-5 text-green-600" />
             <span class="capitalize">Admin Users</span>
           </div>
-          <b class="text-3xl text-gray-900">5,678</b>
+          <b class="text-3xl text-gray-900">{{ adminStats?.adminUsers ?? 0 }}</b>
         </div>
       </div>
     </div>
@@ -69,5 +69,7 @@
 
 <script setup>
 import { Search, Building, Clock, XCircle, Star, Hourglass, Users } from "lucide-vue-next";
+// Dynamic stats
+const { data: adminStats } = await useFetch('/stubs/adminStats.json')
 </script>
 
