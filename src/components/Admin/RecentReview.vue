@@ -37,7 +37,7 @@
             </div>
             <div class="text-left truncate">{{ review.date }}</div>
             <div class="text-left truncate">{{ review.review }}</div>
-            <div class="text-left truncate font-medium" :class="getStatusClass(review.status)">
+            <div class="text-left truncate font-medium" :class="getStatusClass(review.status, 'soft')">
               {{ review.status }}
             </div>
             <div class="text-left">
@@ -71,7 +71,7 @@
             </div>
           </div>
           <div class="flex items-center gap-2">
-            <span class="text-xs font-medium px-2 py-1 rounded-full" :class="getStatusClass(review.status) + ' bg-opacity-10'">
+            <span class="text-xs font-medium px-2 py-1 rounded-full" :class="getStatusClass(review.status, 'soft') + ' bg-opacity-10'">
               {{ review.status }}
             </span>
             <MoreHorizontal class="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer" />
