@@ -11,28 +11,10 @@ export default defineNuxtConfig({
       viewport: "width=device-width, initial-scale=1",
       title: metaInfo.siteName,
       meta: [
-        { name: "description", content: metaInfo.description },
         { name: "description", content: metaInfo.siteDescription },
         { property: "og:title", content: metaInfo.siteName },
         { property: "og:description", content: metaInfo.siteDescription },
         { property: "og:image", content: metaInfo.siteLogo },
-      ],
-      script: [
-        {
-          key: "gtm",
-          children: `(function (w, d, s, l, i) {
-            w[l] = w[l] || [];
-            w[l].push({
-              'gtm.start': new Date().getTime(), event: 'gtm.js'
-            });
-            var f = d.getElementsByTagName(s)[0],
-                j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : '';
-            j.async = true;
-            j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
-            f.parentNode.insertBefore(j, f);
-          })(window, document, 'script', 'dataLayer', 'GTM-KSJ3PR2X');`,
-          type: "text/javascript"
-        }
       ],
     },
   },
@@ -41,7 +23,13 @@ export default defineNuxtConfig({
     preset: "vercel-edge",
   },
 
-  modules: ["@nuxtjs/tailwindcss", "@formkit/nuxt", "@pinia/nuxt", "nuxt-icon"],
+  modules: [
+    "@nuxtjs/tailwindcss",
+    "@formkit/nuxt",
+    "@pinia/nuxt",
+    "nuxt-icon",
+    "@kevinmarrec/nuxt-pwa"
+  ],
 
   css: [
     "~/assets/scss/main.scss",
@@ -59,11 +47,13 @@ export default defineNuxtConfig({
       ogSiteName: metaInfo.siteName,
       description: metaInfo.siteDescription,
       author: "Author.",
+      theme_color: "#ffffff",
     },
     manifest: {
       name: metaInfo.siteName,
-      short_name: "",
+      short_name: "Yellow-Book",
       lang: "en",
+      icons: [],
     },
     workbox: { enabled: false },
   },

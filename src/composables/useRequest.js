@@ -1,4 +1,4 @@
-import accessToken from "~/composables/useToken";
+import useToken from "~/composables/useToken";
 
 
 const $api = {
@@ -9,8 +9,9 @@ const $api = {
       onRequest({request, options}) {
         // Set the request headers
         options.headers = options.headers || {}
-        if (accessToken()) options.headers.Authorization = `Bearer ${accessToken()}` // Set the authorization token ...
-        options.headers.accept = 'application/json' // header accept application/json is required ... Otherwise backend throws 302 status ...
+        const token = useToken()
+        if (token) options.headers.Authorization = `Bearer ${token}`
+        options.headers.Accept = 'application/json' // Proper case per Fetch
       },
       onRequestError({request, options, error}) {
         // Handle the request errors
@@ -36,9 +37,14 @@ const $api = {
         options.body = payload
         options.method = 'POST'
         options.headers = options.headers || {}
-        if (accessToken()) options.headers.Authorization = `Bearer ${accessToken()}` // Set the authorization token ...
-        options.headers.contentType = 'multipart/form-data' // Required for uploading images ...
-        options.headers.accept = 'application/json' // header accept application/json is required ... Otherwise backend throws 302 status ...
+        const token = useToken()
+        if (token) options.headers.Authorization = `Bearer ${token}`
+        // Content-Type should be set only for JSON; for FormData, let browser set boundary
+        if (payload && !(payload instanceof FormData)) {
+          options.headers['Content-Type'] = 'application/json'
+          options.body = typeof payload === 'string' ? payload : JSON.stringify(payload)
+        }
+        options.headers.Accept = 'application/json'
       },
       onRequestError({request, options, error}) {
 
@@ -64,8 +70,9 @@ const $api = {
         // Set the request headers
         options.method = 'DELETE'
         options.headers = options.headers || {}
-        if (accessToken()) options.headers.Authorization = `Bearer ${accessToken()}` // Set the authorization token ...
-        options.headers.accept = 'application/json' // header accept application/json is required ... Otherwise backend throws 302 status ...
+        const token = useToken()
+        if (token) options.headers.Authorization = `Bearer ${token}`
+        options.headers.Accept = 'application/json'
       },
       onRequestError({request, options, error}) {
         // Handle the request errors
