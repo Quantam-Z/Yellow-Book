@@ -1,7 +1,10 @@
 <template>
-  <div class="w-full relative   flex-shrink-0 text-left text-base text-[#616161] bg-[#fff9e6] rounded-sm font-['Plus_Jakarta_Sans'] pb-7 boat-bottom-radius">
+  <div class="w-full relative flex-shrink-0 text-left text-num-16 text-dimgray bg-oldlace rounded-sm font-plus-jakarta-sans pb-7 boat-bottom-radius overflow-hidden">
       
-      <div class="relative z-10 w-full  px-4 sm:px-6 md:px-12 lg:px-[120px] py-4 sm:py-6 flex flex-col">
+      <!-- oversized background circle to mirror template -->
+      <div class="absolute bottom-0 left-[calc(50%_-_4744px)] rounded-[50%] bg-oldlace w-[9487px] h-[9487px]"></div>
+
+      <div class="relative z-10 w-full px-4 sm:px-6 md:px-12 lg:px-[120px] py-4 sm:py-6 flex flex-col gap-[77px]">
         <div class="flex items-center justify-between mb-6 sm:mb-12 md:mb-16">
         <div class="w-[120px] sm:w-[118px] md:w-[118px] rounded-[4px]  flex flex-col items-start p-2 box-border">
           <img class="self-stretch max-w-full overflow-hidden h-[34px] sm:h-[30px] md:h-[30px] flex-shrink-0 object-cover" src="/logo/logo.png" alt="Logo" />
@@ -15,22 +18,22 @@
           >
             <NuxtLink
               :to="item.to"
-              class="relative leading-[160%] text-base no-underline"
-              :class="isActive(item.to) ? 'font-medium text-[#212121]' : 'font-normal text-[#616161]'"
+              class="relative leading-[160%] capitalize font-medium text-base no-underline"
+              :class="isActive(item.to) ? 'text-gray-200' : 'text-dimgray font-normal'"
             >
               {{ item.label }}
             </NuxtLink>
-            <div v-if="isActive(item.to)" class="w-[30px] bg-[#212121] h-[2px]"></div>
+            <div v-if="isActive(item.to)" class="w-[37px] h-0.5 bg-gray-200 rounded-sm"></div>
           </div>
         </div>
 
-        <div class="hidden lg:flex items-center gap-6 text-[#212121]">
+        <div class="hidden lg:flex items-center gap-6 text-gray-200">
           <div class="flex items-center justify-center cursor-pointer" @click="openLoginModal">
-            <div class="relative leading-[160%] font-normal text-base">Login</div>
+            <div class="relative leading-[160%] capitalize font-medium">Login</div>
           </div>
           <NuxtLink
             :to="ctaLink"
-            class="relative rounded border-gray border-solid border-[1px] box-border w-full h-12 flex items-center justify-center py-[18px] px-9 text-center text-base text-gray font-plus-jakarta-sans"
+            class="h-12 rounded border-gray-200 border-solid border-[1px] box-border flex items-center justify-center py-[18px] px-9 text-center"
           >
             <div class="relative leading-[130%] capitalize font-semibold">List Your Agency</div>
           </NuxtLink>
@@ -98,33 +101,39 @@
         </div>
       </transition>
 
-      <div class="flex-1 flex justify-center items-start">
-  <div class="max-w-[676px] w-full mx-auto flex flex-col items-center gap-6 sm:gap-8 text-center text-[#212121]">
+      <div v-if="showHeroSection" class="flex-1 flex justify-center items-start">
+  <div class="max-w-[676px] w-full mx-auto flex flex-col items-center gap-[35px] text-center text-gray-200">
     
-    <div class="w-full flex flex-col items-center justify-center gap-3 sm:gap-4 md:gap-[26px]">
-      <h1 class="w-full text-3xl sm:text-4xl md:text-[46px] leading-[170%] capitalize font-medium px-4">
-        Trusted Help, Right When<br class="mb-2"/>You Need It
+    <div class="self-stretch flex flex-col items-center justify-center gap-[26px]">
+      <h1 class="w-[574px] text-[46px] leading-[122%] capitalize font-medium hidden md:block">
+        Trusted Help, Right When You Need It
       </h1>
-      <p class="w-full max-w-[536px] text-sm sm:text-base md:text-lg leading-[130%] capitalize text-[#616161] px-4">
+      <h1 class="w-full text-3xl sm:text-4xl leading-[122%] capitalize font-medium md:hidden px-4">
+        Trusted Help, Right When You Need It
+      </h1>
+      <p class="w-[536px] text-num-16 leading-[130%] capitalize text-dimgray hidden md:block">
+        Reliable support from real people, solving everyday problems with care, speed, and integrity.
+      </p>
+      <p class="w-full max-w-[536px] text-sm sm:text-base leading-[130%] capitalize text-dimgray md:hidden px-4">
         Reliable support from real people, solving everyday problems with care, speed, and integrity.
       </p>
     </div>
 
-    <div ref="searchContainer" class="w-full relative px-4">
-      <div class="backdrop-blur-[16px] rounded-[12px] sm:rounded-[16px] bg-[#feecb2] flex flex-row items-center p-2 sm:p-3 md:p-3 gap-2 sm:gap-3 md:gap-[20px] text-[14px] sm:text-[16px] md:text-[16px]">
+    <div ref="searchContainer" class="self-stretch px-4 md:px-0 relative">
+      <div class="self-stretch [backdrop-filter:blur(16px)] rounded-2xl bg-palegoldenrod flex items-center p-2 sm:p-3 md:p-4 gap-2 sm:gap-3 md:gap-6 text-num-14">
 
-        <div class="flex-1 rounded-[8px] bg-[#fff9e6] flex flex-col items-start justify-center p-[10px] min-h-[44px] sm:min-h-[48px]">
+        <div class="self-stretch flex-1 rounded-num-8 bg-oldlace flex flex-col items-start justify-center p-num-10">
           <div class="w-full flex items-center">
-            <div class="relative leading-[160%] capitalize truncate text-sm sm:text-base md:text-base">{{ selectedSearch }}</div>
+            <div class="relative leading-[170%] capitalize">{{ selectedSearch }}</div>
           </div>
         </div>
 
         <div 
-          class="relative rounded-lg bg-gold border-goldenrod border-solid border-b-[2px] box-border flex items-center p-2.5 gap-2 text-center text-lg text-gray font-plus-jakarta-sans cursor-pointer"
+          class="rounded-num-8 bg-gold border-goldenrod border-solid border-b-[2px] flex items-center p-num-10 gap-2 text-[18px] cursor-pointer"
           @click="toggleDropdown"
         >
           <div class="relative leading-[160%] capitalize font-medium">Search</div>
-          <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
           </svg>
         </div>
@@ -132,12 +141,9 @@
       </div>
 
       <transition name="dropdown">
-        <div v-if="showDropdown" class="absolute top-full mt-2 left-4 right-4 rounded-[8px] border border-[#fee38d] overflow-hidden bg-white shadow-xl z-20 max-h-[200px] sm:max-h-[250px] md:max-h-[300px] overflow-y-auto">
-          <div v-for="(item, index) in searchData" :key="index" @click="selectSearch(item)" :class="[
-              'w-full h-[40px] sm:h-[44px] flex items-center px-3 sm:px-4 cursor-pointer transition-all text-xs sm:text-sm md:text-[14px] active:scale-[0.98]',
-              index === 0 ? 'bg-[#f6fafd] hover:bg-[#e3f2fd]' : 'bg-[#fafafa] hover:bg-[#f0f0f0]',
-              index !== searchData.length - 1 ? 'border-b border-[#e0e0e0]' : ''
-            ]">
+        <div v-if="showDropdown" class="absolute top-full mt-2 left-4 right-4 md:left-0 md:right-0 rounded-num-8 border border-khaki overflow-hidden bg-white shadow-xl z-20 max-h-[300px] overflow-y-auto">
+          <div v-for="(item, index) in searchData" :key="index" @click="selectSearch(item)" class="w-full h-11 flex items-center px-4 cursor-pointer transition-colors text-num-14 border-b border-gainsboro last:border-b-0"
+            :class="index === 0 ? 'bg-ghostwhite hover:bg-gray-100' : 'bg-gray-100 hover:bg-ghostwhite'">
             <div class="leading-[170%] capitalize">{{ item }}</div>
           </div>
         </div>
@@ -185,6 +191,11 @@ export default {
     }
   },
   computed: {
+    showHeroSection(){
+      try {
+        return this.$route?.path === '/' || this.$route?.name === 'index';
+      } catch (e) { return false; }
+    },
     effectiveMenuItems(){
       if (Array.isArray(this.menuItems) && this.menuItems.length > 0) return this.menuItems;
       return [

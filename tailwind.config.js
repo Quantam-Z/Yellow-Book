@@ -10,6 +10,12 @@ module.exports = {
         goldenrod: "#e5b106",
         white: "#fff",
         whitesmoke: "#eee",
+        // Brand/semantic colors used across the landing navbar template
+        oldlace: "#fff9e6",
+        palegoldenrod: "#feecb2",
+        dimgray: "#616161",
+        khaki: "#f0e68c",
+        ghostwhite: "#f8f8ff",
         gray: {
           100: "#fafafa",
           200: "#212121",
@@ -18,6 +24,7 @@ module.exports = {
       },
       spacing: {
         "num-52": "52px",
+        "num-10": "10px",
       },
       fontFamily: {
         "plus-jakarta-sans": ["Plus Jakarta Sans", "sans-serif"],
@@ -28,9 +35,11 @@ module.exports = {
       padding: {
         "num-20": "20px",
         "num-16": "16px",
+        "num-10": "10px",
       },
       fontSize: {
         "num-16": "16px",
+        "num-14": "14px",
       },
       fontWeight: {
         body: 500,    // Medium/Semi-Bold for body
