@@ -119,7 +119,7 @@
       </p>
     </div>
 
-    <div ref="searchContainer" class="self-stretch px-4 md:px-0 relative">
+    <div ref="searchContainer" class="self-stretch px-4 md:px-0 relative pb-6">
       <div class="self-stretch [backdrop-filter:blur(16px)] rounded-2xl bg-palegoldenrod flex items-center p-2 sm:p-3 md:p-4 gap-2 sm:gap-3 md:gap-6 text-num-14">
 
         <div class="self-stretch flex-1 rounded-num-8 bg-oldlace flex flex-col items-start justify-center p-num-10">
@@ -140,26 +140,23 @@
 
       </div>
 
-      <teleport to="body">
-        <transition name="dropdown">
+      <transition name="fade">
+        <div
+          v-if="showDropdown"
+          ref="dropdown"
+          class="absolute left-0 right-0 top-full mt-2 rounded-num-8 border border-khaki overflow-hidden bg-white shadow-xl z-[1000] max-h-[300px] overflow-y-auto"
+        >
           <div
-            v-if="showDropdown"
-            ref="dropdown"
-            :style="dropdownStyle"
-            class="fixed mt-2 rounded-num-8 border border-khaki overflow-hidden bg-white shadow-xl z-[1000] max-h-[300px] overflow-y-auto"
+            v-for="(item, index) in searchData"
+            :key="index"
+            @click="selectSearch(item)"
+            class="w-full h-11 flex items-center px-4 cursor-pointer transition-colors text-num-14 border-b border-gainsboro last:border-b-0"
+            :class="index === 0 ? 'bg-ghostwhite hover:bg-gray-100' : 'bg-gray-100 hover:bg-ghostwhite'"
           >
-            <div
-              v-for="(item, index) in searchData"
-              :key="index"
-              @click="selectSearch(item)"
-              class="w-full h-11 flex items-center px-4 cursor-pointer transition-colors text-num-14 border-b border-gainsboro last:border-b-0"
-              :class="index === 0 ? 'bg-ghostwhite hover:bg-gray-100' : 'bg-gray-100 hover:bg-ghostwhite'"
-            >
-              <div class="leading-[170%] capitalize">{{ item }}</div>
-            </div>
+            <div class="leading-[170%] capitalize">{{ item }}</div>
           </div>
-        </transition>
-      </teleport>
+        </div>
+      </transition>
     </div>
   </div>
 </div>
@@ -225,26 +222,15 @@ export default {
         const container = this.$refs.searchContainer;
         if (!container) return;
         const rect = container.getBoundingClientRect();
-        const scrollX = window.scrollX || window.pageXOffset;
-        const scrollY = window.scrollY || window.pageYOffset;
-        const top = rect.bottom + scrollY + 8; // 8px offset
-        const left = rect.left + scrollX + (rect.width >= 1 ? 0 : 0);
+        // For fixed-positioned dropdown, use viewport coordinates directly
+        const top = rect.bottom + 8; // 8px offset below the container
+        const left = rect.left;
         const width = rect.width;
         this.dropdownStyle = { top: `${top}px`, left: `${left}px`, width: `${width}px` };
       } catch (_) {}
     },
     toggleDropdown(){
       this.showDropdown = !this.showDropdown;
-      if (this.showDropdown) {
-        this.$nextTick(() => {
-          this.updateDropdownPosition();
-          window.addEventListener('resize', this.updateDropdownPosition);
-          window.addEventListener('scroll', this.updateDropdownPosition, true);
-        });
-      } else {
-        window.removeEventListener('resize', this.updateDropdownPosition);
-        window.removeEventListener('scroll', this.updateDropdownPosition, true);
-      }
     },
     selectSearch(item){ this.selectedSearch=item; this.showDropdown=false; },
     openLoginModal(){ this.showLoginModal=true; this.isMobileMenuOpen=false; },
@@ -286,8 +272,7 @@ export default {
     if (process.client && this._onDocClick) {
       document.removeEventListener('click', this._onDocClick);
     }
-    window.removeEventListener('resize', this.updateDropdownPosition);
-    window.removeEventListener('scroll', this.updateDropdownPosition, true);
+    // no-op
   }
 }
 </script>
@@ -341,11 +326,9 @@ export default {
 .slide-enter-from{ transform: translateX(100%); }
 .slide-leave-to{ transform: translateX(100%); }
 
-/* Dropdown Transition */
-.dropdown-enter-active{ transition: all 0.3s cubic-bezier(0.4,0,0.2,1); }
-.dropdown-leave-active{ transition: all 0.2s cubic-bezier(0.4,0,0.2,1); }
-.dropdown-enter-from{ transform: translateY(-10px); opacity:0; }
-.dropdown-leave-to{ transform: translateY(-10px); opacity:0; }
+/* Dropdown Fade Transition */
+.fade-enter-active, .fade-leave-active { transition: opacity 0.15s ease-in-out; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
 
 /* Scrollbar Styling */
 .overflow-y-auto::-webkit-scrollbar{ width:6px; }
