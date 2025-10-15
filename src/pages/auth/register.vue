@@ -26,6 +26,7 @@ export default {
   },
 };
 </script>
+<!-- 
 <style  module>.frameParent {
   position: relative;
   border-radius: 12px;
@@ -249,4 +250,4 @@ export default {
         justify-content: center;
   }
 
-</style>
+</style> -->
