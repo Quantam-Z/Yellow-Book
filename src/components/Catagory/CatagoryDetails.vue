@@ -116,14 +116,14 @@
         <div class="relative leading-[160%] capitalize font-medium text-sm lg:text-base">Emergency Service Available</div>
         <div class="flex items-center gap-4 lg:gap-[22px] text-[14px] lg:text-[16px] text-gray-500">
           <div class="flex items-center gap-2 cursor-pointer" @click="setEmergencyService(true)">
-            <div class="w-5 h-5 lg:w-6 lg:h-6 border-2 border-gray-300 rounded-full bg-white flex items-center justify-center">
-              <div :class="['w-3 h-3 rounded-full transition-colors', filters.emergencyService === true ? 'bg-yellow-400' : 'bg-transparent']"></div>
+            <div class="w-5 h-5 lg:w-6 lg:h-6 border-2 border-black rounded-full bg-white flex items-center justify-center">
+              <div :class="['w-3 h-3 rounded-full transition-colors', filters.emergencyService === true ? 'bg-black' : 'bg-transparent']"></div>
             </div>
             <div class="relative leading-[160%] capitalize font-medium">Yes</div>
           </div>
           <div class="flex items-center gap-2 cursor-pointer" @click="setEmergencyService(false)">
-            <div class="w-5 h-5 lg:w-6 lg:h-6 border-2 border-gray-300 rounded-full bg-white flex items-center justify-center">
-              <div :class="['w-3 h-3 rounded-full transition-colors', filters.emergencyService === false ? 'bg-yellow-400' : 'bg-transparent']"></div>
+            <div class="w-5 h-5 lg:w-6 lg:h-6 border-2 border-black rounded-full bg-white flex items-center justify-center">
+              <div :class="['w-3 h-3 rounded-full transition-colors', filters.emergencyService === false ? 'bg-black' : 'bg-transparent']"></div>
             </div>
             <div class="relative leading-[160%] capitalize font-medium">No</div>
           </div>
@@ -143,7 +143,7 @@
             </svg>
           </div>
         </div>
-        <div class="self-stretch bg-ghostwhite flex flex-col items-start p-3 lg:p-[10px] relative text-left text-[14px] lg:text-[16px] text-darkslategray">
+        <div class="self-stretch bg-ghostwhite flex flex-col items-start p-3 lg:p-[10px] relative text-left text-[14px] lg:text-[16px] text-darkslategray max-h-64 overflow-y-auto">
           <div class="self-stretch flex flex-col items-start gap-0.5 z-[0]">
             <div 
               v-for="service in currentCategory.filters.serviceTypes.options" 
@@ -154,10 +154,11 @@
               <div class="w-5 h-5 lg:w-6 lg:h-6 relative overflow-hidden shrink-0">
                 <div class="w-full h-full border-2 border-gray-300 rounded-sm bg-white flex items-center justify-center transition-colors">
                   <div class="w-3.5 h-3.5 lg:w-4.5 lg:h-4.5 border border-gray-400 rounded-xs bg-white flex items-center justify-center transition-colors">
-                    <div 
-                      v-if="filters.services.has(service)" 
-                      class="w-3 h-3 bg-blue-500 rounded-xs transition-all duration-200"
-                    ></div>
+                    <div v-if="filters.services.has(service)" class="w-3 h-3 flex items-center justify-center transition-all duration-200">
+                      <svg viewBox="0 0 24 24" class="w-3 h-3 text-black" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 6L9 17l-5-5"></path>
+                      </svg>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -175,7 +176,7 @@
             <polyline points="6,9 12,15 18,9"></polyline>
           </svg>
         </div>
-        <div class="self-stretch bg-ghostwhite flex flex-col items-start p-3 lg:p-[10px] relative text-left text-[14px] lg:text-[16px] text-darkslategray">
+        <div class="self-stretch bg-ghostwhite flex flex-col items-start p-3 lg:p-[10px] relative text-left text-[14px] lg:text-[16px] text-darkslategray max-h-64 overflow-y-auto">
           <div class="self-stretch flex flex-col items-start gap-0.5 z-[0]">
             <div 
               v-for="specialization in currentCategory.filters.specializations.options" 
@@ -186,10 +187,11 @@
               <div class="w-5 h-5 lg:w-6 lg:h-6 relative overflow-hidden shrink-0">
                 <div class="w-full h-full border-2 border-gray-300 rounded-sm bg-white flex items-center justify-center transition-colors">
                   <div class="w-3.5 h-3.5 lg:w-4.5 lg:h-4.5 border border-gray-400 rounded-xs bg-white flex items-center justify-center transition-colors">
-                    <div 
-                      v-if="filters.specializations.has(specialization)" 
-                      class="w-3 h-3 bg-blue-500 rounded-xs transition-all duration-200"
-                    ></div>
+                    <div v-if="filters.specializations.has(specialization)" class="w-3 h-3 flex items-center justify-center transition-all duration-200">
+                      <svg viewBox="0 0 24 24" class="w-3 h-3 text-black" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 6L9 17l-5-5"></path>
+                      </svg>
+                    </div>
                   </div>
                 </div>
               </div>
