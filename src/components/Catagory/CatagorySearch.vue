@@ -18,9 +18,15 @@
       <div
         class="w-full relative rounded border-gainsboro border-solid border-[1px] box-border flex items-center justify-between py-0 pl-2.5 pr-0 gap-5 text-center text-sm text-darkgray font-plus-jakarta-sans"
       >
-        <div class="flex items-center gap-1">
+        <div class="flex items-center gap-1 flex-1">
           <Search class="h-5 w-5 text-[#9e9e9e]" />
-          <div class="relative leading-[170%] capitalize">Search</div>
+          <input
+            v-model="searchText"
+            type="text"
+            :placeholder="placeholder"
+            aria-label="Search"
+            class="flex-1 bg-transparent outline-none border-0 focus:ring-0 relative leading-[170%] capitalize placeholder-[#9e9e9e] text-[#212121]"
+          />
         </div>
 
         <button
@@ -39,7 +45,15 @@
 import { ref, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 // ✅ Lucide Vue icons import
-import { Search, ArrowRight } from "lucide-vue-next";
+import { Search } from "lucide-vue-next";
+
+const props = defineProps({
+  modelValue: { type: String, default: null },
+  categoryName: { type: String, default: null },
+  placeholder: { type: String, default: "Search" },
+});
+
+const emit = defineEmits(["update:modelValue", "search"]);
 
 const route = useRoute();
 const router = useRouter();
@@ -55,17 +69,55 @@ const applySearch = () => {
   // reset pagination when searching
   delete nextQuery.page;
   router.push({ query: nextQuery });
+  emit("update:modelValue", q);
+  emit("search", q);
 };
 
 onMounted(() => {
-  categoryName.value = decodeURIComponent(String(route.query.name || "Unknown"));
-  searchText.value = typeof route.query.q === "string" ? route.query.q : "";
+  categoryName.value = props.categoryName ?? decodeURIComponent(String(route.query.name || "Unknown"));
+  if (props.modelValue !== null && props.modelValue !== undefined) {
+    searchText.value = String(props.modelValue ?? "");
+  } else {
+    searchText.value = typeof route.query.q === "string" ? route.query.q : "";
+  }
 });
 
 watch(
   () => route.query.q,
   (q) => {
-    searchText.value = typeof q === "string" ? q : "";
+    const next = typeof q === "string" ? q : "";
+    if (next !== searchText.value) {
+      searchText.value = next;
+      emit("update:modelValue", next);
+    }
+  }
+);
+
+watch(
+  () => route.query.name,
+  (name) => {
+    if (props.categoryName == null) {
+      categoryName.value = decodeURIComponent(String(name || "Unknown"));
+    }
+  }
+);
+
+watch(
+  () => props.modelValue,
+  (val) => {
+    const next = val == null ? "" : String(val);
+    if (next !== searchText.value) {
+      searchText.value = next;
+    }
+  }
+);
+
+watch(
+  () => props.categoryName,
+  (val) => {
+    if (val != null) {
+      categoryName.value = String(val);
+    }
   }
 );
 </script>
