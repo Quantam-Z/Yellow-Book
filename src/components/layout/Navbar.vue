@@ -4,8 +4,8 @@
       <!-- oversized background circle to mirror template -->
       <div class="absolute bottom-0 left-[calc(50%_-_4744px)] rounded-[50%] bg-oldlace w-[9487px] h-[9487px]"></div>
 
-      <div class="relative z-10 w-full px-4 sm:px-6 md:px-12 lg:px-[120px] py-4 sm:py-6 flex flex-col gap-[77px]">
-        <div class="flex items-center justify-between mb-6 sm:mb-12 md:mb-16">
+      <div class="relative z-10 w-full px-4 sm:px-6 md:px-12 lg:px-[120px] py-4 sm:py-6 flex flex-col gap-6 md:gap-8">
+        <div class="flex items-center justify-between mb-0">
         <div class="w-[120px] sm:w-[118px] md:w-[118px] rounded-[4px]  flex flex-col items-start p-2 box-border">
           <img class="self-stretch max-w-full overflow-hidden h-[34px] sm:h-[30px] md:h-[30px] flex-shrink-0 object-cover" src="/logo/logo.png" alt="Logo" />
         </div>
@@ -23,7 +23,7 @@
             >
               {{ item.label }}
             </NuxtLink>
-            <div v-if="isActive(item.to)" class="w-[37px] h-0.5 bg-gray-200 rounded-sm"></div>
+            <div v-if="item.label === 'Category'" class="w-[37px] h-0.5 bg-gray-200 rounded-sm"></div>
           </div>
         </div>
 
@@ -33,7 +33,7 @@
           </div>
           <NuxtLink
             :to="ctaLink"
-            class="h-12 rounded border-gray-200 border-solid border-[1px] box-border flex items-center justify-center py-[18px] px-9 text-center"
+            class="h-12 rounded border-gray-200 border-solid border-[1px] box-border flex items-center justify-center py-[18px] px-9 text-center no-underline text-[#212121] hover:text-[#212121] focus:text-[#212121] visited:text-[#212121]"
           >
             <div class="relative leading-[130%] capitalize font-semibold">List Your Agency</div>
           </NuxtLink>
@@ -140,14 +140,26 @@
 
       </div>
 
-      <transition name="dropdown">
-        <div v-if="showDropdown" class="absolute top-full mt-2 left-4 right-4 md:left-0 md:right-0 rounded-num-8 border border-khaki overflow-hidden bg-white shadow-xl z-20 max-h-[300px] overflow-y-auto">
-          <div v-for="(item, index) in searchData" :key="index" @click="selectSearch(item)" class="w-full h-11 flex items-center px-4 cursor-pointer transition-colors text-num-14 border-b border-gainsboro last:border-b-0"
-            :class="index === 0 ? 'bg-ghostwhite hover:bg-gray-100' : 'bg-gray-100 hover:bg-ghostwhite'">
-            <div class="leading-[170%] capitalize">{{ item }}</div>
+      <teleport to="body">
+        <transition name="dropdown">
+          <div
+            v-if="showDropdown"
+            ref="dropdown"
+            :style="dropdownStyle"
+            class="fixed mt-2 rounded-num-8 border border-khaki overflow-hidden bg-white shadow-xl z-[1000] max-h-[300px] overflow-y-auto"
+          >
+            <div
+              v-for="(item, index) in searchData"
+              :key="index"
+              @click="selectSearch(item)"
+              class="w-full h-11 flex items-center px-4 cursor-pointer transition-colors text-num-14 border-b border-gainsboro last:border-b-0"
+              :class="index === 0 ? 'bg-ghostwhite hover:bg-gray-100' : 'bg-gray-100 hover:bg-ghostwhite'"
+            >
+              <div class="leading-[170%] capitalize">{{ item }}</div>
+            </div>
           </div>
-        </div>
-      </transition>
+        </transition>
+      </teleport>
     </div>
   </div>
 </div>
@@ -184,6 +196,7 @@ export default {
       selectedSearch: 'Nomadic Travel',
       showLoginModal: false,
       isMobileMenuOpen: false,
+      dropdownStyle: { top: '0px', left: '0px', width: '0px' },
       searchData: [
         'Nomadic Travel','Altai Tours','Steppe Adventure','Discover Mongolia','Desert Expeditions','Mountain Hiking','Cultural Tours','Wildlife Safari','City Exploration','Beach Resort'
       ],
@@ -206,7 +219,33 @@ export default {
     }
   },
   methods: {
-    toggleDropdown(){ this.showDropdown=!this.showDropdown; },
+    updateDropdownPosition(){
+      try {
+        if (!this.showDropdown) return;
+        const container = this.$refs.searchContainer;
+        if (!container) return;
+        const rect = container.getBoundingClientRect();
+        const scrollX = window.scrollX || window.pageXOffset;
+        const scrollY = window.scrollY || window.pageYOffset;
+        const top = rect.bottom + scrollY + 8; // 8px offset
+        const left = rect.left + scrollX + (rect.width >= 1 ? 0 : 0);
+        const width = rect.width;
+        this.dropdownStyle = { top: `${top}px`, left: `${left}px`, width: `${width}px` };
+      } catch (_) {}
+    },
+    toggleDropdown(){
+      this.showDropdown = !this.showDropdown;
+      if (this.showDropdown) {
+        this.$nextTick(() => {
+          this.updateDropdownPosition();
+          window.addEventListener('resize', this.updateDropdownPosition);
+          window.addEventListener('scroll', this.updateDropdownPosition, true);
+        });
+      } else {
+        window.removeEventListener('resize', this.updateDropdownPosition);
+        window.removeEventListener('scroll', this.updateDropdownPosition, true);
+      }
+    },
     selectSearch(item){ this.selectedSearch=item; this.showDropdown=false; },
     openLoginModal(){ this.showLoginModal=true; this.isMobileMenuOpen=false; },
     closeLoginModal(){ this.showLoginModal=false; },
@@ -233,8 +272,11 @@ export default {
   },
   mounted(){
     this._onDocClick = (e) => {
-      const searchContainer=this.$refs.searchContainer;
-      if (searchContainer && !searchContainer.contains(e.target)) this.showDropdown=false;
+      const searchContainer = this.$refs.searchContainer;
+      const dropdownEl = this.$refs.dropdown;
+      const clickedInsideSearch = searchContainer && searchContainer.contains(e.target);
+      const clickedInsideDropdown = dropdownEl && dropdownEl.contains && dropdownEl.contains(e.target);
+      if (!clickedInsideSearch && !clickedInsideDropdown) this.showDropdown = false;
     };
     if (process.client) {
       document.addEventListener('click', this._onDocClick);
@@ -244,6 +286,8 @@ export default {
     if (process.client && this._onDocClick) {
       document.removeEventListener('click', this._onDocClick);
     }
+    window.removeEventListener('resize', this.updateDropdownPosition);
+    window.removeEventListener('scroll', this.updateDropdownPosition, true);
   }
 }
 </script>
