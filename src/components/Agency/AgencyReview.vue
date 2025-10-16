@@ -39,7 +39,7 @@
               </div>
               <div class="flex flex-col gap-6">
                 <div class="text-base leading-7 italic capitalize max-[575px]:text-sm max-[375px]:text-[13px]">"{{ review.review }}"</div>
-                <div class="text-base font-medium text-gray-400 capitalize max-[575px]:text-sm">{{ review.date }}</div>
+                <div class="text-base font-medium text-gray-400 capitalize max-[575px]:text-sm">Date: {{ review.date }}</div>
               </div>
             </div>
 
@@ -50,10 +50,15 @@
                 <ThumbsUp class="w-5 h-5" />
                 <span>{{ reactionCounts[idx]?.likes ?? 0 }}</span>
               </button>
-              <button class="flex items-center gap-2" @click="dislike(idx)">
-                <ThumbsDown class="w-5 h-5" />
-                <span>{{ reactionCounts[idx]?.dislikes ?? 0 }}</span>
+              <button class="flex items-center gap-2" @click="share(idx)">
+                <Share2 class="w-5 h-5" />
+                <span>{{ reactionCounts[idx]?.shares ?? 0 }}</span>
               </button>
+            </div>
+
+            <!-- Connector line from actions to company reply -->
+            <div v-if="review.companyResponse" class="relative ml-5 h-3 max-[767px]:ml-[10px] max-[575px]:ml-0">
+              <div class="absolute left-3 top-0 bottom-0 border-l border-[#bdbdbd] max-[767px]:left-2"></div>
             </div>
 
             <div v-if="review.companyResponse" class="relative px-10 py-5 ml-5 max-[767px]:px-5 max-[767px]:py-[15px] max-[767px]:ml-[10px] max-[575px]:px-[15px] max-[575px]:py-3 max-[575px]:ml-0">
@@ -62,7 +67,7 @@
                 <img :src="review.companyResponse.avatar || '/profile.png'" :alt="review.companyResponse.name" class="w-11 h-11 rounded-full object-cover" />
                 <div class="flex flex-col gap-1">
                   <div class="text-lg font-semibold capitalize max-[575px]:text-base">{{ review.companyResponse.name }}</div>
-                  <div class="text-base font-medium text-gray-400 capitalize max-[575px]:text-sm">{{ review.companyResponse.date }}</div>
+                  <div class="text-base font-medium text-gray-400 capitalize max-[575px]:text-sm">Date: {{ review.companyResponse.date }}</div>
                 </div>
               </div>
               <div class="text-base leading-7 italic capitalize max-[575px]:text-sm">"{{ review.companyResponse.text }}"</div>
@@ -161,7 +166,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import { MessageCircle, ChevronDown, ExternalLink, Star, ThumbsUp, ThumbsDown, X, Clock } from 'lucide-vue-next';
+import { MessageCircle, ChevronDown, ExternalLink, Star, ThumbsUp, Share2, X, Clock } from 'lucide-vue-next';
 
 interface CompanyResponse { name: string; avatar?: string; text: string; date: string }
 interface StubReview { reviewer: string; rating: string | number; date: string; review: string; status?: string; avatar?: string; companyResponse?: CompanyResponse }
@@ -186,10 +191,10 @@ const newReviewText = ref('');
 const { data: reviewsData } = await useFetch<StubReview[]>('/stubs/recentReviews.json');
 const reviews = computed<StubReview[]>(() => Array.isArray(reviewsData.value) ? reviewsData.value! : []);
 
-const reactionCounts = ref<{ likes: number; dislikes: number }[]>([]);
+const reactionCounts = ref<{ likes: number; shares: number }[]>([]);
 
 onMounted(() => {
-  reactionCounts.value = reviews.value.map(() => ({ likes: 0, dislikes: 0 }));
+  reactionCounts.value = reviews.value.map(() => ({ likes: 0, shares: 0 }));
 });
 
 const totalReviews = computed(() => reviews.value.length);
@@ -225,8 +230,8 @@ function submitReview() {
   newReviewRating.value = 0;
   newReviewText.value = '';
 }
-function like(index: number) { if (!reactionCounts.value[index]) reactionCounts.value[index] = { likes: 0, dislikes: 0 }; reactionCounts.value[index].likes++ }
-function dislike(index: number) { if (!reactionCounts.value[index]) reactionCounts.value[index] = { likes: 0, dislikes: 0 }; reactionCounts.value[index].dislikes++ }
+function like(index: number) { if (!reactionCounts.value[index]) reactionCounts.value[index] = { likes: 0, shares: 0 }; reactionCounts.value[index].likes++ }
+function share(index: number) { if (!reactionCounts.value[index]) reactionCounts.value[index] = { likes: 0, shares: 0 }; reactionCounts.value[index].shares++ }
 
 const dateFilterOptions = [
   { value: 'all', label: 'All Reviews' },
