@@ -7,7 +7,7 @@ const faqs = ref([
     id: 1,
     question: 'What is Yellow Book?',
     answer: 'Yellow Book is a platform where users can discover, review, and connect with companies from different categories such as travel agencies, restaurants, and more.',
-    open: true, // Start the first one open
+    open: true,
   },
   {
     id: 2,

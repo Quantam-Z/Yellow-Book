@@ -254,49 +254,52 @@
           </button>
         </div>
         
-        <div class="relative flex-shrink-0">
-          <button 
-            @click="toggleSortDropdown"
-            class="flex items-center gap-2 bg-white border border-gainsboro border-solid rounded-[4px] px-4 py-2 hover:border-gray-400 transition-colors"
-          >
-            <span class="text-dimgray leading-[160%] capitalize font-medium">Sort</span>
-            <div class="flex flex-col gap-0.5 w-4">
-              <div class="h-0.5 bg-gray-600 rounded-full w-full"></div>
-              <div class="h-0.5 bg-gray-600 rounded-full w-3/4"></div>
-              <div class="h-0.5 bg-gray-600 rounded-full w-full"></div>
-            </div>
-          </button>
-          
-          <div 
-            v-if="showSortOptions"
-            class="absolute top-full right-0 mt-1 w-[342px] rounded-[4px] bg-white border border-gainsboro border-solid box-border overflow-hidden flex flex-col items-start z-50 text-center text-dimgray shadow-lg"
-          >
-            <div class="w-full flex flex-col items-start gap-2">
-              <div class="self-stretch bg-ghostwhite flex flex-col items-start p-[10px] text-left text-[16px] text-darkslategray">
-                <div class="self-stretch flex flex-col items-start gap-0.5">
-                  <div 
-                    v-for="rating in ratings" 
-                    :key="rating" 
-                    class="self-stretch border-b border-whitesmoke border-solid box-border h-10 flex items-center gap-1 cursor-pointer hover:bg-gray-50"
-                    @click="toggleRating(rating)"
-                  >
-                    <div class="w-6 relative h-6 overflow-hidden shrink-0">
-                      <div class="w-full h-full border-2 border-gray-300 rounded-sm bg-white flex items-center justify-center">
-                        <div class="w-4.5 h-4.5 border border-gray-400 rounded-xs bg-white flex items-center justify-center">
-                          <div 
-                            v-if="filters.ratings.has(parseInt(rating))" 
-                            class="w-3 h-3 bg-blue-500 rounded-xs transition-all duration-200"
-                          ></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="relative leading-[130%] capitalize font-medium">{{ rating }} star</div>
-                  </div>
-                </div>
+   <div class="w-full flex justify-end">
+  <div class="relative flex-shrink-0">
+    <button 
+      @click="toggleSortDropdown"
+      class="flex items-center gap-2 bg-white border border-gainsboro border-solid rounded-[4px] px-4 py-2 hover:border-gray-400 transition-colors"
+    >
+      <span class="text-dimgray leading-[160%] capitalize font-medium">Sort</span>
+      <div class="flex flex-col gap-0.5 w-4">
+        <div class="h-0.5 bg-gray-600 rounded-full w-full"></div>
+        <div class="h-0.5 bg-gray-600 rounded-full w-3/4"></div>
+        <div class="h-0.5 bg-gray-600 rounded-full w-full"></div>
+      </div>
+    </button>
+    
+    <div 
+      v-if="showSortOptions"
+      class="absolute top-full right-0 mt-1 w-[342px] rounded-[4px] bg-white border border-gainsboro border-solid box-border overflow-hidden flex flex-col items-start z-50 text-center text-dimgray shadow-lg"
+    >
+      <div class="w-full flex flex-col items-start gap-2">
+        <div class="self-stretch bg-ghostwhite flex flex-col items-start p-[10px] text-left text-[16px] text-darkslategray">
+          <div class="self-stretch flex flex-col items-start gap-0.5">
+            
+            <div 
+              v-for="rating in ratings" 
+              :key="rating" 
+              class="self-stretch border-b border-whitesmoke border-solid box-border h-10 flex items-center gap-2 cursor-pointer hover:bg-gray-50 px-2"
+              @click="toggleRating(rating)"
+            >
+              <!-- Radio box with black border -->
+              <div class="w-6 h-6 flex items-center justify-center border-2 border-black rounded-sm bg-white relative shrink-0">
+                <div 
+                  v-if="filters.ratings.has(parseInt(rating))" 
+                  class="w-3 h-3 bg-blue-500 rounded-sm transition-all duration-200"
+                ></div>
               </div>
+
+              <div class="relative leading-[130%] capitalize font-medium">{{ rating }} star</div>
             </div>
+
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
       </div>
 
       <!-- Mobile Active Filters -->
