@@ -38,7 +38,8 @@ function slugify(name: string): string {
 }
 
 // Load agencies from stubs (served from public directory)
-const { data: agenciesData } = await useFetch<StubAgency[]>('stubs/agencies.json');
+// Use absolute path to avoid route-relative 404s on nested routes
+const { data: agenciesData } = await useFetch<StubAgency[]>('/stubs/agencies.json');
 
 const mappedAgencies = computed(() =>
   Array.isArray(agenciesData.value)
@@ -92,7 +93,7 @@ const goToAgency = (title: string, slug?: string, id?: number | string) => {
     <div class="w-full flex flex-wrap justify-center items-stretch gap-6">
       <div
         v-for="(agency, index) in sortedLimitedAgencies"
-        :key="index"
+        :key="agency.id"
         class="flex-1 basis-[300px] max-w-full sm:max-w-[384px] rounded-xl overflow-hidden flex flex-col cursor-pointer bg-white shadow-md transition-transform duration-200 hover:-translate-y-2"
         @click="goToAgency(agency.title, agency.slug, agency.id)"
       >
