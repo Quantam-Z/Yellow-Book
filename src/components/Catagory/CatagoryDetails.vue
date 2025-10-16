@@ -120,7 +120,7 @@
         class="flex items-center gap-2 cursor-pointer" 
         @click="setEmergencyService(true)"
       >
-        <div class="w-5 h-5 lg:w-6 lg:h-6 border border-gray-700 rounded-full bg-white flex items-center justify-center">
+        <div class="w-5 h-5 lg:w-6 lg:h-6 border-2 border-gray-700 rounded-full bg-white flex items-center justify-center">
           <div :class="[
             'w-3 h-3 rounded-full transition-colors', 
             filters.emergencyService === true ? 'bg-black' : 'bg-transparent'
@@ -133,7 +133,7 @@
         class="flex items-center gap-2 cursor-pointer" 
         @click="setEmergencyService(false)"
       >
-        <div class="w-5 h-5 lg:w-6 lg:h-6 border border-gray-700 rounded-full bg-white flex items-center justify-center">
+        <div class="w-5 h-5 lg:w-6 lg:h-6 border-2 border-gray-700 rounded-full bg-white flex items-center justify-center">
           <div :class="[
             'w-3 h-3 rounded-full transition-colors', 
             filters.emergencyService === false ? 'bg-black' : 'bg-transparent'
@@ -162,7 +162,7 @@
             <div 
               v-for="service in currentCategory.filters.serviceTypes.options" 
               :key="service" 
-              class="self-stretch border-b border-whitesmoke border-solid box-border h-10 flex items-center gap-2 cursor-pointer transition-colors hover:bg-gray-100"
+              class="self-stretch border-b border-whitesmoke border-solid box-border h-10 flex items-center gap-2 cursor-pointer transition-colors hover:bg-gray-100 pl-2 lg:pl-3"
               @click="toggleService(service)"
             >
               <div class="w-5 h-5 lg:w-6 lg:h-6 relative overflow-hidden shrink-0">
@@ -195,7 +195,7 @@
             <div 
               v-for="specialization in currentCategory.filters.specializations.options" 
               :key="specialization" 
-              class="self-stretch border-b border-whitesmoke border-solid box-border h-10 flex items-center gap-2 cursor-pointer transition-colors hover:bg-gray-100"
+              class="self-stretch border-b border-whitesmoke border-solid box-border h-10 flex items-center gap-2 cursor-pointer transition-colors hover:bg-gray-100 pl-2 lg:pl-3"
               @click="toggleSpecialization(specialization)"
             >
               <div class="w-5 h-5 lg:w-6 lg:h-6 relative overflow-hidden shrink-0">
