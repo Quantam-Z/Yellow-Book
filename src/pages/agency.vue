@@ -37,7 +37,6 @@ import { computed } from 'vue';
  import AgencyDetails from '@/components/Agency/AgencyDetails.vue';
  import AgencyContact from '@/components/Agency/AgencyContact.vue';
  import AgencyReview from '@/components/Agency/AgencyReview.vue';
- import { categoryService } from '@/services/categoryService';
  import Footer from '@/components/layout/Footer.vue';
 
  definePageMeta({
@@ -100,13 +99,7 @@ const stubCompany = computed<StubCompany | null>(() => {
   return null;
 });
 
-// Fallback to listings.json via existing service if needed
-const listingFromService = computed(() => {
-  if (slugQuery.value) return categoryService.getListingBySlug(slugQuery.value);
-  if (idQuery.value) return categoryService.getListingById(idQuery.value);
-  if (titleQuery.value) return categoryService.getListingByName(titleQuery.value);
-  return null;
-});
+// No fallback to categories/listings – show/create agency only
 
 type Agency = {
   id?: number | string;
@@ -120,26 +113,44 @@ type Agency = {
   serviceType?: string;
 };
 
+function unslugify(slug: string): string {
+  return String(slug || '')
+    .split('-')
+    .filter(Boolean)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ');
+}
+
 const agency = computed<Agency | null>(() => {
   const stub = stubCompany.value;
-  const listing = listingFromService.value as Partial<Agency> | null;
-
   if (stub) {
     return {
       id: stub.id,
       name: stub.name,
-      category: stub.category || listing?.category || 'General Services',
-      website: stub.website || listing?.website || '',
-      location: listing?.location || '',
-      revenue: listing?.revenue || '',
-      rating: typeof listing?.rating === 'number' ? listing!.rating : 0,
-      ratingCount: typeof listing?.ratingCount === 'number' ? listing!.ratingCount : 0,
-      serviceType: listing?.serviceType || undefined,
+      category: '',
+      website: stub.website || '',
+      location: '',
+      revenue: '',
+      rating: 0,
+      ratingCount: 0,
+      serviceType: undefined,
     };
   }
 
-  if (listing && listing.name) {
-    return listing as Agency;
+  // Create a minimal agency when not found
+  const createdName = titleQuery.value || (slugQuery.value ? unslugify(slugQuery.value) : '');
+  if (createdName) {
+    return {
+      id: idQuery.value || slugQuery.value || createdName,
+      name: createdName,
+      category: '',
+      website: '',
+      location: '',
+      revenue: '',
+      rating: 0,
+      ratingCount: 0,
+      serviceType: undefined,
+    };
   }
 
   return null;
@@ -148,7 +159,7 @@ const agency = computed<Agency | null>(() => {
  const agencyNameFromQuery = computed(() => titleQuery.value || slugQuery.value || '');
 
  // Derived/display placeholders; replace with real fields as data grows
-const agencyTagline = computed(() => (agency.value ? `Top-rated ${agency.value.serviceType || 'services'} in ${agency.value.location || 'your area'}` : ''));
+const agencyTagline = computed(() => (agency.value ? `Discover ${agency.value.name} — trusted services tailored to you.` : ''));
  const heroImage = computed(() => '/logo/image6.png');
  const logoImage = computed(() => '/logo/image7.png');
  const aboutText = computed(
@@ -162,7 +173,7 @@ const agencyPhone = computed(() => {
 });
 const agencyEmail = computed(() => 'contact@example.com');
  const employeesText = computed(() => '10-20');
- const industryText = computed(() => agency.value?.category || 'General Services');
+ const industryText = computed(() => 'General Services');
  const profileImage = computed(() => '/profile.png');
  const ownerName = computed(() => 'Cameron Williamson');
  const ownerTitle = computed(() => 'CEO & Founder');
