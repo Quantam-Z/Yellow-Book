@@ -25,6 +25,7 @@
       :owner-bio="ownerBio"
     />
     <AgencyReview />
+    <Popular :limit="6" sort-by="rating" order="desc" />
     <Footer />
   </div>
  </template>
@@ -37,6 +38,7 @@ import { computed } from 'vue';
  import AgencyDetails from '@/components/Agency/AgencyDetails.vue';
  import AgencyContact from '@/components/Agency/AgencyContact.vue';
  import AgencyReview from '@/components/Agency/AgencyReview.vue';
+import Popular from '@/components/common/Popular.vue';
  import Footer from '@/components/layout/Footer.vue';
 
  definePageMeta({
