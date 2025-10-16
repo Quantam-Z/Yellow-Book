@@ -1,195 +1,256 @@
 <template>
-  <div class="w-full relative flex flex-col lg:flex-row items-start justify-between gap-6 text-left font-plus-jakarta-sans">
-    <!-- Left: Reviews & Controls -->
-    <div class="flex-1 relative">
-      <!-- Container -->
-      <div class="rounded-lg bg-gray-100 border border-gray-200 w-full flex flex-col p-5 gap-6">
-        <!-- Header row -->
-        <div class="w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div class="flex items-center gap-2.5 text-[22px] sm:text-[24px] text-gray-800">
-            <div class="h-6 w-6 rounded bg-goldenrod flex items-center justify-center">
-              <Star class="h-4 w-4 text-white" />
+  <div class="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8">
+    <div class="max-w-7xl mx-auto flex flex-col lg:flex-row gap-6">
+      <!-- Main Content -->
+      <div class="flex-1 space-y-6">
+        <!-- Header -->
+        <div class="bg-white rounded-lg border border-gray-200 p-5 md:p-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex items-center gap-2.5">
+              <MessageSquare class="w-6 h-6 text-blue-500" />
+              <h1 class="text-xl md:text-2xl font-semibold text-gray-800 capitalize">
+                {{ pageTitle }}
+              </h1>
             </div>
-            <div class="leading-[130%] capitalize font-semibold">Customer Reviews</div>
-          </div>
-          <div class="flex items-center gap-3 text-[14px] sm:text-[16px]">
-            <button
-              class="rounded-lg border border-gray-300 bg-white flex items-center gap-2 px-3 py-2 hover:bg-gray-50"
-              @click="toggleFilters"
-            >
-              <Filter class="h-5 w-5" />
-              <span class="font-medium">Filter</span>
-            </button>
-            <a
-              href="#"
-              class="rounded-lg border border-gold text-gold flex items-center gap-2 px-3 py-2 hover:bg-oldlace"
-            >
-              <span class="font-medium">Go to website</span>
-              <ExternalLink class="h-5 w-5" />
-            </a>
+            <div class="flex items-center gap-4 flex-wrap max-[991px]:justify-center max-[575px]:flex-col max-[575px]:w-full max-[575px]:gap-[10px]">
+              <button class="flex items-center gap-2 px-3 py-2 rounded border border-[#757575] text-[#424242] text-base font-medium hover:bg-black/5 max-[575px]:w-full max-[575px]:justify-center max-[575px]:py-3" @click="toggleFilter">
+                <span>{{ filterText }}</span>
+                <ChevronDown class="w-5 h-5" />
+              </button>
+              <button class="flex items-center gap-2 px-3 py-2 rounded border border-[#28aed8] text-[#28aed8] text-base font-medium hover:bg-[#28aed8]/5 max-[575px]:w-full max-[575px]:justify-center max-[575px]:py-3">
+                <span>{{ websiteText }}</span>
+                <ExternalLink class="w-5 h-5" />
+              </button>
+            </div>
           </div>
         </div>
 
-        <!-- Active filters (chips) -->
-        <div v-if="selectedStar || dateFrom || dateTo" class="flex flex-wrap gap-2 text-sm">
-          <div v-if="selectedStar" class="px-2 py-1 rounded bg-ghostwhite border border-gray-200 flex items-center gap-2">
-            {{ selectedStar }} Star
-            <button class="hover:text-red-500" @click="selectedStar = ''"><X class="w-4 h-4" /></button>
-          </div>
-          <div v-if="dateFrom" class="px-2 py-1 rounded bg-ghostwhite border border-gray-200 flex items-center gap-2">
-            From: {{ dateFrom }}
-            <button class="hover:text-red-500" @click="dateFrom = ''"><X class="w-4 h-4" /></button>
-          </div>
-          <div v-if="dateTo" class="px-2 py-1 rounded bg-ghostwhite border border-gray-200 flex items-center gap-2">
-            To: {{ dateTo }}
-            <button class="hover:text-red-500" @click="dateTo = ''"><X class="w-4 h-4" /></button>
-          </div>
-          <button class="px-2 py-1 rounded bg-white border border-gray-300 hover:bg-gray-50" @click="resetFilters">Reset</button>
-        </div>
-
-        <!-- Reviews list -->
-        <div class="flex flex-col gap-5">
+        <!-- Reviews List -->
+        <div class="space-y-5">
           <div
-            v-for="review in visibleReviews"
-            :key="review.id"
-            class="w-full shadow-[0px_4px_16px_rgba(158,158,158,0.14)] rounded-lg bg-white flex flex-col p-5 gap-5"
+            v-for="(review, index) in filteredReviews"
+            :key="index"
+            class="bg-white rounded-lg shadow-md p-5 md:p-6 space-y-5"
           >
-            <!-- Reviewer header -->
-            <div class="flex items-start justify-between gap-3">
-              <div class="flex items-center gap-3">
-                <div class="h-11 w-11 rounded-full bg-ghostwhite border border-gray-200 flex items-center justify-center text-gray-700 font-semibold">
-                  {{ getInitials(review.reviewerName) }}
-                </div>
-                <div class="flex flex-col gap-1">
-                  <div class="leading-[130%] capitalize font-semibold text-gray-900">{{ review.reviewerName }}</div>
-                  <div class="flex items-center gap-1">
-                    <RatingStars :value="review.rating" :size-class="'w-5 h-5'" />
+            <!-- Review Header -->
+            <div class="space-y-3">
+              <div class="flex items-start gap-3">
+                <img
+                  :src="review.avatar || `https://i.pravatar.cc/150?img=${index + 1}`"
+                  :alt="review.reviewer"
+                  class="w-11 h-11 rounded-full object-cover"
+                />
+                <div class="flex-1">
+                  <h3 class="font-semibold text-gray-800 capitalize mb-1">
+                    {{ review.reviewer }}
+                  </h3>
+                  <div class="flex items-center gap-0.5">
+                    <Star
+                      v-for="star in 5"
+                      :key="star"
+                      class="w-5 h-5"
+                      :class="star <= Number(review.rating) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'"
+                    />
                   </div>
                 </div>
               </div>
-              <div class="text-sm text-gray-500 font-medium">Date: {{ formatDate(review.date) }}</div>
+              
+              <div class="space-y-4">
+                <p class="text-gray-600 leading-relaxed italic">
+                  "{{ review.review }}"
+                </p>
+                <p class="text-sm font-medium text-gray-400 capitalize">
+                  Date: {{ review.date }}
+                </p>
+              </div>
             </div>
 
-            <!-- Content -->
-            <div class="text-[15px] sm:text-[16px] leading-[160%] text-gray-700 italic">
-              “{{ review.content }}”
+            <!-- Divider -->
+            <div class="border-t border-gray-200"></div>
+
+            <!-- Like/Dislike -->
+            <div class="flex items-center gap-6">
+              <button @click="like(index)" class="flex items-center gap-2 text-gray-600 hover:text-blue-500 transition-colors">
+                <ThumbsUp class="w-5 h-5" />
+                <span class="text-sm font-medium">{{ reactionCounts[index]?.likes || 0 }}</span>
+              </button>
+              <button @click="dislike(index)" class="flex items-center gap-2 text-gray-600 hover:text-red-500 transition-colors">
+                <ThumbsDown class="w-5 h-5" />
+                <span class="text-sm font-medium">{{ reactionCounts[index]?.dislikes || 0 }}</span>
+              </button>
             </div>
 
-            <!-- Optional company response slot (if present in data) -->
-            <div v-if="review.response" class="w-full flex flex-col py-5 px-4 sm:px-6 border border-gray-200 rounded-lg bg-ghostwhite relative gap-2">
-              <div class="flex items-center gap-3">
-                <div class="h-10 w-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-700 font-semibold">
-                  {{ getInitials(review.response.companyName) }}
-                </div>
-                <div class="flex flex-col gap-0.5">
-                  <div class="font-semibold text-gray-900">{{ review.response.companyName }}</div>
-                  <div class="text-xs text-gray-500">Date: {{ formatDate(review.response.date) }}</div>
+            <!-- Company Reply -->
+            <div v-if="review.companyResponse" class="ml-6 md:ml-10 pl-6 md:pl-10 py-5 relative reply-connector space-y-3">
+              <div class="flex items-start gap-3">
+                <img
+                  :src="review.companyResponse.avatar || 'https://i.pravatar.cc/150?img=10'"
+                  :alt="review.companyResponse.name"
+                  class="w-11 h-11 rounded-full object-cover"
+                />
+                <div class="flex-1">
+                  <h4 class="font-semibold text-gray-800 capitalize mb-2">
+                    {{ review.companyResponse.name }}
+                  </h4>
+                  <p class="text-sm font-medium text-gray-400 capitalize">
+                    Date: {{ review.companyResponse.date }}
+                  </p>
                 </div>
               </div>
-              <div class="text-sm text-gray-700">
-                “{{ review.response.content }}”
-              </div>
+              <p class="text-gray-600 leading-relaxed italic">
+                "{{ review.companyResponse.text }}"
+              </p>
             </div>
           </div>
         </div>
 
-        <!-- Load more -->
-        <div class="flex justify-center">
-          <button
-            v-if="hasMore"
-            class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition flex items-center gap-2"
-            @click="loadMore"
-          >
-            <ChevronDown class="w-4 h-4" />
-            Load More
-          </button>
-          <div v-else class="text-gray-500 text-sm py-2">No more reviews to load</div>
-        </div>
-
-        <!-- New review prompt (UI only) -->
-        <div class="w-full shadow-[0px_0px_17px_rgba(97,97,97,0.16)] rounded-lg bg-white border border-gray-300 overflow-hidden flex flex-col p-5 gap-6 text-center">
-          <div class="flex flex-col items-center gap-3">
-            <div class="leading-[130%] capitalize font-semibold text-gray-900">Give me your rating & Review</div>
-            <RatingStars :value="Number(selectedStar) || 0" :size-class="'w-6 h-6 sm:w-8 sm:h-8'" />
+        <!-- Submit Review Section -->
+        <div class="bg-white rounded-lg shadow-lg border border-gray-300 p-5 md:p-6 space-y-6">
+          <div class="text-center space-y-5">
+            <h2 class="text-lg font-semibold text-gray-800 capitalize">
+              {{ addReviewTitle }}
+            </h2>
+            <div class="flex items-center justify-center gap-1">
+              <Star
+                v-for="star in 5"
+                :key="star"
+                class="w-8 h-8 cursor-pointer hover:scale-110 transition-transform"
+                :class="star <= newReviewRating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'"
+                @click="setRating(star)"
+              />
+            </div>
           </div>
-          <div class="flex flex-col gap-4 text-left text-[16px] text-gray-500">
+          
+          <div class="space-y-4">
             <textarea
-              class="w-full min-h-[100px] rounded-lg bg-gray-50 border border-gray-200 p-4 outline-none focus:ring-2 focus:ring-gold"
-              placeholder="Write your review for this company..."
-              disabled
-            />
-            <button class="h-12 rounded-lg bg-gold text-white font-semibold">Submit</button>
+              v-model="newReviewText"
+              :placeholder="reviewPlaceholder"
+              class="w-full h-24 p-4 bg-gray-100 border border-gray-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-yellow-400 text-gray-700"
+            ></textarea>
+            <button
+              @click="submitReview"
+              class="w-full py-3 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold rounded capitalize transition-colors"
+            >
+              {{ submitText }}
+            </button>
           </div>
         </div>
       </div>
 
-      <!-- Filters panel -->
+      <!-- Sidebar -->
+      <div class="lg:w-96 space-y-6">
+        <!-- Rating Summary -->
+        <div class="bg-white rounded-lg shadow-lg p-5 md:p-6">
+          <div class="flex flex-col sm:flex-row lg:flex-col items-center gap-6">
+            <div class="text-center space-y-3">
+              <h2 class="text-5xl font-semibold text-black capitalize">
+                {{ overallRating.toFixed(1) }}
+              </h2>
+              <p class="text-base font-medium text-green-600 capitalize">
+                {{ ratingLabel }}
+              </p>
+              <div class="space-y-2">
+                <div class="flex items-center justify-center gap-0.5">
+                  <Star
+                    v-for="star in 5"
+                    :key="star"
+                    class="w-5 h-5 fill-yellow-400 text-yellow-400"
+                  />
+                </div>
+                <p class="text-sm font-medium text-gray-600 capitalize">
+                  ({{ totalReviews }} reviews)
+                </p>
+              </div>
+            </div>
+
+            <div class="flex-1 w-full space-y-2">
+              <div
+                v-for="stars in [5, 4, 3, 2, 1]"
+                :key="stars"
+                class="flex items-center gap-3"
+              >
+                <div class="flex items-center gap-1 w-12 justify-end">
+                  <span class="text-lg text-gray-800">{{ stars }}</span>
+                  <Star class="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                </div>
+                <div class="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div
+                    class="h-full bg-yellow-400 transition-all"
+                    :style="{ width: `${totalReviews > 0 ? (ratingBreakdown[stars] / totalReviews) * 100 : 0}%` }"
+                  ></div>
+                </div>
+                <span class="text-sm font-medium text-gray-600 w-12 text-right">
+                  {{ ratingBreakdown[stars] }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile Filter Modal -->
       <div
-        v-if="showFilters"
-        class="absolute top-16 right-0 z-10 w-full sm:w-[320px] shadow-[0px_4px_14px_rgba(158,158,158,0.1)] rounded-lg bg-white border border-gray-200 overflow-hidden"
+        v-if="showFilter"
+        class="fixed inset-0 bg-black bg-opacity-50 z-50 lg:hidden"
+        @click="showFilter = false"
       >
-        <div class="bg-gray-800 text-white flex items-center justify-between py-3 pl-4 pr-2">
-          <div class="leading-[130%] capitalize font-semibold">Filter</div>
-          <button class="p-2 hover:bg-gray-700 rounded" @click="toggleFilters"><X class="h-5 w-5" /></button>
-        </div>
-        <div class="flex flex-col p-5 gap-5 text-gray-800">
-          <div class="flex flex-col gap-2">
-            <div class="font-medium">Review Score</div>
-            <div class="rounded-lg border border-gray-300 flex flex-col p-3 gap-2 text-gray-600">
-              <label v-for="s in [1,2,3,4,5]" :key="s" class="flex items-center gap-2 cursor-pointer">
-                <input type="radio" class="accent-gold" name="stars" :value="s" v-model="selectedStar" />
-                <div>{{ s }} Star</div>
+        <div class="absolute right-0 top-0 bottom-0 w-full max-w-sm bg-white shadow-xl" @click.stop>
+          <div class="bg-gray-800 text-white px-4 py-3 flex items-center justify-between">
+            <h3 class="font-semibold capitalize">{{ filterTitle }}</h3>
+            <button @click="showFilter = false">
+              <X class="w-6 h-6" />
+            </button>
+          </div>
+          <div class="p-5 space-y-5 overflow-y-auto h-full pb-20">
+            <!-- Review Score Filter -->
+            <div class="space-y-2">
+              <label class="font-medium text-gray-800 capitalize">
+                {{ reviewScoreTitle }}
               </label>
-            </div>
-          </div>
-          <div class="flex flex-col gap-2">
-            <div class="font-medium">Date filter</div>
-            <div class="rounded-lg border border-gray-300 flex flex-col p-3 gap-2 text-gray-600">
-              <div class="flex items-center gap-2">
-                <span class="w-24 text-gray-700">From</span>
-                <input type="date" v-model="dateFrom" class="flex-1 border rounded px-2 py-1 text-sm" />
+              <div class="border border-gray-300 rounded p-2 space-y-1">
+                <label
+                  v-for="star in 5"
+                  :key="star"
+                  class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded"
+                >
+                  <input
+                    type="checkbox"
+                    class="w-5 h-5 accent-blue-500"
+                    :value="star"
+                    v-model="selectedRatings"
+                  />
+                  <span class="text-sm text-gray-600 capitalize">
+                    {{ star }} Star
+                  </span>
+                </label>
               </div>
-              <div class="flex items-center gap-2">
-                <span class="w-24 text-gray-700">To</span>
-                <input type="date" v-model="dateTo" class="flex-1 border rounded px-2 py-1 text-sm" />
-              </div>
             </div>
-          </div>
-          <div class="flex items-center justify-end gap-2">
-            <button class="px-3 py-2 border rounded hover:bg-gray-50" @click="resetFilters">Reset</button>
-            <button class="px-4 py-2 bg-gold text-white rounded" @click="applyFilters">Apply</button>
-          </div>
-        </div>
-      </div>
-    </div>
 
-    <!-- Right: Summary -->
-    <div class="w-full lg:w-[380px] xl:w-[420px] shadow-[0px_4px_16px_rgba(158,158,158,0.24)] rounded-lg bg-white overflow-hidden flex items-center p-5 gap-6 text-center">
-      <div class="w-[120px] flex flex-col items-center gap-3">
-        <div class="flex flex-col items-center gap-3">
-          <div class="text-[40px] sm:text-[46px] leading-none capitalize font-semibold text-black">{{ averageRating }}</div>
-          <div class="text-[14px] sm:text-[16px] leading-[160%] capitalize font-medium text-forestgreen">{{ ratingLabel }}</div>
-        </div>
-        <div class="flex flex-col items-center justify-center gap-2 text-[14px] sm:text-[16px] text-dimgray">
-          <div class="flex items-center">
-            <RatingStars :value="Number(averageRating)" :size-class="'w-5 h-5'" />
+            <!-- Date Filter -->
+            <div class="space-y-2">
+              <label class="font-medium text-gray-800 capitalize">
+                {{ dateFilterTitle }}
+              </label>
+              <div class="border border-gray-300 rounded p-2 space-y-1">
+                <label
+                  v-for="option in dateFilterOptions"
+                  :key="option.value"
+                  class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded"
+                >
+                  <input
+                    type="radio"
+                    name="dateFilterMobile"
+                    class="w-5 h-5 accent-blue-500"
+                    :value="option.value"
+                    v-model="selectedDateFilter"
+                  />
+                  <span class="text-sm text-gray-600 capitalize">
+                    {{ option.label }}
+                  </span>
+                </label>
+              </div>
+            </div>
           </div>
-          <div class="leading-[160%] capitalize font-medium">({{ totalReviews }} reviews)</div>
-        </div>
-      </div>
-      <div class="flex-1 flex flex-col items-start gap-2 text-[18px] text-gray-800">
-        <div v-for="star in [5,4,3,2,1]" :key="star" class="w-full flex items-center gap-3">
-          <div class="w-10 flex items-center justify-end gap-1.5">
-            <div class="leading-[130%]">{{ star }}</div>
-            <Star class="h-5 w-5 text-yellow-400 fill-yellow-400" />
-          </div>
-          <div class="h-2 flex-1 rounded bg-gainsboro overflow-hidden">
-            <div
-              class="h-full bg-goldenrod"
-              :style="{ width: Math.max(2, Math.round(getStarPercent(star))) + '%' }"
-            />
-          </div>
-          <div class="w-10 text-right text-[14px] text-dimgray font-medium">{{ countsByStar[star] }}</div>
         </div>
       </div>
     </div>
@@ -197,131 +258,160 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import RatingStars from '@/components/common/RatingStars.vue'
-import { Filter, ExternalLink, X, ChevronDown, Star } from 'lucide-vue-next'
+import { ref, computed, onMounted } from 'vue';
+import { MessageSquare, ChevronDown, ExternalLink, Star, ThumbsUp, ThumbsDown, X } from 'lucide-vue-next';
 
-interface CompanyResponse {
-  companyName: string
-  date: string
-  content: string
+interface CompanyResponse { 
+  name: string; 
+  avatar?: string; 
+  text: string; 
+  date: string 
 }
 
-interface ReviewItem {
-  id: number
-  reviewerName: string
-  rating: number
-  date: string
-  time?: string
-  content: string
-  response?: CompanyResponse
+interface StubReview { 
+  reviewer: string; 
+  rating: string | number; 
+  date: string; 
+  review: string; 
+  status?: string; 
+  avatar?: string; 
+  companyResponse?: CompanyResponse 
 }
 
-const allReviews = ref<ReviewItem[]>([])
-const selectedStar = ref<number | ''>('')
-const dateFrom = ref<string>('')
-const dateTo = ref<string>('')
-const showFilters = ref(false)
-const currentPage = ref(1)
-const itemsPerPage = 6
+const pageTitle = 'Customer Reviews';
+const filterText = 'Filter';
+const websiteText = 'Go to website';
+const addReviewTitle = 'Give me your rating & Review';
+const reviewPlaceholder = 'Write here your Review for this company...';
+const submitText = 'Submit';
+const filterTitle = 'Filter';
+const reviewScoreTitle = 'Review Score';
+const dateFilterTitle = 'Date filter';
+const ratingLabel = 'Excellent';
 
-// Load reviews from stub json
-const { data: reviewsData } = await useFetch<ReviewItem[]>('/stubs/agencyReviews.json')
+const showFilter = ref(false);
+const selectedRatings = ref<number[]>([]);
+const selectedDateFilter = ref<'all' | '30' | '90' | '180' | '365'>('all');
+const newReviewRating = ref(0);
+const newReviewText = ref('');
+
+// Mock reviews data
+const reviews = ref<StubReview[]>([
+  {
+    reviewer: "Cameron Williamson",
+    rating: 5,
+    date: "Jul/8/2025",
+    review: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea",
+    avatar: "https://i.pravatar.cc/150?img=1",
+    companyResponse: {
+      name: "Company Name",
+      avatar: "https://i.pravatar.cc/150?img=10",
+      date: "Jul/8/2025",
+      text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore"
+    }
+  },
+  {
+    reviewer: "Sarah Johnson",
+    rating: 4,
+    date: "Jul/5/2025",
+    review: "Great service and friendly staff. The experience was smooth from start to finish. Would definitely recommend to others looking for quality service.",
+    avatar: "https://i.pravatar.cc/150?img=2",
+    companyResponse: {
+      name: "Company Name",
+      avatar: "https://i.pravatar.cc/150?img=10",
+      date: "Jul/6/2025",
+      text: "Thank you for your kind words! We're glad you had a positive experience with us."
+    }
+  },
+  {
+    reviewer: "Michael Chen",
+    rating: 3,
+    date: "Jul/3/2025",
+    review: "Average experience. Some aspects were good but there's definitely room for improvement. The pricing is fair but the service could be faster.",
+    avatar: "https://i.pravatar.cc/150?img=3"
+  }
+]);
+
+const reactionCounts = ref<{ likes: number; dislikes: number }[]>([]);
 
 onMounted(() => {
-  allReviews.value = reviewsData.value || []
-})
+  reactionCounts.value = reviews.value.map(() => ({ likes: Math.floor(Math.random() * 500), dislikes: Math.floor(Math.random() * 100) }));
+});
 
-const totalReviews = computed(() => allReviews.value.length)
+const totalReviews = computed(() => reviews.value.length);
 
-const averageRating = computed(() => {
-  if (!allReviews.value.length) return '0.0'
-  const sum = allReviews.value.reduce((acc, r) => acc + (r.rating || 0), 0)
-  return (sum / allReviews.value.length).toFixed(1)
-})
+const overallRating = computed(() => {
+  if (reviews.value.length === 0) return 0;
+  const sum = reviews.value.reduce((acc, r) => acc + Number(r.rating || 0), 0);
+  return sum / reviews.value.length;
+});
 
-const ratingLabel = computed(() => {
-  const avg = Number(averageRating.value)
-  if (avg >= 4.5) return 'Excellent'
-  if (avg >= 4.0) return 'Great'
-  if (avg >= 3.0) return 'Good'
-  if (avg >= 2.0) return 'Fair'
-  return 'Poor'
-})
+const ratingBreakdown = computed<Record<number, number>>(() => {
+  const breakdown: Record<number, number> = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+  reviews.value.forEach((r) => {
+    const rounded = Math.max(1, Math.min(5, Math.round(Number(r.rating || 0))));
+    breakdown[rounded]++;
+  });
+  return breakdown;
+});
 
-const countsByStar = computed<Record<number, number>>(() => {
-  const counts: Record<number, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
-  for (const r of allReviews.value) {
-    const k = (r.rating || 0) as 1 | 2 | 3 | 4 | 5
-    counts[k] = (counts[k] || 0) + 1
+const filteredReviews = computed(() => {
+  if (!selectedRatings.value.length) return reviews.value;
+  const set = new Set(selectedRatings.value);
+  return reviews.value.filter((r) => set.has(Math.round(Number(r.rating || 0))));
+});
+
+function toggleFilter() { 
+  showFilter.value = !showFilter.value;
+}
+
+function setRating(rating: number) { 
+  newReviewRating.value = rating;
+}
+
+function submitReview() {
+  if (newReviewRating.value === 0 || !newReviewText.value.trim()) {
+    alert('Please provide both rating and review text');
+    return;
   }
-  return counts
-})
-
-function getStarPercent(star: number): number {
-  if (!totalReviews.value) return 0
-  return (countsByStar.value[star] / totalReviews.value) * 100
+  alert(`Review submitted!\nRating: ${newReviewRating.value} stars\nReview: ${newReviewText.value}`);
+  newReviewRating.value = 0;
+  newReviewText.value = '';
 }
 
-const filtered = computed(() => {
-  let list = allReviews.value.slice()
-  if (selectedStar.value) {
-    list = list.filter((r) => r.rating === Number(selectedStar.value))
+function like(index: number) { 
+  if (!reactionCounts.value[index]) {
+    reactionCounts.value[index] = { likes: 0, dislikes: 0 };
   }
-  if (dateFrom.value) {
-    list = list.filter((r) => new Date(r.date) >= new Date(dateFrom.value))
+  reactionCounts.value[index].likes++;
+}
+
+function dislike(index: number) { 
+  if (!reactionCounts.value[index]) {
+    reactionCounts.value[index] = { likes: 0, dislikes: 0 };
   }
-  if (dateTo.value) {
-    list = list.filter((r) => new Date(r.date) <= new Date(dateTo.value))
-  }
-  return list
-})
-
-const visibleReviews = computed(() => filtered.value.slice(0, currentPage.value * itemsPerPage))
-const hasMore = computed(() => visibleReviews.value.length < filtered.value.length)
-
-function toggleFilters() {
-  showFilters.value = !showFilters.value
+  reactionCounts.value[index].dislikes++;
 }
 
-function applyFilters() {
-  currentPage.value = 1
-  showFilters.value = false
-}
-
-function resetFilters() {
-  selectedStar.value = ''
-  dateFrom.value = ''
-  dateTo.value = ''
-  currentPage.value = 1
-}
-
-function loadMore() {
-  currentPage.value += 1
-}
-
-function formatDate(date: string): string {
-  if (!date) return ''
-  return new Date(date).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  })
-}
-
-function getInitials(name: string): string {
-  return name
-    .split(' ')
-    .map((n) => n[0])
-    .join('')
-    .toUpperCase()
-}
+const dateFilterOptions = [
+  { value: 'all', label: 'All Reviews' },
+  { value: '30', label: 'Last 30 Days' },
+  { value: '90', label: 'Last 3 Months' },
+  { value: '180', label: 'Last 6 Months' },
+  { value: '365', label: 'Last 12 Months' },
+] as const;
 </script>
 
 <style scoped>
-/***** Small helpers for nicer feel *****/
-:deep(textarea[disabled]) {
-  opacity: 0.8;
-  cursor: not-allowed;
+.reply-connector::before {
+  content: '';
+  position: absolute;
+  left: 12px;
+  top: -12px;
+  width: 33px;
+  height: 57px;
+  border-left: 1px solid #c0c0c0;
+  border-bottom: 1px solid #c0c0c0;
+  border-bottom-left-radius: 12px;
 }
 </style>
