@@ -101,11 +101,11 @@
               class="w-full relative max-w-full overflow-hidden h-[18px] shrink-0 custom-slider"
               :style="{'--progress': `${((currentPrice - minPrice) / (maxPrice - minPrice)) * 100}%`}"
             />
-            <div class="w-8 absolute top-[-25px] left-1/2 transform -translate-x-1/2 shadow-[0px_2px_4px_rgba(0,_0,_0,_0.1)] flex flex-col items-center z-[2] text-[12px] text-yellow-500">
+            <div class="w-8 absolute top-[-25px] left-1/2 transform -translate-x-1/2 shadow-[0px_2px_4px_rgba(0,_0,_0,_0.1)] flex flex-col items-center z-[2] text-[12px]" style="color: #28AED8;">
               <div class="self-stretch rounded-[4px] bg-white flex items-center justify-center p-1">
                 <b class="relative leading-[170%] capitalize">{{ currentPrice }}</b>
               </div>
-              <div class="w-0 h-0 border-l-2 border-r-2 border-t-2 border-l-transparent border-r-transparent border-t-yellow-500 -mt-0.5"></div>
+              <div class="w-0 h-0 border-l-2 border-r-2 border-t-2 border-l-transparent border-r-transparent -mt-0.5" style="border-top-color: #28AED8;"></div>
             </div>
           </div>
         </div>
@@ -116,13 +116,13 @@
         <div class="relative leading-[160%] capitalize font-medium text-sm lg:text-base">Emergency Service Available</div>
         <div class="flex items-center gap-4 lg:gap-[22px] text-[14px] lg:text-[16px] text-gray-500">
           <div class="flex items-center gap-2 cursor-pointer" @click="setEmergencyService(true)">
-            <div class="w-5 h-5 lg:w-6 lg:h-6 border-2 border-black rounded-full bg-white flex items-center justify-center">
+            <div class="w-5 h-5 lg:w-6 lg:h-6 border border-black rounded-full bg-white flex items-center justify-center">
               <div :class="['w-3 h-3 rounded-full transition-colors', filters.emergencyService === true ? 'bg-black' : 'bg-transparent']"></div>
             </div>
             <div class="relative leading-[160%] capitalize font-medium">Yes</div>
           </div>
           <div class="flex items-center gap-2 cursor-pointer" @click="setEmergencyService(false)">
-            <div class="w-5 h-5 lg:w-6 lg:h-6 border-2 border-black rounded-full bg-white flex items-center justify-center">
+            <div class="w-5 h-5 lg:w-6 lg:h-6 border border-black rounded-full bg-white flex items-center justify-center">
               <div :class="['w-3 h-3 rounded-full transition-colors', filters.emergencyService === false ? 'bg-black' : 'bg-transparent']"></div>
             </div>
             <div class="relative leading-[160%] capitalize font-medium">No</div>
@@ -148,7 +148,7 @@
             <div 
               v-for="service in currentCategory.filters.serviceTypes.options" 
               :key="service" 
-              class="self-stretch border-b border-whitesmoke border-solid box-border h-10 flex items-center gap-2 cursor-pointer transition-colors hover:bg-gray-100"
+              class="self-stretch border-b border-whitesmoke border-solid box-border h-10 flex items-center gap-2 cursor-pointer transition-colors hover:bg-gray-100 pl-2"
               @click="toggleService(service)"
             >
               <div class="w-5 h-5 lg:w-6 lg:h-6 relative overflow-hidden shrink-0">
@@ -181,7 +181,7 @@
             <div 
               v-for="specialization in currentCategory.filters.specializations.options" 
               :key="specialization" 
-              class="self-stretch border-b border-whitesmoke border-solid box-border h-10 flex items-center gap-2 cursor-pointer transition-colors hover:bg-gray-100"
+              class="self-stretch border-b border-whitesmoke border-solid box-border h-10 flex items-center gap-2 cursor-pointer transition-colors hover:bg-gray-100 pl-2"
               @click="toggleSpecialization(specialization)"
             >
               <div class="w-5 h-5 lg:w-6 lg:h-6 relative overflow-hidden shrink-0">
@@ -679,7 +679,7 @@ export default {
 
 <style scoped>
 .custom-slider {
-  background: linear-gradient(to right, #fcc207 0%, #fcc207 var(--progress, 50%), #e0e0e0 var(--progress, 50%), #e0e0e0 100%);
+  background: linear-gradient(to right, #28AED8 0%, #28AED8 var(--progress, 50%), #e0e0e0 var(--progress, 50%), #e0e0e0 100%);
   border-radius: 9px;
   border: none;
   outline: none;
@@ -694,7 +694,7 @@ export default {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: #fcc207;
+  background: #28AED8;
   cursor: pointer;
   border: 2px solid white;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
@@ -704,7 +704,7 @@ export default {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: #fcc207;
+  background: #28AED8;
   cursor: pointer;
   border: 2px solid white;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
