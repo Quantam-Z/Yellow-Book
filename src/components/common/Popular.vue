@@ -27,7 +27,7 @@ const props = withDefaults(
     limit: 6,
     sortBy: 'rating',
     order: 'desc',
-    heading: 'Agencies',
+    heading: 'Popular listings',
   }
 );
 
@@ -64,7 +64,7 @@ onMounted(async () => {
   loading.value = true;
   error.value = null;
   try {
-    const res = await fetch('/stubs/agencies.json'); // Ensure JSON is in public/stubs/
+    const res = await fetch('/stubs/agencies.json');
     if (!res.ok) throw new Error(`Failed to fetch: ${res.statusText}`);
     const data: StubAgency[] = await res.json();
     agenciesData.value = data;
@@ -110,7 +110,7 @@ const sortedLimitedAgencies = computed(() => {
 
 <template>
   <div class="w-full max-w-[1200px] mx-auto mt-16 px-5 flex flex-col items-center gap-10 text-center font-plus-jakarta-sans">
-    <div class="text-3xl sm:text-4xl lg:text-[36px] font-semibold capitalize leading-[130%]">
+    <div class="text-3xl sm:text-4xl lg:text-[30px] font-semibold capitalize leading-[130%]">
       {{ props.heading }}
     </div>
 

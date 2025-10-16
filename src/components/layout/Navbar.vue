@@ -89,7 +89,7 @@
   <div class="max-w-[676px] w-full mx-auto flex flex-col items-center gap-6 sm:gap-8 text-center text-[#212121]">
     
     <div class="w-full flex flex-col items-center justify-center gap-3 sm:gap-4 md:gap-[26px]">
-  <h1 class="w-full text-2xl sm:text-3xl md:text-[40px] leading-[140%] sm:leading-[135%] capitalize font-medium px-4">
+  <h1 class="w-full text-2xl sm:text-3xl md:text-[46px] leading-[140%] sm:leading-[135%] capitalize font-medium px-4">
     Trusted Help, Right When<br/>You Need It
   </h1>
   <p class="w-full max-w-[536px] text-sm sm:text-base md:text-[16px] leading-[130%] capitalize text-[#616161] px-4">
@@ -189,8 +189,8 @@ export default {
 /* Applies a large bottom-border-radius to create the "boat" or concave effect */
 .boat-bottom-radius {
     /* Base style for smaller screens */
-    border-bottom-left-radius: 150px 40px; 
-    border-bottom-right-radius: 150px 40px; 
+    border-bottom-left-radius: 130px 40px; 
+    border-bottom-right-radius: 130px 40px; 
 }
 
 @media (min-width: 640px) { /* sm breakpoint */
