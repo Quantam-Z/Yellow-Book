@@ -38,7 +38,7 @@ function slugify(name: string): string {
 }
 
 // Load agencies from stubs (served from public directory)
-const { data: agenciesData } = await useFetch<StubAgency[]>('/stubs/agencies.json');
+const { data: agenciesData } = await useFetch<StubAgency[]>('stubs/agencies.json');
 
 const mappedAgencies = computed(() =>
   Array.isArray(agenciesData.value)
