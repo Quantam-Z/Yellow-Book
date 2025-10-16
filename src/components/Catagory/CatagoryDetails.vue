@@ -1,5 +1,5 @@
 <template>
-  <div class="relative w-full flex flex-col lg:flex-row items-start gap-4 lg:gap-6 p-3 lg:p-5 min-h-screen bg-gray-50 text-center text-[16px] lg:text-[18px] text-dimgray font-plus-jakarta-sans">
+  <div class="relative w-full flex flex-col lg:flex-row items-start gap-4 lg:gap-6 p-3 lg:p-5 min-h-screen bg-white text-center text-[16px] lg:text-[18px] text-dimgray font-plus-jakarta-sans">
     
     <!-- Mobile Header -->
     <div class="lg:hidden w-full flex justify-center items-center mb-4">
@@ -101,11 +101,11 @@
               class="w-full relative max-w-full overflow-hidden h-[18px] shrink-0 custom-slider"
               :style="{'--progress': `${((currentPrice - minPrice) / (maxPrice - minPrice)) * 100}%`}"
             />
-            <div class="w-8 absolute top-[-25px] left-1/2 transform -translate-x-1/2 shadow-[0px_2px_4px_rgba(0,_0,_0,_0.1)] flex flex-col items-center z-[2] text-[12px]" style="color: #28AED8;">
+            <div class="w-8 absolute top-[-25px] left-1/2 transform -translate-x-1/2 shadow-[0px_2px_4px_rgba(0,_0,_0,_0.1)] flex flex-col items-center z-[2] text-[12px] text-yellow-500">
               <div class="self-stretch rounded-[4px] bg-white flex items-center justify-center p-1">
                 <b class="relative leading-[170%] capitalize">{{ currentPrice }}</b>
               </div>
-              <div class="w-0 h-0 border-l-2 border-r-2 border-t-2 border-l-transparent border-r-transparent -mt-0.5" style="border-top-color: #28AED8;"></div>
+              <div class="w-0 h-0 border-l-2 border-r-2 border-t-2 border-l-transparent border-r-transparent border-t-yellow-500 -mt-0.5"></div>
             </div>
           </div>
         </div>
@@ -113,24 +113,38 @@
 
       <!-- Emergency Service Filter -->
       <div v-if="currentCategory?.filters?.emergencyService" class="self-stretch bg-white border border-gainsboro border-solid flex flex-col items-start p-3 lg:p-[10px] gap-4 lg:gap-6">
-        <div class="relative leading-[160%] capitalize font-medium text-sm lg:text-base">Emergency Service Available</div>
-        <div class="flex items-center gap-4 lg:gap-[22px] text-[14px] lg:text-[16px] text-gray-500">
-          <div class="flex items-center gap-2 cursor-pointer" @click="setEmergencyService(true)">
-            <div class="w-5 h-5 lg:w-6 lg:h-6 border border-black rounded-full bg-white flex items-center justify-center">
-              <div :class="['w-3 h-3 rounded-full transition-colors', filters.emergencyService === true ? 'bg-black' : 'bg-transparent']"></div>
-            </div>
-            <div class="relative leading-[160%] capitalize font-medium">Yes</div>
-          </div>
-          <div class="flex items-center gap-2 cursor-pointer" @click="setEmergencyService(false)">
-            <div class="w-5 h-5 lg:w-6 lg:h-6 border border-black rounded-full bg-white flex items-center justify-center">
-              <div :class="['w-3 h-3 rounded-full transition-colors', filters.emergencyService === false ? 'bg-black' : 'bg-transparent']"></div>
-            </div>
-            <div class="relative leading-[160%] capitalize font-medium">No</div>
-          </div>
+    <div class="relative leading-[160%] capitalize font-medium text-sm lg:text-base">Emergency Service Available</div>
+    <div class="flex items-center gap-4 lg:gap-[22px] text-[14px] lg:text-[16px] text-gray-500">
+      
+      <div 
+        class="flex items-center gap-2 cursor-pointer" 
+        @click="setEmergencyService(true)"
+      >
+        <div class="w-5 h-5 lg:w-6 lg:h-6 border border-gray-700 rounded-full bg-white flex items-center justify-center">
+          <div :class="[
+            'w-3 h-3 rounded-full transition-colors', 
+            filters.emergencyService === true ? 'bg-black' : 'bg-transparent'
+          ]"></div>
         </div>
+        <div class="relative leading-[160%] capitalize font-medium text-gray-700">Yes</div>
       </div>
+      
+      <div 
+        class="flex items-center gap-2 cursor-pointer" 
+        @click="setEmergencyService(false)"
+      >
+        <div class="w-5 h-5 lg:w-6 lg:h-6 border border-gray-700 rounded-full bg-white flex items-center justify-center">
+          <div :class="[
+            'w-3 h-3 rounded-full transition-colors', 
+            filters.emergencyService === false ? 'bg-black' : 'bg-transparent'
+          ]"></div>
+        </div>
+        <div class="relative leading-[160%] capitalize font-medium text-gray-700">No</div>
+      </div>
+      
+    </div>
+</div>
 
-      <!-- Service Types Filter -->
       <div v-if="currentCategory?.filters?.serviceTypes" class="self-stretch rounded-[4px] border border-gainsboro border-solid flex flex-col items-start p-3 lg:p-[10px] gap-2">
         <div class="w-full flex items-center justify-between gap-0">
           <div class="relative leading-[160%] capitalize font-medium text-sm lg:text-base">{{ currentCategory.filters.serviceTypes.label }}</div>
@@ -148,7 +162,7 @@
             <div 
               v-for="service in currentCategory.filters.serviceTypes.options" 
               :key="service" 
-              class="self-stretch border-b border-whitesmoke border-solid box-border h-10 flex items-center gap-2 cursor-pointer transition-colors hover:bg-gray-100 pl-2"
+              class="self-stretch border-b border-whitesmoke border-solid box-border h-10 flex items-center gap-2 cursor-pointer transition-colors hover:bg-gray-100"
               @click="toggleService(service)"
             >
               <div class="w-5 h-5 lg:w-6 lg:h-6 relative overflow-hidden shrink-0">
@@ -181,7 +195,7 @@
             <div 
               v-for="specialization in currentCategory.filters.specializations.options" 
               :key="specialization" 
-              class="self-stretch border-b border-whitesmoke border-solid box-border h-10 flex items-center gap-2 cursor-pointer transition-colors hover:bg-gray-100 pl-2"
+              class="self-stretch border-b border-whitesmoke border-solid box-border h-10 flex items-center gap-2 cursor-pointer transition-colors hover:bg-gray-100"
               @click="toggleSpecialization(specialization)"
             >
               <div class="w-5 h-5 lg:w-6 lg:h-6 relative overflow-hidden shrink-0">
@@ -303,7 +317,6 @@
         </button>
       </div>
       
-      <!-- Listings Container -->
       <div class="w-full space-y-4">
         <div 
           v-for="listing in paginatedListings" 
@@ -333,15 +346,15 @@
                       </svg>
                     </div>
                   </div>
-                  <svg class="h-5 w-5 lg:h-6 lg:w-6 text-gray-500 cursor-pointer" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path>
+                  <svg class="h-5 w-5 lg:h-6 lg:w-6 text-red-500 cursor-pointer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                   </svg>
                 </div>
                 
                 <div class="self-stretch flex flex-col items-start gap-2 lg:gap-1 text-[13px] lg:text-[14px] text-darkgray">
                   <div class="self-stretch flex flex-col items-start">
                     <div class="self-stretch flex items-center gap-2">
-                      <svg class="w-4 h-4 lg:w-5 lg:h-5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <svg class="w-4 h-4 lg:w-5 lg:h-5 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <circle cx="12" cy="12" r="10"></circle>
                         <line x1="2" y1="12" x2="22" y2="12"></line>
                         <path d="m2,12 c3,5.5 7,9 10,9 s7,-3.5 10,-9"></path>
@@ -351,7 +364,7 @@
                     </div>
                   </div>
                   <div class="self-stretch flex items-center gap-2">
-                    <svg class="w-4 h-4 lg:w-5 lg:h-5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <svg class="w-4 h-4 lg:w-5 lg:h-5 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                       <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
                       <circle cx="12" cy="10" r="3"></circle>
                     </svg>
@@ -359,7 +372,7 @@
                   </div>
                   <div class="self-stretch flex flex-col lg:flex-row items-start lg:items-center gap-2 lg:gap-2">
                     <div class="flex items-center gap-2 flex-1">
-                      <svg class="w-4 h-4 lg:w-5 lg:h-5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <svg class="w-4 h-4 lg:w-5 lg:h-5 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <line x1="12" y1="1" x2="12" y2="23"></line>
                         <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
                       </svg>
@@ -679,6 +692,7 @@ export default {
 
 <style scoped>
 .custom-slider {
+  /* Changed #fcc207 to #28AED8 */
   background: linear-gradient(to right, #28AED8 0%, #28AED8 var(--progress, 50%), #e0e0e0 var(--progress, 50%), #e0e0e0 100%);
   border-radius: 9px;
   border: none;
@@ -694,6 +708,7 @@ export default {
   width: 20px;
   height: 20px;
   border-radius: 50%;
+  /* Changed #fcc207 to #28AED8 */
   background: #28AED8;
   cursor: pointer;
   border: 2px solid white;
@@ -704,6 +719,7 @@ export default {
   width: 20px;
   height: 20px;
   border-radius: 50%;
+  /* Changed #fcc207 to #28AED8 */
   background: #28AED8;
   cursor: pointer;
   border: 2px solid white;
