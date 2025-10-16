@@ -37,8 +37,6 @@ function slugify(name: string): string {
     .replace(/^-+|-+$/g, '');
 }
 
-// Load agencies from stubs (served from public directory)
-// Use absolute path to avoid route-relative 404s on nested routes
 const { data: agenciesData } = await useFetch<StubAgency[]>('/stubs/agencies.json');
 
 const mappedAgencies = computed(() =>

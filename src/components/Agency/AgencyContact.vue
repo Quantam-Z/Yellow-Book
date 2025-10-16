@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full min-h-screen bg-gray-50 flex justify-center p-4 sm:p-6 lg:p-10">
+  <div class="w-full min-h-screen bg-white flex justify-center p-4 sm:p-6 lg:p-10">
     
     <div class="flex flex-col lg:flex-row items-start justify-center gap-6 w-full max-w-6xl">
 
@@ -174,7 +174,6 @@ const computedWebsiteHref = computed(() => {
 </script>
 
 <style scoped>
-/* You can still add custom styles here if needed, but Tailwind handles responsiveness */
 .shadow-lg {
   box-shadow: 0 4px 16px rgba(158, 158, 158, 0.24);
 }
