@@ -147,7 +147,6 @@ const agency = computed<Agency | null>(() => {
 
  const agencyNameFromQuery = computed(() => titleQuery.value || slugQuery.value || '');
 
- // Derived/display placeholders; replace with real fields as data grows
 const agencyTagline = computed(() => (agency.value ? `Top-rated ${agency.value.serviceType || 'services'} in ${agency.value.location || 'your area'}` : ''));
  const heroImage = computed(() => '/logo/image6.png');
  const logoImage = computed(() => '/logo/image7.png');
@@ -157,7 +156,6 @@ const agencyTagline = computed(() => (agency.value ? `Top-rated ${agency.value.s
      'Discover our agency — delivering quality services with excellence.'
  );
 const agencyPhone = computed(() => {
-  // Prefer stub data's mobile when available
   return (stubCompany.value?.mobile && `+${stubCompany.value.mobile}`) || '+976 1234 5678';
 });
 const agencyEmail = computed(() => 'contact@example.com');

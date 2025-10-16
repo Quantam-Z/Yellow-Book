@@ -20,8 +20,8 @@ const logoImageSrc = computed(() => props.logoImage || '/logo/image7.png');
 </script>
 
 <template>
-  <div class="w-full flex flex-col items-center gap-6 text-center text-black font-plus-jakarta-sans">
-    <!-- Image Container -->
+<div class="w-full flex flex-col items-center gap-6 text-center text-black font-plus-jakarta-sans px-4 lg:px-6 py-2">
+  <!-- Image Container -->
     <div class="relative w-full max-w-7xl">
       <img 
         class="w-full h-auto object-cover  rounded-lg" 

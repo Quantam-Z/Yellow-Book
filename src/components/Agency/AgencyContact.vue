@@ -1,17 +1,15 @@
 <template>
-  <div class="w-full min-h-screen bg-white flex justify-center p-4 sm:p-6 lg:p-10">
+  <div class="min-h-screen flex justify-center px-4 lg:px-6 py-2 bg-white">
     
-    <div class="flex flex-col lg:flex-row items-start justify-center gap-6 w-full max-w-6xl">
+    <div class="flex flex-col lg:flex-row items-stretch justify-center gap-6 w-[97%] max-w-6xl lg:h-[80vh]">
 
-      <div 
-        class="w-full lg:flex-1 shadow-lg shadow-gray-200/50 bg-white border border-gray-200 rounded-xl flex flex-col items-start p-6 gap-6 min-w-0"
-      >
-        <div class="w-full border-b border-gray-200 flex items-center pb-3 gap-2 text-lg font-semibold text-gray-800">
+      <div class="w-full lg:flex-1 shadow-lg shadow-gray-200/50 bg-white border border-gray-200 rounded-xl flex flex-col items-start p-6 gap-6 min-w-0 h-full">
+        <div class="w-full border-b border-gray-200 flex items-center pb-3 gap-2 text-lg font-semibold text-gray-800 shrink-0">
           <Building class="w-5 h-5 text-indigo-500" />
           <div class="leading-relaxed capitalize">Company Information</div>
         </div>
-        
-        <div class="self-stretch flex flex-col items-start pl-0 sm:pl-7 gap-4 text-left text-sm text-gray-600">
+
+        <div class="self-stretch flex flex-col items-start pl-0 sm:pl-7 gap-4 text-left text-sm text-gray-600 flex-grow overflow-y-auto pr-2">
           
           <div class="flex items-center gap-3 w-full flex-wrap">
             <div class="w-full sm:w-56 flex items-center justify-between gap-2 shrink-0">
@@ -34,6 +32,7 @@
             <span v-else class="break-words text-gray-500">Not provided</span>
           </div>
 
+          <!-- Phone -->
           <div class="flex items-center gap-3 w-full flex-wrap">
             <div class="w-full sm:w-56 flex items-center justify-between gap-2 shrink-0">
               <div class="flex items-center gap-2">
@@ -45,6 +44,7 @@
             <div class="break-words text-gray-700">{{ phone || 'Not provided' }}</div>
           </div>
 
+          <!-- Email -->
           <div class="flex items-center gap-3 w-full flex-wrap">
             <div class="w-full sm:w-56 flex items-center justify-between gap-2 shrink-0">
               <div class="flex items-center gap-2">
@@ -56,6 +56,7 @@
             <div class="break-words text-gray-700">{{ email || 'Not provided' }}</div>
           </div>
 
+          <!-- Location -->
           <div class="flex items-center gap-3 w-full flex-wrap">
             <div class="w-full sm:w-56 flex items-center justify-between gap-2 shrink-0">
               <div class="flex items-center gap-2">
@@ -67,6 +68,7 @@
             <div class="break-words text-gray-700">{{ location || 'Not provided' }}</div>
           </div>
 
+          <!-- Revenue -->
           <div class="flex items-center gap-3 w-full flex-wrap">
             <div class="w-full sm:w-56 flex items-center justify-between gap-2 shrink-0">
               <div class="flex items-center gap-2">
@@ -78,6 +80,7 @@
             <div class="break-words text-gray-700">{{ revenue || 'Not provided' }}</div>
           </div>
 
+          <!-- Employees -->
           <div class="flex items-center gap-3 w-full flex-wrap">
             <div class="w-full sm:w-56 flex items-center justify-between gap-2 shrink-0">
               <div class="flex items-center gap-2">
@@ -89,6 +92,7 @@
             <div class="break-words text-gray-700">{{ employees || 'Not provided' }}</div>
           </div>
 
+          <!-- Industry -->
           <div class="flex items-center gap-3 w-full flex-wrap">
             <div class="w-full sm:w-56 flex items-center justify-between gap-2 shrink-0">
               <div class="flex items-center gap-2">
@@ -100,6 +104,7 @@
             <div class="break-words text-gray-700">{{ industry || 'Not provided' }}</div>
           </div>
 
+          <!-- Category -->
           <div class="flex items-center gap-3 w-full flex-wrap">
             <div class="w-full sm:w-56 flex items-center justify-between gap-2 shrink-0">
               <div class="flex items-center gap-2">
@@ -114,11 +119,10 @@
         </div>
       </div>
 
-      <div 
-        class="w-full lg:w-[480px] lg:flex-shrink-0 shadow-lg shadow-gray-200/50 bg-white border border-gray-200 rounded-xl flex flex-col items-center p-6 gap-6 min-h-0"
-      >
-        <div class="flex flex-col items-center gap-4 w-full">
-          
+      <!-- Right Card -->
+      <div class="w-full lg:w-[480px] lg:flex-shrink-0 shadow-lg shadow-gray-200/50 bg-white border border-gray-200 rounded-xl flex flex-col items-center p-6 gap-6 min-h-0 h-full overflow-y-auto">
+        
+        <div class="flex flex-col items-center gap-4 w-full shrink-0">
           <img class="w-36 h-36 rounded-full object-cover shadow-md" :src="profileImage || '/profile.png'" :alt="ownerName || 'Owner'" />
           
           <div class="flex flex-col items-center justify-center gap-2.5">
@@ -127,28 +131,19 @@
           </div>
         </div>
         
-        <div class="text-base leading-relaxed italic text-gray-700 text-center">
+        <div class="text-base leading-relaxed italic text-gray-700 text-center flex-grow">
           "{{ ownerBio || '' }}"
         </div>
       </div>
+
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { 
-  Building, 
-  Globe, 
-  Phone, 
-  Mail, 
-  MapPin, 
-  DollarSign, 
-  Users, 
-  Briefcase, 
-  Tag, 
-  ExternalLink 
+  Building, Globe, Phone, Mail, MapPin, DollarSign, Users, Briefcase, Tag, ExternalLink 
 } from 'lucide-vue-next';
-
 import { computed } from 'vue';
 
 const props = defineProps<{
