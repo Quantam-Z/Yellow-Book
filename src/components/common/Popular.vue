@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { Star, MapPin } from 'lucide-vue-next';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { computed } from 'vue';
+import { Star, MapPin } from 'lucide-vue-next';
 
-const router = useRouter();
-
+// --- Types ---
 type StubAgency = {
   title: string;
   description: string;
@@ -16,18 +15,31 @@ type StubAgency = {
 type SortKey = 'rating' | 'title' | 'location';
 type SortOrder = 'asc' | 'desc';
 
-const props = withDefaults(defineProps<{
-  limit?: number;
-  sortBy?: SortKey;
-  order?: SortOrder;
-  heading?: string;
-}>(), {
-  limit: 6,
-  sortBy: 'rating',
-  order: 'desc',
-  heading: 'Agencies',
-});
+// --- Props ---
+const props = withDefaults(
+  defineProps<{
+    limit?: number;
+    sortBy?: SortKey;
+    order?: SortOrder;
+    heading?: string;
+  }>(),
+  {
+    limit: 6,
+    sortBy: 'rating',
+    order: 'desc',
+    heading: 'Agencies',
+  }
+);
 
+// --- Router ---
+const router = useRouter();
+
+// --- Reactive States ---
+const agenciesData = ref<StubAgency[]>([]);
+const loading = ref(true);
+const error = ref<string | null>(null);
+
+// --- Utility Functions ---
 function slugify(name: string): string {
   return String(name || '')
     .toLowerCase()
@@ -37,42 +49,8 @@ function slugify(name: string): string {
     .replace(/^-+|-+$/g, '');
 }
 
-const { data: agenciesData } = await useFetch<StubAgency[]>('/stubs/agencies.json');
-
-const mappedAgencies = computed(() =>
-  Array.isArray(agenciesData.value)
-    ? (agenciesData.value as StubAgency[]).map((a) => ({
-        id: slugify(a.title),
-        title: a.title,
-        description: a.description,
-        image: a.image,
-        rating: Math.max(0, Math.min(5, Number(a.rating) || 0)),
-        location: a.location,
-        slug: slugify(a.title),
-      }))
-    : []
-);
-
-const sortedLimitedAgencies = computed(() => {
-  const raw = mappedAgencies.value.slice();
-  const key = props.sortBy as SortKey;
-  const order = props.order === 'asc' ? 1 : -1;
-  raw.sort((a, b) => {
-    const va = (a as Record<string, unknown>)[key];
-    const vb = (b as Record<string, unknown>)[key];
-    if (typeof va === 'number' && typeof vb === 'number') {
-      return (va - vb) * order;
-    }
-    const sa = String(va || '').toLowerCase();
-    const sb = String(vb || '').toLowerCase();
-    return sa.localeCompare(sb) * order;
-  });
-  return raw.slice(0, Math.max(1, Number(props.limit || 0)));
-});
-
 const getStars = (rating: number) => Array(Math.max(0, Math.min(5, rating))).fill(0);
 
-// Prefer slug; fall back to title for compatibility
 const goToAgency = (title: string, slug?: string, id?: number | string) => {
   const query: Record<string, string> = {};
   if (slug) query.slug = slug;
@@ -80,7 +58,55 @@ const goToAgency = (title: string, slug?: string, id?: number | string) => {
   if (id != null) query.id = String(id);
   router.push({ path: '/agency', query });
 };
+
+// --- Client-Side Fetch ---
+onMounted(async () => {
+  loading.value = true;
+  error.value = null;
+  try {
+    const res = await fetch('/stubs/agencies.json'); // Ensure JSON is in public/stubs/
+    if (!res.ok) throw new Error(`Failed to fetch: ${res.statusText}`);
+    const data: StubAgency[] = await res.json();
+    agenciesData.value = data;
+  } catch (err: any) {
+    console.error(err);
+    error.value = err.message || 'Failed to load agencies';
+  } finally {
+    loading.value = false;
+  }
+});
+
+// --- Computed: Map & Sort ---
+const mappedAgencies = computed(() =>
+  agenciesData.value.map(a => ({
+    id: slugify(a.title),
+    title: a.title,
+    description: a.description,
+    image: a.image,
+    rating: Math.max(0, Math.min(5, Number(a.rating) || 0)),
+    location: a.location,
+    slug: slugify(a.title),
+  }))
+);
+
+const sortedLimitedAgencies = computed(() => {
+  const raw = mappedAgencies.value.slice();
+  const key = props.sortBy as SortKey;
+  const order = props.order === 'asc' ? 1 : -1;
+
+  raw.sort((a, b) => {
+    const va = (a as Record<string, unknown>)[key];
+    const vb = (b as Record<string, unknown>)[key];
+    if (typeof va === 'number' && typeof vb === 'number') return (va - vb) * order;
+    const sa = String(va || '').toLowerCase();
+    const sb = String(vb || '').toLowerCase();
+    return sa.localeCompare(sb) * order;
+  });
+
+  return raw.slice(0, Math.max(1, Number(props.limit || 0)));
+});
 </script>
+
 
 <template>
   <div class="w-full max-w-[1200px] mx-auto mt-16 px-5 flex flex-col items-center gap-10 text-center font-plus-jakarta-sans">
