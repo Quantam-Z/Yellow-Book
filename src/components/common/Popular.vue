@@ -25,21 +25,37 @@ function slugify(name: string): string {
 }
 
 // Load agencies from stubs (not categories/listings)
-const { data: companiesData } = await useFetch<StubCompany[]>('/stubs/companies.json');
-const companies = computed<StubCompany[]>(() => Array.isArray(companiesData.value) ? (companiesData.value as StubCompany[]) : []);
+const { data: companiesData } = useFetch<StubCompany[]>('/stubs/companies.json', {
+  default: () => [] as StubCompany[],
+});
 
-// Map to Popular card model (hide category info)
-const agencies = computed(() =>
-  companies.value.slice(0, 6).map((c) => ({
+const companies = computed<StubCompany[]>(() =>
+  Array.isArray(companiesData.value) ? (companiesData.value as StubCompany[]) : []
+);
+
+// Fallback list when fetch is empty or fails
+const fallbackCompanies: StubCompany[] = [
+  { id: 'fallback-1', name: 'ABC Company', website: 'www.yourwebsite.com', verified: false },
+  { id: 'fallback-2', name: 'XYZ Corporation', website: 'www.xyzcorp.com', verified: false },
+  { id: 'fallback-3', name: 'Tech Solutions Ltd', website: 'www.techsolutions.com', verified: true },
+];
+
+// Map to Popular card model (hide category info) - limit to 3
+const agencies = computed(() => {
+  const source = companies.value && companies.value.length > 0
+    ? companies.value.slice(0, 3)
+    : fallbackCompanies;
+
+  return source.map((c, idx) => ({
     id: c.id,
     title: c.name,
     description: c.website || (c.verified ? 'Verified' : 'Unverified'),
-    image: '/logo/p1.png',
+    image: ['/logo/p1.png', '/logo/p2.png', '/logo/p3.png'][idx % 3],
     rating: 0,
     location: '',
     slug: slugify(c.name),
-  }))
-);
+  }));
+});
 
 const getStars = (rating: number) => Array(Math.max(0, Math.min(5, rating))).fill(0);
 
