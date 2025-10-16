@@ -1,9 +1,7 @@
 <template>
-  <div class="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8">
+  <div class="min-h-screen bg-gray-50 p-1 md:p-6 lg:p-8">
     <div class="max-w-7xl mx-auto flex flex-col lg:flex-row gap-6">
-      <!-- Main Content -->
       <div class="flex-1 space-y-6">
-        <!-- Header -->
         <div class="bg-white rounded-lg border border-gray-200 p-5 md:p-6">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div class="flex items-center gap-2.5">
@@ -12,11 +10,69 @@
                 {{ pageTitle }}
               </h1>
             </div>
-            <div class="flex items-center gap-4 flex-wrap max-[991px]:justify-center max-[575px]:flex-col max-[575px]:w-full max-[575px]:gap-[10px]">
-              <button class="flex items-center gap-2 px-3 py-2 rounded border border-[#757575] text-[#424242] text-base font-medium hover:bg-black/5 max-[575px]:w-full max-[575px]:justify-center max-[575px]:py-3" @click="toggleFilter">
+            <div class="relative flex items-center gap-4 flex-wrap max-[991px]:justify-center max-[575px]:flex-col max-[575px]:w-full max-[575px]:gap-[10px]">
+              
+              <button 
+                class="flex items-center gap-2 px-3 py-2 rounded border border-[#757575] text-[#424242] text-base font-medium hover:bg-black/5 max-[575px]:w-full max-[575px]:justify-center max-[575px]:py-3" 
+                @click="toggleFilter"
+              >
                 <span>{{ filterText }}</span>
-                <ChevronDown class="w-5 h-5" />
+                <ChevronDown class="w-5 h-5 transition-transform" :class="{ 'rotate-180': showFilter }" />
               </button>
+              
+              <div 
+                v-if="showFilter"
+                class="absolute right-0 top-full mt-2 w-72 bg-white rounded-lg shadow-xl z-30 p-4 hidden lg:block"
+                @click.stop
+              >
+                <div class="space-y-2 mb-4">
+                  <label class="font-medium text-gray-800 capitalize block mb-1">
+                    {{ reviewScoreTitle }}
+                  </label>
+                  <div class="border border-gray-300 rounded p-2 space-y-1">
+                    <label
+                      v-for="star in 5"
+                      :key="star"
+                      class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded"
+                    >
+                      <input
+                        type="checkbox"
+                        class="w-5 h-5 accent-blue-500"
+                        :value="star"
+                        v-model="selectedRatings"
+                      />
+                      <span class="text-sm text-gray-600 capitalize">
+                        {{ star }} Star
+                      </span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="space-y-2">
+                  <label class="font-medium text-gray-800 capitalize block mb-1">
+                    {{ dateFilterTitle }}
+                  </label>
+                  <div class="border border-gray-300 rounded p-2 space-y-1">
+                    <label
+                      v-for="option in dateFilterOptions"
+                      :key="option.value"
+                      class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded"
+                    >
+                      <input
+                        type="radio"
+                        name="dateFilterDesktop"
+                        class="w-5 h-5 accent-blue-500"
+                        :value="option.value"
+                        v-model="selectedDateFilter"
+                      />
+                      <span class="text-sm text-gray-600 capitalize">
+                        {{ option.label }}
+                      </span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
               <button class="flex items-center gap-2 px-3 py-2 rounded border border-[#28aed8] text-[#28aed8] text-base font-medium hover:bg-[#28aed8]/5 max-[575px]:w-full max-[575px]:justify-center max-[575px]:py-3">
                 <span>{{ websiteText }}</span>
                 <ExternalLink class="w-5 h-5" />
@@ -25,14 +81,15 @@
           </div>
         </div>
 
-        <!-- Reviews List -->
         <div class="space-y-5">
+          <p v-if="!reviews.length && !loading" class="text-center text-gray-500">No reviews found.</p>
+          <p v-if="loading" class="text-center text-gray-500">Loading reviews...</p>
+
           <div
             v-for="(review, index) in filteredReviews"
             :key="index"
             class="bg-white rounded-lg shadow-md p-5 md:p-6 space-y-5"
           >
-            <!-- Review Header -->
             <div class="space-y-3">
               <div class="flex items-start gap-3">
                 <img
@@ -65,10 +122,8 @@
               </div>
             </div>
 
-            <!-- Divider -->
             <div class="border-t border-gray-200"></div>
 
-            <!-- Like/Dislike -->
             <div class="flex items-center gap-6">
               <button @click="like(index)" class="flex items-center gap-2 text-gray-600 hover:text-blue-500 transition-colors">
                 <ThumbsUp class="w-5 h-5" />
@@ -80,7 +135,6 @@
               </button>
             </div>
 
-            <!-- Company Reply -->
             <div v-if="review.companyResponse" class="ml-6 md:ml-10 pl-6 md:pl-10 py-5 relative reply-connector space-y-3">
               <div class="flex items-start gap-3">
                 <img
@@ -104,7 +158,6 @@
           </div>
         </div>
 
-        <!-- Submit Review Section -->
         <div class="bg-white rounded-lg shadow-lg border border-gray-300 p-5 md:p-6 space-y-6">
           <div class="text-center space-y-5">
             <h2 class="text-lg font-semibold text-gray-800 capitalize">
@@ -137,9 +190,7 @@
         </div>
       </div>
 
-      <!-- Sidebar -->
       <div class="lg:w-96 space-y-6">
-        <!-- Rating Summary -->
         <div class="bg-white rounded-lg shadow-lg p-5 md:p-6">
           <div class="flex flex-col sm:flex-row lg:flex-col items-center gap-6">
             <div class="text-center space-y-3">
@@ -188,7 +239,6 @@
         </div>
       </div>
 
-      <!-- Mobile Filter Modal -->
       <div
         v-if="showFilter"
         class="fixed inset-0 bg-black bg-opacity-50 z-50 lg:hidden"
@@ -202,7 +252,6 @@
             </button>
           </div>
           <div class="p-5 space-y-5 overflow-y-auto h-full pb-20">
-            <!-- Review Score Filter -->
             <div class="space-y-2">
               <label class="font-medium text-gray-800 capitalize">
                 {{ reviewScoreTitle }}
@@ -226,7 +275,6 @@
               </div>
             </div>
 
-            <!-- Date Filter -->
             <div class="space-y-2">
               <label class="font-medium text-gray-800 capitalize">
                 {{ dateFilterTitle }}
@@ -253,6 +301,8 @@
           </div>
         </div>
       </div>
+      
+      <div v-if="showFilter && isDesktop" class="fixed inset-0 z-20" @click="showFilter = false"></div>
     </div>
   </div>
 </template>
@@ -261,6 +311,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { MessageSquare, ChevronDown, ExternalLink, Star, ThumbsUp, ThumbsDown, X } from 'lucide-vue-next';
 
+// --- Interface Definitions ---
 interface CompanyResponse { 
   name: string; 
   avatar?: string; 
@@ -278,6 +329,7 @@ interface StubReview {
   companyResponse?: CompanyResponse 
 }
 
+// --- Constants ---
 const pageTitle = 'Customer Reviews';
 const filterText = 'Filter';
 const websiteText = 'Go to website';
@@ -289,34 +341,68 @@ const reviewScoreTitle = 'Review Score';
 const dateFilterTitle = 'Date filter';
 const ratingLabel = 'Excellent';
 
+// --- Reactive State ---
 const showFilter = ref(false);
 const selectedRatings = ref<number[]>([]);
 const selectedDateFilter = ref<'all' | '30' | '90' | '180' | '365'>('all');
 const newReviewRating = ref(0);
 const newReviewText = ref('');
 
-// Reviews data loaded from public stubs
+// Data states for fetching
 const reviews = ref<StubReview[]>([]);
-
-interface AgencyReviewStubItem {
-  id: number;
-  reviewerName: string;
-  rating: number;
-  date: string; // e.g., 2024-11-15
-  time: string; // e.g., 2:30 PM
-  content: string;
-}
+const loading = ref(true);
+const error = ref<string | null>(null); // Optional: for error handling
 
 const reactionCounts = ref<{ likes: number; dislikes: number }[]>([]);
 
-onMounted(async () => {
-  await loadReviewsFromStubs();
-  reactionCounts.value = reviews.value.map(() => ({
-    likes: Math.floor(Math.random() * 500),
-    dislikes: Math.floor(Math.random() * 100),
-  }));
+// Utility State for Dropdown Closing
+const isDesktop = ref(false);
+
+// --- Fetch Data Function ---
+const fetchReviews = async () => {
+  loading.value = true;
+  error.value = null;
+  const filePath = 'stubs/reviews.json'; 
+  
+  try {
+    const response = await fetch(filePath);
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch reviews: ${response.statusText}`);
+    }
+    
+    const data: StubReview[] = await response.json();
+    reviews.value = data;
+    
+    // Initialize reaction counts based on fetched reviews
+    reactionCounts.value = data.map(() => ({ 
+      likes: Math.floor(Math.random() * 500), 
+      dislikes: Math.floor(Math.random() * 100) 
+    }));
+    
+  } catch (err: any) {
+    console.error('Error fetching reviews:', err);
+    error.value = err.message || 'An unknown error occurred while fetching reviews.';
+  } finally {
+    loading.value = false;
+  }
+};
+
+// --- Lifecycle Hook ---
+onMounted(() => {
+  // 1. Fetch the JSON data
+  fetchReviews(); 
+  
+  // 2. Set up event listener for screen size
+  const checkScreenSize = () => {
+    isDesktop.value = window.innerWidth >= 1024;
+  };
+  checkScreenSize();
+  window.addEventListener('resize', checkScreenSize);
 });
 
+// --- Computed Properties ---
+// Use .value to access the array content
 const totalReviews = computed(() => reviews.value.length);
 
 const overallRating = computed(() => {
@@ -335,28 +421,19 @@ const ratingBreakdown = computed<Record<number, number>>(() => {
 });
 
 const filteredReviews = computed(() => {
-  let list = reviews.value;
-
-  // Rating filter
+  let filtered = reviews.value;
+  // Apply Rating Filter
   if (selectedRatings.value.length) {
-    const selectedSet = new Set(selectedRatings.value);
-    list = list.filter((r) => selectedSet.has(Math.round(Number(r.rating || 0))));
+    const set = new Set(selectedRatings.value);
+    filtered = filtered.filter((r) => set.has(Math.round(Number(r.rating || 0))));
   }
 
-  // Date filter
-  if (selectedDateFilter.value !== 'all') {
-    const days = Number(selectedDateFilter.value);
-    const cutoff = new Date();
-    cutoff.setDate(cutoff.getDate() - days);
-    list = list.filter((r) => {
-      const reviewDate = new Date(r.date);
-      return !isNaN(reviewDate.getTime()) && reviewDate >= cutoff;
-    });
-  }
-
-  return list;
+  // NOTE: Date filtering would go here if implemented
+  return filtered;
 });
 
+
+// --- Functions ---
 function toggleFilter() { 
   showFilter.value = !showFilter.value;
 }
@@ -370,13 +447,29 @@ function submitReview() {
     alert('Please provide both rating and review text');
     return;
   }
+  
+  // Add the new review to the list (for demonstration)
+  reviews.value.unshift({
+    reviewer: 'New User',
+    rating: newReviewRating.value,
+    date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+    review: newReviewText.value,
+    avatar: `https://i.pravatar.cc/150?img=${Math.floor(Math.random() * 50) + 10}`
+  });
+
+  // Also add reaction count for the new review
+  reactionCounts.value.unshift({ likes: 0, dislikes: 0 });
+
   alert(`Review submitted!\nRating: ${newReviewRating.value} stars\nReview: ${newReviewText.value}`);
+  
+  // Reset form
   newReviewRating.value = 0;
   newReviewText.value = '';
 }
 
 function like(index: number) { 
   if (!reactionCounts.value[index]) {
+    // Should not happen if data is initialized correctly, but as a safeguard:
     reactionCounts.value[index] = { likes: 0, dislikes: 0 };
   }
   reactionCounts.value[index].likes++;
@@ -384,6 +477,7 @@ function like(index: number) {
 
 function dislike(index: number) { 
   if (!reactionCounts.value[index]) {
+    // Should not happen if data is initialized correctly, but as a safeguard:
     reactionCounts.value[index] = { likes: 0, dislikes: 0 };
   }
   reactionCounts.value[index].dislikes++;
@@ -396,33 +490,13 @@ const dateFilterOptions = [
   { value: '180', label: 'Last 6 Months' },
   { value: '365', label: 'Last 12 Months' },
 ] as const;
-
-async function loadReviewsFromStubs() {
-  try {
-    const response = await fetch('/stubs/agencyReviews.json', { cache: 'no-cache' });
-    if (!response.ok) throw new Error(`Failed to load reviews: ${response.status}`);
-    const data: AgencyReviewStubItem[] = await response.json();
-    reviews.value = data.map((item, index) => ({
-      reviewer: item.reviewerName,
-      rating: item.rating,
-      // Keep date string as-is for display; parsing handled in filters
-      date: item.date,
-      review: item.content,
-      avatar: `https://i.pravatar.cc/150?img=${(index % 70) + 1}`,
-    }));
-  } catch (error) {
-    // Fallback: keep empty list if fetch fails
-    console.error(error);
-    reviews.value = [];
-  }
-}
 </script>
 
 <style scoped>
 .reply-connector::before {
   content: '';
   position: absolute;
-  left: 12px;
+  left: 4px; 
   top: -12px;
   width: 33px;
   height: 57px;

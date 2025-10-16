@@ -1,0 +1,36 @@
+[
+    {
+      "reviewer": "Cameron Williamson",
+      "rating": 5,
+      "date": "Jul/8/2025",
+      "review": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea",
+      "avatar": "https://i.pravatar.cc/150?img=1",
+      "companyResponse": {
+        "name": "Company Name",
+        "avatar": "https://i.pravatar.cc/150?img=10",
+        "date": "Jul/8/2025",
+        "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore"
+      }
+    },
+    {
+      "reviewer": "Sarah Johnson",
+      "rating": 4,
+      "date": "Jul/5/2025",
+      "review": "Great service and friendly staff. The experience was smooth from start to finish. Would definitely recommend to others looking for quality service.",
+      "avatar": "https://i.pravatar.cc/150?img=2",
+      "companyResponse": {
+        "name": "Company Name",
+        "avatar": "https://i.pravatar.cc/150?img=10",
+        "date": "Jul/6/2025",
+        "text": "Thank you for your kind words! We're glad you had a positive experience with us."
+      }
+    },
+    {
+      "reviewer": "Michael Chen",
+      "rating": 3,
+      "date": "Jul/3/2025",
+      "review": "Average experience. Some aspects were good but there's definitely room for improvement. The pricing is fair but the service could be faster.",
+      "avatar": "https://i.pravatar.cc/150?img=3"
+    }
+  ]
+  
