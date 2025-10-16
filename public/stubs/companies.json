@@ -1,0 +1,14 @@
+[
+  { "id": 1, "name": "ABC Company", "website": "www.yourwebsite.com", "mobile": "556265485", "category": "Technology", "status": "Approved", "verified": false },
+  { "id": 2, "name": "XYZ Corporation", "website": "www.xyzcorp.com", "mobile": "556265486", "category": "Finance", "status": "Pending", "verified": false },
+  { "id": 3, "name": "Tech Solutions Ltd", "website": "www.techsolutions.com", "mobile": "556265487", "category": "Technology", "status": "Approved", "verified": true },
+  { "id": 4, "name": "Global Enterprises", "website": "www.globalent.com", "mobile": "556265488", "category": "Manufacturing", "status": "Approved", "verified": false },
+  { "id": 5, "name": "Digital Innovations", "website": "www.digiinnov.com", "mobile": "556265489", "category": "Technology", "status": "Rejected", "verified": false },
+  { "id": 6, "name": "Smart Systems Inc", "website": "www.smartsystems.com", "mobile": "556265490", "category": "IT Services", "status": "Approved", "verified": false },
+  { "id": 7, "name": "Future Tech Labs", "website": "www.futuretech.com", "mobile": "556265491", "category": "Research", "status": "Pending", "verified": false },
+  { "id": 8, "name": "Cloud Solutions Pro", "website": "www.cloudsol.com", "mobile": "556265492", "category": "Cloud Services", "status": "Approved", "verified": false },
+  { "id": 9, "name": "Data Analytics Corp", "website": "www.dataanalytics.com", "mobile": "556265493", "category": "Analytics", "status": "Approved", "verified": false },
+  { "id": 10, "name": "Cyber Security Ltd", "website": "www.cybersec.com", "mobile": "556265494", "category": "Security", "status": "Pending", "verified": false },
+  { "id": 11, "name": "Web Design Studio", "website": "www.webdesign.com", "mobile": "556265495", "category": "Design", "status": "Approved", "verified": false },
+  { "id": 12, "name": "Mobile App Developers", "website": "www.mobileapp.com", "mobile": "556265496", "category": "Technology", "status": "Approved", "verified": false }
+]
