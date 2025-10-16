@@ -1,0 +1,23 @@
+[
+  {
+    "title": "Revolutionizing Technology",
+    "description": "Innovative technology solutions for modern businesses",
+    "image": "/logo/p1.png",
+    "rating": 5,
+    "location": "Ulaanbaatar, Mongolia"
+  },
+  {
+    "title": "Creative Agency",
+    "description": "Building modern brands with style and vision",
+    "image": "/logo/p2.png",
+    "rating": 4,
+    "location": "Tokyo, Japan"
+  },
+  {
+    "title": "Food & Beverage",
+    "description": "Fresh, organic, and delicious products",
+    "image": "/logo/p3.png",
+    "rating": 5,
+    "location": "Berlin, Germany"
+  }
+]

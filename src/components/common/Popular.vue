@@ -5,14 +5,12 @@ import { computed } from 'vue';
 
 const router = useRouter();
 
-type StubCompany = {
-  id: number | string;
-  name: string;
-  website?: string;
-  mobile?: string;
-  category?: string;
-  status?: string;
-  verified?: boolean;
+type StubAgency = {
+  title: string;
+  description: string;
+  image: string;
+  rating: number;
+  location: string;
 };
 
 function slugify(name: string): string {
@@ -24,21 +22,22 @@ function slugify(name: string): string {
     .replace(/^-+|-+$/g, '');
 }
 
-// Load agencies from stubs (not categories/listings)
-const { data: companiesData } = await useFetch<StubCompany[]>('/stubs/companies.json');
-const companies = computed<StubCompany[]>(() => Array.isArray(companiesData.value) ? (companiesData.value as StubCompany[]) : []);
+// Load agencies from stubs
+const { data: agenciesData } = await useFetch<StubAgency[]>('/stubs/agencies.json');
 
-// Map to Popular card model (hide category info)
+// Use agencies directly from stub, limit to 6
 const agencies = computed(() =>
-  companies.value.slice(0, 6).map((c) => ({
-    id: c.id,
-    title: c.name,
-    description: c.website || (c.verified ? 'Verified' : 'Unverified'),
-    image: '/logo/p1.png',
-    rating: 0,
-    location: '',
-    slug: slugify(c.name),
-  }))
+  Array.isArray(agenciesData.value)
+    ? (agenciesData.value as StubAgency[]).slice(0, 6).map((a) => ({
+        id: slugify(a.title),
+        title: a.title,
+        description: a.description,
+        image: a.image,
+        rating: Math.max(0, Math.min(5, Number(a.rating) || 0)),
+        location: a.location,
+        slug: slugify(a.title),
+      }))
+    : []
 );
 
 const getStars = (rating: number) => Array(Math.max(0, Math.min(5, rating))).fill(0);
