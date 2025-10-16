@@ -2,22 +2,42 @@
 import { Star, MapPin } from 'lucide-vue-next';
 import { useRouter } from 'vue-router';
 import { computed } from 'vue';
-import { categoryService } from '@/services/categoryService';
 
 const router = useRouter();
 
-// Source from listings.json
-const listings = categoryService.getListings();
+type StubCompany = {
+  id: number | string;
+  name: string;
+  website?: string;
+  mobile?: string;
+  category?: string;
+  status?: string;
+  verified?: boolean;
+};
 
-// Map to Popular card model (fallbacks for images)
+function slugify(name: string): string {
+  return String(name || '')
+    .toLowerCase()
+    .trim()
+    .replace(/&/g, 'and')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+// Load agencies from stubs (not categories/listings)
+const { data: companiesData } = await useFetch<StubCompany[]>('/stubs/companies.json');
+const companies = computed<StubCompany[]>(() => Array.isArray(companiesData.value) ? (companiesData.value as StubCompany[]) : []);
+
+// Map to Popular card model (hide category info)
 const agencies = computed(() =>
-  listings.slice(0, 6).map((l) => ({
-    title: l.name,
-    description: `${l.serviceType} • ${l.category}`,
+  companies.value.slice(0, 6).map((c) => ({
+    id: c.id,
+    title: c.name,
+    description: c.website || (c.verified ? 'Verified' : 'Unverified'),
     image: '/logo/p1.png',
-    rating: Math.round(l.rating || 0),
-    location: l.location,
-    slug: categoryService.slugifyName(l.name),
+    rating: 0,
+    location: '',
+    slug: slugify(c.name),
   }))
 );
 
@@ -44,7 +64,7 @@ const goToAgency = (title: string, slug?: string, id?: number | string) => {
         v-for="(agency, index) in agencies"
         :key="index"
         class="flex-1 basis-[300px] max-w-full sm:max-w-[384px] rounded-xl overflow-hidden flex flex-col cursor-pointer bg-white shadow-md transition-transform duration-200 hover:-translate-y-2"
-        @click="goToAgency(agency.title, agency.slug)"
+        @click="goToAgency(agency.title, agency.slug, agency.id)"
       >
         <!-- Agency Image -->
         <img class="w-full h-[250px] sm:h-[280px] object-cover" :src="agency.image" :alt="agency.title" />
