@@ -176,6 +176,11 @@ export default {
 </script>
 
 <style scoped>
+.navbar-links :deep(a),
+.navbar-mobile :deep(a) {
+  text-decoration: none !important;
+}
+
 .mobile-height { height: 100vh; min-height: 100vh; }
 @media (max-width: 1023px) { 
   .mobile-height { 
@@ -185,29 +190,27 @@ export default {
 }
 
 /* ---------------------------------------------------- */
-/* NEW BOAT SHAPE STYLE */
-/* Applies a large bottom-border-radius to create the "boat" or concave effect */
+/* UPDATED BOAT SHAPE STYLE - Less rounded */
 .boat-bottom-radius {
-    /* Base style for smaller screens */
-    border-bottom-left-radius: 130px 40px; 
-    border-bottom-right-radius: 130px 40px; 
+    /* Reduced border radius for smaller screens */
+    border-bottom-left-radius: 100px 25px; 
+    border-bottom-right-radius: 100px 25px; 
 }
 
 @media (min-width: 640px) { /* sm breakpoint */
     .boat-bottom-radius {
-        border-bottom-left-radius: 250px 60px;
-        border-bottom-right-radius: 250px 60px;
+        border-bottom-left-radius: 180px 40px;
+        border-bottom-right-radius: 180px 40px;
     }
 }
 
 @media (min-width: 1024px) { /* lg breakpoint */
     .boat-bottom-radius {
-        border-bottom-left-radius: 400px 90px;
-        border-bottom-right-radius: 400px 90px;
+        border-bottom-left-radius: 280px 60px;
+        border-bottom-right-radius: 280px 60px;
     }
 }
 /* ---------------------------------------------------- */
-
 
 /* Overlay Transition */
 .overlay-enter-active, .overlay-leave-active{ transition: opacity 0.3s ease; }
