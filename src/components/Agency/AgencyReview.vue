@@ -295,47 +295,26 @@ const selectedDateFilter = ref<'all' | '30' | '90' | '180' | '365'>('all');
 const newReviewRating = ref(0);
 const newReviewText = ref('');
 
-// Mock reviews data
-const reviews = ref<StubReview[]>([
-  {
-    reviewer: "Cameron Williamson",
-    rating: 5,
-    date: "Jul/8/2025",
-    review: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea",
-    avatar: "https://i.pravatar.cc/150?img=1",
-    companyResponse: {
-      name: "Company Name",
-      avatar: "https://i.pravatar.cc/150?img=10",
-      date: "Jul/8/2025",
-      text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore"
-    }
-  },
-  {
-    reviewer: "Sarah Johnson",
-    rating: 4,
-    date: "Jul/5/2025",
-    review: "Great service and friendly staff. The experience was smooth from start to finish. Would definitely recommend to others looking for quality service.",
-    avatar: "https://i.pravatar.cc/150?img=2",
-    companyResponse: {
-      name: "Company Name",
-      avatar: "https://i.pravatar.cc/150?img=10",
-      date: "Jul/6/2025",
-      text: "Thank you for your kind words! We're glad you had a positive experience with us."
-    }
-  },
-  {
-    reviewer: "Michael Chen",
-    rating: 3,
-    date: "Jul/3/2025",
-    review: "Average experience. Some aspects were good but there's definitely room for improvement. The pricing is fair but the service could be faster.",
-    avatar: "https://i.pravatar.cc/150?img=3"
-  }
-]);
+// Reviews data loaded from public stubs
+const reviews = ref<StubReview[]>([]);
+
+interface AgencyReviewStubItem {
+  id: number;
+  reviewerName: string;
+  rating: number;
+  date: string; // e.g., 2024-11-15
+  time: string; // e.g., 2:30 PM
+  content: string;
+}
 
 const reactionCounts = ref<{ likes: number; dislikes: number }[]>([]);
 
-onMounted(() => {
-  reactionCounts.value = reviews.value.map(() => ({ likes: Math.floor(Math.random() * 500), dislikes: Math.floor(Math.random() * 100) }));
+onMounted(async () => {
+  await loadReviewsFromStubs();
+  reactionCounts.value = reviews.value.map(() => ({
+    likes: Math.floor(Math.random() * 500),
+    dislikes: Math.floor(Math.random() * 100),
+  }));
 });
 
 const totalReviews = computed(() => reviews.value.length);
@@ -356,9 +335,26 @@ const ratingBreakdown = computed<Record<number, number>>(() => {
 });
 
 const filteredReviews = computed(() => {
-  if (!selectedRatings.value.length) return reviews.value;
-  const set = new Set(selectedRatings.value);
-  return reviews.value.filter((r) => set.has(Math.round(Number(r.rating || 0))));
+  let list = reviews.value;
+
+  // Rating filter
+  if (selectedRatings.value.length) {
+    const selectedSet = new Set(selectedRatings.value);
+    list = list.filter((r) => selectedSet.has(Math.round(Number(r.rating || 0))));
+  }
+
+  // Date filter
+  if (selectedDateFilter.value !== 'all') {
+    const days = Number(selectedDateFilter.value);
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - days);
+    list = list.filter((r) => {
+      const reviewDate = new Date(r.date);
+      return !isNaN(reviewDate.getTime()) && reviewDate >= cutoff;
+    });
+  }
+
+  return list;
 });
 
 function toggleFilter() { 
@@ -400,6 +396,26 @@ const dateFilterOptions = [
   { value: '180', label: 'Last 6 Months' },
   { value: '365', label: 'Last 12 Months' },
 ] as const;
+
+async function loadReviewsFromStubs() {
+  try {
+    const response = await fetch('/stubs/agencyReviews.json', { cache: 'no-cache' });
+    if (!response.ok) throw new Error(`Failed to load reviews: ${response.status}`);
+    const data: AgencyReviewStubItem[] = await response.json();
+    reviews.value = data.map((item, index) => ({
+      reviewer: item.reviewerName,
+      rating: item.rating,
+      // Keep date string as-is for display; parsing handled in filters
+      date: item.date,
+      review: item.content,
+      avatar: `https://i.pravatar.cc/150?img=${(index % 70) + 1}`,
+    }));
+  } catch (error) {
+    // Fallback: keep empty list if fetch fails
+    console.error(error);
+    reviews.value = [];
+  }
+}
 </script>
 
 <style scoped>
