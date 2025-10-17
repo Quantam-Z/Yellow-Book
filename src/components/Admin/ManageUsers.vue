@@ -341,6 +341,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { getStatusClass, getStatusShort, getSignupMethodClass } from '~/composables/useStatusClass'
+import { useSelection } from '~/composables/useSelection'
 import { Search, Calendar, Eye, CheckCircle, ChevronDown, Users, Mail, Share2, ChevronLeft, ChevronRight, Filter } from "lucide-vue-next";
 
 // Stats data
@@ -395,15 +396,15 @@ const filteredUsers = computed(() => {
   })
 })
 
-// Filter function
-const filterUsers = () => {}
+// Filter function replaced by shared noop; computed handles filtering
+import { noop } from '~/composables/useCommon'
+const filterUsers = noop
 
-// Select all checkbox
+// Select all checkbox using shared selection helper
+const { toggleAll } = useSelection(users)
 const toggleSelectAll = () => {
-  filteredUsers.value.forEach(user => {
-    user.selected = selectAll.value;
-  });
-};
+  toggleAll(filteredUsers.value)
+}
 
 // Status and signup method helpers are centralized in composable
 

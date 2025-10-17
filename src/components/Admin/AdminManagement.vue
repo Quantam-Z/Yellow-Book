@@ -307,6 +307,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { getStatusClass, getRoleClass } from '~/composables/useStatusClass'
+import { useSelection } from '~/composables/useSelection'
 import { Search, Eye, CheckCircle, ChevronDown, Edit, Trash2, Users, UserCheck, UserX, Shield } from "lucide-vue-next";
 
 // Stats data
@@ -351,15 +352,15 @@ const openAddModal = () => {
   // Add your modal logic here
 };
 
-// Filter function
-const filterAdmins = () => {}
+// Filter function replaced by shared noop; computed handles filtering
+import { noop } from '~/composables/useCommon'
+const filterAdmins = noop
 
-// Select all checkbox
+// Select all checkbox using shared selection helper
+const { toggleAll } = useSelection(admins)
 const toggleSelectAll = () => {
-  filteredAdmins.value.forEach(admin => {
-    admin.selected = selectAll.value;
-  });
-};
+  toggleAll(filteredAdmins.value)
+}
 
 // Status and role classes centralized in composable
 

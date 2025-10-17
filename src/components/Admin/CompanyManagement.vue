@@ -301,8 +301,10 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { getStatusClass, getStatusShort } from '~/composables/useStatusClass'
+import { useSelection } from '~/composables/useSelection'
 import { Search, Calendar, Eye, CheckCircle, ChevronDown, ChevronLeft, ChevronRight, Filter, Phone, Globe } from "lucide-vue-next";
-import AddCompany from '~/components/modal/addCompany.vue';
+// Lazy-load modal, fix import case to match file system
+const AddCompany = defineAsyncComponent(() => import('~/components/modal/AddCompany.vue'))
 
 // Modal state
 const isModalOpen = ref(false);
@@ -322,10 +324,11 @@ const companies = ref((companiesData.value || []).map(c => ({ ...c, selected: fa
 
 // Search and filters
 const searchQuery = ref('');
+// selection state derived from filtered list
 const selectAll = ref(false);
 const filters = ref({
-  dateFrom: '2025-10-09',
-  dateTo: '2025-10-09',
+  dateFrom: '',
+  dateTo: '',
   timeRange: '',
   status: '',
   category: ''
@@ -356,14 +359,15 @@ const filteredCompanies = computed(() => {
 })
 
 // No-op to keep template bindings; computed handles filtering
-const filterCompanies = () => {}
+import { noop } from '~/composables/useCommon'
+const filterCompanies = noop
 
-// Select all checkbox
+// Selection helpers
+const { toggleAll } = useSelection(companies)
+// Select all checkbox only affects currently filtered rows
 const toggleSelectAll = () => {
-  filteredCompanies.value.forEach(company => {
-    company.selected = selectAll.value;
-  });
-};
+  toggleAll(filteredCompanies.value)
+}
 
 // Status helpers are centralized in composable
 
