@@ -304,7 +304,7 @@ import { getStatusClass, getStatusShort } from '~/composables/useStatusClass'
 import { useSelection } from '~/composables/useSelection'
 import { Search, Calendar, Eye, CheckCircle, ChevronDown, ChevronLeft, ChevronRight, Filter, Phone, Globe } from "lucide-vue-next";
 // Lazy-load modal, fix import case to match file system
-const AddCompany = defineAsyncComponent(() => import('~/components/modal/addCompany.vue'))
+const AddCompany = defineAsyncComponent(() => import('~/components/modal/AddCompany.vue'))
 
 // Modal state
 const isModalOpen = ref(false);

@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import BuisnessReg from '~/components/modal/buisnessReg.vue';
+import BuisnessReg from '~/components/modal/BuisnessReg.vue';
 
 export default {
   components: {
