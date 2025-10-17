@@ -3,31 +3,31 @@
       
       <div class="relative z-10 w-full  px-4 sm:px-6 md:px-12 lg:px-[120px] py-4 sm:py-6 flex flex-col">
         <div class="flex items-center justify-between mb-6 sm:mb-12 md:mb-16">
-        <div class="w-[120px] sm:w-[118px] md:w-[118px] rounded-[4px]  flex flex-col items-start p-2 box-border">
-          <img class="self-stretch max-w-full overflow-hidden h-[34px] sm:h-[30px] md:h-[30px] flex-shrink-0 object-cover" src="/logo/logo.png" alt="Logo" />
-        </div>
+        <nuxt-link to="/" class="w-[120px] sm:w-[118px] md:w-[118px] rounded-[4px]  flex flex-col items-start p-2 box-border">
+    <img class="self-stretch max-w-full overflow-hidden h-[34px] sm:h-[30px] md:h-[30px] flex-shrink-0 object-cover" src="/logo/logo.png" alt="Logo" />
+</nuxt-link>
 
         <div class="hidden lg:flex items-center gap-8">
-          <div class="flex flex-col items-center gap-[4px] text-[#212121] cursor-pointer">
+          <nuxt-link to="/catagory" class="flex flex-col items-center gap-[4px] text-[#212121] cursor-pointer no-underline">
   <div class="relative leading-[160%] font-medium text-base">Category</div>
   <div class="w-[30px] bg-[#212121] h-[2px]"></div>
-</div>
+</nuxt-link>
 
-          <div class="flex items-center justify-center cursor-pointer">
-            <div class="relative leading-[160%] font-normal text-base text-[#616161]">Popular Listing</div>
-          </div>
-          <div class="flex items-center justify-center cursor-pointer">
-            <div class="relative leading-[160%] font-normal text-base text-[#616161]">FAQ</div>
-          </div>
+<nuxt-link to="/agency" class="flex items-center justify-center cursor-pointer no-underline">
+    <div class="relative leading-[160%] font-normal text-base text-[#616161]">Popular Listing</div>
+</nuxt-link>
+<nuxt-link to="/faq" class="flex items-center justify-center cursor-pointer no-underline">
+    <div class="relative leading-[160%] font-normal text-base text-[#616161]">FAQ</div>
+</nuxt-link>
         </div>
 
         <div class="hidden lg:flex items-center gap-6 text-[#212121]">
           <div class="flex items-center justify-center cursor-pointer" @click="openLoginModal">
             <div class="relative leading-[160%] font-normal text-base">Login</div>
           </div>
-          <div class="relative rounded border-gray border-solid border-[1px] box-border w-full h-12 flex items-center justify-center py-[18px] px-9 text-center text-base text-gray font-plus-jakarta-sans">
-<div class="relative leading-[130%] capitalize font-semibold">List Your Agency</div>
-</div>
+          <nuxt-link to="/agency" class="relative rounded border-gray border-solid border-[1px] box-border w-full h-12 flex items-center justify-center py-[18px] px-9 text-center text-base text-[#212121] font-plus-jakarta-sans no-underline">
+    <div class="relative leading-[130%] capitalize font-semibold">List Your Agency</div>
+</nuxt-link>
 
         </div>
 
