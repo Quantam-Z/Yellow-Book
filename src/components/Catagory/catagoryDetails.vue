@@ -444,7 +444,7 @@
 
 <script>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
-import Pagination from '~/components/common/Pagination.vue';
+import Pagination from '~/components/common/pagination.vue';
 import { categoryService } from '@/services/categoryService';
 import { useListingsFilter } from '@/composables/useListingsFilter';
 import { getStatusClass } from '@/utils/filterUtils';
