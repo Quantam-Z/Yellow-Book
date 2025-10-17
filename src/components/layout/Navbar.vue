@@ -136,7 +136,7 @@
 </template>
 
 <script>
-import LoginModal from '~/components/common/loginModal.vue'
+import LoginModal from '~/components/common/LoginModal.vue'
 import { Menu, X } from 'lucide-vue-next'
 
 export default {

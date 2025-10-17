@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import Catagory from '~/components/common/catagory.vue'
-import Frequent from '~/components/common/frequent.vue'
-import Popular from '~/components/common/popular.vue'
-import Star from '~/components/common/star.vue'
+import Catagory from '~/components/common/Catagory.vue'
+import Frequent from '~/components/common/Frequent.vue'
+import Popular from '~/components/common/Popular.vue'
+import Star from '~/components/common/Star.vue'
 </script>
 
 <template>

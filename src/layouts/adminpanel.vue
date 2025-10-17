@@ -11,7 +11,7 @@
   </template>
   
   <script setup>
-  import Sidebar from '~/components/adminLayout/sidebar.vue'
-  import Header from '~/components/adminLayout/header.vue'
+  import Sidebar from '~/components/adminLayout/Sidebar.vue'
+  import Header from '~/components/adminLayout/Header.vue'
   </script>
   

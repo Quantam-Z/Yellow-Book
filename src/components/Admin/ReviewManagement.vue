@@ -200,7 +200,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { Pencil, CheckCircle, Trash2, Filter, Plus } from 'lucide-vue-next'
-import RatingStars from '~/components/common/ratingStars.vue'
+import RatingStars from '~/components/common/RatingStars.vue'
 
 const reviews = ref([])
 const selectedRating = ref('')
