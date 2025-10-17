@@ -66,13 +66,11 @@ import {
   Shield,
   Settings,
   LogOut,
-  // RESTORED: Importing Menu (Hamburger) icon
   Menu 
 } from "lucide-vue-next";
 import { ref, onMounted, onUnmounted } from "vue";
 
 const isOpen = ref(false);
-// State to track if the user has scrolled down
 const isScrolled = ref(false); 
 
 const mainMenu = [
@@ -90,7 +88,6 @@ const bottomMenu = [
 
 // Function to handle scroll event
 const handleScroll = () => {
-  // Hide the button if the user scrolls more than 100 pixels down
   isScrolled.value = window.scrollY > 100; 
 };
 
