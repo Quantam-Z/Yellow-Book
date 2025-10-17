@@ -11,7 +11,7 @@
         },
         "specializations": {
           "label": "Animal Types",
-          "options": ["Dogs", "cats", "Birds", "Reptiles", "Small Animals"]
+          "options": ["Dogs", "Cats", "Birds", "Reptiles", "Small Animals"]
         },
         "emergencyService": true
       }
@@ -39,7 +39,7 @@
       "filters": {
         "serviceTypes": {
           "label": "Food Services",
-          "options": ["Restaurant", "catering", "Food Truck", "Bakery", "Coffee Shop"]
+          "options": ["Restaurant", "Catering", "Food Truck", "Bakery", "Coffee Shop"]
         },
         "specializations": {
           "label": "Cuisine Types",

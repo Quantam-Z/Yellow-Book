@@ -1,15 +1,15 @@
 <template>
   <div>
-    <buisnessReg :isOpen="isModalOpen" @close="closeModal" />
+    <BuisnessReg :isOpen="isModalOpen" @close="closeModal" />
   </div>
 </template>
 
 <script>
-import buisnessReg from '~/components/modal/buisnessReg.vue';
+import BuisnessReg from '~/components/modal/BuisnessReg.vue';
 
 export default {
   components: {
-    buisnessReg,
+    BuisnessReg,
   },
   data() {
     return {

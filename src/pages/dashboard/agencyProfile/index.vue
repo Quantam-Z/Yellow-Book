@@ -1,15 +1,15 @@
 <template>
   <div class="w-full space-y-6">
-   <dashboard />
+   <Dashboard />
   </div>
 </template>
 
 <script setup>
-import dashboard from '@/components/agencyProfile/dashboard.vue';
+import Dashboard from '@/components/AgencyProfile/Dashboard.vue';
 
 
 
 definePageMeta({
-  layout: "agencyProfile",
+  layout: "agencyprofile",
 });
 </script>
