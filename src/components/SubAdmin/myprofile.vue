@@ -1,6 +1,6 @@
 <template>
     <div class="min-h-screen bg-gray-50 p-4">
-      <!-- Header -->
+      <!-- header -->
       <div class="w-full rounded-lg bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 p-4 mb-4">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
           <h1 class="text-xl md:text-2xl font-bold text-gray-900">My Profile</h1>

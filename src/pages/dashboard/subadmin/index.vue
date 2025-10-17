@@ -1,15 +1,15 @@
 <template>
   <div class="w-full space-y-6">
-   <Dashboard />
+   <dashboard />
   </div>
 </template>
 
 <script setup>
-import Dashboard from '~/components/SubAdmin/Dashboard.vue';
+import dashboard from '~/components/SubAdmin/dashboard.vue';
 
 
 
 definePageMeta({
-  layout: "subadminpanel",
+  layout: "subadminPanel",
 });
 </script>

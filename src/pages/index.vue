@@ -1,18 +1,18 @@
 <script setup lang="ts">
-import Catagory from '~/components/common/Catagory.vue'
-import Frequent from '~/components/common/Frequent.vue'
-import Popular from '~/components/common/Popular.vue'
-import Star from '~/components/common/Star.vue'
+import catagory from '~/components/common/catagory.vue'
+import frequent from '~/components/common/frequent.vue'
+import popular from '~/components/common/popular.vue'
+import star from '~/components/common/star.vue'
 </script>
 
 <template>
   <div class="flex flex-col gap-10">
-    <!-- Navbar is included via default layout -->
-    <Catagory />
-    <Popular />
-    <Star />
-    <Frequent />
-    <!-- Footer is included via default layout -->
+    <!-- navbar is included via default layout -->
+    <catagory />
+    <popular />
+    <star />
+    <frequent />
+    <!-- footer is included via default layout -->
   </div>
   
 </template>

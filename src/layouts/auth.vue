@@ -9,7 +9,7 @@
 </template>
 
 <script setup>
-// import Header from "~/components/common/Header.vue";
+// import header from "~/components/common/header.vue";
 </script>
 
 

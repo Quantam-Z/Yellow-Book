@@ -3,7 +3,7 @@ import { defineAsyncComponent, computed } from 'vue';
 import { useRoute } from 'vue-router';
 
 definePageMeta({
-  layout: 'agencyprofile',
+  layout: 'agencyProfile',
 });
 
 function generateNameCandidates(slug: string): string[] {
@@ -16,7 +16,7 @@ function generateNameCandidates(slug: string): string[] {
 }
 
 const route = useRoute();
-const modules = import.meta.glob('@/components/AgencyProfile/*.vue');
+const modules = import.meta.glob('@/components/agencyProfile/*.vue');
 
 // Handle known slug aliases/misspellings
 const aliasMap: Record<string, string[]> = {

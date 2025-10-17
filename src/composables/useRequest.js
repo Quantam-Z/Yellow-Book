@@ -10,11 +10,11 @@ import useToken from "~/composables/useToken";
 const createClient = () => {
   const { public: publicConfig } = useRuntimeConfig();
 
-  const withAuthHeaders = (headers = {}) => {
+  const withAuthheaders = (headers = {}) => {
     const token = useToken();
-    const authHeaders = {};
-    if (token) authHeaders.Authorization = `Bearer ${token}`;
-    return { Accept: "application/json", ...authHeaders, ...headers };
+    const authheaders = {};
+    if (token) authheaders.Authorization = `Bearer ${token}`;
+    return { Accept: "application/json", ...authheaders, ...headers };
   };
 
   const showSuccess = (message) => {
@@ -65,8 +65,8 @@ const createClient = () => {
         method,
         body,
         headers: isFormData
-          ? withAuthHeaders(headers)
-          : withAuthHeaders({ "Content-Type": "application/json", ...headers }),
+          ? withAuthheaders(headers)
+          : withAuthheaders({ "Content-Type": "application/json", ...headers }),
         query,
         retry: 0,
         onRequest({ options }) {

@@ -1,5 +1,5 @@
 [
   { "id": 1, "text": "Absolutely fantastic service from start to finish. Highly recommend!", "company": "Innovate Solutions", "date": "2024-10-22", "time": "10:30 PM", "rating": 5, "reviewerName": "John Doe", "email": "john.doe@example.com", "companyName": "Innovate Solutions" },
   { "id": 2, "text": "Great product quality and excellent customer support team.", "company": "Global Enterprises", "date": "2024-10-21", "time": "02:15 PM", "rating": 4, "reviewerName": "Jane Smith", "email": "jane.smith@example.com", "companyName": "Global Enterprises" },
-  { "id": 3, "text": "Very professional and delivered on time with excellent quality work.", "company": "Tech Startup Inc", "date": "2024-10-20", "time": "09:45 AM", "rating": 5, "reviewerName": "Mike Johnson", "email": "mike.johnson@example.com", "companyName": "Tech Startup Inc" }
+  { "id": 3, "text": "Very professional and delivered on time with excellent quality work.", "company": "Tech startup Inc", "date": "2024-10-20", "time": "09:45 AM", "rating": 5, "reviewerName": "Mike Johnson", "email": "mike.johnson@example.com", "companyName": "Tech startup Inc" }
 ]

@@ -135,7 +135,7 @@
             </div>
 
             <div>
-              <label class="font-medium text-sm text-gray-700 block mb-1">Company Category <span class="text-red-500">*</span></label>
+              <label class="font-medium text-sm text-gray-700 block mb-1">Company category <span class="text-red-500">*</span></label>
               <div class="relative">
                 <select 
                   v-model="companyData.category"
