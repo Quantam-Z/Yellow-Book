@@ -1,19 +1,19 @@
 <template>
       <div>
-        <catagoryHead />
-        <catagoryBanner />
-        <catagorysearch />
-        <catagoryDetails />
-        <footer />
+        <CatagoryHead />
+        <CatagoryBanner />
+        <CatagorySearch />
+        <CatagoryDetails />
+        <Footer />
       </div>
     </template>
     
     <script setup lang="ts">
-    import catagoryHead from '@/components/catagory/catagoryHead.vue';
-    import footer from '@/components/layout/footer.vue';
-import catagoryBanner from '~/components/catagory/catagoryBanner.vue';
-import catagoryDetails from '~/components/catagory/catagoryDetails.vue';
-import catagorysearch from '~/components/catagory/catagorysearch.vue';
+    import CatagoryHead from '@/components/Catagory/CatagoryHead.vue';
+    import Footer from '@/components/layout/Footer.vue';
+import CatagoryBanner from '~/components/Catagory/CatagoryBanner.vue';
+import CatagoryDetails from '~/components/Catagory/CatagoryDetails.vue';
+import CatagorySearch from '~/components/Catagory/CatagorySearch.vue';
     
     definePageMeta({
       layout: 'catagory',

@@ -1,6 +1,6 @@
 [
   { "id": 1, "name": "Innovate Solutions", "category": "Tech", "assignedDate": "2024-10-22" },
   { "id": 2, "name": "Global Enterprises", "category": "Finance", "assignedDate": "2024-10-21" },
-  { "id": 3, "name": "Tech startup Inc", "category": "Technology", "assignedDate": "2024-10-20" },
+  { "id": 3, "name": "Tech Startup Inc", "category": "Technology", "assignedDate": "2024-10-20" },
   { "id": 4, "name": "Creative Agency Co", "category": "Marketing", "assignedDate": "2024-10-19" }
 ]

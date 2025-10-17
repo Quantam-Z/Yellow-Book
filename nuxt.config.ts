@@ -47,7 +47,7 @@ export default defineNuxtConfig({
 
   formkit: {
     defaultConfig: true,
-    configFile: "./src/config/formkitConfig.js",
+    configFile: "./src/config/formkit.config.js",
   },
 
   pwa: {
