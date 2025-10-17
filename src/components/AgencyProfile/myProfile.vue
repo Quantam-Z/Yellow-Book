@@ -1,7 +1,7 @@
 <template>
     <div class="w-full min-h-screen bg-gray-50 p-4 sm:p-6">
       
-      <!-- Header Section -->
+      <!-- header Section -->
       <div class="w-full rounded-xl bg-gradient-to-tr from-indigo-500/10 to-pink-500/10 p-4 mb-6 border border-gray-200 shadow-sm">
         <div class="flex items-center justify-between">
           <h1 class="text-2xl font-bold text-gray-900">My Profile</h1>
@@ -96,7 +96,7 @@
                 </div>
               </div>
   
-              <!-- Update Profile Button -->
+              <!-- Update Profile button -->
               <button
                 class="w-full md:w-[223px] rounded-lg bg-green-500 text-white h-[52px] flex items-center justify-center gap-2 font-semibold shadow-md hover:bg-green-600 transition-colors mt-4"
                 @click="updateProfile"
@@ -108,7 +108,7 @@
           </div>
         </div>
   
-        <!-- Save Button -->
+        <!-- Save button -->
         <div class="flex justify-end pt-4 border-t border-gray-100">
           <button
             class="w-full sm:w-[200px] rounded-xl bg-green-500 text-white py-3 font-medium flex items-center justify-center gap-2 shadow-lg shadow-green-500/30 hover:bg-green-600 transition-colors"

@@ -3,7 +3,7 @@ import { defineAsyncComponent, computed } from 'vue';
 import { useRoute } from 'vue-router';
 
 definePageMeta({
-  layout: 'adminpanel',
+  layout: 'adminPanel',
 });
 
 function generateNameCandidates(slug: string): string[] {
@@ -20,10 +20,10 @@ const modules = import.meta.glob('@/components/Admin/*.vue');
 
 // Map route slugs to preferred component base names
 const aliasMap: Record<string, string[]> = {
-  'manage-users': ['ManageUsers'],
-  'manage-companies': ['CompanyManagement'],
-  'manage-review': ['ReviewManagement'],
-  'admin-management': ['AdminManagement'],
+  'manage-users': ['manageUsers'],
+  'manage-companies': ['companyManagement'],
+  'manage-review': ['reviewManagement'],
+  'admin-management': ['adminManagement'],
 };
 
 const SelectedComponent = computed(() => {

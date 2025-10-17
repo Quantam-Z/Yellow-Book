@@ -1,7 +1,7 @@
 <template>
     <div class="w-full min-h-screen bg-gray-50 p-4 sm:p-6">
       
-      <!-- Header Section -->
+      <!-- header Section -->
       <div class="w-full rounded-xl bg-gradient-to-tr from-indigo-500/10 to-pink-500/10 p-4 mb-6 border border-gray-200 shadow-sm">
         <div class="flex items-center justify-between">
           <h1 class="text-2xl font-bold text-gray-900">Settings</h1>
@@ -59,7 +59,7 @@
                 
               </div>
               
-              <!-- Update Password Button -->
+              <!-- Update Password button -->
               <button 
                 class="w-full sm:w-[200px] rounded-lg bg-green-500 h-12 flex items-center justify-center gap-2 text-white font-semibold shadow-md hover:bg-green-600 transition-colors"
                 @click="updatePassword"
@@ -70,24 +70,24 @@
             </div>
           </div>
   
-          <!-- Right Column - Notification Preferences -->
+          <!-- Right Column - notification Preferences -->
           <div class="flex-1 shadow-lg rounded-xl bg-white flex flex-col items-start p-6 gap-6 border border-gray-100">
-            <h2 class="text-xl font-bold text-gray-800 capitalize">Notification Preferences</h2>
+            <h2 class="text-xl font-bold text-gray-800 capitalize">notification Preferences</h2>
             
-            <!-- Email Notifications Toggle -->
+            <!-- Email notifications Toggle -->
             <div class="self-stretch flex items-start gap-6">
               <div class="flex-1 flex flex-col items-start gap-2">
-                <div class="self-stretch text-sm font-medium text-gray-700 capitalize">Email Notifications</div>
+                <div class="self-stretch text-sm font-medium text-gray-700 capitalize">Email notifications</div>
                 <div class="self-stretch text-sm text-gray-500">Receive email notifications for new reviews and updates</div>
               </div>
               <div 
                 class="w-14 h-7 rounded-full bg-gray-200 border border-gray-300 flex items-center p-1 cursor-pointer transition-all duration-300"
-                :class="emailNotifications ? 'bg-green-500' : 'bg-gray-200'"
-                @click="toggleEmailNotifications"
+                :class="emailnotifications ? 'bg-green-500' : 'bg-gray-200'"
+                @click="toggleEmailnotifications"
               >
                 <div 
                   class="w-5 h-5 rounded-full bg-white shadow-md transform transition-transform duration-300"
-                  :class="emailNotifications ? 'translate-x-7' : 'translate-x-0'"
+                  :class="emailnotifications ? 'translate-x-7' : 'translate-x-0'"
                 ></div>
               </div>
             </div>
@@ -95,20 +95,20 @@
             <!-- Divider -->
             <div class="self-stretch border-t border-gray-200"></div>
             
-            <!-- Push Notifications Toggle -->
+            <!-- Push notifications Toggle -->
             <div class="self-stretch flex items-start gap-6">
               <div class="flex-1 flex flex-col items-start gap-2">
-                <div class="self-stretch text-sm font-medium text-gray-700 capitalize">Push Notifications</div>
+                <div class="self-stretch text-sm font-medium text-gray-700 capitalize">Push notifications</div>
                 <div class="self-stretch text-sm text-gray-500">Receive push notifications for important updates</div>
               </div>
               <div 
                 class="w-14 h-7 rounded-full bg-gray-200 border border-gray-300 flex items-center p-1 cursor-pointer transition-all duration-300"
-                :class="pushNotifications ? 'bg-green-500' : 'bg-gray-200'"
-                @click="togglePushNotifications"
+                :class="pushnotifications ? 'bg-green-500' : 'bg-gray-200'"
+                @click="togglePushnotifications"
               >
                 <div 
                   class="w-5 h-5 rounded-full bg-white shadow-md transform transition-transform duration-300"
-                  :class="pushNotifications ? 'translate-x-7' : 'translate-x-0'"
+                  :class="pushnotifications ? 'translate-x-7' : 'translate-x-0'"
                 ></div>
               </div>
             </div>
@@ -116,20 +116,20 @@
             <!-- Divider -->
             <div class="self-stretch border-t border-gray-200"></div>
             
-            <!-- SMS Notifications Toggle -->
+            <!-- SMS notifications Toggle -->
             <div class="self-stretch flex items-start gap-6">
               <div class="flex-1 flex flex-col items-start gap-2">
-                <div class="self-stretch text-sm font-medium text-gray-700 capitalize">SMS Notifications</div>
+                <div class="self-stretch text-sm font-medium text-gray-700 capitalize">SMS notifications</div>
                 <div class="self-stretch text-sm text-gray-500">Receive SMS alerts for critical updates</div>
               </div>
               <div 
                 class="w-14 h-7 rounded-full bg-gray-200 border border-gray-300 flex items-center p-1 cursor-pointer transition-all duration-300"
-                :class="smsNotifications ? 'bg-green-500' : 'bg-gray-200'"
-                @click="toggleSmsNotifications"
+                :class="smsnotifications ? 'bg-green-500' : 'bg-gray-200'"
+                @click="toggleSmsnotifications"
               >
                 <div 
                   class="w-5 h-5 rounded-full bg-white shadow-md transform transition-transform duration-300"
-                  :class="smsNotifications ? 'translate-x-7' : 'translate-x-0'"
+                  :class="smsnotifications ? 'translate-x-7' : 'translate-x-0'"
                 ></div>
               </div>
             </div>
@@ -157,7 +157,7 @@
           </div>
         </div>
   
-        <!-- Save All Changes Button -->
+        <!-- Save All Changes button -->
         <div class="flex justify-end pt-4 border-t border-gray-100">
           <button
             class="w-full sm:w-[200px] rounded-xl bg-indigo-600 text-white py-3 font-medium flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/30 hover:bg-indigo-700 transition-colors"
@@ -182,23 +182,23 @@
     confirmPassword: ''
   });
   
-  // Notification preferences
-  const emailNotifications = ref(true);
-  const pushNotifications = ref(false);
-  const smsNotifications = ref(true);
+  // notification preferences
+  const emailnotifications = ref(true);
+  const pushnotifications = ref(false);
+  const smsnotifications = ref(true);
   const marketingEmails = ref(false);
   
   // Methods
-  const toggleEmailNotifications = () => {
-    emailNotifications.value = !emailNotifications.value;
+  const toggleEmailnotifications = () => {
+    emailnotifications.value = !emailnotifications.value;
   };
   
-  const togglePushNotifications = () => {
-    pushNotifications.value = !pushNotifications.value;
+  const togglePushnotifications = () => {
+    pushnotifications.value = !pushnotifications.value;
   };
   
-  const toggleSmsNotifications = () => {
-    smsNotifications.value = !smsNotifications.value;
+  const toggleSmsnotifications = () => {
+    smsnotifications.value = !smsnotifications.value;
   };
   
   const toggleMarketingEmails = () => {
@@ -213,9 +213,9 @@
   const saveAllChanges = () => {
     // Handle save all changes logic here
     const notificationPreferences = {
-      email: emailNotifications.value,
-      push: pushNotifications.value,
-      sms: smsNotifications.value,
+      email: emailnotifications.value,
+      push: pushnotifications.value,
+      sms: smsnotifications.value,
       marketing: marketingEmails.value
     };
     // You can add API call here

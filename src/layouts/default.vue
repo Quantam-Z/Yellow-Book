@@ -1,22 +1,22 @@
 <template>
   <div class="min-h-screen flex flex-col bg-white text-gray-800">
-    <!-- Navbar -->
-    <Navbar />
+    <!-- navbar -->
+    <navbar />
 
     <!-- Page Content -->
     <main class="flex-1 container mx-auto">
       <slot />
     </main>
 
-    <!-- Footer -->
-    <Footer />
+    <!-- footer -->
+    <footer />
   </div>
 </template>
 
 <script setup lang="ts">
 // Import layout components
-import Navbar from '@/components/layout/Navbar.vue'
-import Footer from '@/components/layout/Footer.vue'
+import navbar from '@/components/layout/navbar.vue'
+import footer from '@/components/layout/footer.vue'
 </script>
 
 <style scoped>

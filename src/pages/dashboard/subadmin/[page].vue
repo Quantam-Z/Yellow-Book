@@ -3,7 +3,7 @@ import { defineAsyncComponent, computed } from 'vue';
 import { useRoute } from 'vue-router';
 
 definePageMeta({
-  layout: 'subadminpanel',
+  layout: 'subadminPanel',
 });
 
 function generateNameCandidates(slug: string): string[] {
@@ -20,7 +20,7 @@ const modules = import.meta.glob('@/components/SubAdmin/*.vue');
 
 // Map common slugs to component names
 const aliasMap: Record<string, string[]> = {
-  'assign-companies': ['AssignCompanies'],
+  'assign-companies': ['assignCompanies'],
 };
 
 const SelectedComponent = computed(() => {

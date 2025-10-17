@@ -2,7 +2,7 @@ import categoriesData from '@/data/categories.json';
 import listingsData from '@/data/listings.json';
 
 export const categoryService = {
-  getCategories() {
+  getcategories() {
     return categoriesData.categories || [];
   },
 
@@ -27,23 +27,23 @@ export const categoryService = {
     return this.getListings().find((listing) => this.slugifyName(listing.name) === normalizedTarget) || null;
   },
 
-  getCategoryByName(name) {
-    const categories = this.getCategories();
-    const normalizedName = this.normalizeCategoryName(name);
+  getcategoryByName(name) {
+    const categories = this.getcategories();
+    const normalizedName = this.normalizecategoryName(name);
     
-    const foundCategory = categories.find(cat => 
-      this.normalizeCategoryName(cat.name) === normalizedName
+    const foundcategory = categories.find(cat => 
+      this.normalizecategoryName(cat.name) === normalizedName
     );
     
-    return foundCategory || this.getDefaultCategory();
+    return foundcategory || this.getDefaultcategory();
   },
 
-  getListingsByCategory(categoryName) {
+  getListingsBycategory(categoryName) {
     const listings = this.getListings();
-    const normalizedCategoryName = this.normalizeCategoryName(categoryName);
+    const normalizedcategoryName = this.normalizecategoryName(categoryName);
     
     return listings.filter(listing => 
-      this.normalizeCategoryName(listing.category) === normalizedCategoryName
+      this.normalizecategoryName(listing.category) === normalizedcategoryName
     );
   },
 
@@ -62,12 +62,12 @@ export const categoryService = {
     return String(name).toLowerCase().replace(/[^a-z0-9]/g, '').trim();
   },
 
-  normalizeCategoryName(name) {
+  normalizecategoryName(name) {
     if (!name) return '';
     return name.toLowerCase().replace(/[&\s+]/g, '').trim();
   },
 
-  getDefaultCategory() {
+  getDefaultcategory() {
     return {
       name: 'General Services',
       icon: 'DefaultIcon',

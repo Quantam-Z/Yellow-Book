@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue';
 
-export function useListingsFilter(listings) {
+export function useListingsfilter(listings) {
   const filters = ref({
     services: new Set(),
     specializations: new Set(),
@@ -38,7 +38,7 @@ export function useListingsFilter(listings) {
     });
   });
 
-  const toggleFilter = (filterType, value) => {
+  const togglefilter = (filterType, value) => {
     if (filterType === 'emergencyService') {
       filters.value[filterType] = filters.value[filterType] === value ? null : value;
     } else if (filterType === 'maxPrice') {
@@ -55,7 +55,7 @@ export function useListingsFilter(listings) {
     }
   };
 
-  const removeFilter = (filterType, value) => {
+  const removefilter = (filterType, value) => {
     if (filterType === 'emergencyService') {
       filters.value[filterType] = null;
     } else if (filterType === 'maxPrice') {
@@ -67,7 +67,7 @@ export function useListingsFilter(listings) {
     }
   };
 
-  const clearFilters = () => {
+  const clearfilters = () => {
     filters.value.services.clear();
     filters.value.specializations.clear();
     filters.value.ratings.clear();
@@ -79,8 +79,8 @@ export function useListingsFilter(listings) {
   return {
     filters,
     filteredListings,
-    toggleFilter,
-    removeFilter,
-    clearFilters
+    togglefilter,
+    removefilter,
+    clearfilters
   };
 }

@@ -1,7 +1,7 @@
 <template>
   <div>
-    <AgencyHead :agency-name="agency?.name || agencyNameFromQuery" />
-    <CommonAgencyProfile
+    <agencyHead :agency-name="agency?.name || agencyNameFromQuery" />
+    <CommonagencyProfile
       :agency-name="agency?.name || agencyNameFromQuery"
       :rating="agency?.rating ?? 0"
       :rating-count="agency?.ratingCount ?? 0"
@@ -9,8 +9,8 @@
       :hero-image="heroImage"
       :logo-image="logoImage"
     />
-    <AgencyDetails :about="aboutText" />
-    <AgencyContact
+    <agencyDetails :about="aboutText" />
+    <agencyContact
       :website="agency?.website || ''"
       :phone="agencyPhone"
       :email="agencyEmail"
@@ -24,21 +24,21 @@
       :owner-title="ownerTitle"
       :owner-bio="ownerBio"
     />
-    <AgencyReview />
-    <Footer />
+    <agencyReview />
+    <footer />
   </div>
  </template>
 
  <script setup lang="ts">
 import { computed } from 'vue';
  import { useRoute } from 'vue-router';
- import CommonAgencyProfile from '@/components/Agency/AgencyProfile.vue';
- import AgencyHead from '@/components/Agency/AgencyHead.vue';
- import AgencyDetails from '@/components/Agency/AgencyDetails.vue';
- import AgencyContact from '@/components/Agency/AgencyContact.vue';
- import AgencyReview from '@/components/Agency/AgencyReview.vue';
+ import CommonagencyProfile from '@/components/Agency/agencyProfile.vue';
+ import agencyHead from '@/components/Agency/agencyHead.vue';
+ import agencyDetails from '@/components/Agency/agencyDetails.vue';
+ import agencyContact from '@/components/Agency/agencyContact.vue';
+ import agencyReview from '@/components/Agency/agencyReview.vue';
  import { categoryService } from '@/services/categoryService';
- import Footer from '@/components/layout/Footer.vue';
+ import footer from '@/components/layout/footer.vue';
 
  definePageMeta({
    layout: 'catagory',
