@@ -299,7 +299,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, defineAsyncComponent } from 'vue';
 import { getStatusClass, getStatusShort } from '~/composables/useStatusClass'
 import { useSelection } from '~/composables/useSelection'
 import { Search, Calendar, Eye, CheckCircle, ChevronDown, ChevronLeft, ChevronRight, Filter, Phone, Globe } from "lucide-vue-next";
