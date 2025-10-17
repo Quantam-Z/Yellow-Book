@@ -32,13 +32,13 @@
  <script setup lang="ts">
 import { computed } from 'vue';
  import { useRoute } from 'vue-router';
- import CommonAgencyProfile from '@/components/Agency/AgencyProfile.vue';
- import AgencyHead from '@/components/Agency/AgencyHead.vue';
- import AgencyDetails from '@/components/Agency/AgencyDetails.vue';
- import AgencyContact from '@/components/Agency/AgencyContact.vue';
- import AgencyReview from '@/components/Agency/AgencyReview.vue';
+ import CommonAgencyProfile from '~/components/Agency/agencyProfile.vue';
+ import AgencyHead from '~/components/Agency/agencyHead.vue';
+ import AgencyDetails from '~/components/Agency/agencyDetails.vue';
+ import AgencyContact from '~/components/Agency/agencyContact.vue';
+ import AgencyReview from '~/components/Agency/agencyReview.vue';
  import { categoryService } from '@/services/categoryService';
- import Footer from '@/components/layout/Footer.vue';
+ import Footer from '~/components/layout/footer.vue';
 
  definePageMeta({
    layout: 'catagory',

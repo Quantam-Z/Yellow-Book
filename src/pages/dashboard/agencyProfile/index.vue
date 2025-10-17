@@ -5,7 +5,7 @@
 </template>
 
 <script setup>
-import Dashboard from '@/components/AgencyProfile/Dashboard.vue';
+import Dashboard from '~/components/AgencyProfile/dashboard.vue';
 
 
 

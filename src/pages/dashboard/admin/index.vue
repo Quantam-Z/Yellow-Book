@@ -27,10 +27,10 @@
 </template>
 
 <script setup>
-import WelcomeComponent from "@/components/Admin/Welcome.vue";
-import RecentActivity from "~/components/Admin/RecentActivity.vue";
-import RecentCompany from "~/components/Admin/RecentCompany.vue";
-import RecentReview from "~/components/Admin/RecentReview.vue";
+import WelcomeComponent from "~/components/Admin/welcome.vue";
+import RecentActivity from "~/components/Admin/recentActivity.vue";
+import RecentCompany from "~/components/Admin/recentCompany.vue";
+import RecentReview from "~/components/Admin/recentReview.vue";
 
 definePageMeta({
   layout: "adminpanel",

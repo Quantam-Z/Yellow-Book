@@ -302,7 +302,7 @@
 import { ref, computed } from 'vue';
 import { getStatusClass, getStatusShort } from '~/composables/useStatusClass'
 import { Search, Calendar, Eye, CheckCircle, ChevronDown, ChevronLeft, ChevronRight, Filter, Phone, Globe } from "lucide-vue-next";
-import AddCompany from '@/components/modal/AddCompany.vue';
+import AddCompany from '~/components/modal/addCompany.vue';
 
 // Modal state
 const isModalOpen = ref(false);

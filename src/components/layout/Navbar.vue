@@ -141,7 +141,7 @@
 </template>
 
 <script>
-import LoginModal from '~/components/common/LoginModal.vue'
+import LoginModal from '~/components/common/loginModal.vue'
 export default {
   name: 'ResponsiveLandingPage',
   components: { LoginModal },

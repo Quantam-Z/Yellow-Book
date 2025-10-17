@@ -14,7 +14,7 @@
   </template>
   
   <script setup>
-  import Sidebar from '@/components/adminLayout/Sidebar.vue'
-  import Header from '@/components/adminLayout/Header.vue'
+  import Sidebar from '~/components/adminLayout/sidebar.vue'
+  import Header from '~/components/adminLayout/header.vue'
   </script>
   

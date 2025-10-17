@@ -124,7 +124,7 @@
 
 <script setup>
 import { ShieldCheck, MessageSquare, UserCheck } from "lucide-vue-next";
-import RatingStars from '@/components/common/RatingStars.vue'
+import RatingStars from '~/components/common/ratingStars.vue'
 import {
   Chart as ChartJS,
   Title,
