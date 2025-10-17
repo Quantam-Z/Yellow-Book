@@ -1,8 +1,7 @@
 <template>
   <div class="flex">
-    <!-- Fixed Hamburger Button - Hidden when sidebar is open -->
     <button
-      v-if="!isOpen"
+      v-if="!isOpen && !isScrolled" 
       @click="isOpen = true"
       class="md:hidden fixed top-2 left-4 z-50 p-2 rounded-lg bg-white border border-gray-300 shadow-lg hover:shadow-xl duration-200"
       aria-label="Open navigation menu"
@@ -10,14 +9,12 @@
       <Menu class="w-5 h-5 text-gray-700" />
     </button>
 
-    <!-- Mobile Overlay -->
     <div
       v-if="isOpen"
       class="fixed inset-0 bg-black bg-opacity-30 z-30 md:hidden"
       @click="closeSidebar"
     />
 
-    <!-- Sidebar -->
     <aside
       class="w-[280px] min-h-screen bg-white border-r border-[#eee] shadow-[4px_12px_23px_rgba(0,0,0,0.08)] py-6 px-4 flex flex-col justify-between
              fixed md:static top-0 left-0 h-full z-40 transition-transform duration-300 ease-in-out"
@@ -69,11 +66,14 @@ import {
   Shield,
   Settings,
   LogOut,
-  Menu
+  // RESTORED: Importing Menu (Hamburger) icon
+  Menu 
 } from "lucide-vue-next";
 import { ref, onMounted, onUnmounted } from "vue";
 
 const isOpen = ref(false);
+// State to track if the user has scrolled down
+const isScrolled = ref(false); 
 
 const mainMenu = [
   { label: "Dashboard", icon: LayoutDashboard, to: "/dashboard/admin" },
@@ -87,6 +87,12 @@ const bottomMenu = [
   { label: "Settings", icon: Settings, to: "/dashboard/admin/settings" },
   { label: "Logout", icon: LogOut, to: "/logout" },
 ];
+
+// Function to handle scroll event
+const handleScroll = () => {
+  // Hide the button if the user scrolls more than 100 pixels down
+  isScrolled.value = window.scrollY > 100; 
+};
 
 // Close sidebar function
 const closeSidebar = () => {
@@ -113,23 +119,21 @@ const handleResize = () => {
 onMounted(() => {
   document.addEventListener('keydown', handleEscapeKey);
   window.addEventListener('resize', handleResize);
+  // Add scroll listener
+  window.addEventListener('scroll', handleScroll); 
 });
 
 // Remove event listeners
 onUnmounted(() => {
   document.removeEventListener('keydown', handleEscapeKey);
   window.removeEventListener('resize', handleResize);
+  // Remove scroll listener
+  window.removeEventListener('scroll', handleScroll); 
 });
 </script>
 
 <style scoped>
-/* Remove underline for all NuxtLinks */
 a {
   text-decoration: none !important;
-}
-
-/* Ensure hamburger stays fixed during scroll */
-button {
-  position: fixed;
 }
 </style>

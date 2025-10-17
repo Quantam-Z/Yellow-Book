@@ -33,17 +33,12 @@
 
         <button 
           @click="toggleMobileMenu" 
-          class="lg:hidden p-2 rounded-md hover:bg-white/50 transition-all z-50 relative"
+          class="lg:hidden p-2 rounded-full border-2 border-[#fcc207] bg-white shadow-md z-50 relative transform hover:scale-110 transition-transform"
           aria-label="Toggle menu"
         >
-          <svg v-if="!isMobileMenuOpen" class="w-6 h-6 text-[#212121]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-          </svg>
-          <svg v-else class="w-6 h-6 text-[#212121]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-          </svg>
+          <component :is="isMobileMenuOpen ? 'X' : 'Menu'" class="w-6 h-6 text-[#212121]" />
         </button>
-      </div>
+        </div>
 
       <transition name="overlay">
         <div 
@@ -142,9 +137,11 @@
 
 <script>
 import LoginModal from '~/components/common/loginModal.vue'
+import { Menu, X } from 'lucide-vue-next'
+
 export default {
   name: 'ResponsiveLandingPage',
-  components: { LoginModal },
+  components: { LoginModal, Menu, X },
   data() {
     return {
       showDropdown: false,
@@ -176,6 +173,7 @@ export default {
 </script>
 
 <style scoped>
+/* (Existing styles for responsiveness, transitions, etc.) */
 .navbar-links :deep(a),
 .navbar-mobile :deep(a) {
   text-decoration: none !important;
