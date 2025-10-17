@@ -228,8 +228,8 @@
 
 <script setup>
 import RatingStars from '~/components/common/ratingStars.vue'
-import CompanyVerificationModal from '~/components/modal/VerifyReview.vue';
-import ReviewModal from '~/components/modal/ReviewModal.vue';
+import CompanyVerificationModal from '~/components/modal/verifyReview.vue';
+import ReviewModal from '~/components/modal/reviewModal.vue';
 
 definePageMeta({
   layout: "subadminpanel",
