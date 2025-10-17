@@ -2,7 +2,7 @@ import { metaInfo } from "./metaTag";
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  srcDir: "./src/",
+  srcDir: "./src",
   ssr: true,
 
   app: {
