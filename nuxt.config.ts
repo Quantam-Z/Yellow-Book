@@ -1,14 +1,24 @@
 import { metaInfo } from "./metaTag";
 
 export default defineNuxtConfig({
+  // ✅ Source directory for all app code
   srcDir: "./src/",
+
+  // ✅ Enable SSR (recommended for SEO and Nuxt features)
   ssr: true,
 
+  // ✅ Application <head> defaults
   app: {
     head: {
       charset: "utf-8",
       viewport: "width=device-width, initial-scale=1",
       title: metaInfo.siteName,
+      meta: [
+        { name: "description", content: metaInfo.siteDescription },
+        { property: "og:title", content: metaInfo.siteName },
+        { property: "og:description", content: metaInfo.siteDescription },
+        { property: "og:image", content: metaInfo.siteLogo },
+      ],
       link: [
         { rel: "preconnect", href: "https://fonts.googleapis.com" },
         { rel: "preconnect", href: "https://fonts.gstatic.com", crossorigin: "" },
@@ -17,19 +27,15 @@ export default defineNuxtConfig({
           href: "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap",
         },
       ],
-      meta: [
-        { name: "description", content: metaInfo.siteDescription },
-        { property: "og:title", content: metaInfo.siteName },
-        { property: "og:description", content: metaInfo.siteDescription },
-        { property: "og:image", content: metaInfo.siteLogo },
-      ],
     },
   },
 
+  // ✅ Nitro handles Vercel automatically
   nitro: {
-    preset: "vercel", // ✅ switch from vercel-edge
+    preset: "vercel", // use "vercel" (NOT vercel-edge)
   },
 
+  // ✅ Nuxt modules
   modules: [
     "@nuxtjs/tailwindcss",
     "@formkit/nuxt",
@@ -38,13 +44,21 @@ export default defineNuxtConfig({
     "@kevinmarrec/nuxt-pwa",
   ],
 
-  css: ["~/assets/scss/main.scss", "awesome-notifications/dist/style.css"],
+  // ✅ Global CSS
+  css: [
+    "~/assets/scss/main.scss",
+    "awesome-notifications/dist/style.css",
+  ],
 
+  // ✅ FormKit config
   formkit: {
     defaultConfig: true,
     configFile: "./src/config/formkit.config.js",
   },
 
+  // ✅ Tailwind customizations handled in tailwind.config.js
+
+  // ✅ PWA setup (auto handled by @kevinmarrec/nuxt-pwa)
   pwa: {
     meta: {
       title: metaInfo.siteName,
@@ -57,19 +71,37 @@ export default defineNuxtConfig({
       name: metaInfo.siteName,
       short_name: "Yellow-Book",
       lang: "en",
-      icons: [],
+      background_color: "#ffffff",
+      display: "standalone",
+      start_url: "/",
+      icons: [], // Add icons later if needed
     },
     workbox: { enabled: false },
   },
 
+  // ✅ Runtime config (Vercel env support)
   runtimeConfig: {
     public: {
       gtagId: "G-HXRZKQV1EN",
       siteName: "Yellow-Book",
       apiBaseUrl:
-        process.env.NUXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8000/api/",
+        process.env.NUXT_PUBLIC_API_BASE_URL ??
+        "http://127.0.0.1:8000/api/", // fallback for local dev
     },
   },
 
+  // ✅ Vue compiler options (for custom directives, e.g. motion)
+  vue: {
+    compilerOptions: {
+      directiveTransforms: {
+        motion: () => ({
+          props: [],
+          needRuntime: true,
+        }),
+      },
+    },
+  },
+
+  // ✅ Compatibility
   compatibilityDate: "2025-09-18",
 });
