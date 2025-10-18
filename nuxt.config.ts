@@ -1,6 +1,5 @@
 import { metaInfo } from "./metaTag";
 
-// https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   srcDir: "./src/",
   ssr: true,
@@ -11,12 +10,11 @@ export default defineNuxtConfig({
       viewport: "width=device-width, initial-scale=1",
       title: metaInfo.siteName,
       link: [
-        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
+        { rel: "preconnect", href: "https://fonts.googleapis.com" },
+        { rel: "preconnect", href: "https://fonts.gstatic.com", crossorigin: "" },
         {
-          rel: 'stylesheet',
-          href:
-            'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap',
+          rel: "stylesheet",
+          href: "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap",
         },
       ],
       meta: [
@@ -29,7 +27,7 @@ export default defineNuxtConfig({
   },
 
   nitro: {
-    preset: "vercel-edge",
+    preset: "vercel", // ✅ switch from vercel-edge
   },
 
   modules: [
@@ -37,13 +35,10 @@ export default defineNuxtConfig({
     "@formkit/nuxt",
     "@pinia/nuxt",
     "nuxt-icon",
-    "@kevinmarrec/nuxt-pwa"
+    "@kevinmarrec/nuxt-pwa",
   ],
 
-  css: [
-    "~/assets/scss/main.scss",
-    "awesome-notifications/dist/style.css",
-  ],
+  css: ["~/assets/scss/main.scss", "awesome-notifications/dist/style.css"],
 
   formkit: {
     defaultConfig: true,
@@ -67,22 +62,12 @@ export default defineNuxtConfig({
     workbox: { enabled: false },
   },
 
-  vue: {
-    compilerOptions: {
-      directiveTransforms: {
-        motion: () => ({
-          props: [],
-          needRuntime: true,
-        }),
-      },
-    },
-  },
-
   runtimeConfig: {
     public: {
       gtagId: "G-HXRZKQV1EN",
       siteName: "Yellow-Book",
-      apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8000/api/",
+      apiBaseUrl:
+        process.env.NUXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8000/api/",
     },
   },
 
