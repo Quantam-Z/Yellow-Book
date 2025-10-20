@@ -1,6 +1,6 @@
 <template>
 <div class="min-h-screen bg-gray-100 py-2 sm:py-4 md:py-6 lg:py-8 w-full mx-auto">
-  <div class="w-full max-w-5xl mx-auto flex flex-col lg:flex-row gap-6 px-4">
+  <div class="w-full  mx-auto flex flex-col lg:flex-row gap-6 px-4">
         
         <div class="flex-1 space-y-6">
           <div class="bg-white rounded-lg border border-gray-200 p-5 md:p-6">
@@ -74,16 +74,10 @@
                   </div>
                 </div>
   
-                <a
-                  v-if="websiteHref"
-                  :href="websiteHref"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="flex items-center gap-2 px-3 py-2 rounded border border-[#28aed8] text-[#28aed8] text-base font-medium hover:bg-[#28aed8]/5 max-[575px]:w-full max-[575px]:justify-center max-[575px]:py-3"
-                >
+                <button class="flex items-center gap-2 px-3 py-2 rounded border border-[#28aed8] text-[#28aed8] text-base font-medium hover:bg-[#28aed8]/5 max-[575px]:w-full max-[575px]:justify-center max-[575px]:py-3">
                   <span>{{ websiteText }}</span>
                   <ExternalLink class="w-5 h-5" />
-                </a>
+                </button>
               </div>
             </div>
           </div>
