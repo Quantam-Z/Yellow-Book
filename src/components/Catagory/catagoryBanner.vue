@@ -1,52 +1,10 @@
 <template>
-  <div :class="$style.heroSection">
-    <img src="/logo/Cat.jpeg" :class="$style.heroImage" alt="Hero" />
+  <div class="w-full flex items-center justify-center p-3 md:p-4">
+    <img
+      src="/logo/Cat.jpeg"
+      alt="Hero"
+      class="w-full h-auto max-w-full md:max-w-[900px] lg:max-w-[1200px] rounded-md md:rounded-lg lg:rounded-xl object-cover transition-all duration-300 ease-in-out max-[480px]:rounded-[6px]"
+    />
   </div>
+  
 </template>
-
-<style module>
-.heroSection {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 16px;
-  box-sizing: border-box;
-}
-
-.heroImage {
-  width: 100%;
-  max-width: 1200px;
-  height: auto;
-  border-radius: 12px;
-  object-fit: cover;
-  transition: all 0.3s ease;
-}
-
-/* Tablet view */
-@media (max-width: 1024px) {
-  .heroImage {
-    max-width: 900px;
-    border-radius: 10px;
-  }
-}
-
-/* Mobile view */
-@media (max-width: 768px) {
-  .heroSection {
-    padding: 12px;
-  }
-
-  .heroImage {
-    max-width: 100%;
-    border-radius: 8px;
-  }
-}
-
-/* Very small mobile view */
-@media (max-width: 480px) {
-  .heroImage {
-    border-radius: 6px;
-  }
-}
-</style>
