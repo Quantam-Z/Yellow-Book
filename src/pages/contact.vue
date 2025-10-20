@@ -1,7 +1,7 @@
 <template>
     <div class="p-8">
       <h1 class="text-3xl font-bold mb-4">Contact Us</h1>
-      <form class="space-y-4 max-w-lg">
+      <form class="space-y-4 w-full">
         <div>
           <label class="block mb-1 font-medium">Name</label>
           <input type="text" class="w-full border rounded p-2" placeholder="Your Name" />

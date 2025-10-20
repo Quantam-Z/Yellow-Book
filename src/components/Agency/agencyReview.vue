@@ -1,5 +1,5 @@
 <template>
-<div class="min-h-screen bg-gray-100 py-2 sm:py-4 md:py-6 lg:py-8 w-[97%] max-w-7xl mx-auto">
+<div class="min-h-screen bg-gray-100 py-2 sm:py-4 md:py-6 lg:py-8 w-full mx-auto">
   <div class="mx-auto flex flex-col lg:flex-row gap-6 px-4">
         
         <div class="flex-1 space-y-6">
@@ -191,7 +191,7 @@
           </div>
         </div>
   
-        <div class="lg:w-96 space-y-6">
+        <div class="lg:flex-[1] space-y-6 min-w-0">
           <div class="bg-white rounded-lg shadow-lg p-5 md:p-6">
             <div class="flex flex-col sm:flex-row items-center gap-6"> 
               
