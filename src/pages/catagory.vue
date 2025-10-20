@@ -1,12 +1,12 @@
 <template>
-      <div>
-        <CatagoryHead />
-        <CatagoryBanner />
-        <CatagorySearch />
-        <CatagoryDetails />
-        <Footer />
-      </div>
-    </template>
+  <div>
+    <CatagoryHead />
+    <CatagoryBanner />
+    <CatagorySearch />
+    <CatagoryDetails />
+    <Footer />
+  </div>
+</template>
     
     <script setup lang="ts">
     import CatagoryHead from '~/components/Catagory/catagoryHead.vue';
