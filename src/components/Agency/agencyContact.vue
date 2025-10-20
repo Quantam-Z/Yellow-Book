@@ -152,8 +152,4 @@ const computedWebsiteHref = computed(() => {
 });
 </script>
 
-<style scoped>
-.shadow-lg {
-  box-shadow: 0 4px 16px rgba(158, 158, 158, 0.24);
-}
-</style>
+
