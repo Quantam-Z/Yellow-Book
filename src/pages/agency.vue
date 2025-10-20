@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="w-full">
     <AgencyHead :agency-name="agency?.name || agencyNameFromQuery" />
     <CommonAgencyProfile
       :agency-name="agency?.name || agencyNameFromQuery"
