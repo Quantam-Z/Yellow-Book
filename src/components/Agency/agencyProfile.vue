@@ -20,10 +20,10 @@ const logoImageSrc = computed(() => props.logoImage || '/logo/image7.png');
 </script>
 
 <template>
-  <div class="w-full flex flex-col items-center gap-6 text-center text-black font-plus-jakarta-sans px-4 sm:px-6 lg:px-8 py-2">
+  <div class="w-[97%] max-w-7xl mx-auto flex flex-col items-center gap-6 text-center text-black font-plus-jakarta-sans px-4 sm:px-6 lg:px-8 py-2">
 
     <!-- Image Container -->
-    <div class="relative w-full max-w-7xl">
+    <div class="relative w-full">
       <img 
         class="w-full h-auto object-cover rounded-lg" 
         :src="heroImageSrc" 
