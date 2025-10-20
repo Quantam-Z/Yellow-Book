@@ -30,34 +30,34 @@ const logoImageSrc = computed(() => props.logoImage || '/logo/image7.png');
         alt="Main background" 
       />
       <img 
-        class="absolute -bottom-24 left-1/2 -translate-x-1/2 w-[25%] max-w-[200px] sm:w-1/3 sm:max-w-[180px] xs:w-1/2 xs:max-w-[150px] h-auto aspect-square object-cover rounded-lg"
+        class="absolute -bottom-16 sm:-bottom-20 md:-bottom-24 left-1/2 -translate-x-1/2 w-1/2 max-w-[150px] sm:w-1/3 sm:max-w-[180px] md:w-1/4 md:max-w-[200px] h-auto aspect-square object-cover rounded-lg"
         :src="logoImageSrc" 
         alt="Overlay logo" 
       />
     </div>
 
     <!-- Content Section -->
-    <div class="flex flex-col items-center gap-5 pt-32 sm:pt-28 xs:pt-24">
+    <div class="flex flex-col items-center gap-5 pt-24 sm:pt-28 md:pt-32">
       <!-- Title and Description -->
       <div class="flex flex-col items-center gap-4">
-        <h1 class="text-4xl lg:text-5xl font-bold leading-tight capitalize sm:text-3xl xs:text-2xl">
+        <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold leading-tight capitalize">
           {{ safeAgencyName }}
         </h1>
-        <p class="text-base text-gray-600 leading-relaxed text-center max-w-2xl sm:text-sm xs:text-xs px-2">
+        <p class="text-sm sm:text-base text-gray-600 leading-relaxed text-center max-w-2xl px-2">
           {{ taglineText }}
         </p>
       </div>
 
       <!-- Rating Section -->
-      <div class="flex items-center gap-2 text-base text-gray-600 sm:text-sm xs:text-xs">
+      <div class="flex items-center gap-2 text-sm sm:text-base text-gray-600">
         <!-- Stars -->
-        <div class="flex items-center gap-0.5 sm:gap-0.5 xs:gap-0.5">
-          <Star v-for="n in 5" :key="n" class="w-6 h-6 sm:w-5 sm:h-5 xs:w-4 xs:h-4 text-black" />
+        <div class="flex items-center gap-0.5">
+          <Star v-for="n in 5" :key="n" class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-black" />
         </div>
         <!-- Rating Number -->
-        <b class="leading-relaxed capitalize text-base sm:text-sm xs:text-xs">{{ roundedRating }}</b>
+        <b class="leading-relaxed capitalize text-sm sm:text-base">{{ roundedRating }}</b>
         <!-- Reviews -->
-        <span class="leading-relaxed font-medium text-gray-500 text-sm sm:text-xs xs:text-[10px]">{{ ratingCountText }}</span>
+        <span class="leading-relaxed font-medium text-gray-500 text-xs sm:text-sm">{{ ratingCountText }}</span>
       </div>
     </div>
 

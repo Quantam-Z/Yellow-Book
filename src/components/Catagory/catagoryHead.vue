@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full flex flex-wrap items-center gap-2 lg:gap-3 px-4 lg:px-6 py-2 text-base text-black font-plus-jakarta-sans">
+  <div class="w-full flex items-center gap-2 lg:gap-3 px-4 lg:px-6 py-2 text-base text-black font-plus-jakarta-sans overflow-x-auto whitespace-nowrap sm:whitespace-normal sm:flex-wrap">
     <!-- Back Button -->
     <button 
       @click="goBack"
@@ -52,26 +52,5 @@ const goBack = () => {
 <style scoped>
 .font-plus-jakarta-sans {
   font-family: 'Plus Jakarta Sans', sans-serif;
-}
-
-@media (max-width: 480px) {
-  .flex-wrap {
-    flex-wrap: nowrap !important;
-    overflow-x: auto;
-    gap: 8px;
-  }
-
-  .flex-wrap > * {
-    flex-shrink: 0;
-  }
-
-  .flex-wrap::-webkit-scrollbar {
-    display: none;
-  }
-
-  .flex-wrap {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
 }
 </style>
