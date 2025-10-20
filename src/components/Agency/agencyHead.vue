@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full mx-auto flex items-center gap-2 lg:gap-3 px-4 lg:px-6 py-2 text-base text-black font-plus-jakarta-sans overflow-x-auto whitespace-nowrap sm:whitespace-normal sm:flex-wrap">
+  <div class="w-full max-w-5xl mx-auto flex items-center gap-2 lg:gap-3 px-4 lg:px-6 py-2 text-base text-black font-plus-jakarta-sans overflow-x-auto whitespace-nowrap sm:whitespace-normal sm:flex-wrap">
     <!-- Back Button -->
     <button 
       @click="goBack"
