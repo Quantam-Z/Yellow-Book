@@ -1,8 +1,8 @@
 <template>
-<div class="min-h-screen bg-gray-100 py-2 sm:py-4 md:py-6 lg:py-8 w-full mx-auto">
-  <div class="w-full  mx-auto flex flex-col lg:flex-row gap-6 px-4">
+<div class="min-h-screen bg-gray-100 py-2 sm:py-4 md:py-6 lg:py-8 w-full">
+  <div class="w-full flex flex-col lg:flex-row gap-6">
         
-        <div class="flex-1 space-y-6">
+        <div class="w-full lg:flex-[2] space-y-6">
           <div class="bg-white rounded-lg border border-gray-200 p-5 md:p-6">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div class="flex items-center gap-2.5">
@@ -191,7 +191,7 @@
           </div>
         </div>
   
-        <div class="lg:flex-[1] space-y-6 min-w-0">
+        <div class="w-full lg:flex-[1] space-y-6 min-w-0">
           <div class="bg-white rounded-lg shadow-lg p-5 md:p-6">
             <div class="flex flex-col sm:flex-row items-center gap-6"> 
               

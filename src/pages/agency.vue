@@ -1,30 +1,32 @@
 <template>
   <div class="w-full">
-    <AgencyHead :agency-name="agency?.name || agencyNameFromQuery" />
-    <CommonAgencyProfile
-      :agency-name="agency?.name || agencyNameFromQuery"
-      :rating="agency?.rating ?? 0"
-      :rating-count="agency?.ratingCount ?? 0"
-      :tagline="agencyTagline"
-      :hero-image="heroImage"
-      :logo-image="logoImage"
-    />
-    <AgencyDetails :about="aboutText" />
-    <AgencyContact
-      :website="agency?.website || ''"
-      :phone="agencyPhone"
-      :email="agencyEmail"
-      :location="agency?.location || ''"
-      :revenue="agency?.revenue || ''"
-      :employees="employeesText"
-      :industry="industryText"
-      :category="agency?.category || ''"
-      :profile-image="profileImage"
-      :owner-name="ownerName"
-      :owner-title="ownerTitle"
-      :owner-bio="ownerBio"
-    />
-    <AgencyReview :website="agency?.website || ''" />
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+      <AgencyHead :agency-name="agency?.name || agencyNameFromQuery" />
+      <CommonAgencyProfile
+        :agency-name="agency?.name || agencyNameFromQuery"
+        :rating="agency?.rating ?? 0"
+        :rating-count="agency?.ratingCount ?? 0"
+        :tagline="agencyTagline"
+        :hero-image="heroImage"
+        :logo-image="logoImage"
+      />
+      <AgencyDetails :about="aboutText" />
+      <AgencyContact
+        :website="agency?.website || ''"
+        :phone="agencyPhone"
+        :email="agencyEmail"
+        :location="agency?.location || ''"
+        :revenue="agency?.revenue || ''"
+        :employees="employeesText"
+        :industry="industryText"
+        :category="agency?.category || ''"
+        :profile-image="profileImage"
+        :owner-name="ownerName"
+        :owner-title="ownerTitle"
+        :owner-bio="ownerBio"
+      />
+      <AgencyReview :website="agency?.website || ''" />
+    </div>
     <Footer />
   </div>
  </template>
