@@ -20,7 +20,7 @@ const logoImageSrc = computed(() => props.logoImage || '/logo/image7.png');
 </script>
 
 <template>
-  <div class="w-full mx-auto flex flex-col items-center gap-6 text-center text-black font-plus-jakarta-sans px-4 sm:px-6 lg:px-8 py-2">
+  <div class="w-full flex flex-col items-center gap-6 text-center text-black font-plus-jakarta-sans py-2">
 
     <!-- Image Container -->
     <div class="relative w-full">
@@ -43,7 +43,7 @@ const logoImageSrc = computed(() => props.logoImage || '/logo/image7.png');
         <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold leading-tight capitalize">
           {{ safeAgencyName }}
         </h1>
-        <p class="text-sm sm:text-base text-gray-600 leading-relaxed text-center w-full px-2">
+        <p class="text-sm sm:text-base text-gray-600 leading-relaxed text-center w-full">
           {{ taglineText }}
         </p>
       </div>
