@@ -24,7 +24,7 @@
       :owner-title="ownerTitle"
       :owner-bio="ownerBio"
     />
-    <AgencyReview />
+    <AgencyReview :website="agency?.website || ''" />
     <Footer />
   </div>
  </template>

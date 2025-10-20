@@ -74,10 +74,16 @@
                   </div>
                 </div>
   
-                <button class="flex items-center gap-2 px-3 py-2 rounded border border-[#28aed8] text-[#28aed8] text-base font-medium hover:bg-[#28aed8]/5 max-[575px]:w-full max-[575px]:justify-center max-[575px]:py-3">
+                <a
+                  v-if="websiteHref"
+                  :href="websiteHref"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="flex items-center gap-2 px-3 py-2 rounded border border-[#28aed8] text-[#28aed8] text-base font-medium hover:bg-[#28aed8]/5 max-[575px]:w-full max-[575px]:justify-center max-[575px]:py-3"
+                >
                   <span>{{ websiteText }}</span>
                   <ExternalLink class="w-5 h-5" />
-                </button>
+                </a>
               </div>
             </div>
           </div>

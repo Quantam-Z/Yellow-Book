@@ -17,6 +17,11 @@ const ratingCountText = computed(() => `(${Number(props.ratingCount || 0)} revie
 const taglineText = computed(() => props.tagline || '');
 const heroImageSrc = computed(() => props.heroImage || '/logo/image6.png');
 const logoImageSrc = computed(() => props.logoImage || '/logo/image7.png');
+
+const fullStars = computed(() => {
+  const value = Math.round(Number(props.rating || 0));
+  return Math.max(0, Math.min(5, value));
+});
 </script>
 
 <template>
@@ -52,7 +57,12 @@ const logoImageSrc = computed(() => props.logoImage || '/logo/image7.png');
       <div class="flex items-center gap-2 text-sm sm:text-base text-gray-600">
         <!-- Stars -->
         <div class="flex items-center gap-0.5">
-          <Star v-for="n in 5" :key="n" class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-black" />
+          <Star
+            v-for="n in 5"
+            :key="n"
+            class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6"
+            :class="n <= fullStars ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'"
+          />
         </div>
         <!-- Rating Number -->
         <b class="leading-relaxed capitalize text-sm sm:text-base">{{ roundedRating }}</b>
