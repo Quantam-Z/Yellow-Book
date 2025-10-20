@@ -1,6 +1,6 @@
 <template>
   <div
-    class="w-full max-w-[800px] mx-auto mb-2 px-3 sm:px-5 flex flex-col items-center gap-4 text-center text-[16px] text-[#28aed8] font-['Plus_Jakarta_Sans']"
+    class="w-full max-w-[1200px] mx-auto mb-2 px-4 sm:px-5 flex flex-col items-center gap-4 text-center text-[16px] text-[#28aed8] font-['Plus_Jakarta_Sans']"
   >
     <div class="flex flex-col items-center gap-3 sm:gap-4">
       <div class="capitalize text-[14px] sm:text-[16px] text-[#28aed8]">Main Category</div>
@@ -13,7 +13,7 @@
     <!-- Search Form -->
     <form
       @submit.prevent="applySearch"
-      class="w-full self-stretch rounded-[4px] border border-[#e0e0e0] flex flex-col sm:flex-row items-stretch sm:items-center justify-between px-[6px] sm:px-[10px] gap-2 sm:gap-0 text-[14px] text-[#9e9e9e]"
+      class="w-full max-w-[800px] self-stretch rounded-[4px] border border-[#e0e0e0] flex flex-col sm:flex-row items-stretch sm:items-center justify-between px-[6px] sm:px-[10px] gap-2 sm:gap-0 text-[14px] text-[#9e9e9e] mx-auto"
     >
       <div
         class="w-full relative rounded border-gainsboro border-solid border-[1px] box-border flex items-center justify-between py-1.5 sm:py-0 pl-2 sm:pl-2.5 pr-0 gap-3 sm:gap-5 text-center text-sm text-darkgray font-plus-jakarta-sans"

@@ -1,5 +1,5 @@
 <template>
-  <div class="relative w-full flex flex-col lg:flex-row items-start gap-4 lg:gap-6 p-3 lg:p-5 min-h-screen bg-white text-center text-[16px] lg:text-[18px] text-dimgray font-plus-jakarta-sans">
+  <div class="relative w-full max-w-[1200px] mx-auto flex flex-col lg:flex-row items-start gap-4 lg:gap-6 px-4 lg:px-5 py-3 lg:py-5 min-h-screen bg-white text-center text-[16px] lg:text-[18px] text-dimgray font-plus-jakarta-sans">
     
     <!-- Mobile Header -->
     <div class="lg:hidden w-full flex justify-center items-center mb-4">
@@ -62,7 +62,7 @@
 
     <!-- Sidebar Filters -->
     <div 
-      class="w-full lg:w-[382px] shadow-[4px_4px_19px_rgba(158,_158,_158,_0.05)] rounded-[4px] bg-white border border-gainsboro border-solid box-border flex flex-col items-start p-4 lg:p-5 gap-4 lg:gap-5 transition-all duration-300"
+      class="w-full xl:w-[382px] shadow-[4px_4px_19px_rgba(158,_158,_158,_0.05)] rounded-[4px] bg-white border border-gainsboro border-solid box-border flex flex-col items-start p-4 lg:p-5 gap-4 lg:gap-5 transition-all duration-300"
       :class="{
         'hidden lg:flex': !showMobileFilters,
         'flex': showMobileFilters
@@ -233,7 +233,7 @@
     </div>
 
     <!-- Main Content Area -->
-    <div class="w-full lg:w-[792px] flex flex-col items-center relative gap-4 lg:gap-5 text-left text-darkslategray">
+    <div class="w-full xl:w-[792px] flex flex-col items-center relative gap-4 lg:gap-5 text-left text-darkslategray">
       
       <!-- Desktop Header -->
       <div class="hidden lg:flex w-full justify-between items-center mb-4 lg:mb-5">
