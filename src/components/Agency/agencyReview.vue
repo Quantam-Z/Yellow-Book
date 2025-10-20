@@ -1,6 +1,6 @@
 <template>
 <div class="min-h-screen bg-gray-100 py-2 sm:py-4 md:py-6 lg:py-8 w-full">
-  <div class="w-full flex flex-col lg:flex-row gap-6">
+  <div class="w-full px-4 flex flex-col lg:flex-row gap-6">
         
         <div class="w-full lg:flex-[2] space-y-6">
           <div class="bg-white rounded-lg border border-gray-200 p-5 md:p-6">
@@ -160,35 +160,80 @@
           </div>
   
           <div class="bg-white rounded-lg shadow-lg border border-gray-300 p-5 md:p-6 space-y-6">
-            <div class="text-center space-y-5">
-              <h2 class="text-lg font-semibold text-gray-800 capitalize">
-                {{ addReviewTitle }}
-              </h2>
-              <div class="flex items-center justify-center gap-1">
-                <Star
-                  v-for="star in 5"
-                  :key="star"
-                  class="w-8 h-8 cursor-pointer hover:scale-110 transition-transform"
-                  :class="star <= newReviewRating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'"
-                  @click="setRating(star)"
-                />
-              </div>
-            </div>
-            
-            <div class="space-y-4">
-              <textarea
-                v-model="newReviewText"
-                :placeholder="reviewPlaceholder"
-                class="w-full h-24 p-4 bg-gray-100 border border-gray-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-yellow-400 text-gray-700"
-              ></textarea>
-              <button
-                @click="submitReview"
-                class="w-full py-3 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold rounded capitalize transition-colors"
-              >
-                {{ submitText }}
-              </button>
-            </div>
-          </div>
+  <div class="text-center" style="margin-bottom: 1.25rem;">
+    <h2 style="font-size: 1.125rem; font-weight: 600; color: #1F2937; text-transform: capitalize; margin-bottom: 1rem;">
+      {{ addReviewTitle }}
+    </h2>
+    <div style="display: flex; justify-content: center; gap: 0.5rem;">
+      <div
+        v-for="star in 5"
+        :key="star"
+        @click="setRating(star)"
+        :style="{
+          width: '40px',
+          height: '40px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          border: '1px solid #9CA3AF',
+          borderRadius: '0.375rem',
+          cursor: 'pointer',
+          transition: 'all 0.2s',
+          backgroundColor: star <= newReviewRating ? '#FDE68A' : 'transparent'
+        }"
+      >
+        <Star
+          :style="{
+            width: '24px',
+            height: '24px',
+            color: star <= newReviewRating ? '#F59E0B' : '#D1D5DB',
+            transform: star <= newReviewRating ? 'scale(1.1)' : 'scale(1)'
+          }"
+        />
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top: 1rem; display: flex; flex-direction: column; gap: 1rem;">
+    <textarea
+      v-model="newReviewText"
+      :placeholder="reviewPlaceholder"
+      :style="{
+        width: '100%',
+        height: '96px',
+        padding: '1rem',
+        backgroundColor: '#F3F4F6',
+        border: '1px solid #E5E7EB',
+        borderRadius: '0.5rem',
+        resize: 'none',
+        outline: 'none',
+        fontSize: '1rem',
+        color: '#374151',
+        lineHeight: '1.5'
+      }"
+    ></textarea>
+
+    <button
+      @click="submitReview"
+      :style="{
+        width: '100%',
+        padding: '0.75rem',
+        backgroundColor: '#F59E0B',
+        color: '#FFFFFF',
+        fontWeight: '600',
+        borderRadius: '0.375rem',
+        textTransform: 'capitalize',
+        cursor: 'pointer',
+        transition: 'background-color 0.2s'
+      }"
+      @mouseover="hover=true"
+      @mouseleave="hover=false"
+    >
+      {{ submitText }}
+    </button>
+  </div>
+</div>
+
         </div>
   
         <div class="w-full lg:flex-[1] space-y-6 min-w-0">
@@ -223,12 +268,12 @@
                   class="flex items-center gap-3"
                 >
                   <div class="flex items-center gap-1 w-12 justify-end">
-                    <span class="text-lg text-black">{{ stars }}</span> 
+                    <span class="text-lg bg-white/40">{{ stars }}</span> 
                     
                     <Star class="w-5 h-5 fill-gray-700 text-gray-700 drop-shadow-sm" /> 
                   </div>
                   <div class="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
-                    <div
+                  <div
                       class="h-full bg-gray-700 transition-all"
                       :style="{ width: `${totalReviews > 0 ? (ratingBreakdown[stars] / totalReviews) * 100 : 0}%` }"
                     ></div>

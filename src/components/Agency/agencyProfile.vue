@@ -30,10 +30,10 @@ const logoImageSrc = computed(() => props.logoImage || '/logo/image7.png');
         alt="Main background" 
       />
       <img 
-        class="absolute -bottom-16 sm:-bottom-20 md:-bottom-24 left-1/2 -translate-x-1/2 w-1/2 sm:w-1/3 md:w-1/4 h-auto aspect-square object-cover rounded-lg max-w-xs"
-        :src="logoImageSrc" 
-        alt="Overlay logo" 
-      />
+  class="absolute -bottom-16 sm:-bottom-20 md:-bottom-24 left-1/2 -translate-x-1/2 w-32 h-32 sm:w-[166px] sm:h-[167px] object-cover rounded-lg"
+  :src="logoImageSrc" 
+  alt="Overlay logo" 
+/>
     </div>
 
     <!-- Content Section -->
