@@ -42,30 +42,22 @@ const statCards = ref<StatCard[]>([
 </script>
 
 <template>
-  <div class="w-full relative bg-[#fcc207] mt-12">
+  <div class="w-full relative bg-[#fcc207] mt-12 py-[clamp(1.5rem,3vw,3rem)]">
     <div
-      class="w-full mx-auto px-4 sm:px-6 md:px-12 lg:px-[120px] grid grid-cols-2 md:grid-cols-4 gap-6 text-left text-white font-['Plus_Jakarta_Sans'] items-stretch"
+      class="w-full mx-auto px-[clamp(1rem,3vw,5rem)] grid grid-cols-2 md:grid-cols-4 gap-[clamp(0.75rem,1.5vw,1.5rem)] text-left text-white font-['Plus_Jakarta_Sans'] items-stretch"
     >
       <div
         v-for="card in statCards"
         :key="card.id"
-        class="flex items-center p-6 md:p-8 gap-4 bg-[#e5b106] rounded-lg w-full h-full"
+        class="flex items-center p-[clamp(1rem,2vw,2rem)] gap-[clamp(0.75rem,1.5vw,1.5rem)] bg-[#e5b106] rounded-lg w-full h-full"
       >
-        <img class="w-16 h-auto flex-shrink-0" :src="card.iconSrc" :alt="card.altText" />
-        <div class="flex flex-col justify-center gap-3 flex-1">
-          <b class="text-4xl md:text-5xl font-bold leading-none capitalize sm:text-3xl">{{ card.value }}</b>
-          <div class="text-base font-semibold leading-normal capitalize">{{ card.label }}</div>
+        <img class="w-[clamp(2.75rem,5vw,4.5rem)] h-auto flex-shrink-0" :src="card.iconSrc" :alt="card.altText" />
+        <div class="flex flex-col justify-center gap-[clamp(0.25rem,0.6vw,0.75rem)] flex-1">
+          <b class="text-[clamp(1.75rem,4.2vw,3.5rem)] font-bold leading-none capitalize">{{ card.value }}</b>
+          <div class="text-[clamp(0.9rem,1.2vw,1.125rem)] font-semibold leading-normal capitalize">{{ card.label }}</div>
         </div>
       </div>
     </div>
   </div>
 </template>
   
-<style>
-/* Custom utility for extra small screens (xs:text-3xl) */
-@media (max-width: 400px) {
-  .xs\:text-3xl {
-    font-size: 1.875rem; /* ~30px */
-  }
-}
-</style>
