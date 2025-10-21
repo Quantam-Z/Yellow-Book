@@ -44,7 +44,7 @@ const statCards = ref<StatCard[]>([
 <template>
   <div class="w-full relative bg-[#fcc207] mt-12">
     <div
-      class="w-full max-w-[1200px] mx-auto px-5 grid grid-cols-2 md:grid-cols-4 gap-6 text-left text-white font-['Plus_Jakarta_Sans'] items-stretch"
+      class="w-full mx-auto px-4 sm:px-6 md:px-12 lg:px-[120px] grid grid-cols-2 md:grid-cols-4 gap-6 text-left text-white font-['Plus_Jakarta_Sans'] items-stretch"
     >
       <div
         v-for="card in statCards"
