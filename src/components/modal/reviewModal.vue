@@ -113,7 +113,6 @@
   <script setup>
   import { Star, X } from "lucide-vue-next";
   
-  // Define props
   const props = defineProps({
     review: {
       type: Object,
@@ -129,15 +128,11 @@
     }
   });
   
-  // Define emits
   const emit = defineEmits(['close', 'update-status', 'ban-reviewer']);
-  
-  // Update status function
-  const updateStatus = (status) => {
+    const updateStatus = (status) => {
     emit('update-status', { reviewId: props.review.id, status });
   };
   
-  // Ban reviewer function
   const banReviewer = () => {
     emit('ban-reviewer', props.review.id);
   };
