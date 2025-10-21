@@ -42,19 +42,18 @@ const statCards = ref<StatCard[]>([
 </script>
 
 <template>
-  <div class="w-full relative bg-[#fcc207] flex items-center justify-start mt-12 overflow-x-auto stat-scroll-container">
-    <div 
-      class="flex flex-row items-center justify-start lg:justify-center px-4 lg:px-32 md:px-20 gap-6 text-left text-white font-['Plus_Jakarta_Sans'] flex-nowrap"
-      :class="{ 'w-full': statCards.length <= 4 }"
+  <div class="w-full relative bg-[#fcc207] mt-12">
+    <div
+      class="w-full max-w-[1200px] mx-auto px-5 grid grid-cols-2 md:grid-cols-4 gap-6 text-left text-white font-['Plus_Jakarta_Sans'] items-stretch"
     >
-      <div 
+      <div
         v-for="card in statCards"
         :key="card.id"
-        class="flex items-center p-10 sm:p-6 gap-4 bg-[#e5b106] min-w-[280px] flex-shrink-0"
+        class="flex items-center p-6 md:p-8 gap-4 bg-[#e5b106] rounded-lg w-full h-full"
       >
         <img class="w-16 h-auto flex-shrink-0" :src="card.iconSrc" :alt="card.altText" />
         <div class="flex flex-col justify-center gap-3 flex-1">
-          <b class="text-5xl font-bold leading-none capitalize sm:text-4xl xs:text-3xl">{{ card.value }}</b>
+          <b class="text-4xl md:text-5xl font-bold leading-none capitalize sm:text-3xl">{{ card.value }}</b>
           <div class="text-base font-semibold leading-normal capitalize">{{ card.label }}</div>
         </div>
       </div>
@@ -63,25 +62,10 @@ const statCards = ref<StatCard[]>([
 </template>
   
 <style>
-/* 1. Hide the scrollbar for a cleaner look while retaining horizontal scrolling 
-2. Define custom utility for extra small screens (xs:text-3xl)
-*/
-
-.stat-scroll-container {
-    /* Hide scrollbar for Chrome, Safari and Opera */
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
-}
-.stat-scroll-container::-webkit-scrollbar {
-    display: none;
-}
-
-/* Defining custom utilities for smaller breakpoints not directly supported by Tailwind default.
-    This ensures proper scaling on extra small screens.
-*/
+/* Custom utility for extra small screens (xs:text-3xl) */
 @media (max-width: 400px) {
-    .xs\:text-3xl {
-        font-size: 1.875rem; /* ~30px */
-    }
+  .xs\:text-3xl {
+    font-size: 1.875rem; /* ~30px */
+  }
 }
 </style>
