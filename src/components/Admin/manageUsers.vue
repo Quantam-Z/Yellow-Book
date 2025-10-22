@@ -8,14 +8,15 @@
       </div>
 
       <!-- Search Bar -->
-      <div class="w-full relative rounded-lg bg-gray-50 border-white border-solid border box-border flex items-center p-2.5 sm:p-3 md:p-4 gap-2 sm:gap-3">
-        <Search class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-gray-400 flex-shrink-0" />
+      <div class="w-full relative rounded-lg bg-white/80 backdrop-blur-sm flex items-center px-4 py-3 gap-3">
+        <SearchIcon class="w-5 h-5 text-gray-400 flex-shrink-0" aria-hidden="true" />
         <input
           type="text"
           v-model="searchQuery"
-          @input="filterUsers"
-          placeholder="Search users by name or email"
-          class="flex-1 outline-none bg-transparent text-gray-600 placeholder-gray-400 text-xs sm:text-sm md:text-base leading-[130%] capitalize min-w-0"
+          @input="handleFilterChange"
+          placeholder="Search Companies By Name Or Category"
+          class="flex-1 outline-none border-none bg-transparent text-gray-700 placeholder-gray-400 text-base min-w-0 
+                 focus:ring-0 focus:outline-none"
         />
       </div>
     </div>
@@ -63,31 +64,29 @@
     <!-- Filters Section - Enhanced for Mobile -->
     <div class="mb-4 overflow-x-auto pb-2 scrollbar-thin">
       <div class="flex items-center gap-1.5 sm:gap-2 min-w-max pr-4">
-        <h2 class="text-xs sm:text-sm md:text-base font-semibold text-gray-900 whitespace-nowrap pr-1 sm:pr-2 hidden xs:block">
-          All Users List
-        </h2>
+        <h2 class="text-xs sm:text-sm md:text-base font-semibold text-gray-900 whitespace-nowrap pr-1 sm:pr-2 xs:block">
+  All Users List
+</h2>
         
-        <!-- Date Filters -->
-        <div class="flex items-center gap-1 sm:gap-1.5 bg-white rounded-lg px-1.5 sm:px-2 py-1.5 shadow-sm border border-gray-200 whitespace-nowrap">
-          <span class="text-gray-500 text-[10px] sm:text-xs hidden xs:inline">From:</span>
+         <div class="h-12 relative rounded-xl bg-gray-100 border border-gray-200 flex items-center px-4 gap-2 text-sm">
+          <span class="text-gray-400 text-sm">From:</span>
           <input 
             type="date" 
             v-model="filters.dateFrom"
-            @change="filterUsers"
-            class="font-medium text-gray-900 text-[10px] sm:text-xs outline-none cursor-pointer w-20 xs:w-24 sm:w-28 touch-manipulation"
+            @change="handleFilterChange"
+            class="text-gray-600 text-sm outline-none bg-transparent cursor-pointer border-none touch-manipulation ring-0 focus:ring-0 w-32"
           />
-          <Calendar class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-gray-400 flex-shrink-0 hidden xs:block" />
         </div>
 
-        <div class="flex items-center gap-1 sm:gap-1.5 bg-white rounded-lg px-1.5 sm:px-2 py-1.5 shadow-sm border border-gray-200 whitespace-nowrap">
-          <span class="text-gray-500 text-[10px] sm:text-xs hidden xs:inline">To:</span>
+        <!-- Date To -->
+        <div class="h-12 relative rounded-xl bg-gray-100 border border-gray-200 flex items-center px-4 gap-2 text-sm">
+          <span class="text-gray-400 text-sm">To:</span>
           <input 
             type="date" 
             v-model="filters.dateTo"
-            @change="filterUsers"
-            class="font-medium text-gray-900 text-[10px] sm:text-xs outline-none cursor-pointer w-20 xs:w-24 sm:w-28 touch-manipulation"
+            @change="handleFilterChange"
+            class="text-gray-600 text-sm outline-none bg-transparent cursor-pointer border-none touch-manipulation ring-0 focus:ring-0 w-32"
           />
-          <Calendar class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-gray-400 flex-shrink-0 hidden xs:block" />
         </div>
 
         <!-- Time Range Filter -->
@@ -103,7 +102,7 @@
         </select>
 
         <!-- Status Filter -->
-        <select 
+        <!-- <select 
           v-model="filters.status"
           @change="filterUsers"
           class="bg-white rounded-lg px-2 sm:px-3 py-1.5 shadow-sm border border-gray-200 text-gray-600 text-[10px] sm:text-xs outline-none cursor-pointer whitespace-nowrap touch-manipulation"
@@ -113,7 +112,21 @@
           <option value="Inactive">Inactive</option>
           <option value="Suspended">Suspended</option>
           <option value="Pending">Pending</option>
-        </select>
+        </select> -->
+
+        <div class="relative">
+          <select 
+            v-model="filters.status"
+            @change="handleFilterChange"
+            class="h-12 rounded-xl bg-gray-100 border border-gray-200 appearance-none py-0 pl-4 pr-10 text-left text-sm text-gray-600 cursor-pointer focus:outline-none focus:ring-0 min-w-[140px]"
+          >
+            <option value="">Select Status</option>
+            <option value="Approved">Approved</option>
+            <option value="Pending">Pending</option>
+            <option value="Rejected">Rejected</option>
+          </select>
+          <ChevronDownIcon class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" aria-hidden="true" />
+        </div>
 
         <!-- Signup Method Filter -->
         <select 
