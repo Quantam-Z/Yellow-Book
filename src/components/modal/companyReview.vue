@@ -41,9 +41,8 @@
 
 <script setup>
 import { ref, defineEmits, defineProps } from "vue";
-// CORRECTED IMPORT: Assuming the path should be relative to common or an alias like @/components/common/StarRatingBox.vue
-// Using a common relative path here, adjust if your project structure is different
-import StarRatingBox from "../common/StarRatingBox.vue"; 
+// Use the existing common star rating box component (filename is lowercase)
+import StarRatingBox from "../common/starRatingBox.vue"; 
 
 const emit = defineEmits(["close", "submit"]);
 

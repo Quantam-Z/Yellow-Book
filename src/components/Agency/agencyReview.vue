@@ -102,14 +102,14 @@
                   <h3 class="font-semibold text-gray-800 capitalize mb-1">
                     {{ review.reviewer }}
                   </h3>
-                  <div class="flex items-center gap-0.5">
-                    <Star
-                      v-for="star in 5"
-                      :key="star"
-                      class="w-5 h-5"
-                      :class="star <= Number(review.rating) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'"
-                    />
-                  </div>
+              <div class="flex items-center gap-0.5">
+                <StarRatingBox
+                  :model-value="Number(review.rating)"
+                  :readonly="true"
+                  :box-size="32"
+                  :icon-size="20"
+                />
+              </div>
                 </div>
               </div>
 
@@ -202,11 +202,7 @@
               </p>
               <div class="space-y-2">
                 <div class="flex items-center justify-center gap-0.5">
-                  <Star
-                    v-for="star in 5"
-                    :key="star"
-                    class="w-5 h-5 fill-yellow-400 text-yellow-400"
-                  />
+                  <StarRatingBox :model-value="5" :readonly="true" :box-size="32" :icon-size="20" />
                 </div>
                 <p class="text-sm font-medium text-gray-600 capitalize">
                   ({{ totalReviews }} reviews)
@@ -324,8 +320,8 @@
   import { MessageSquare, ChevronDown, ExternalLink, Star, X } from 'lucide-vue-next';
   import { Teleport } from 'vue';
   
-  // NOTE: Assuming the correct path for the reusable StarRatingBox in the main component
-  import StarRatingBox from '@/components/common/StarRatingBox.vue';
+  // NOTE: Use the existing common star rating box component (filename is lowercase)
+  import StarRatingBox from '@/components/common/starRatingBox.vue';
   
   // NEW IMPORT: Import the dedicated modal component
   import CompanyReview from '@/components/modal/companyReview.vue'; 
