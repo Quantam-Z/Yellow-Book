@@ -106,8 +106,8 @@
                 <StarRatingBox
                   :model-value="Number(review.rating)"
                   :readonly="true"
-                  :box-size="isDesktop ? 32 : 28"
-                  :icon-size="isDesktop ? 20 : 18"
+                  :box-size="reviewStarBoxSize"
+                  :icon-size="reviewStarIconSize"
                 />
               </div>
                 </div>
@@ -183,7 +183,10 @@
                 {{ addReviewTitle }}
              </div>
              <div class="flex items-center gap-1">
-                <StarRatingBox />
+                <StarRatingBox
+                  :box-size="ctaStarBoxSize"
+                  :icon-size="ctaStarIconSize"
+                />
              </div>
           </div>
         </div>
@@ -205,7 +208,7 @@
                   <Star
                     v-for="star in 5"
                     :key="star"
-                    class="w-5 h-5 fill-yellow-400 text-yellow-400"
+                    class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 fill-yellow-400 text-yellow-400"
                   />
                 </div>
                 <p class="text-sm font-medium text-gray-600 capitalize">
@@ -223,7 +226,7 @@
                 <div class="flex items-center gap-1 w-10 sm:w-12 justify-end">
                   <span class="text-lg bg-white/40">{{ stars }}</span>
 
-                  <Star class="w-4 h-4 sm:w-5 sm:h-5 fill-gray-700 text-gray-700 drop-shadow-sm" />
+                  <Star class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 fill-gray-700 text-gray-700 drop-shadow-sm" />
                 </div>
                 <div class="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
                   <div
@@ -390,6 +393,44 @@
   // removed reactionCounts; likes/dislikes are stored on each review item
 
   const isDesktop = ref(false);
+  const windowWidth = ref(0);
+
+  // Responsive star sizes derived from screen width
+  const reviewStarBoxSize = computed(() => {
+    const w = windowWidth.value;
+    if (w >= 1536) return 38; // 2xl
+    if (w >= 1280) return 36; // xl
+    if (w >= 1024) return 32; // lg
+    if (w >= 640) return 30;  // sm
+    return 28;                // xs
+  });
+
+  const reviewStarIconSize = computed(() => {
+    const w = windowWidth.value;
+    if (w >= 1536) return 24;
+    if (w >= 1280) return 22;
+    if (w >= 1024) return 20;
+    if (w >= 640) return 19;
+    return 18;
+  });
+
+  const ctaStarBoxSize = computed(() => {
+    const w = windowWidth.value;
+    if (w >= 1536) return 48;
+    if (w >= 1280) return 44;
+    if (w >= 1024) return 40;
+    if (w >= 640) return 36;
+    return 32;
+  });
+
+  const ctaStarIconSize = computed(() => {
+    const w = windowWidth.value;
+    if (w >= 1536) return 30;
+    if (w >= 1280) return 28;
+    if (w >= 1024) return 26;
+    if (w >= 640) return 24;
+    return 22;
+  });
 
 
   const fetchReviews = async () => {
@@ -435,14 +476,15 @@
   onMounted(() => {
     fetchReviews();
 
-    const checkScreenSize = () => {
+    const handleResize = () => {
+      windowWidth.value = window.innerWidth;
       isDesktop.value = window.innerWidth >= 1024;
     };
-    checkScreenSize();
-    window.addEventListener('resize', checkScreenSize);
+    handleResize();
+    window.addEventListener('resize', handleResize);
 
     onUnmounted(() => {
-      window.removeEventListener('resize', checkScreenSize);
+      window.removeEventListener('resize', handleResize);
     });
   });
 
