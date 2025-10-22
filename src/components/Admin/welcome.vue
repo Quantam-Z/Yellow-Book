@@ -1,7 +1,5 @@
 <template>
-    <div
-      class="w-full rounded-lg bg-gradient-to-br from-purple-100 via-pink-50 to-blue-400 p-4 mb-4"
-    >
+   <div class="w-full rounded-lg bg-gradient-to-br from-purple-100 via-pink-50 to-blue-400 p-4 mb-4">
       <h2 class="text-3xl font-bold text-black">Welcome back, {{ adminStats?.welcomeName || 'User' }}</h2>
 
     <div
