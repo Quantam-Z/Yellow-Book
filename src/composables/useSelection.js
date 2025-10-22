@@ -6,6 +6,8 @@ import { computed } from 'vue'
  */
 export function useSelection(itemsRef) {
   const anySelected = computed(() => itemsRef.value.some(item => Boolean(item.selected)))
+
+  // Primary computed to reflect whether all current items are selected
   const allSelected = computed({
     get() {
       const items = itemsRef.value
@@ -17,10 +19,19 @@ export function useSelection(itemsRef) {
     }
   })
 
+  // Alias used by some components (e.g., CompanyManagement)
+  const selectAll = allSelected
+
   const toggleAll = (subset) => {
     const target = Array.isArray(subset) && subset.length ? subset : itemsRef.value
     const next = !target.every(item => Boolean(item.selected))
     target.forEach(item => { item.selected = next })
+  }
+
+  // Toggle selection for a single item (expected by components)
+  const toggleSelection = (item) => {
+    if (!item) return
+    item.selected = !Boolean(item.selected)
   }
 
   const clearSelection = () => {
@@ -30,6 +41,8 @@ export function useSelection(itemsRef) {
   return {
     anySelected,
     allSelected,
+    selectAll,
+    toggleSelection,
     toggleAll,
     clearSelection,
   }
