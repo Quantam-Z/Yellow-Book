@@ -11,11 +11,11 @@
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          border: `1px solid ${borderColor}`,
-          borderRadius: '0.375rem',
+          border: star <= modelValue ? `3px solid #FBBF24` : '3px solid #9CA3AF',
+          borderRadius: '4px',
           cursor: readonly ? 'default' : 'pointer',
           transition: 'all 0.2s',
-          backgroundColor: star <= modelValue ? filledBg : 'transparent',
+          backgroundColor: '#FFFFFF',
           pointerEvents: readonly ? 'none' : 'auto',
         }"
         :role="readonly ? undefined : 'button'"
@@ -23,12 +23,12 @@
         @keyup.enter="rate(star)"
       >
         <Star
+          :fill="star <= modelValue ? '#FBBF24' : 'none'"
           :style="{
             width: iconSize + 'px',
             height: iconSize + 'px',
-            color: star <= modelValue ? filledColor : emptyColor,
-            transition: 'transform 0.2s',
-            transform: star <= modelValue ? 'scale(1.1)' : 'scale(1)',
+            color: star <= modelValue ? '#FBBF24' : '#9CA3AF',
+            transition: 'all 0.2s',
           }"
         />
       </div>
@@ -51,12 +51,12 @@ const props = withDefaults(defineProps<{
   borderColor?: string;
 }>(), {
   readonly: false,
-  boxSize: 40,
-  iconSize: 24,
-  filledBg: '#FDE68A',
-  filledColor: '#F59E0B',
-  emptyColor: '#D1D5DB',
-  borderColor: '#9CA3AF',
+  boxSize: 60,
+  iconSize: 36,
+  filledBg: '#FFFFFF',
+  filledColor: '#FBBF24',
+  emptyColor: '#FBBF24',
+  borderColor: '#FBBF24',
 });
 
 const emit = defineEmits<{
@@ -72,6 +72,5 @@ function rate(rating: number) {
 }
 </script>
   
-  <style scoped>
-  </style>
-  
+<style scoped>
+</style>

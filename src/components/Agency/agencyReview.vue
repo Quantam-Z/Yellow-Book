@@ -202,7 +202,11 @@
               </p>
               <div class="space-y-2">
                 <div class="flex items-center justify-center gap-0.5">
-                  <StarRatingBox :model-value="5" :readonly="true" :box-size="32" :icon-size="20" />
+                  <Star
+                    v-for="star in 5"
+                    :key="star"
+                    class="w-5 h-5 fill-yellow-400 text-yellow-400"
+                  />
                 </div>
                 <p class="text-sm font-medium text-gray-600 capitalize">
                   ({{ totalReviews }} reviews)
@@ -234,7 +238,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </div> 
       
       <div
         v-if="showFilter"
@@ -320,10 +324,7 @@
   import { MessageSquare, ChevronDown, ExternalLink, Star, X } from 'lucide-vue-next';
   import { Teleport } from 'vue';
   
-  // NOTE: Use the existing common star rating box component (filename is lowercase)
   import StarRatingBox from '@/components/common/starRatingBox.vue';
-  
-  // NEW IMPORT: Import the dedicated modal component
   import CompanyReview from '@/components/modal/companyReview.vue'; 
 
   interface CompanyResponse {
