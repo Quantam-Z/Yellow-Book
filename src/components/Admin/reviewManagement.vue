@@ -1,7 +1,7 @@
 <template>
-  <div class="w-full min-h-screen bg-gray-50 p-4 sm:p-6 space-y-4 sm:space-y-6">
-    <!-- Header Section -->
-    <div class="w-full rounded-lg bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 p-3 sm:p-4 md:p-6 mb-4">
+  <div class="w-full font-plus-jakarta-sans max-w-full overflow-hidden bg-gray-50 p-4 sm:p-6 space-y-6">
+    <!-- Header -->
+    <div class="w-full rounded-lg bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 p-3 sm:p-4 md:p-6">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
         <h1 class="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">Review Management</h1>
       </div>
@@ -13,627 +13,531 @@
           type="text"
           v-model="searchQuery"
           @input="handleFilterChange"
-          placeholder="Search Companies By Name Or Category"
-          class="flex-1 outline-none border-none bg-transparent text-gray-700 placeholder-gray-400 text-base min-w-0 
-                 focus:ring-0 focus:outline-none"
+          placeholder="Search by reviewer or content"
+          class="flex-1 outline-none border-none bg-transparent text-gray-700 placeholder-gray-400 text-base min-w-0 focus:ring-0 focus:outline-none"
         />
       </div>
     </div>
 
-    <div class="w-full relative flex items-center gap-4 text-left text-num-14 text-gray font-plus-jakarta-sans">
-<div class="flex-1 rounded-num-8 bg-white border-whitesmoke border-solid border-[1px] flex items-center justify-center p-num-16 gap-4">
-<img class="h-11 w-11 rounded-num-4" alt="" />
-<div class="flex-1 flex flex-col items-start gap-4">
-<div class="self-stretch relative leading-[130%] capitalize">Total Reviews</div>
-<b class="self-stretch relative text-num-18 leading-[160%] capitalize">60</b>
-</div>
-</div>
-<div class="flex-1 rounded-num-8 bg-white border-whitesmoke border-solid border-[1px] flex items-center justify-center p-num-16 gap-4">
-<img class="h-11 w-11 rounded-num-4" alt="" />
-<div class="flex-1 flex flex-col items-start gap-4">
-<div class="self-stretch relative leading-[130%] capitalize">Pending</div>
-<b class="self-stretch relative text-num-18 leading-[160%] capitalize">60</b>
-</div>
-</div>
-<div class="flex-1 rounded-num-8 bg-white border-whitesmoke border-solid border-[1px] flex items-center justify-center p-num-16 gap-4">
-<img class="h-11 w-11 rounded-num-4" alt="" />
-<div class="flex-1 flex flex-col items-start gap-4">
-<div class="self-stretch relative leading-[130%] capitalize"> Approved </div>
-<b class="self-stretch relative text-num-18 leading-[160%] capitalize">60</b>
-</div>
-</div>
-<div class="flex-1 rounded-num-8 bg-white border-whitesmoke border-solid border-[1px] flex items-center justify-center p-num-16 gap-4">
-<img class="h-11 w-11 rounded-num-4" alt="" />
-<div class="flex-1 flex flex-col items-start gap-4">
-<div class="self-stretch relative leading-[130%] capitalize">Rejected</div>
-<b class="self-stretch relative text-num-18 leading-[160%] capitalize">60</b>
-</div>
-</div>
-<div class="flex-1 rounded-num-8 bg-white border-whitesmoke border-solid border-[1px] flex items-center justify-center p-num-16 gap-4">
-<img class="h-11 w-11 rounded-num-4" alt="" />
-<div class="flex-1 flex flex-col items-start gap-4">
-<div class="self-stretch relative leading-[130%] capitalize">On Hold</div>
-<b class="self-stretch relative text-num-18 leading-[160%] capitalize">60</b>
-</div>
-</div>
-<div class="flex-1 rounded-num-8 bg-white border-whitesmoke border-solid border-[1px] flex items-center justify-center p-num-16 gap-4">
-<img class="h-11 w-11 rounded-num-4" alt="" />
-<div class="flex-1 flex flex-col items-start gap-4">
-<div class="self-stretch relative leading-[130%] capitalize">Banned Users</div>
-<b class="self-stretch relative text-num-18 leading-[160%] capitalize">60</b>
-</div>
-</div>
-</div>
+    <!-- Stats -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="rounded-xl bg-white border border-gray-200 p-4 flex items-center gap-4">
+        <MessageSquareIcon class="w-10 h-10 text-blue-500" />
+        <div class="flex-1">
+          <div class="text-sm text-gray-600">Total Reviews</div>
+          <div class="text-xl font-bold text-gray-900">{{ totalReviews }}</div>
+        </div>
+      </div>
+      <div class="rounded-xl bg-white border border-gray-200 p-4 flex items-center gap-4">
+        <CheckCircleIcon class="w-10 h-10 text-green-500" />
+        <div class="flex-1">
+          <div class="text-sm text-gray-600">Approved</div>
+          <div class="text-xl font-bold text-gray-900">{{ approvedCount }}</div>
+        </div>
+      </div>
+      <div class="rounded-xl bg-white border border-gray-200 p-4 flex items-center gap-4">
+        <ClockIcon class="w-10 h-10 text-amber-500" />
+        <div class="flex-1">
+          <div class="text-sm text-gray-600">Pending</div>
+          <div class="text-xl font-bold text-gray-900">{{ pendingCount }}</div>
+        </div>
+      </div>
+      <div class="rounded-xl bg-white border border-gray-200 p-4 flex items-center gap-4">
+        <XCircleIcon class="w-10 h-10 text-red-500" />
+        <div class="flex-1">
+          <div class="text-sm text-gray-600">Rejected</div>
+          <div class="text-xl font-bold text-gray-900">{{ rejectedCount }}</div>
+        </div>
+      </div>
+    </div>
 
+    <!-- Mobile Filters Toggle -->
+    <div class="mb-2 flex lg:hidden items-center justify-between">
+      <h2 class="text-base font-bold text-gray-900">All Review List</h2>
+      <button 
+        @click="showMobileFilters = !showMobileFilters"
+        class="h-12 bg-white rounded-xl px-4 py-2 border border-gray-300 text-gray-700 text-sm outline-none cursor-pointer whitespace-nowrap touch-manipulation flex items-center gap-2 hover:bg-gray-50 active:bg-gray-100 transition"
+        aria-controls="mobile-filters"
+        :aria-expanded="showMobileFilters ? 'true' : 'false'"
+      >
+        <FilterIcon class="w-4 h-4" aria-hidden="true" />
+        <span>Filters</span>
+      </button>
+    </div>
 
-<div class="w-full relative flex items-center justify-between gap-5 text-left text-[18px] text-gray-300 font-plus-jakarta-sans">
-<b class="relative leading-[160%] capitalize whitespace-pre-wrap">All Review List</b>
-<div class="flex items-center gap-2 text-num-14 text-dimgray">
-<div class="flex items-center gap-2 text-silver">
-<div class="h-12 rounded-num-12 bg-gray-100 border-whitesmoke border-solid border-[1px] box-border flex items-center py-num-0 pl-num-16 pr-num-5 gap-2">
-<div class="flex items-center gap-1">
-<div class="relative leading-[130%] capitalize">From:</div>
-<div class="relative leading-[130%] capitalize font-semibold text-gray-200">09-10-2025</div>
-</div>
-<img class="h-num-37 w-[37px] rounded-num-7" alt="" />
-</div>
-<div class="h-12 rounded-num-12 bg-gray-100 border-whitesmoke border-solid border-[1px] box-border flex items-center py-num-0 pl-num-16 pr-num-5 gap-2">
-<div class="flex items-center gap-1">
-<div class="relative leading-[130%] capitalize">To</div>
-<div class="relative leading-[130%] capitalize font-semibold text-gray-200">09-10-2025</div>
-</div>
-<img class="h-num-37 w-[37px] rounded-num-7" alt="" />
-</div>
-</div>
-<div class="h-12 w-[199px] rounded-num-12 bg-gray-100 border-whitesmoke border-solid border-[1px] box-border flex items-center py-num-0 pl-num-16 pr-num-5 gap-4">
-<div class="flex-1 relative leading-[130%] capitalize font-medium">Today</div>
-<img class="h-num-37 w-[37px] rounded-num-7" alt="" />
-</div>
-<div class="h-12 w-[199px] rounded-num-12 bg-gray-100 border-whitesmoke border-solid border-[1px] box-border flex items-center py-num-0 pl-num-16 pr-num-5 gap-4">
-<div class="flex-1 relative leading-[130%] capitalize font-medium">Select Rating</div>
-<img class="h-num-37 w-[37px] rounded-num-7" alt="" />
-</div>
-<div class="h-12 w-[199px] rounded-num-12 bg-gray-100 border-whitesmoke border-solid border-[1px] box-border flex items-center py-num-0 pl-num-16 pr-num-5 gap-4">
-<div class="flex-1 relative leading-[130%] capitalize font-medium">Status</div>
-<img class="h-num-37 w-[37px] rounded-num-7" alt="" />
-</div>
-</div>
-</div>
+    <!-- Filters Section (pattern matches company management) -->
+    <div class="mb-2">
+      <!-- Desktop Filters -->
+      <div class="hidden lg:flex items-center flex-wrap gap-3 min-w-full">
+        <h2 class="text-lg font-bold text-gray-900 whitespace-nowrap">All Review List</h2>
 
-<div class="w-full h-11 relative rounded bg-gray" />
-<div class="w-full relative flex flex-col items-start text-center text-num-14 text-gray font-plus-jakarta-sans">
-<div class="w-num-1232 h-11 relative">
-<div class="absolute top-[0px] left-[0px] rounded-num-4 border-whitesmoke border-solid border-b-[1px] box-border w-num-1232 h-11" />
-<div class="absolute top-[6px] left-[19px] w-[1197px] h-8">
-<div class="absolute top-[11px] left-[0px] leading-[130%] capitalize">01</div>
-<div class="absolute top-[0px] left-[311px] flex items-center gap-4 text-darkslategray">
-<img class="w-8 relative rounded-num-50 max-h-full object-cover" alt="" />
-<div class="relative leading-[130%] capitalize">robat boss</div>
-</div>
-<div class="absolute top-[11px] left-[522px] leading-[130%] capitalize font-medium text-gold">Bluegrass Hemp Oil</div>
-<div class="absolute top-[11px] left-[702px] leading-[130%] capitalize">Great experience working with ...</div>
-<div class="absolute top-[11px] left-[1055px] leading-[130%] capitalize text-gold">Pending</div>
-<div class="absolute top-[11px] left-[57px] leading-[130%] capitalize">12-june-2025 | 10:30 PM</div>
-<div class="absolute top-[4px] left-[958px] flex items-center gap-1 text-darkslategray">
-<img class="h-6 w-6 relative" alt="" />
-<div class="relative leading-[130%] capitalize">5 Star</div>
-</div>
-<div class="absolute top-[4px] left-[1141px] flex items-center gap-2">
-<img class="h-6 w-6 relative" alt="" />
-<img class="h-6 w-6 relative" alt="" />
-</div>
-</div>
-</div>
-<div class="w-num-1232 h-11 relative">
-<div class="absolute top-[0px] left-[0px] rounded-num-4 border-whitesmoke border-solid border-b-[1px] box-border w-num-1232 h-11" />
-<div class="absolute top-[6px] left-[18px] w-num-1198 h-8">
-<div class="absolute top-[11px] left-[0px] leading-[130%] capitalize">02</div>
-<div class="absolute top-[0px] left-[312px] flex items-center gap-4 text-darkslategray">
-<img class="w-8 relative rounded-num-50 max-h-full object-cover" alt="" />
-<div class="relative leading-[130%] capitalize">robat boss</div>
-</div>
-<div class="absolute top-[11px] left-[523px] leading-[130%] capitalize font-medium text-gold">Bluegrass Hemp Oil</div>
-<div class="absolute top-[11px] left-[703px] leading-[130%] capitalize">Great experience working with ...</div>
-<div class="absolute top-[11px] left-[1051px] leading-[130%] capitalize text-forestgreen">Approved</div>
-<div class="absolute top-[11px] left-[58px] leading-[130%] capitalize">12-june-2025 | 10:30 PM</div>
-<div class="absolute top-[4px] left-[959px] flex items-center gap-1 text-darkslategray">
-<img class="h-6 w-6 relative" alt="" />
-<div class="relative leading-[130%] capitalize">5 Star</div>
-</div>
-<div class="absolute top-[4px] left-[1142px] flex items-center gap-2">
-<img class="h-6 w-6 relative" alt="" />
-<img class="h-6 w-6 relative" alt="" />
-</div>
-</div>
-</div>
-<div class="w-num-1232 h-11 relative">
-<div class="absolute top-[0px] left-[0px] rounded-num-4 border-whitesmoke border-solid border-b-[1px] box-border w-num-1232 h-11" />
-<div class="absolute top-[6px] left-[18px] w-num-1198 h-8">
-<div class="absolute top-[11px] left-[0px] leading-[130%] capitalize">03</div>
-<div class="absolute top-[0px] left-[312px] flex items-center gap-4 text-darkslategray">
-<img class="w-8 relative rounded-num-50 max-h-full object-cover" alt="" />
-<div class="relative leading-[130%] capitalize">robat boss</div>
-</div>
-<div class="absolute top-[11px] left-[523px] leading-[130%] capitalize font-medium text-gold">Bluegrass Hemp Oil</div>
-<div class="absolute top-[11px] left-[703px] leading-[130%] capitalize">Great experience working with ...</div>
-<div class="absolute top-[11px] left-[1054px] leading-[130%] capitalize text-firebrick">Rejected</div>
-<div class="absolute top-[11px] left-[58px] leading-[130%] capitalize">12-june-2025 | 10:30 PM</div>
-<div class="absolute top-[4px] left-[959px] flex items-center gap-1 text-darkslategray">
-<img class="h-6 w-6 relative" alt="" />
-<div class="relative leading-[130%] capitalize">5 Star</div>
-</div>
-<div class="absolute top-[4px] left-[1142px] flex items-center gap-2">
-<img class="h-6 w-6 relative" alt="" />
-<img class="h-6 w-6 relative" alt="" />
-</div>
-</div>
-</div>
-<div class="w-num-1232 h-11 relative">
-<div class="absolute top-[0px] left-[0px] rounded-num-4 border-whitesmoke border-solid border-b-[1px] box-border w-num-1232 h-11" />
-<div class="absolute top-[6px] left-[17px] w-[1199px] h-8">
-<div class="absolute top-[11px] left-[0px] leading-[130%] capitalize">04</div>
-<div class="absolute top-[0px] left-[313px] flex items-center gap-4 text-darkslategray">
-<img class="w-8 relative rounded-num-50 max-h-full object-cover" alt="" />
-<div class="relative leading-[130%] capitalize">robat boss</div>
-</div>
-<div class="absolute top-[11px] left-[524px] leading-[130%] capitalize font-medium text-gold">Bluegrass Hemp Oil</div>
-<div class="absolute top-[11px] left-[704px] leading-[130%] capitalize">Great experience working with ...</div>
-<div class="absolute top-[11px] left-[1055px] leading-[130%] capitalize text-deepskyblue">On-Hold</div>
-<div class="absolute top-[11px] left-[59px] leading-[130%] capitalize">12-june-2025 | 10:30 PM</div>
-<div class="absolute top-[4px] left-[960px] flex items-center gap-1 text-darkslategray">
-<img class="h-6 w-6 relative" alt="" />
-<div class="relative leading-[130%] capitalize">5 Star</div>
-</div>
-<div class="absolute top-[4px] left-[1143px] flex items-center gap-2">
-<img class="h-6 w-6 relative" alt="" />
-<img class="h-6 w-6 relative" alt="" />
-</div>
-</div>
-</div>
-<div class="w-num-1232 h-11 relative">
-<div class="absolute top-[0px] left-[0px] rounded-num-4 border-whitesmoke border-solid border-b-[1px] box-border w-num-1232 h-11" />
-<div class="absolute top-[6px] left-[18px] w-num-1198 h-8">
-<div class="absolute top-[11px] left-[0px] leading-[130%] capitalize">05</div>
-<div class="absolute top-[0px] left-[312px] flex items-center gap-4 text-darkslategray">
-<img class="w-8 relative rounded-num-50 max-h-full object-cover" alt="" />
-<div class="relative leading-[130%] capitalize">robat boss</div>
-</div>
-<div class="absolute top-[11px] left-[523px] leading-[130%] capitalize font-medium text-gold">Bluegrass Hemp Oil</div>
-<div class="absolute top-[11px] left-[703px] leading-[130%] capitalize">Great experience working with ...</div>
-<div class="absolute top-[11px] left-[1056px] leading-[130%] capitalize text-gold">Pending</div>
-<div class="absolute top-[11px] left-[58px] leading-[130%] capitalize">12-june-2025 | 10:30 PM</div>
-<div class="absolute top-[4px] left-[959px] flex items-center gap-1 text-darkslategray">
-<img class="h-6 w-6 relative" alt="" />
-<div class="relative leading-[130%] capitalize">5 Star</div>
-</div>
-<div class="absolute top-[4px] left-[1142px] flex items-center gap-2">
-<img class="h-6 w-6 relative" alt="" />
-<img class="h-6 w-6 relative" alt="" />
-</div>
-</div>
-</div>
-<div class="w-num-1232 h-11 relative">
-<div class="absolute top-[0px] left-[0px] rounded-num-4 border-whitesmoke border-solid border-b-[1px] box-border w-num-1232 h-11" />
-<div class="absolute top-[6px] left-[18px] w-num-1198 h-8">
-<div class="absolute top-[11px] left-[0px] leading-[130%] capitalize">06</div>
-<div class="absolute top-[0px] left-[312px] flex items-center gap-4 text-darkslategray">
-<img class="w-8 relative rounded-num-50 max-h-full object-cover" alt="" />
-<div class="relative leading-[130%] capitalize">robat boss</div>
-</div>
-<div class="absolute top-[11px] left-[523px] leading-[130%] capitalize font-medium text-gold">Bluegrass Hemp Oil</div>
-<div class="absolute top-[11px] left-[703px] leading-[130%] capitalize">Great experience working with ...</div>
-<div class="absolute top-[11px] left-[1056px] leading-[130%] capitalize text-gold">Pending</div>
-<div class="absolute top-[11px] left-[58px] leading-[130%] capitalize">12-june-2025 | 10:30 PM</div>
-<div class="absolute top-[4px] left-[959px] flex items-center gap-1 text-darkslategray">
-<img class="h-6 w-6 relative" alt="" />
-<div class="relative leading-[130%] capitalize">5 Star</div>
-</div>
-<div class="absolute top-[4px] left-[1142px] flex items-center gap-2">
-<img class="h-6 w-6 relative" alt="" />
-<img class="h-6 w-6 relative" alt="" />
-</div>
-</div>
-</div>
-<div class="w-num-1232 h-11 relative">
-<div class="absolute top-[0px] left-[0px] rounded-num-4 border-whitesmoke border-solid border-b-[1px] box-border w-num-1232 h-11" />
-<div class="absolute top-[6px] left-[18px] w-num-1198 h-8">
-<div class="absolute top-[11px] left-[0px] leading-[130%] capitalize">07</div>
-<div class="absolute top-[0px] left-[312px] flex items-center gap-4 text-darkslategray">
-<img class="w-8 relative rounded-num-50 max-h-full object-cover" alt="" />
-<div class="relative leading-[130%] capitalize">robat boss</div>
-</div>
-<div class="absolute top-[11px] left-[523px] leading-[130%] capitalize font-medium text-gold">Bluegrass Hemp Oil</div>
-<div class="absolute top-[11px] left-[703px] leading-[130%] capitalize">Great experience working with ...</div>
-<div class="absolute top-[11px] left-[1056px] leading-[130%] capitalize text-gold">Pending</div>
-<div class="absolute top-[11px] left-[58px] leading-[130%] capitalize">12-june-2025 | 10:30 PM</div>
-<div class="absolute top-[4px] left-[959px] flex items-center gap-1 text-darkslategray">
-<img class="h-6 w-6 relative" alt="" />
-<div class="relative leading-[130%] capitalize">5 Star</div>
-</div>
-<div class="absolute top-[4px] left-[1142px] flex items-center gap-2">
-<img class="h-6 w-6 relative" alt="" />
-<img class="h-6 w-6 relative" alt="" />
-</div>
-</div>
-</div>
-<div class="w-num-1232 h-11 relative">
-<div class="absolute top-[0px] left-[0px] rounded-num-4 border-whitesmoke border-solid border-b-[1px] box-border w-num-1232 h-11" />
-<div class="absolute top-[6px] left-[17px] w-[1199px] h-8">
-<div class="absolute top-[11px] left-[0px] leading-[130%] capitalize">08</div>
-<div class="absolute top-[0px] left-[313px] flex items-center gap-4 text-darkslategray">
-<img class="w-8 relative rounded-num-50 max-h-full object-cover" alt="" />
-<div class="relative leading-[130%] capitalize">robat boss</div>
-</div>
-<div class="absolute top-[11px] left-[524px] leading-[130%] capitalize font-medium text-gold">Bluegrass Hemp Oil</div>
-<div class="absolute top-[11px] left-[704px] leading-[130%] capitalize">Great experience working with ...</div>
-<div class="absolute top-[11px] left-[1057px] leading-[130%] capitalize text-gold">Pending</div>
-<div class="absolute top-[11px] left-[59px] leading-[130%] capitalize">12-june-2025 | 10:30 PM</div>
-<div class="absolute top-[4px] left-[960px] flex items-center gap-1 text-darkslategray">
-<img class="h-6 w-6 relative" alt="" />
-<div class="relative leading-[130%] capitalize">5 Star</div>
-</div>
-<div class="absolute top-[4px] left-[1143px] flex items-center gap-2">
-<img class="h-6 w-6 relative" alt="" />
-<img class="h-6 w-6 relative" alt="" />
-</div>
-</div>
-</div>
-<div class="w-num-1232 h-11 relative">
-<div class="absolute top-[0px] left-[0px] rounded-num-4 border-whitesmoke border-solid border-b-[1px] box-border w-num-1232 h-11" />
-<div class="absolute top-[6px] left-[18px] w-num-1198 h-8">
-<div class="absolute top-[11px] left-[0px] leading-[130%] capitalize">09</div>
-<div class="absolute top-[0px] left-[312px] flex items-center gap-4 text-darkslategray">
-<img class="w-8 relative rounded-num-50 max-h-full object-cover" alt="" />
-<div class="relative leading-[130%] capitalize">robat boss</div>
-</div>
-<div class="absolute top-[11px] left-[523px] leading-[130%] capitalize font-medium text-gold">Bluegrass Hemp Oil</div>
-<div class="absolute top-[11px] left-[703px] leading-[130%] capitalize">Great experience working with ...</div>
-<div class="absolute top-[11px] left-[1056px] leading-[130%] capitalize text-gold">Pending</div>
-<div class="absolute top-[11px] left-[58px] leading-[130%] capitalize">12-june-2025 | 10:30 PM</div>
-<div class="absolute top-[4px] left-[959px] flex items-center gap-1 text-darkslategray">
-<img class="h-6 w-6 relative" alt="" />
-<div class="relative leading-[130%] capitalize">5 Star</div>
-</div>
-<div class="absolute top-[4px] left-[1142px] flex items-center gap-2">
-<img class="h-6 w-6 relative" alt="" />
-<img class="h-6 w-6 relative" alt="" />
-</div>
-</div>
-</div>
-<div class="w-num-1232 h-11 relative">
-<div class="absolute top-[0px] left-[0px] rounded-num-4 border-whitesmoke border-solid border-b-[1px] box-border w-num-1232 h-11" />
-<div class="absolute top-[6px] left-[19px] w-[1197px] h-8">
-<div class="absolute top-[11px] left-[0px] leading-[130%] capitalize">10</div>
-<div class="absolute top-[0px] left-[311px] flex items-center gap-4 text-darkslategray">
-<img class="w-8 relative rounded-num-50 max-h-full object-cover" alt="" />
-<div class="relative leading-[130%] capitalize">robat boss</div>
-</div>
-<div class="absolute top-[11px] left-[522px] leading-[130%] capitalize font-medium text-gold">Bluegrass Hemp Oil</div>
-<div class="absolute top-[11px] left-[702px] leading-[130%] capitalize">Great experience working with ...</div>
-<div class="absolute top-[11px] left-[1055px] leading-[130%] capitalize text-gold">Pending</div>
-<div class="absolute top-[11px] left-[57px] leading-[130%] capitalize">12-june-2025 | 10:30 PM</div>
-<div class="absolute top-[4px] left-[958px] flex items-center gap-1 text-darkslategray">
-<img class="h-6 w-6 relative" alt="" />
-<div class="relative leading-[130%] capitalize">5 Star</div>
-</div>
-<div class="absolute top-[4px] left-[1141px] flex items-center gap-2">
-<img class="h-6 w-6 relative" alt="" />
-<img class="h-6 w-6 relative" alt="" />
-</div>
-</div>
-</div>
-<div class="w-num-1232 h-11 relative">
-<div class="absolute top-[0px] left-[0px] rounded-num-4 border-whitesmoke border-solid border-b-[1px] box-border w-num-1232 h-11" />
-<div class="absolute top-[6px] left-[22px] w-[1194px] h-8">
-<div class="absolute top-[11px] left-[0px] leading-[130%] capitalize">11</div>
-<div class="absolute top-[0px] left-[308px] flex items-center gap-4 text-darkslategray">
-<img class="w-8 relative rounded-num-50 max-h-full object-cover" alt="" />
-<div class="relative leading-[130%] capitalize">robat boss</div>
-</div>
-<div class="absolute top-[11px] left-[519px] leading-[130%] capitalize font-medium text-gold">Bluegrass Hemp Oil</div>
-<div class="absolute top-[11px] left-[699px] leading-[130%] capitalize">Great experience working with ...</div>
-<div class="absolute top-[11px] left-[1052px] leading-[130%] capitalize text-gold">Pending</div>
-<div class="absolute top-[11px] left-[54px] leading-[130%] capitalize">12-june-2025 | 10:30 PM</div>
-<div class="absolute top-[4px] left-[955px] flex items-center gap-1 text-darkslategray">
-<img class="h-6 w-6 relative" alt="" />
-<div class="relative leading-[130%] capitalize">5 Star</div>
-</div>
-<div class="absolute top-[4px] left-[1138px] flex items-center gap-2">
-<img class="h-6 w-6 relative" alt="" />
-<img class="h-6 w-6 relative" alt="" />
-</div>
-</div>
-</div>
-<div class="w-num-1232 h-11 relative">
-<div class="absolute top-[0px] left-[0px] rounded-num-4 border-whitesmoke border-solid border-b-[1px] box-border w-num-1232 h-11" />
-<div class="absolute top-[6px] left-[20px] w-num-1196 h-8">
-<div class="absolute top-[11px] left-[0px] leading-[130%] capitalize">12</div>
-<div class="absolute top-[0px] left-[310px] flex items-center gap-4 text-darkslategray">
-<img class="w-8 relative rounded-num-50 max-h-full object-cover" alt="" />
-<div class="relative leading-[130%] capitalize">robat boss</div>
-</div>
-<div class="absolute top-[11px] left-[521px] leading-[130%] capitalize font-medium text-gold">Bluegrass Hemp Oil</div>
-<div class="absolute top-[11px] left-[701px] leading-[130%] capitalize">Great experience working with ...</div>
-<div class="absolute top-[11px] left-[1054px] leading-[130%] capitalize text-gold">Pending</div>
-<div class="absolute top-[11px] left-[56px] leading-[130%] capitalize">12-june-2025 | 10:30 PM</div>
-<div class="absolute top-[4px] left-[957px] flex items-center gap-1 text-darkslategray">
-<img class="h-6 w-6 relative" alt="" />
-<div class="relative leading-[130%] capitalize">5 Star</div>
-</div>
-<div class="absolute top-[4px] left-[1140px] flex items-center gap-2">
-<img class="h-6 w-6 relative" alt="" />
-<img class="h-6 w-6 relative" alt="" />
-</div>
-</div>
-</div>
-<div class="w-num-1232 h-11 relative">
-<div class="absolute top-[0px] left-[0px] rounded-num-4 border-whitesmoke border-solid border-b-[1px] box-border w-num-1232 h-11" />
-<div class="absolute top-[6px] left-[20px] w-num-1196 h-8">
-<div class="absolute top-[11px] left-[0px] leading-[130%] capitalize">13</div>
-<div class="absolute top-[0px] left-[310px] flex items-center gap-4 text-darkslategray">
-<img class="w-8 relative rounded-num-50 max-h-full object-cover" alt="" />
-<div class="relative leading-[130%] capitalize">robat boss</div>
-</div>
-<div class="absolute top-[11px] left-[521px] leading-[130%] capitalize font-medium text-gold">Bluegrass Hemp Oil</div>
-<div class="absolute top-[11px] left-[701px] leading-[130%] capitalize">Great experience working with ...</div>
-<div class="absolute top-[11px] left-[1054px] leading-[130%] capitalize text-gold">Pending</div>
-<div class="absolute top-[11px] left-[56px] leading-[130%] capitalize">12-june-2025 | 10:30 PM</div>
-<div class="absolute top-[4px] left-[957px] flex items-center gap-1 text-darkslategray">
-<img class="h-6 w-6 relative" alt="" />
-<div class="relative leading-[130%] capitalize">5 Star</div>
-</div>
-<div class="absolute top-[4px] left-[1140px] flex items-center gap-2">
-<img class="h-6 w-6 relative" alt="" />
-<img class="h-6 w-6 relative" alt="" />
-</div>
-</div>
-</div>
-<div class="w-num-1232 h-11 relative">
-<div class="absolute top-[0px] left-[0px] rounded-num-4 border-whitesmoke border-solid border-b-[1px] box-border w-num-1232 h-11" />
-<div class="absolute top-[6px] left-[20px] w-num-1196 h-8">
-<div class="absolute top-[11px] left-[0px] leading-[130%] capitalize">14</div>
-<div class="absolute top-[0px] left-[310px] flex items-center gap-4 text-darkslategray">
-<img class="w-8 relative rounded-num-50 max-h-full object-cover" alt="" />
-<div class="relative leading-[130%] capitalize">robat boss</div>
-</div>
-<div class="absolute top-[11px] left-[521px] leading-[130%] capitalize font-medium text-gold">Bluegrass Hemp Oil</div>
-<div class="absolute top-[11px] left-[701px] leading-[130%] capitalize">Great experience working with ...</div>
-<div class="absolute top-[11px] left-[1054px] leading-[130%] capitalize text-gold">Pending</div>
-<div class="absolute top-[11px] left-[56px] leading-[130%] capitalize">12-june-2025 | 10:30 PM</div>
-<div class="absolute top-[4px] left-[957px] flex items-center gap-1 text-darkslategray">
-<img class="h-6 w-6 relative" alt="" />
-<div class="relative leading-[130%] capitalize">5 Star</div>
-</div>
-<div class="absolute top-[4px] left-[1140px] flex items-center gap-2">
-<img class="h-6 w-6 relative" alt="" />
-<img class="h-6 w-6 relative" alt="" />
-</div>
-</div>
-</div>
-<div class="w-num-1232 h-11 relative">
-<div class="absolute top-[0px] left-[0px] rounded-num-4 border-whitesmoke border-solid border-b-[1px] box-border w-num-1232 h-11" />
-<div class="absolute top-[6px] left-[20px] w-num-1196 h-8">
-<div class="absolute top-[11px] left-[0px] leading-[130%] capitalize">15</div>
-<div class="absolute top-[0px] left-[310px] flex items-center gap-4 text-darkslategray">
-<img class="w-8 relative rounded-num-50 max-h-full object-cover" alt="" />
-<div class="relative leading-[130%] capitalize">robat boss</div>
-</div>
-<div class="absolute top-[11px] left-[521px] leading-[130%] capitalize font-medium text-gold">Bluegrass Hemp Oil</div>
-<div class="absolute top-[11px] left-[701px] leading-[130%] capitalize">Great experience working with ...</div>
-<div class="absolute top-[11px] left-[1054px] leading-[130%] capitalize text-gold">Pending</div>
-<div class="absolute top-[11px] left-[56px] leading-[130%] capitalize">12-june-2025 | 10:30 PM</div>
-<div class="absolute top-[4px] left-[957px] flex items-center gap-1 text-darkslategray">
-<img class="h-6 w-6 relative" alt="" />
-<div class="relative leading-[130%] capitalize">5 Star</div>
-</div>
-<div class="absolute top-[4px] left-[1140px] flex items-center gap-2">
-<img class="h-6 w-6 relative" alt="" />
-<img class="h-6 w-6 relative" alt="" />
-</div>
-</div>
-</div>
-<div class="w-num-1232 h-11 relative">
-<div class="absolute top-[0px] left-[0px] rounded-num-4 border-whitesmoke border-solid border-b-[1px] box-border w-num-1232 h-11" />
-<div class="absolute top-[6px] left-[20px] w-num-1196 h-8">
-<div class="absolute top-[11px] left-[0px] leading-[130%] capitalize">16</div>
-<div class="absolute top-[0px] left-[310px] flex items-center gap-4 text-darkslategray">
-<img class="w-8 relative rounded-num-50 max-h-full object-cover" alt="" />
-<div class="relative leading-[130%] capitalize">robat boss</div>
-</div>
-<div class="absolute top-[11px] left-[521px] leading-[130%] capitalize font-medium text-gold">Bluegrass Hemp Oil</div>
-<div class="absolute top-[11px] left-[701px] leading-[130%] capitalize">Great experience working with ...</div>
-<div class="absolute top-[11px] left-[1054px] leading-[130%] capitalize text-gold">Pending</div>
-<div class="absolute top-[11px] left-[56px] leading-[130%] capitalize">12-june-2025 | 10:30 PM</div>
-<div class="absolute top-[4px] left-[957px] flex items-center gap-1 text-darkslategray">
-<img class="h-6 w-6 relative" alt="" />
-<div class="relative leading-[130%] capitalize">5 Star</div>
-</div>
-<div class="absolute top-[4px] left-[1140px] flex items-center gap-2">
-<img class="h-6 w-6 relative" alt="" />
-<img class="h-6 w-6 relative" alt="" />
-</div>
-</div>
-</div>
-<div class="w-num-1232 h-11 relative">
-<div class="absolute top-[0px] left-[0px] rounded-num-4 border-whitesmoke border-solid border-b-[1px] box-border w-num-1232 h-11" />
-<div class="absolute top-[6px] left-[21px] w-[1195px] h-8">
-<div class="absolute top-[11px] left-[0px] leading-[130%] capitalize">17</div>
-<div class="absolute top-[0px] left-[309px] flex items-center gap-4 text-darkslategray">
-<img class="w-8 relative rounded-num-50 max-h-full object-cover" alt="" />
-<div class="relative leading-[130%] capitalize">robat boss</div>
-</div>
-<div class="absolute top-[11px] left-[520px] leading-[130%] capitalize font-medium text-gold">Bluegrass Hemp Oil</div>
-<div class="absolute top-[11px] left-[700px] leading-[130%] capitalize">Great experience working with ...</div>
-<div class="absolute top-[11px] left-[1053px] leading-[130%] capitalize text-gold">Pending</div>
-<div class="absolute top-[11px] left-[55px] leading-[130%] capitalize">12-june-2025 | 10:30 PM</div>
-<div class="absolute top-[4px] left-[956px] flex items-center gap-1 text-darkslategray">
-<img class="h-6 w-6 relative" alt="" />
-<div class="relative leading-[130%] capitalize">5 Star</div>
-</div>
-<div class="absolute top-[4px] left-[1139px] flex items-center gap-2">
-<img class="h-6 w-6 relative" alt="" />
-<img class="h-6 w-6 relative" alt="" />
-</div>
-</div>
-</div>
-<div class="w-num-1232 h-11 relative">
-<div class="absolute top-[0px] left-[0px] rounded-num-4 border-whitesmoke border-solid border-b-[1px] box-border w-num-1232 h-11" />
-<div class="absolute top-[6px] left-[20px] w-num-1196 h-8">
-<div class="absolute top-[11px] left-[0px] leading-[130%] capitalize">18</div>
-<div class="absolute top-[0px] left-[310px] flex items-center gap-4 text-darkslategray">
-<img class="w-8 relative rounded-num-50 max-h-full object-cover" alt="" />
-<div class="relative leading-[130%] capitalize">robat boss</div>
-</div>
-<div class="absolute top-[11px] left-[521px] leading-[130%] capitalize font-medium text-gold">Bluegrass Hemp Oil</div>
-<div class="absolute top-[11px] left-[701px] leading-[130%] capitalize">Great experience working with ...</div>
-<div class="absolute top-[11px] left-[1054px] leading-[130%] capitalize text-gold">Pending</div>
-<div class="absolute top-[11px] left-[56px] leading-[130%] capitalize">12-june-2025 | 10:30 PM</div>
-<div class="absolute top-[4px] left-[957px] flex items-center gap-1 text-darkslategray">
-<img class="h-6 w-6 relative" alt="" />
-<div class="relative leading-[130%] capitalize">5 Star</div>
-</div>
-<div class="absolute top-[4px] left-[1140px] flex items-center gap-2">
-<img class="h-6 w-6 relative" alt="" />
-<img class="h-6 w-6 relative" alt="" />
-</div>
-</div>
-</div>
-<div class="w-num-1232 h-11 relative">
-<div class="absolute top-[0px] left-[0px] rounded-num-4 border-whitesmoke border-solid border-b-[1px] box-border w-num-1232 h-11" />
-<div class="absolute top-[6px] left-[20px] w-num-1196 h-8">
-<div class="absolute top-[11px] left-[0px] leading-[130%] capitalize">19</div>
-<div class="absolute top-[0px] left-[310px] flex items-center gap-4 text-darkslategray">
-<img class="w-8 relative rounded-num-50 max-h-full object-cover" alt="" />
-<div class="relative leading-[130%] capitalize">robat boss</div>
-</div>
-<div class="absolute top-[11px] left-[521px] leading-[130%] capitalize font-medium text-gold">Bluegrass Hemp Oil</div>
-<div class="absolute top-[11px] left-[701px] leading-[130%] capitalize">Great experience working with ...</div>
-<div class="absolute top-[11px] left-[1054px] leading-[130%] capitalize text-gold">Pending</div>
-<div class="absolute top-[11px] left-[56px] leading-[130%] capitalize">12-june-2025 | 10:30 PM</div>
-<div class="absolute top-[4px] left-[957px] flex items-center gap-1 text-darkslategray">
-<img class="h-6 w-6 relative" alt="" />
-<div class="relative leading-[130%] capitalize">5 Star</div>
-</div>
-<div class="absolute top-[4px] left-[1140px] flex items-center gap-2">
-<img class="h-6 w-6 relative" alt="" />
-<img class="h-6 w-6 relative" alt="" />
-</div>
-</div>
-</div>
-<div class="w-num-1232 h-11 relative">
-<div class="absolute top-[0px] left-[0px] rounded-num-4 border-whitesmoke border-solid border-b-[1px] box-border w-num-1232 h-11" />
-<div class="absolute top-[6px] left-[18px] w-num-1198 h-8">
-<div class="absolute top-[11px] left-[0px] leading-[130%] capitalize">20</div>
-<div class="absolute top-[0px] left-[312px] flex items-center gap-4 text-darkslategray">
-<img class="w-8 relative rounded-num-50 max-h-full object-cover" alt="" />
-<div class="relative leading-[130%] capitalize">robat boss</div>
-</div>
-<div class="absolute top-[11px] left-[523px] leading-[130%] capitalize font-medium text-gold">Bluegrass Hemp Oil</div>
-<div class="absolute top-[11px] left-[703px] leading-[130%] capitalize">Great experience working with ...</div>
-<div class="absolute top-[11px] left-[1056px] leading-[130%] capitalize text-gold">Pending</div>
-<div class="absolute top-[11px] left-[58px] leading-[130%] capitalize">12-june-2025 | 10:30 PM</div>
-<div class="absolute top-[4px] left-[959px] flex items-center gap-1 text-darkslategray">
-<img class="h-6 w-6 relative" alt="" />
-<div class="relative leading-[130%] capitalize">5 Star</div>
-</div>
-<div class="absolute top-[4px] left-[1142px] flex items-center gap-2">
-<img class="h-6 w-6 relative" alt="" />
-<img class="h-6 w-6 relative" alt="" />
-</div>
-</div>
-</div>
-</div>
+        <!-- Date From -->
+        <div class="h-12 relative rounded-xl bg-gray-100 border border-gray-200 flex items-center px-4 gap-2 text-sm">
+          <span class="text-gray-400 text-sm">From:</span>
+          <input 
+            type="date" 
+            v-model="filters.dateFrom"
+            @change="handleFilterChange"
+            class="text-gray-600 text-sm outline-none bg-transparent cursor-pointer border-none touch-manipulation ring-0 focus:ring-0 w-32"
+          />
+        </div>
 
+        <!-- Date To -->
+        <div class="h-12 relative rounded-xl bg-gray-100 border border-gray-200 flex items-center px-4 gap-2 text-sm">
+          <span class="text-gray-400 text-sm">To:</span>
+          <input 
+            type="date" 
+            v-model="filters.dateTo"
+            @change="handleFilterChange"
+            class="text-gray-600 text-sm outline-none bg-transparent cursor-pointer border-none touch-manipulation ring-0 focus:ring-0 w-32"
+          />
+        </div>
 
+        <!-- Time Range -->
+        <div class="relative">
+          <select 
+            v-model="filters.timeRange"
+            @change="handleFilterChange"
+            class="h-12 rounded-xl bg-gray-100 border border-gray-200 appearance-none py-0 pl-4 pr-10 text-left text-sm text-gray-600 cursor-pointer focus:outline-none focus:ring-0 min-w-[140px]" 
+          >
+            <option value="">Today</option>
+            <option value="yesterday">Yesterday</option>
+            <option value="last7days">Last 7 Days</option>
+            <option value="last30days">Last 30 Days</option>
+          </select>
+          <ChevronDownIcon class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" aria-hidden="true" />
+        </div>
+
+        <!-- Rating Filter -->
+        <div class="relative">
+          <select 
+            v-model="filters.rating"
+            @change="handleFilterChange"
+            class="h-12 rounded-xl bg-gray-100 border border-gray-200 appearance-none py-0 pl-4 pr-10 text-left text-sm text-gray-600 cursor-pointer focus:outline-none focus:ring-0 min-w-[140px]"
+          >
+            <option value="">Select Rating</option>
+            <option v-for="r in [5,4,3,2,1]" :key="r" :value="String(r)">{{ r }} Star</option>
+          </select>
+          <ChevronDownIcon class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" aria-hidden="true" />
+        </div>
+
+        <!-- Status Filter -->
+        <div class="relative">
+          <select 
+            v-model="filters.status"
+            @change="handleFilterChange"
+            class="h-12 rounded-xl bg-gray-100 border border-gray-200 appearance-none py-0 pl-4 pr-10 text-left text-sm text-gray-600 cursor-pointer focus:outline-none focus:ring-0 min-w-[140px]"
+          >
+            <option value="">Select Status</option>
+            <option value="Approved">Approved</option>
+            <option value="Pending">Pending</option>
+            <option value="Rejected">Rejected</option>
+          </select>
+          <ChevronDownIcon class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" aria-hidden="true" />
+        </div>
+      </div>
+
+      <!-- Mobile Filters -->
+      <div v-if="showMobileFilters" id="mobile-filters" class="mt-3 p-4 bg-white rounded-lg shadow-sm border border-gray-200 lg:hidden">
+        <div class="space-y-4">
+          <!-- Date Range -->
+          <div class="grid grid-cols-2 gap-3">
+            <div class="flex flex-col gap-2">
+              <label class="text-sm text-gray-700 font-medium">From</label>
+              <div class="h-12 relative rounded-xl bg-gray-100 border border-gray-200 flex items-center px-4 gap-2">
+                <input
+                  type="date"
+                  v-model="filters.dateFrom"
+                  @change="handleFilterChange"
+                  class="text-gray-600 text-sm outline-none bg-transparent cursor-pointer border-none touch-manipulation ring-0 focus:ring-0 w-full"
+                />
+              </div>
+            </div>
+            <div class="flex flex-col gap-2">
+              <label class="text-sm text-gray-700 font-medium">To</label>
+              <div class="h-12 relative rounded-xl bg-gray-100 border border-gray-200 flex items-center px-4 gap-2">
+                <input
+                  type="date"
+                  v-model="filters.dateTo"
+                  @change="handleFilterChange"
+                  class="text-gray-600 text-sm outline-none bg-transparent cursor-pointer border-none touch-manipulation ring-0 focus:ring-0 w-full"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Time Range -->
+          <div class="flex flex-col gap-2">
+            <label class="text-sm text-gray-700 font-medium">Time Range</label>
+            <div class="relative">
+              <select 
+                v-model="filters.timeRange"
+                @change="handleFilterChange"
+                class="h-12 w-full rounded-xl bg-gray-100 border border-gray-200 appearance-none py-0 pl-4 pr-10 text-left text-sm text-gray-600 cursor-pointer focus:outline-none focus:ring-0" 
+              >
+                <option value="">Today</option>
+                <option value="yesterday">Yesterday</option>
+                <option value="last7days">Last 7 Days</option>
+                <option value="last30days">Last 30 Days</option>
+              </select>
+              <ChevronDownIcon class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" aria-hidden="true" />
+            </div>
+          </div>
+
+          <!-- Rating -->
+          <div class="flex flex-col gap-2">
+            <label class="text-sm text-gray-700 font-medium">Rating</label>
+            <div class="relative">
+              <select 
+                v-model="filters.rating"
+                @change="handleFilterChange"
+                class="h-12 w-full rounded-xl bg-gray-100 border border-gray-200 appearance-none py-0 pl-4 pr-10 text-left text-sm text-gray-600 cursor-pointer focus:outline-none focus:ring-0"
+              >
+                <option value="">Select Rating</option>
+                <option v-for="r in [5,4,3,2,1]" :key="r" :value="String(r)">{{ r }} Star</option>
+              </select>
+              <ChevronDownIcon class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" aria-hidden="true" />
+            </div>
+          </div>
+
+          <!-- Status -->
+          <div class="flex flex-col gap-2">
+            <label class="text-sm text-gray-700 font-medium">Status</label>
+            <div class="relative">
+              <select
+                v-model="filters.status"
+                @change="handleFilterChange"
+                class="h-12 w-full rounded-xl bg-gray-100 border border-gray-200 appearance-none py-0 pl-4 pr-10 text-left text-sm text-gray-600 cursor-pointer focus:outline-none focus:ring-0"
+              >
+                <option value="">Select Status</option>
+                <option value="Approved">Approved</option>
+                <option value="Pending">Pending</option>
+                <option value="Rejected">Rejected</option>
+              </select>
+              <ChevronDownIcon class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" aria-hidden="true" />
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6 flex items-center justify-end gap-3">
+          <button @click="resetFilters" class="px-4 py-3 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 active:bg-gray-100 touch-manipulation transition">Reset</button>
+          <button @click="applyMobileFilters" class="px-4 py-3 text-sm text-gray-900 bg-yellow-400 hover:bg-yellow-500 active:bg-yellow-600 rounded-lg touch-manipulation transition">Apply</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reviews Table/Card Container -->
+    <div class="w-full bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200">
+      <!-- Loading State -->
+      <div v-if="isLoading" class="text-center py-16 text-gray-500 text-lg font-medium animate-pulse">
+        <svg class="animate-spin h-8 w-8 text-yellow-500 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        Loading Reviews...
+      </div>
+
+      <!-- Content -->
+      <template v-else>
+        <!-- Mobile Cards -->
+        <div class="block lg:hidden">
+          <div 
+            v-for="(review, index) in paginatedReviews" 
+            :key="review.id"
+            class="p-4 border-b border-gray-200 hover:bg-gray-50 active:bg-gray-100 transition"
+          >
+            <div class="flex items-start justify-between mb-3">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="w-10 h-10 rounded-full bg-gray-100 text-gray-700 flex items-center justify-center font-bold text-sm flex-shrink-0">
+                  {{ getInitials(review.reviewer) }}
+                </div>
+                <div class="min-w-0">
+                  <div class="text-sm font-semibold text-gray-900 truncate">{{ review.reviewer }}</div>
+                  <div class="text-xs text-gray-500">{{ formatDisplayDate(review.date) }} | {{ review.time }}</div>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-medium px-2 py-1 rounded-full" :class="getStatusClass(review.status, 'soft') + ' bg-opacity-10'">
+                  {{ review.status }}
+                </span>
+                <MoreIcon class="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer" />
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2 text-sm text-gray-700 mb-2">
+              <RatingStars :value="Number(review.rating)" :size-class="'w-4 h-4'" />
+              <span>{{ review.rating }}</span>
+            </div>
+
+            <p class="text-sm text-gray-700 line-clamp-2 mb-3">{{ review.content }}</p>
+
+            <div class="flex items-center justify-end gap-3 text-sm">
+              <button @click="approveReview(review.id)" class="inline-flex items-center gap-1 text-green-600 hover:text-green-700">
+                <CheckCircleIcon class="w-4 h-4" />
+                Approve
+              </button>
+              <button @click="deleteReview(review.id)" class="inline-flex items-center gap-1 text-red-600 hover:text-red-700">
+                <TrashIcon class="w-4 h-4" />
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Desktop Table -->
+        <div class="hidden lg:block overflow-x-auto">
+          <table class="w-full table-auto min-w-[900px]">
+            <thead class="bg-gray-50 border-b border-gray-200">
+              <tr>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 whitespace-nowrap" style="width: 60px;">No</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 whitespace-nowrap min-w-[180px]">Reviewer</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 whitespace-nowrap min-w-[140px]">Rating</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 whitespace-nowrap min-w-[180px]">Date & Time</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 whitespace-nowrap min-w-[260px]">Review</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 whitespace-nowrap min-w-[120px]">Status</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 whitespace-nowrap" style="width: 120px;">Action</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+              <tr 
+                v-for="(review, index) in paginatedReviews" 
+                :key="review.id"
+                class="hover:bg-gray-50 active:bg-gray-100 transition"
+              >
+                <td class="px-4 py-3 text-gray-700 text-sm whitespace-nowrap">{{ getDisplayIndex(index) }}</td>
+                <td class="px-4 py-3 text-gray-900 font-medium text-sm">
+                  <div class="flex items-center gap-2 min-w-0">
+                    <div class="w-8 h-8 rounded-full bg-gray-100 text-gray-700 flex items-center justify-center font-bold text-xs flex-shrink-0">
+                      {{ getInitials(review.reviewer) }}
+                    </div>
+                    <span class="truncate">{{ review.reviewer }}</span>
+                  </div>
+                </td>
+                <td class="px-4 py-3 text-gray-700 text-sm whitespace-nowrap">
+                  <div class="flex items-center gap-2">
+                    <RatingStars :value="Number(review.rating)" :size-class="'w-4 h-4'" />
+                    <span>{{ review.rating }}</span>
+                  </div>
+                </td>
+                <td class="px-4 py-3 text-gray-700 text-sm whitespace-nowrap">{{ formatDisplayDate(review.date) }} | {{ review.time }}</td>
+                <td class="px-4 py-3 text-gray-700 text-sm">
+                  <span class="truncate block">{{ review.content }}</span>
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap">
+                  <div 
+                    class="inline-flex items-center gap-1 px-3 py-1.5 rounded-md font-medium text-sm"
+                    :class="getStatusClass(review.status, 'badge')"
+                  >
+                    <span>{{ review.status }}</span>
+                  </div>
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap">
+                  <div class="flex items-center gap-3">
+                    <button @click="approveReview(review.id)" class="text-green-600 hover:text-green-700">
+                      <CheckCircleIcon class="w-5 h-5" />
+                    </button>
+                    <button @click="deleteReview(review.id)" class="text-red-600 hover:text-red-700">
+                      <TrashIcon class="w-5 h-5" />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Empty State -->
+        <div v-if="paginatedReviews.length === 0" class="text-center py-12">
+          <div class="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+            <SearchIcon class="w-8 h-8 text-gray-400" aria-hidden="true" />
+          </div>
+          <p class="text-gray-500 text-base">No reviews found</p>
+          <p class="text-gray-400 text-sm mt-1">Try adjusting your search or filters</p>
+        </div>
+      </template>
+    </div>
+
+    <!-- Pagination -->
+    <div class="flex flex-col sm:flex-row justify-between items-center mt-6 gap-4">
+      <p class="text-sm text-gray-600 text-center sm:text-left">
+        Showing <span class="font-semibold">{{ paginatedReviews.length }}</span> of 
+        <span class="font-semibold">{{ filteredReviews.length }}</span> reviews (Page {{ currentPage }} of {{ totalPages }})
+      </p>
+      <div class="flex gap-2">
+        <button 
+          @click="prevPage"
+          :disabled="currentPage === 1"
+          class="px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 active:bg-gray-100 transition touch-manipulation flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <ChevronLeftIcon class="w-4 h-4" aria-hidden="true" />
+          <span>Previous</span>
+        </button>
+        <template v-for="page in totalPages" :key="page">
+          <button 
+            v-if="page === currentPage || page === currentPage - 1 || page === currentPage + 1"
+            @click="currentPage = page"
+            :class="[
+              'px-4 py-2.5 rounded-lg text-sm font-medium transition touch-manipulation min-w-[44px]',
+              page === currentPage 
+                ? 'bg-yellow-400 text-gray-900 hover:bg-yellow-500 active:bg-yellow-600' 
+                : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 active:bg-gray-100'
+            ]"
+          >
+            {{ page }}
+          </button>
+        </template>
+        <button 
+          @click="nextPage"
+          :disabled="currentPage === totalPages"
+          class="px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 active:bg-gray-100 transition touch-manipulation flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <span>Next</span>
+          <ChevronRightIcon class="w-4 h-4" aria-hidden="true" />
+        </button>
+      </div>
+    </div>
   </div>
+  
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { Pencil, CheckCircle, Trash2, Filter, Plus } from 'lucide-vue-next'
+import { 
+  Search as SearchIcon,
+  Filter as FilterIcon,
+  ChevronDown as ChevronDownIcon,
+  ChevronLeft as ChevronLeftIcon,
+  ChevronRight as ChevronRightIcon,
+  CheckCircle as CheckCircleIcon,
+  Trash2 as TrashIcon,
+  MoreHorizontal as MoreIcon,
+  MessageSquare as MessageSquareIcon,
+  Clock as ClockIcon,
+  XCircle as XCircleIcon,
+} from 'lucide-vue-next'
 import RatingStars from '~/components/common/ratingStars.vue'
+import { getStatusClass } from '~/composables/useStatusClass'
 
+// --- State ---
+const isLoading = ref(true)
+const showMobileFilters = ref(false)
+const searchQuery = ref('')
 const reviews = ref([])
-const selectedRating = ref('')
+
+// Pagination
 const currentPage = ref(1)
-const reviewsPerPage = 10
-const dateFrom = ref('')
-const dateTo = ref('')
+const itemsPerPage = 10
+
+// Filters (follow Company Management pattern)
+const filters = ref({
+  dateFrom: '',
+  dateTo: '',
+  timeRange: '',
+  rating: '',
+  status: ''
+})
 
 // Load reviews from stubs
 const { data: reviewsData } = await useFetch('/stubs/agencyReviews.json')
 
-// Format date
-const formatDate = (date) => {
+// Helpers
+const deriveStatus = (rating) => {
+  const val = Number(rating)
+  if (val >= 4) return 'Approved'
+  if (val <= 2) return 'Rejected'
+  return 'Pending'
+}
+
+const formatDisplayDate = (date) => {
   if (!date) return ''
   return new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
 }
 
-// Get initials
 const getInitials = (name) => {
+  if (!name) return ''
   return name.split(' ').map(n => n[0]).join('').toUpperCase()
 }
 
-// Computed
-const overallRating = computed(() => {
-  if (!reviews.value.length) return 0
-  const sum = reviews.value.reduce((acc, r) => acc + r.rating, 0)
-  return (sum / reviews.value.length).toFixed(1)
-})
-
+// Derived metrics
 const totalReviews = computed(() => reviews.value.length)
+const approvedCount = computed(() => reviews.value.filter(r => r.status === 'Approved').length)
+const pendingCount = computed(() => reviews.value.filter(r => r.status === 'Pending').length)
+const rejectedCount = computed(() => reviews.value.filter(r => r.status === 'Rejected').length)
 
+// Filtering
 const filteredReviews = computed(() => {
-  let filtered = reviews.value
+  const q = (searchQuery.value || '').toLowerCase()
+  const { rating, status, dateFrom, dateTo, timeRange } = filters.value
 
-  if (selectedRating.value) {
-    filtered = filtered.filter(r => r.rating === parseInt(selectedRating.value))
+  const withinTimeRange = (d) => {
+    if (!timeRange) return true
+    const today = new Date()
+    const date = new Date(d)
+    const diffMs = today.setHours(0,0,0,0) - date.setHours(0,0,0,0)
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+    if (timeRange === 'yesterday') return diffDays === 1
+    if (timeRange === 'last7days') return diffDays >= 0 && diffDays < 7
+    if (timeRange === 'last30days') return diffDays >= 0 && diffDays < 30
+    return true
   }
 
-  if (dateFrom.value) {
-    filtered = filtered.filter(r => new Date(r.date) >= new Date(dateFrom.value))
-  }
-  if (dateTo.value) {
-    filtered = filtered.filter(r => new Date(r.date) <= new Date(dateTo.value))
-  }
-
-  return filtered.slice(0, currentPage.value * reviewsPerPage)
+  return reviews.value.filter(r => {
+    const matchesQuery = !q || r.reviewer.toLowerCase().includes(q) || r.content.toLowerCase().includes(q)
+    const matchesRating = !rating || Number(r.rating) === Number(rating)
+    const matchesStatus = !status || r.status === status
+    const matchesFrom = !dateFrom || new Date(r.date) >= new Date(dateFrom)
+    const matchesTo = !dateTo || new Date(r.date) <= new Date(dateTo)
+    const matchesTime = withinTimeRange(r.date)
+    return matchesQuery && matchesRating && matchesStatus && matchesFrom && matchesTo && matchesTime
+  })
 })
 
-const hasMoreReviews = computed(() => {
-  let filtered = reviews.value
-  if (selectedRating.value) {
-    filtered = filtered.filter(r => r.rating === parseInt(selectedRating.value))
-  }
-  return filteredReviews.value.length < filtered.length
+const totalPages = computed(() => Math.max(1, Math.ceil(filteredReviews.value.length / itemsPerPage)))
+
+const paginatedReviews = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage
+  const end = start + itemsPerPage
+  return filteredReviews.value.slice(start, end)
 })
 
 // Methods
-const applyFilters = () => { 
-  currentPage.value = 1 
-}
-
+const handleFilterChange = () => { currentPage.value = 1 }
+const applyMobileFilters = () => { handleFilterChange(); showMobileFilters.value = false }
 const resetFilters = () => {
-  selectedRating.value = ''
-  dateFrom.value = ''
-  dateTo.value = ''
-  currentPage.value = 1
+  filters.value = { dateFrom: '', dateTo: '', timeRange: '', rating: '', status: '' }
+  handleFilterChange()
 }
 
-const approveReview = (id) => { 
+const getDisplayIndex = (indexInPage) => {
+  const trueIndex = (currentPage.value - 1) * itemsPerPage + indexInPage + 1
+  return String(trueIndex).padStart(2, '0')
 }
 
-const deleteReview = (id) => { 
-  reviews.value = reviews.value.filter(r => r.id !== id) 
+const approveReview = (id) => {
+  const r = reviews.value.find(x => x.id === id)
+  if (r) r.status = 'Approved'
 }
 
-const loadMoreReviews = () => { 
-  currentPage.value++ 
+const deleteReview = (id) => {
+  reviews.value = reviews.value.filter(r => r.id !== id)
 }
+
+const nextPage = () => { if (currentPage.value < totalPages.value) currentPage.value++ }
+const prevPage = () => { if (currentPage.value > 1) currentPage.value-- }
 
 // Init
-onMounted(() => { 
-  reviews.value = reviewsData.value || [] 
+onMounted(() => {
+  const raw = reviewsData.value || []
+  reviews.value = raw.map((r, i) => ({
+    id: r.id ?? i + 1,
+    reviewer: r.reviewerName || r.reviewer || 'Unknown',
+    rating: Number(r.rating) || 0,
+    date: r.date,
+    time: r.time || '',
+    content: r.content || r.review || '',
+    status: deriveStatus(r.rating)
+  }))
+  isLoading.value = false
 })
 </script>
 
@@ -645,10 +549,16 @@ onMounted(() => {
   overflow: hidden;
 }
 
-/* Improve mobile touch targets */
+/* Enhanced touch targets for mobile */
 @media (max-width: 640px) {
-  button, select, input {
+  input[type="date"], select, button {
     min-height: 44px;
   }
+}
+
+/* Better focus states for accessibility */
+input:focus, select:focus, button:focus {
+  outline: 2px solid #fbbf24;
+  outline-offset: 2px;
 }
 </style>
