@@ -1,6 +1,6 @@
 <template>
   <div style="text-align: center;">
-    <div style="display: flex; justify-content: center; gap: 0.5rem;">
+    <div style="display: flex; justify-content: center; gap: 0.2rem;">
       <div
         v-for="star in 5"
         :key="star"
@@ -12,9 +12,8 @@
           alignItems: 'center',
           justifyContent: 'center',
           border: star <= props.modelValue
-            ? `3px solid ${props.filledColor}`
-            : `3px solid ${props.borderColor}`,
-          borderRadius: '4px',
+            ? `1px solid ${props.filledColor}`
+            : `1px solid ${props.borderColor}`,
           cursor: props.readonly ? 'default' : 'pointer',
           transition: 'all 0.2s',
           backgroundColor: props.filledBg,
