@@ -83,7 +83,7 @@
         </div>
 
         <div class="space-y-5">
-          <p v-if="!reviews.length && !loading" class="text-center text-gray-500">No reviews found.</p>
+          <p v-if="!filteredReviews.length && !loading" class="text-center text-gray-500">No reviews found.</p>
           <p v-if="loading" class="text-center text-gray-500">Loading reviews...</p>
 
           <div
@@ -128,25 +128,25 @@
             <div class="flex items-center gap-6">
 
               <div
-                @click="like(index)"
+                @click="like(review)"
                 class="flex items-center gap-2 text-gray-600 hover:text-blue-500 transition-colors cursor-pointer"
                 role="button"
                 tabindex="0"
-                @keyup.enter="like(index)"
+                @keyup.enter="like(review)"
               >
                 <img src="/thumb_up.svg" alt="Like" class="w-5 h-5" />
-                <span class="text-sm font-medium">{{ reactionCounts[index]?.likes || 0 }}</span>
+                <span class="text-sm font-medium">{{ review.likes }}</span>
               </div>
 
               <div
-                @click="dislike(index)"
+                @click="dislike(review)"
                 class="flex items-center gap-2 text-gray-600 hover:text-red-500 transition-colors cursor-pointer"
                 role="button"
                 tabindex="0"
-                @keyup.enter="dislike(index)"
+                @keyup.enter="dislike(review)"
               >
                 <img src="/Frame.svg" alt="Dislike" class="w-5 h-5" />
-                <span class="text-sm font-medium">{{ reactionCounts[index]?.dislikes || 0 }}</span>
+                <span class="text-sm font-medium">{{ review.dislikes }}</span>
               </div>
             </div>
 
@@ -198,7 +198,7 @@
                 {{ overallRating.toFixed(1) }}
               </h2>
               <p class="text-base font-medium text-green-600 capitalize">
-                {{ ratingLabel }}
+                {{ ratingLabelText }}
               </p>
               <div class="space-y-2">
                 <div class="flex items-center justify-center gap-0.5">
@@ -320,7 +320,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, computed, onMounted } from 'vue';
+  import { ref, computed, onMounted, onUnmounted } from 'vue';
   import { MessageSquare, ChevronDown, ExternalLink, Star, X } from 'lucide-vue-next';
   import { Teleport } from 'vue';
   
@@ -336,18 +336,15 @@
 
   interface ReviewItem {
     reviewer: string;
-    rating: string | number;
+    rating: number;
     date: string;
     review: string;
     status?: string;
     avatar?: string;
+    likes: number;
+    dislikes: number;
     companyResponse?: CompanyResponse
   }
-
-  type ReactionCounts = {
-    likes: number;
-    dislikes: number
-  };
 
   // Configuration constants
   const TEXT_CONTENT = {
@@ -360,7 +357,6 @@
     filterTitle: 'Filter Options',
     reviewScoreTitle: 'Review Score',
     dateFilterTitle: 'Date Filter',
-    ratingLabel: 'Excellent',
   };
 
   const dateFilterOptions = [
@@ -374,7 +370,7 @@
   // Destructure constants for cleaner template access
   const {
       pageTitle, filterText, websiteText, addReviewTitle, reviewPlaceholder,
-      submitText, filterTitle, reviewScoreTitle, dateFilterTitle, ratingLabel
+      submitText, filterTitle, reviewScoreTitle, dateFilterTitle
   } = TEXT_CONTENT;
 
 
@@ -391,7 +387,7 @@
   const loading = ref(true);
   const error = ref<string | null>(null);
 
-  const reactionCounts = ref<ReactionCounts[]>([]);
+  // removed reactionCounts; likes/dislikes are stored on each review item
 
   const isDesktop = ref(false);
 
@@ -408,12 +404,24 @@
         throw new Error(`Failed to fetch reviews: HTTP ${response.status}`);
       }
 
-      const data: ReviewItem[] = await response.json();
-      reviews.value = data;
+      const data = (await response.json()) as Array<{
+        reviewer: string;
+        rating: number | string;
+        date: string;
+        review: string;
+        avatar?: string;
+        companyResponse?: CompanyResponse;
+      }>;
 
-      reactionCounts.value = data.map(() => ({
+      reviews.value = data.map((r) => ({
+        reviewer: r.reviewer,
+        rating: Number(r.rating) || 0,
+        date: r.date,
+        review: r.review,
+        avatar: r.avatar,
+        companyResponse: r.companyResponse,
         likes: Math.floor(Math.random() * 500),
-        dislikes: Math.floor(Math.random() * 100)
+        dislikes: Math.floor(Math.random() * 100),
       }));
 
     } catch (err: any) {
@@ -432,6 +440,10 @@
     };
     checkScreenSize();
     window.addEventListener('resize', checkScreenSize);
+
+    onUnmounted(() => {
+      window.removeEventListener('resize', checkScreenSize);
+    });
   });
 
 
@@ -439,14 +451,24 @@
 
   const overallRating = computed(() => {
     if (!reviews.value.length) return 0;
-    const sum = reviews.value.reduce((acc, r) => acc + Number(r.rating || 0), 0);
+    const sum = reviews.value.reduce((acc, r) => acc + (r.rating || 0), 0);
     return sum / reviews.value.length;
+  });
+
+  const ratingLabelText = computed(() => {
+    const avg = overallRating.value;
+    if (avg >= 4.5) return 'Excellent';
+    if (avg >= 4.0) return 'Great';
+    if (avg >= 3.0) return 'Good';
+    if (avg >= 2.0) return 'Fair';
+    if (avg > 0) return 'Poor';
+    return 'No ratings';
   });
 
   const ratingBreakdown = computed<Record<number, number>>(() => {
     const breakdown: Record<number, number> = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
     reviews.value.forEach((r) => {
-      const rating = Math.round(Number(r.rating || 0));
+      const rating = Math.round(r.rating || 0);
       const rounded = Math.max(1, Math.min(5, rating));
       breakdown[rounded]++;
     });
@@ -459,7 +481,7 @@
     // 1. Apply Rating Filter
     if (selectedRatings.value.length) {
       const set = new Set(selectedRatings.value.map(r => Math.round(r)));
-      filtered = filtered.filter((r) => set.has(Math.round(Number(r.rating || 0))));
+      filtered = filtered.filter((r) => set.has(Math.round(r.rating || 0)));
     }
 
     // 2. Apply Date Filter
@@ -484,14 +506,13 @@
   function handleNewReview(reviewData: { rating: number, text: string }) {
     const newReview: ReviewItem = {
       reviewer: 'New User',
-      rating: reviewData.rating,
+      rating: Number(reviewData.rating) || 0,
       date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
       review: reviewData.text.trim(),
       avatar: `https://i.pravatar.cc/150?img=${Math.floor(Math.random() * 50) + 10}`
     };
 
-    reviews.value.unshift(newReview);
-    reactionCounts.value.unshift({ likes: 0, dislikes: 0 });
+    reviews.value.unshift({ ...newReview, likes: 0, dislikes: 0 });
     
     // The modal component handles closing itself, but we ensure the state is closed here just in case.
     showCompanyReview.value = false;
@@ -502,16 +523,12 @@
     showFilter.value = !showFilter.value;
   }
 
-  function like(index: number) {
-    if (reactionCounts.value[index]) {
-      reactionCounts.value[index].likes++;
-    }
+  function like(review: ReviewItem) {
+    review.likes++;
   }
 
-  function dislike(index: number) {
-    if (reactionCounts.value[index]) {
-      reactionCounts.value[index].dislikes++;
-    }
+  function dislike(review: ReviewItem) {
+    review.dislikes++;
   }
 </script>
 
