@@ -30,7 +30,7 @@
           All Company List
         </h2>
         
-        <div class="h-12 relative rounded-xl bg-gray-100 border border-gray-200 box-border flex items-center pl-4 pr-1 gap-2 text-sm text-silver">
+        <div class="h-12 relative rounded-xl bg-gray-100 border border-gray-200 box-border flex items-center pl-4 pr-9 gap-2 text-sm text-silver">
           <span class="text-gray-400 text-sm hidden sm:inline">From:</span>
           <input 
             type="date" 
@@ -38,9 +38,10 @@
             @change="filterCompanies"
             class="text-gray-600 text-sm outline-none bg-transparent cursor-pointer border-none touch-manipulation ring-0 focus:ring-0 w-24 sm:w-28 md:w-32"
           />
+          <CalendarIcon class="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
         </div>
 
-        <div class="h-12 relative rounded-xl bg-gray-100 border border-gray-200 box-border flex items-center pl-4 pr-1 gap-2 text-sm text-silver">
+        <div class="h-12 relative rounded-xl bg-gray-100 border border-gray-200 box-border flex items-center pl-4 pr-9 gap-2 text-sm text-silver">
           <span class="text-gray-400 text-sm hidden sm:inline">To:</span>
           <input 
             type="date" 
@@ -48,21 +49,15 @@
             @change="filterCompanies"
             class="text-gray-600 text-sm outline-none bg-transparent cursor-pointer border-none touch-manipulation ring-0 focus:ring-0 w-24 sm:w-28 md:w-32"
           />
+          <CalendarIcon class="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
         </div>
 
-        <div class="relative">
-          <select 
-            v-model="filters.timeRange"
-            @change="filterCompanies"
-            class="h-12 relative rounded-xl bg-gray-100 border border-gray-200 box-border appearance-none py-0 pl-4 pr-10 text-left text-sm text-gray-600 cursor-pointer focus:outline-none focus:ring-0 min-w-[120px]" 
-          >
-            <option value="">Today</option>
-            <option value="yesterday">Yesterday</option>
-            <option value="last7days">Last 7 Days</option>
-            <option value="last30days">Last 30 Days</option>
-          </select>
-          <ChevronDownIcon class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-        </div>
+        <button 
+          @click="setToday"
+          class="h-12 bg-white rounded-xl px-4 py-2 border border-gray-300 text-gray-700 text-sm outline-none cursor-pointer whitespace-nowrap flex items-center gap-2 hover:bg-gray-50 active:bg-gray-100 transition"
+        >
+          Today
+        </button>
 
         <div class="relative">
           <select 
@@ -105,16 +100,12 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div class="flex flex-col gap-1.5">
             <label class="text-xs text-gray-500 font-medium">Time Range</label>
-            <select 
-              v-model="filters.timeRange"
-              @change="filterCompanies"
-              class="bg-gray-50 rounded-lg px-3 py-2 text-sm outline-none border border-gray-200 h-10"
+            <button 
+              @click="setToday"
+              class="bg-white rounded-lg px-3 py-2 text-sm outline-none border border-gray-200 h-10 text-left"
             >
-              <option value="">Today</option>
-              <option value="yesterday">Yesterday</option>
-              <option value="last7days">Last 7 Days</option>
-              <option value="last30days">Last 30 Days</option>
-            </select>
+              Today
+            </button>
           </div>
           <div class="flex flex-col gap-1.5">
             <label class="text-xs text-gray-500 font-medium">Category</label>
@@ -197,19 +188,18 @@
           </div>
 
           <div class="hidden sm:block overflow-x-auto scrollbar-thin">
-            <table class="w-full table-auto" style="min-width: 600px;">
+            <table class="w-full table-auto" style="min-width: 720px;">
               <thead class="bg-gray-50 border-b border-gray-200">
                 <tr>
                   <th class="px-2 sm:px-3 md:px-4 py-2.5 sm:py-3 text-left" style="width: 40px;">
                     <input 
                       type="checkbox" 
-                      v-model="selectAll"
-                      @change="toggleSelectAll"
+                      v-model="selectAllFiltered"
                       class="w-4 h-4 rounded border-gray-300 cursor-pointer touch-manipulation" 
                     />
                   </th>
                   <th class="px-2 sm:px-3 md:px-4 py-2.5 sm:py-3 text-left text-[10px] sm:text-xs font-semibold text-gray-700 whitespace-nowrap" style="width: 50px;">No</th>
-                  <th class="px-2 sm:px-3 md:px-4 py-2.5 sm:py-3 text-left text-[10px] sm:text-xs font-semibold text-gray-700 whitespace-nowrap min-w-[120px]">Company</th>
+                  <th class="px-2 sm:px-3 md:px-4 py-2.5 sm:py-3 text-left text-[10px] sm:text-xs font-semibold text-gray-700 whitespace-nowrap min-w-[160px]">Company Name</th>
                   <th class="px-2 sm:px-3 md:px-4 py-2.5 sm:py-3 text-left text-[10px] sm:text-xs font-semibold text-gray-700 whitespace-nowrap min-w-[120px] hidden md:table-cell">Website</th>
                   <th class="px-2 sm:px-3 md:px-4 py-2.5 sm:py-3 text-left text-[10px] sm:text-xs font-semibold text-gray-700 whitespace-nowrap min-w-[80px] hidden sm:table-cell">Mobile</th>
                   <th class="px-2 sm:px-3 md:px-4 py-2.5 sm:py-3 text-left text-[10px] sm:text-xs font-semibold text-gray-700 whitespace-nowrap min-w-[90px]">Category</th>
@@ -237,8 +227,10 @@
                       <CheckCircleIcon v-if="company.verified" class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-green-500 flex-shrink-0" />
                     </div>
                   </td>
-                  <td class="px-2 sm:px-3 md:px-4 py-2.5 sm:py-3 text-yellow-500 text-[10px] sm:text-xs hidden md:table-cell">
-                    <span class="truncate max-w-[150px] block">{{ company.website }}</span>
+                  <td class="px-2 sm:px-3 md:px-4 py-2.5 sm:py-3 text-[10px] sm:text-xs hidden md:table-cell">
+                    <a :href="formatWebsite(company.website)" target="_blank" rel="noopener" class="truncate max-w-[180px] block text-yellow-500 hover:underline">
+                      {{ company.website }}
+                    </a>
                   </td>
                   <td class="px-2 sm:px-3 md:px-4 py-2.5 sm:py-3 text-gray-700 text-[10px] sm:text-xs whitespace-nowrap hidden sm:table-cell">{{ company.mobile }}</td>
                   <td class="px-2 sm:px-3 md:px-4 py-2.5 sm:py-3 text-gray-700 text-[10px] sm:text-xs">
@@ -305,9 +297,8 @@
 
 <script setup>
 import { ref, computed, defineAsyncComponent, onMounted } from 'vue';
-import { Search as SearchIcon, Eye as EyeIcon, CheckCircle as CheckCircleIcon, ChevronDown as ChevronDownIcon, ChevronLeft as ChevronLeftIcon, ChevronRight as ChevronRightIcon, Filter as FilterIcon, Phone as PhoneIcon, Globe as GlobeIcon } from "lucide-vue-next";
+import { Search as SearchIcon, Eye as EyeIcon, CheckCircle as CheckCircleIcon, ChevronDown as ChevronDownIcon, ChevronLeft as ChevronLeftIcon, ChevronRight as ChevronRightIcon, Filter as FilterIcon, Phone as PhoneIcon, Globe as GlobeIcon, Calendar as CalendarIcon } from "lucide-vue-next";
 import { getStatusClass, getStatusShort } from '~/composables/useStatusClass'
-import { useSelection } from '~/composables/useSelection'
 import { noop } from '~/composables/useCommon'
 
 const AddCompany = defineAsyncComponent(() => import('~/components/modal/addCompany.vue'))
@@ -315,7 +306,6 @@ const AddCompany = defineAsyncComponent(() => import('~/components/modal/addComp
 const isModalOpen = ref(false);
 const showMobileFilters = ref(false);
 const searchQuery = ref('');
-const selectAll = ref(false);
 const isLoading = ref(true); 
 
 const filters = ref({
@@ -382,11 +372,18 @@ const closeModal = () => {
   isModalOpen.value = false;
 };
 
-const { toggleAll } = useSelection(companies); 
-
-const toggleSelectAll = () => {
-  toggleAll(filteredCompanies.value);
-};
+const selectAllFiltered = computed({
+  get() {
+    const items = filteredCompanies.value;
+    if (!items.length) return false;
+    return items.every(item => Boolean(item.selected));
+  },
+  set(val) {
+    filteredCompanies.value.forEach(item => {
+      item.selected = Boolean(val);
+    });
+  }
+});
 
 const viewCompany = (company) => {
   alert(`Viewing: ${company.name}`);
@@ -397,6 +394,23 @@ const changeStatus = (company) => {
   const currentIndex = statuses.indexOf(company.status);
   const nextIndex = (currentIndex + 1) % statuses.length;
   company.status = statuses[nextIndex];
+};
+
+const setToday = () => {
+  const d = new Date();
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  const iso = `${yyyy}-${mm}-${dd}`;
+  filters.value.dateFrom = iso;
+  filters.value.dateTo = iso;
+  filterCompanies();
+};
+
+const formatWebsite = (url) => {
+  if (!url) return '#';
+  if (/^https?:\/\//i.test(url)) return url;
+  return `https://${url}`;
 };
 </script>
 
