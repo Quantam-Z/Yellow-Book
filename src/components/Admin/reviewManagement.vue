@@ -1,199 +1,550 @@
 <template>
   <div class="w-full min-h-screen bg-gray-50 p-4 sm:p-6 space-y-4 sm:space-y-6">
     <!-- Header Section -->
-    <div class="w-full rounded-xl bg-gradient-to-tr from-indigo-500/10 to-pink-500/10 p-4 sm:p-6 border border-gray-200 shadow-sm">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Reviews</h1>
-          <p class="mt-1 text-sm text-gray-600">Manage and monitor customer feedback</p>
-        </div>
-        <button
-          class="flex items-center justify-center gap-2 rounded-full px-4 py-1.5 text-sm font-semibold bg-white border border-indigo-400 text-indigo-600 shadow-md hover:bg-indigo-50 transition-colors w-full sm:w-auto mt-2 sm:mt-0"
-        >
-          <Pencil class="w-4 h-4" />
-          Manage
-        </button>
+    <div class="w-full rounded-lg bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 p-3 sm:p-4 md:p-6 mb-4">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+        <h1 class="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">Review Management</h1>
+      </div>
+
+      <!-- Search Bar -->
+      <div class="w-full relative rounded-lg bg-white/80 backdrop-blur-sm flex items-center px-4 py-3 gap-3">
+        <SearchIcon class="w-5 h-5 text-gray-400 flex-shrink-0" aria-hidden="true" />
+        <input
+          type="text"
+          v-model="searchQuery"
+          @input="handleFilterChange"
+          placeholder="Search Companies By Name Or Category"
+          class="flex-1 outline-none border-none bg-transparent text-gray-700 placeholder-gray-400 text-base min-w-0 
+                 focus:ring-0 focus:outline-none"
+        />
       </div>
     </div>
 
-    <!-- Overall Rating -->
-    <div class="w-full bg-white rounded-xl shadow-lg p-4 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-      <div class="font-semibold text-lg sm:text-xl text-gray-800">Overall Rating</div>
-      <div class="text-center sm:text-right">
-        <div class="text-2xl sm:text-3xl font-bold text-gray-900">{{ overallRating }}</div>
-        <div class="flex justify-center sm:justify-end gap-1 mt-1">
-          <RatingStars :value="Number(overallRating)" :size-class="'w-4 h-4 sm:w-5 sm:h-5'" />
-        </div>
-        <div class="text-sm text-gray-500">Based on {{ totalReviews }} reviews</div>
-      </div>
-    </div>
+    <div class="w-full relative flex items-center gap-4 text-left text-num-14 text-gray font-plus-jakarta-sans">
+<div class="flex-1 rounded-num-8 bg-white border-whitesmoke border-solid border-[1px] flex items-center justify-center p-num-16 gap-4">
+<img class="h-11 w-11 rounded-num-4" alt="" />
+<div class="flex-1 flex flex-col items-start gap-4">
+<div class="self-stretch relative leading-[130%] capitalize">Total Reviews</div>
+<b class="self-stretch relative text-num-18 leading-[160%] capitalize">60</b>
+</div>
+</div>
+<div class="flex-1 rounded-num-8 bg-white border-whitesmoke border-solid border-[1px] flex items-center justify-center p-num-16 gap-4">
+<img class="h-11 w-11 rounded-num-4" alt="" />
+<div class="flex-1 flex flex-col items-start gap-4">
+<div class="self-stretch relative leading-[130%] capitalize">Pending</div>
+<b class="self-stretch relative text-num-18 leading-[160%] capitalize">60</b>
+</div>
+</div>
+<div class="flex-1 rounded-num-8 bg-white border-whitesmoke border-solid border-[1px] flex items-center justify-center p-num-16 gap-4">
+<img class="h-11 w-11 rounded-num-4" alt="" />
+<div class="flex-1 flex flex-col items-start gap-4">
+<div class="self-stretch relative leading-[130%] capitalize"> Approved </div>
+<b class="self-stretch relative text-num-18 leading-[160%] capitalize">60</b>
+</div>
+</div>
+<div class="flex-1 rounded-num-8 bg-white border-whitesmoke border-solid border-[1px] flex items-center justify-center p-num-16 gap-4">
+<img class="h-11 w-11 rounded-num-4" alt="" />
+<div class="flex-1 flex flex-col items-start gap-4">
+<div class="self-stretch relative leading-[130%] capitalize">Rejected</div>
+<b class="self-stretch relative text-num-18 leading-[160%] capitalize">60</b>
+</div>
+</div>
+<div class="flex-1 rounded-num-8 bg-white border-whitesmoke border-solid border-[1px] flex items-center justify-center p-num-16 gap-4">
+<img class="h-11 w-11 rounded-num-4" alt="" />
+<div class="flex-1 flex flex-col items-start gap-4">
+<div class="self-stretch relative leading-[130%] capitalize">On Hold</div>
+<b class="self-stretch relative text-num-18 leading-[160%] capitalize">60</b>
+</div>
+</div>
+<div class="flex-1 rounded-num-8 bg-white border-whitesmoke border-solid border-[1px] flex items-center justify-center p-num-16 gap-4">
+<img class="h-11 w-11 rounded-num-4" alt="" />
+<div class="flex-1 flex flex-col items-start gap-4">
+<div class="self-stretch relative leading-[130%] capitalize">Banned Users</div>
+<b class="self-stretch relative text-num-18 leading-[160%] capitalize">60</b>
+</div>
+</div>
+</div>
 
-    <!-- Filters -->
-    <div class="w-full bg-white rounded-xl shadow-lg p-4 sm:p-6">
-      <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-        <select v-model="selectedRating" class="border rounded-lg px-3 py-2 text-gray-700 flex-1 text-sm">
-          <option value="">All ratings</option>
-          <option v-for="opt in [5,4,3,2,1]" :key="opt" :value="opt">{{ opt }} Stars</option>
-        </select>
 
-        <div class="flex gap-2">
-          <input type="date" v-model="dateFrom" class="border rounded-lg px-3 py-2 text-gray-700 flex-1 text-sm" />
-          <input type="date" v-model="dateTo" class="border rounded-lg px-3 py-2 text-gray-700 flex-1 text-sm" />
-        </div>
+<div class="w-full relative flex items-center justify-between gap-5 text-left text-[18px] text-gray-300 font-plus-jakarta-sans">
+<b class="relative leading-[160%] capitalize whitespace-pre-wrap">All Review List</b>
+<div class="flex items-center gap-2 text-num-14 text-dimgray">
+<div class="flex items-center gap-2 text-silver">
+<div class="h-12 rounded-num-12 bg-gray-100 border-whitesmoke border-solid border-[1px] box-border flex items-center py-num-0 pl-num-16 pr-num-5 gap-2">
+<div class="flex items-center gap-1">
+<div class="relative leading-[130%] capitalize">From:</div>
+<div class="relative leading-[130%] capitalize font-semibold text-gray-200">09-10-2025</div>
+</div>
+<img class="h-num-37 w-[37px] rounded-num-7" alt="" />
+</div>
+<div class="h-12 rounded-num-12 bg-gray-100 border-whitesmoke border-solid border-[1px] box-border flex items-center py-num-0 pl-num-16 pr-num-5 gap-2">
+<div class="flex items-center gap-1">
+<div class="relative leading-[130%] capitalize">To</div>
+<div class="relative leading-[130%] capitalize font-semibold text-gray-200">09-10-2025</div>
+</div>
+<img class="h-num-37 w-[37px] rounded-num-7" alt="" />
+</div>
+</div>
+<div class="h-12 w-[199px] rounded-num-12 bg-gray-100 border-whitesmoke border-solid border-[1px] box-border flex items-center py-num-0 pl-num-16 pr-num-5 gap-4">
+<div class="flex-1 relative leading-[130%] capitalize font-medium">Today</div>
+<img class="h-num-37 w-[37px] rounded-num-7" alt="" />
+</div>
+<div class="h-12 w-[199px] rounded-num-12 bg-gray-100 border-whitesmoke border-solid border-[1px] box-border flex items-center py-num-0 pl-num-16 pr-num-5 gap-4">
+<div class="flex-1 relative leading-[130%] capitalize font-medium">Select Rating</div>
+<img class="h-num-37 w-[37px] rounded-num-7" alt="" />
+</div>
+<div class="h-12 w-[199px] rounded-num-12 bg-gray-100 border-whitesmoke border-solid border-[1px] box-border flex items-center py-num-0 pl-num-16 pr-num-5 gap-4">
+<div class="flex-1 relative leading-[130%] capitalize font-medium">Status</div>
+<img class="h-num-37 w-[37px] rounded-num-7" alt="" />
+</div>
+</div>
+</div>
 
-        <button
-          class="bg-green-600 text-white px-4 sm:px-6 py-2 rounded-lg shadow hover:bg-green-700 transition flex items-center justify-center gap-2 w-full sm:w-auto text-sm"
-          @click="applyFilters"
-        >
-          <Filter class="w-4 h-4" />
-          Apply filter
-        </button>
-      </div>
-    </div>
+<div class="w-full h-11 relative rounded bg-gray" />
+<div class="w-full relative flex flex-col items-start text-center text-num-14 text-gray font-plus-jakarta-sans">
+<div class="w-num-1232 h-11 relative">
+<div class="absolute top-[0px] left-[0px] rounded-num-4 border-whitesmoke border-solid border-b-[1px] box-border w-num-1232 h-11" />
+<div class="absolute top-[6px] left-[19px] w-[1197px] h-8">
+<div class="absolute top-[11px] left-[0px] leading-[130%] capitalize">01</div>
+<div class="absolute top-[0px] left-[311px] flex items-center gap-4 text-darkslategray">
+<img class="w-8 relative rounded-num-50 max-h-full object-cover" alt="" />
+<div class="relative leading-[130%] capitalize">robat boss</div>
+</div>
+<div class="absolute top-[11px] left-[522px] leading-[130%] capitalize font-medium text-gold">Bluegrass Hemp Oil</div>
+<div class="absolute top-[11px] left-[702px] leading-[130%] capitalize">Great experience working with ...</div>
+<div class="absolute top-[11px] left-[1055px] leading-[130%] capitalize text-gold">Pending</div>
+<div class="absolute top-[11px] left-[57px] leading-[130%] capitalize">12-june-2025 | 10:30 PM</div>
+<div class="absolute top-[4px] left-[958px] flex items-center gap-1 text-darkslategray">
+<img class="h-6 w-6 relative" alt="" />
+<div class="relative leading-[130%] capitalize">5 Star</div>
+</div>
+<div class="absolute top-[4px] left-[1141px] flex items-center gap-2">
+<img class="h-6 w-6 relative" alt="" />
+<img class="h-6 w-6 relative" alt="" />
+</div>
+</div>
+</div>
+<div class="w-num-1232 h-11 relative">
+<div class="absolute top-[0px] left-[0px] rounded-num-4 border-whitesmoke border-solid border-b-[1px] box-border w-num-1232 h-11" />
+<div class="absolute top-[6px] left-[18px] w-num-1198 h-8">
+<div class="absolute top-[11px] left-[0px] leading-[130%] capitalize">02</div>
+<div class="absolute top-[0px] left-[312px] flex items-center gap-4 text-darkslategray">
+<img class="w-8 relative rounded-num-50 max-h-full object-cover" alt="" />
+<div class="relative leading-[130%] capitalize">robat boss</div>
+</div>
+<div class="absolute top-[11px] left-[523px] leading-[130%] capitalize font-medium text-gold">Bluegrass Hemp Oil</div>
+<div class="absolute top-[11px] left-[703px] leading-[130%] capitalize">Great experience working with ...</div>
+<div class="absolute top-[11px] left-[1051px] leading-[130%] capitalize text-forestgreen">Approved</div>
+<div class="absolute top-[11px] left-[58px] leading-[130%] capitalize">12-june-2025 | 10:30 PM</div>
+<div class="absolute top-[4px] left-[959px] flex items-center gap-1 text-darkslategray">
+<img class="h-6 w-6 relative" alt="" />
+<div class="relative leading-[130%] capitalize">5 Star</div>
+</div>
+<div class="absolute top-[4px] left-[1142px] flex items-center gap-2">
+<img class="h-6 w-6 relative" alt="" />
+<img class="h-6 w-6 relative" alt="" />
+</div>
+</div>
+</div>
+<div class="w-num-1232 h-11 relative">
+<div class="absolute top-[0px] left-[0px] rounded-num-4 border-whitesmoke border-solid border-b-[1px] box-border w-num-1232 h-11" />
+<div class="absolute top-[6px] left-[18px] w-num-1198 h-8">
+<div class="absolute top-[11px] left-[0px] leading-[130%] capitalize">03</div>
+<div class="absolute top-[0px] left-[312px] flex items-center gap-4 text-darkslategray">
+<img class="w-8 relative rounded-num-50 max-h-full object-cover" alt="" />
+<div class="relative leading-[130%] capitalize">robat boss</div>
+</div>
+<div class="absolute top-[11px] left-[523px] leading-[130%] capitalize font-medium text-gold">Bluegrass Hemp Oil</div>
+<div class="absolute top-[11px] left-[703px] leading-[130%] capitalize">Great experience working with ...</div>
+<div class="absolute top-[11px] left-[1054px] leading-[130%] capitalize text-firebrick">Rejected</div>
+<div class="absolute top-[11px] left-[58px] leading-[130%] capitalize">12-june-2025 | 10:30 PM</div>
+<div class="absolute top-[4px] left-[959px] flex items-center gap-1 text-darkslategray">
+<img class="h-6 w-6 relative" alt="" />
+<div class="relative leading-[130%] capitalize">5 Star</div>
+</div>
+<div class="absolute top-[4px] left-[1142px] flex items-center gap-2">
+<img class="h-6 w-6 relative" alt="" />
+<img class="h-6 w-6 relative" alt="" />
+</div>
+</div>
+</div>
+<div class="w-num-1232 h-11 relative">
+<div class="absolute top-[0px] left-[0px] rounded-num-4 border-whitesmoke border-solid border-b-[1px] box-border w-num-1232 h-11" />
+<div class="absolute top-[6px] left-[17px] w-[1199px] h-8">
+<div class="absolute top-[11px] left-[0px] leading-[130%] capitalize">04</div>
+<div class="absolute top-[0px] left-[313px] flex items-center gap-4 text-darkslategray">
+<img class="w-8 relative rounded-num-50 max-h-full object-cover" alt="" />
+<div class="relative leading-[130%] capitalize">robat boss</div>
+</div>
+<div class="absolute top-[11px] left-[524px] leading-[130%] capitalize font-medium text-gold">Bluegrass Hemp Oil</div>
+<div class="absolute top-[11px] left-[704px] leading-[130%] capitalize">Great experience working with ...</div>
+<div class="absolute top-[11px] left-[1055px] leading-[130%] capitalize text-deepskyblue">On-Hold</div>
+<div class="absolute top-[11px] left-[59px] leading-[130%] capitalize">12-june-2025 | 10:30 PM</div>
+<div class="absolute top-[4px] left-[960px] flex items-center gap-1 text-darkslategray">
+<img class="h-6 w-6 relative" alt="" />
+<div class="relative leading-[130%] capitalize">5 Star</div>
+</div>
+<div class="absolute top-[4px] left-[1143px] flex items-center gap-2">
+<img class="h-6 w-6 relative" alt="" />
+<img class="h-6 w-6 relative" alt="" />
+</div>
+</div>
+</div>
+<div class="w-num-1232 h-11 relative">
+<div class="absolute top-[0px] left-[0px] rounded-num-4 border-whitesmoke border-solid border-b-[1px] box-border w-num-1232 h-11" />
+<div class="absolute top-[6px] left-[18px] w-num-1198 h-8">
+<div class="absolute top-[11px] left-[0px] leading-[130%] capitalize">05</div>
+<div class="absolute top-[0px] left-[312px] flex items-center gap-4 text-darkslategray">
+<img class="w-8 relative rounded-num-50 max-h-full object-cover" alt="" />
+<div class="relative leading-[130%] capitalize">robat boss</div>
+</div>
+<div class="absolute top-[11px] left-[523px] leading-[130%] capitalize font-medium text-gold">Bluegrass Hemp Oil</div>
+<div class="absolute top-[11px] left-[703px] leading-[130%] capitalize">Great experience working with ...</div>
+<div class="absolute top-[11px] left-[1056px] leading-[130%] capitalize text-gold">Pending</div>
+<div class="absolute top-[11px] left-[58px] leading-[130%] capitalize">12-june-2025 | 10:30 PM</div>
+<div class="absolute top-[4px] left-[959px] flex items-center gap-1 text-darkslategray">
+<img class="h-6 w-6 relative" alt="" />
+<div class="relative leading-[130%] capitalize">5 Star</div>
+</div>
+<div class="absolute top-[4px] left-[1142px] flex items-center gap-2">
+<img class="h-6 w-6 relative" alt="" />
+<img class="h-6 w-6 relative" alt="" />
+</div>
+</div>
+</div>
+<div class="w-num-1232 h-11 relative">
+<div class="absolute top-[0px] left-[0px] rounded-num-4 border-whitesmoke border-solid border-b-[1px] box-border w-num-1232 h-11" />
+<div class="absolute top-[6px] left-[18px] w-num-1198 h-8">
+<div class="absolute top-[11px] left-[0px] leading-[130%] capitalize">06</div>
+<div class="absolute top-[0px] left-[312px] flex items-center gap-4 text-darkslategray">
+<img class="w-8 relative rounded-num-50 max-h-full object-cover" alt="" />
+<div class="relative leading-[130%] capitalize">robat boss</div>
+</div>
+<div class="absolute top-[11px] left-[523px] leading-[130%] capitalize font-medium text-gold">Bluegrass Hemp Oil</div>
+<div class="absolute top-[11px] left-[703px] leading-[130%] capitalize">Great experience working with ...</div>
+<div class="absolute top-[11px] left-[1056px] leading-[130%] capitalize text-gold">Pending</div>
+<div class="absolute top-[11px] left-[58px] leading-[130%] capitalize">12-june-2025 | 10:30 PM</div>
+<div class="absolute top-[4px] left-[959px] flex items-center gap-1 text-darkslategray">
+<img class="h-6 w-6 relative" alt="" />
+<div class="relative leading-[130%] capitalize">5 Star</div>
+</div>
+<div class="absolute top-[4px] left-[1142px] flex items-center gap-2">
+<img class="h-6 w-6 relative" alt="" />
+<img class="h-6 w-6 relative" alt="" />
+</div>
+</div>
+</div>
+<div class="w-num-1232 h-11 relative">
+<div class="absolute top-[0px] left-[0px] rounded-num-4 border-whitesmoke border-solid border-b-[1px] box-border w-num-1232 h-11" />
+<div class="absolute top-[6px] left-[18px] w-num-1198 h-8">
+<div class="absolute top-[11px] left-[0px] leading-[130%] capitalize">07</div>
+<div class="absolute top-[0px] left-[312px] flex items-center gap-4 text-darkslategray">
+<img class="w-8 relative rounded-num-50 max-h-full object-cover" alt="" />
+<div class="relative leading-[130%] capitalize">robat boss</div>
+</div>
+<div class="absolute top-[11px] left-[523px] leading-[130%] capitalize font-medium text-gold">Bluegrass Hemp Oil</div>
+<div class="absolute top-[11px] left-[703px] leading-[130%] capitalize">Great experience working with ...</div>
+<div class="absolute top-[11px] left-[1056px] leading-[130%] capitalize text-gold">Pending</div>
+<div class="absolute top-[11px] left-[58px] leading-[130%] capitalize">12-june-2025 | 10:30 PM</div>
+<div class="absolute top-[4px] left-[959px] flex items-center gap-1 text-darkslategray">
+<img class="h-6 w-6 relative" alt="" />
+<div class="relative leading-[130%] capitalize">5 Star</div>
+</div>
+<div class="absolute top-[4px] left-[1142px] flex items-center gap-2">
+<img class="h-6 w-6 relative" alt="" />
+<img class="h-6 w-6 relative" alt="" />
+</div>
+</div>
+</div>
+<div class="w-num-1232 h-11 relative">
+<div class="absolute top-[0px] left-[0px] rounded-num-4 border-whitesmoke border-solid border-b-[1px] box-border w-num-1232 h-11" />
+<div class="absolute top-[6px] left-[17px] w-[1199px] h-8">
+<div class="absolute top-[11px] left-[0px] leading-[130%] capitalize">08</div>
+<div class="absolute top-[0px] left-[313px] flex items-center gap-4 text-darkslategray">
+<img class="w-8 relative rounded-num-50 max-h-full object-cover" alt="" />
+<div class="relative leading-[130%] capitalize">robat boss</div>
+</div>
+<div class="absolute top-[11px] left-[524px] leading-[130%] capitalize font-medium text-gold">Bluegrass Hemp Oil</div>
+<div class="absolute top-[11px] left-[704px] leading-[130%] capitalize">Great experience working with ...</div>
+<div class="absolute top-[11px] left-[1057px] leading-[130%] capitalize text-gold">Pending</div>
+<div class="absolute top-[11px] left-[59px] leading-[130%] capitalize">12-june-2025 | 10:30 PM</div>
+<div class="absolute top-[4px] left-[960px] flex items-center gap-1 text-darkslategray">
+<img class="h-6 w-6 relative" alt="" />
+<div class="relative leading-[130%] capitalize">5 Star</div>
+</div>
+<div class="absolute top-[4px] left-[1143px] flex items-center gap-2">
+<img class="h-6 w-6 relative" alt="" />
+<img class="h-6 w-6 relative" alt="" />
+</div>
+</div>
+</div>
+<div class="w-num-1232 h-11 relative">
+<div class="absolute top-[0px] left-[0px] rounded-num-4 border-whitesmoke border-solid border-b-[1px] box-border w-num-1232 h-11" />
+<div class="absolute top-[6px] left-[18px] w-num-1198 h-8">
+<div class="absolute top-[11px] left-[0px] leading-[130%] capitalize">09</div>
+<div class="absolute top-[0px] left-[312px] flex items-center gap-4 text-darkslategray">
+<img class="w-8 relative rounded-num-50 max-h-full object-cover" alt="" />
+<div class="relative leading-[130%] capitalize">robat boss</div>
+</div>
+<div class="absolute top-[11px] left-[523px] leading-[130%] capitalize font-medium text-gold">Bluegrass Hemp Oil</div>
+<div class="absolute top-[11px] left-[703px] leading-[130%] capitalize">Great experience working with ...</div>
+<div class="absolute top-[11px] left-[1056px] leading-[130%] capitalize text-gold">Pending</div>
+<div class="absolute top-[11px] left-[58px] leading-[130%] capitalize">12-june-2025 | 10:30 PM</div>
+<div class="absolute top-[4px] left-[959px] flex items-center gap-1 text-darkslategray">
+<img class="h-6 w-6 relative" alt="" />
+<div class="relative leading-[130%] capitalize">5 Star</div>
+</div>
+<div class="absolute top-[4px] left-[1142px] flex items-center gap-2">
+<img class="h-6 w-6 relative" alt="" />
+<img class="h-6 w-6 relative" alt="" />
+</div>
+</div>
+</div>
+<div class="w-num-1232 h-11 relative">
+<div class="absolute top-[0px] left-[0px] rounded-num-4 border-whitesmoke border-solid border-b-[1px] box-border w-num-1232 h-11" />
+<div class="absolute top-[6px] left-[19px] w-[1197px] h-8">
+<div class="absolute top-[11px] left-[0px] leading-[130%] capitalize">10</div>
+<div class="absolute top-[0px] left-[311px] flex items-center gap-4 text-darkslategray">
+<img class="w-8 relative rounded-num-50 max-h-full object-cover" alt="" />
+<div class="relative leading-[130%] capitalize">robat boss</div>
+</div>
+<div class="absolute top-[11px] left-[522px] leading-[130%] capitalize font-medium text-gold">Bluegrass Hemp Oil</div>
+<div class="absolute top-[11px] left-[702px] leading-[130%] capitalize">Great experience working with ...</div>
+<div class="absolute top-[11px] left-[1055px] leading-[130%] capitalize text-gold">Pending</div>
+<div class="absolute top-[11px] left-[57px] leading-[130%] capitalize">12-june-2025 | 10:30 PM</div>
+<div class="absolute top-[4px] left-[958px] flex items-center gap-1 text-darkslategray">
+<img class="h-6 w-6 relative" alt="" />
+<div class="relative leading-[130%] capitalize">5 Star</div>
+</div>
+<div class="absolute top-[4px] left-[1141px] flex items-center gap-2">
+<img class="h-6 w-6 relative" alt="" />
+<img class="h-6 w-6 relative" alt="" />
+</div>
+</div>
+</div>
+<div class="w-num-1232 h-11 relative">
+<div class="absolute top-[0px] left-[0px] rounded-num-4 border-whitesmoke border-solid border-b-[1px] box-border w-num-1232 h-11" />
+<div class="absolute top-[6px] left-[22px] w-[1194px] h-8">
+<div class="absolute top-[11px] left-[0px] leading-[130%] capitalize">11</div>
+<div class="absolute top-[0px] left-[308px] flex items-center gap-4 text-darkslategray">
+<img class="w-8 relative rounded-num-50 max-h-full object-cover" alt="" />
+<div class="relative leading-[130%] capitalize">robat boss</div>
+</div>
+<div class="absolute top-[11px] left-[519px] leading-[130%] capitalize font-medium text-gold">Bluegrass Hemp Oil</div>
+<div class="absolute top-[11px] left-[699px] leading-[130%] capitalize">Great experience working with ...</div>
+<div class="absolute top-[11px] left-[1052px] leading-[130%] capitalize text-gold">Pending</div>
+<div class="absolute top-[11px] left-[54px] leading-[130%] capitalize">12-june-2025 | 10:30 PM</div>
+<div class="absolute top-[4px] left-[955px] flex items-center gap-1 text-darkslategray">
+<img class="h-6 w-6 relative" alt="" />
+<div class="relative leading-[130%] capitalize">5 Star</div>
+</div>
+<div class="absolute top-[4px] left-[1138px] flex items-center gap-2">
+<img class="h-6 w-6 relative" alt="" />
+<img class="h-6 w-6 relative" alt="" />
+</div>
+</div>
+</div>
+<div class="w-num-1232 h-11 relative">
+<div class="absolute top-[0px] left-[0px] rounded-num-4 border-whitesmoke border-solid border-b-[1px] box-border w-num-1232 h-11" />
+<div class="absolute top-[6px] left-[20px] w-num-1196 h-8">
+<div class="absolute top-[11px] left-[0px] leading-[130%] capitalize">12</div>
+<div class="absolute top-[0px] left-[310px] flex items-center gap-4 text-darkslategray">
+<img class="w-8 relative rounded-num-50 max-h-full object-cover" alt="" />
+<div class="relative leading-[130%] capitalize">robat boss</div>
+</div>
+<div class="absolute top-[11px] left-[521px] leading-[130%] capitalize font-medium text-gold">Bluegrass Hemp Oil</div>
+<div class="absolute top-[11px] left-[701px] leading-[130%] capitalize">Great experience working with ...</div>
+<div class="absolute top-[11px] left-[1054px] leading-[130%] capitalize text-gold">Pending</div>
+<div class="absolute top-[11px] left-[56px] leading-[130%] capitalize">12-june-2025 | 10:30 PM</div>
+<div class="absolute top-[4px] left-[957px] flex items-center gap-1 text-darkslategray">
+<img class="h-6 w-6 relative" alt="" />
+<div class="relative leading-[130%] capitalize">5 Star</div>
+</div>
+<div class="absolute top-[4px] left-[1140px] flex items-center gap-2">
+<img class="h-6 w-6 relative" alt="" />
+<img class="h-6 w-6 relative" alt="" />
+</div>
+</div>
+</div>
+<div class="w-num-1232 h-11 relative">
+<div class="absolute top-[0px] left-[0px] rounded-num-4 border-whitesmoke border-solid border-b-[1px] box-border w-num-1232 h-11" />
+<div class="absolute top-[6px] left-[20px] w-num-1196 h-8">
+<div class="absolute top-[11px] left-[0px] leading-[130%] capitalize">13</div>
+<div class="absolute top-[0px] left-[310px] flex items-center gap-4 text-darkslategray">
+<img class="w-8 relative rounded-num-50 max-h-full object-cover" alt="" />
+<div class="relative leading-[130%] capitalize">robat boss</div>
+</div>
+<div class="absolute top-[11px] left-[521px] leading-[130%] capitalize font-medium text-gold">Bluegrass Hemp Oil</div>
+<div class="absolute top-[11px] left-[701px] leading-[130%] capitalize">Great experience working with ...</div>
+<div class="absolute top-[11px] left-[1054px] leading-[130%] capitalize text-gold">Pending</div>
+<div class="absolute top-[11px] left-[56px] leading-[130%] capitalize">12-june-2025 | 10:30 PM</div>
+<div class="absolute top-[4px] left-[957px] flex items-center gap-1 text-darkslategray">
+<img class="h-6 w-6 relative" alt="" />
+<div class="relative leading-[130%] capitalize">5 Star</div>
+</div>
+<div class="absolute top-[4px] left-[1140px] flex items-center gap-2">
+<img class="h-6 w-6 relative" alt="" />
+<img class="h-6 w-6 relative" alt="" />
+</div>
+</div>
+</div>
+<div class="w-num-1232 h-11 relative">
+<div class="absolute top-[0px] left-[0px] rounded-num-4 border-whitesmoke border-solid border-b-[1px] box-border w-num-1232 h-11" />
+<div class="absolute top-[6px] left-[20px] w-num-1196 h-8">
+<div class="absolute top-[11px] left-[0px] leading-[130%] capitalize">14</div>
+<div class="absolute top-[0px] left-[310px] flex items-center gap-4 text-darkslategray">
+<img class="w-8 relative rounded-num-50 max-h-full object-cover" alt="" />
+<div class="relative leading-[130%] capitalize">robat boss</div>
+</div>
+<div class="absolute top-[11px] left-[521px] leading-[130%] capitalize font-medium text-gold">Bluegrass Hemp Oil</div>
+<div class="absolute top-[11px] left-[701px] leading-[130%] capitalize">Great experience working with ...</div>
+<div class="absolute top-[11px] left-[1054px] leading-[130%] capitalize text-gold">Pending</div>
+<div class="absolute top-[11px] left-[56px] leading-[130%] capitalize">12-june-2025 | 10:30 PM</div>
+<div class="absolute top-[4px] left-[957px] flex items-center gap-1 text-darkslategray">
+<img class="h-6 w-6 relative" alt="" />
+<div class="relative leading-[130%] capitalize">5 Star</div>
+</div>
+<div class="absolute top-[4px] left-[1140px] flex items-center gap-2">
+<img class="h-6 w-6 relative" alt="" />
+<img class="h-6 w-6 relative" alt="" />
+</div>
+</div>
+</div>
+<div class="w-num-1232 h-11 relative">
+<div class="absolute top-[0px] left-[0px] rounded-num-4 border-whitesmoke border-solid border-b-[1px] box-border w-num-1232 h-11" />
+<div class="absolute top-[6px] left-[20px] w-num-1196 h-8">
+<div class="absolute top-[11px] left-[0px] leading-[130%] capitalize">15</div>
+<div class="absolute top-[0px] left-[310px] flex items-center gap-4 text-darkslategray">
+<img class="w-8 relative rounded-num-50 max-h-full object-cover" alt="" />
+<div class="relative leading-[130%] capitalize">robat boss</div>
+</div>
+<div class="absolute top-[11px] left-[521px] leading-[130%] capitalize font-medium text-gold">Bluegrass Hemp Oil</div>
+<div class="absolute top-[11px] left-[701px] leading-[130%] capitalize">Great experience working with ...</div>
+<div class="absolute top-[11px] left-[1054px] leading-[130%] capitalize text-gold">Pending</div>
+<div class="absolute top-[11px] left-[56px] leading-[130%] capitalize">12-june-2025 | 10:30 PM</div>
+<div class="absolute top-[4px] left-[957px] flex items-center gap-1 text-darkslategray">
+<img class="h-6 w-6 relative" alt="" />
+<div class="relative leading-[130%] capitalize">5 Star</div>
+</div>
+<div class="absolute top-[4px] left-[1140px] flex items-center gap-2">
+<img class="h-6 w-6 relative" alt="" />
+<img class="h-6 w-6 relative" alt="" />
+</div>
+</div>
+</div>
+<div class="w-num-1232 h-11 relative">
+<div class="absolute top-[0px] left-[0px] rounded-num-4 border-whitesmoke border-solid border-b-[1px] box-border w-num-1232 h-11" />
+<div class="absolute top-[6px] left-[20px] w-num-1196 h-8">
+<div class="absolute top-[11px] left-[0px] leading-[130%] capitalize">16</div>
+<div class="absolute top-[0px] left-[310px] flex items-center gap-4 text-darkslategray">
+<img class="w-8 relative rounded-num-50 max-h-full object-cover" alt="" />
+<div class="relative leading-[130%] capitalize">robat boss</div>
+</div>
+<div class="absolute top-[11px] left-[521px] leading-[130%] capitalize font-medium text-gold">Bluegrass Hemp Oil</div>
+<div class="absolute top-[11px] left-[701px] leading-[130%] capitalize">Great experience working with ...</div>
+<div class="absolute top-[11px] left-[1054px] leading-[130%] capitalize text-gold">Pending</div>
+<div class="absolute top-[11px] left-[56px] leading-[130%] capitalize">12-june-2025 | 10:30 PM</div>
+<div class="absolute top-[4px] left-[957px] flex items-center gap-1 text-darkslategray">
+<img class="h-6 w-6 relative" alt="" />
+<div class="relative leading-[130%] capitalize">5 Star</div>
+</div>
+<div class="absolute top-[4px] left-[1140px] flex items-center gap-2">
+<img class="h-6 w-6 relative" alt="" />
+<img class="h-6 w-6 relative" alt="" />
+</div>
+</div>
+</div>
+<div class="w-num-1232 h-11 relative">
+<div class="absolute top-[0px] left-[0px] rounded-num-4 border-whitesmoke border-solid border-b-[1px] box-border w-num-1232 h-11" />
+<div class="absolute top-[6px] left-[21px] w-[1195px] h-8">
+<div class="absolute top-[11px] left-[0px] leading-[130%] capitalize">17</div>
+<div class="absolute top-[0px] left-[309px] flex items-center gap-4 text-darkslategray">
+<img class="w-8 relative rounded-num-50 max-h-full object-cover" alt="" />
+<div class="relative leading-[130%] capitalize">robat boss</div>
+</div>
+<div class="absolute top-[11px] left-[520px] leading-[130%] capitalize font-medium text-gold">Bluegrass Hemp Oil</div>
+<div class="absolute top-[11px] left-[700px] leading-[130%] capitalize">Great experience working with ...</div>
+<div class="absolute top-[11px] left-[1053px] leading-[130%] capitalize text-gold">Pending</div>
+<div class="absolute top-[11px] left-[55px] leading-[130%] capitalize">12-june-2025 | 10:30 PM</div>
+<div class="absolute top-[4px] left-[956px] flex items-center gap-1 text-darkslategray">
+<img class="h-6 w-6 relative" alt="" />
+<div class="relative leading-[130%] capitalize">5 Star</div>
+</div>
+<div class="absolute top-[4px] left-[1139px] flex items-center gap-2">
+<img class="h-6 w-6 relative" alt="" />
+<img class="h-6 w-6 relative" alt="" />
+</div>
+</div>
+</div>
+<div class="w-num-1232 h-11 relative">
+<div class="absolute top-[0px] left-[0px] rounded-num-4 border-whitesmoke border-solid border-b-[1px] box-border w-num-1232 h-11" />
+<div class="absolute top-[6px] left-[20px] w-num-1196 h-8">
+<div class="absolute top-[11px] left-[0px] leading-[130%] capitalize">18</div>
+<div class="absolute top-[0px] left-[310px] flex items-center gap-4 text-darkslategray">
+<img class="w-8 relative rounded-num-50 max-h-full object-cover" alt="" />
+<div class="relative leading-[130%] capitalize">robat boss</div>
+</div>
+<div class="absolute top-[11px] left-[521px] leading-[130%] capitalize font-medium text-gold">Bluegrass Hemp Oil</div>
+<div class="absolute top-[11px] left-[701px] leading-[130%] capitalize">Great experience working with ...</div>
+<div class="absolute top-[11px] left-[1054px] leading-[130%] capitalize text-gold">Pending</div>
+<div class="absolute top-[11px] left-[56px] leading-[130%] capitalize">12-june-2025 | 10:30 PM</div>
+<div class="absolute top-[4px] left-[957px] flex items-center gap-1 text-darkslategray">
+<img class="h-6 w-6 relative" alt="" />
+<div class="relative leading-[130%] capitalize">5 Star</div>
+</div>
+<div class="absolute top-[4px] left-[1140px] flex items-center gap-2">
+<img class="h-6 w-6 relative" alt="" />
+<img class="h-6 w-6 relative" alt="" />
+</div>
+</div>
+</div>
+<div class="w-num-1232 h-11 relative">
+<div class="absolute top-[0px] left-[0px] rounded-num-4 border-whitesmoke border-solid border-b-[1px] box-border w-num-1232 h-11" />
+<div class="absolute top-[6px] left-[20px] w-num-1196 h-8">
+<div class="absolute top-[11px] left-[0px] leading-[130%] capitalize">19</div>
+<div class="absolute top-[0px] left-[310px] flex items-center gap-4 text-darkslategray">
+<img class="w-8 relative rounded-num-50 max-h-full object-cover" alt="" />
+<div class="relative leading-[130%] capitalize">robat boss</div>
+</div>
+<div class="absolute top-[11px] left-[521px] leading-[130%] capitalize font-medium text-gold">Bluegrass Hemp Oil</div>
+<div class="absolute top-[11px] left-[701px] leading-[130%] capitalize">Great experience working with ...</div>
+<div class="absolute top-[11px] left-[1054px] leading-[130%] capitalize text-gold">Pending</div>
+<div class="absolute top-[11px] left-[56px] leading-[130%] capitalize">12-june-2025 | 10:30 PM</div>
+<div class="absolute top-[4px] left-[957px] flex items-center gap-1 text-darkslategray">
+<img class="h-6 w-6 relative" alt="" />
+<div class="relative leading-[130%] capitalize">5 Star</div>
+</div>
+<div class="absolute top-[4px] left-[1140px] flex items-center gap-2">
+<img class="h-6 w-6 relative" alt="" />
+<img class="h-6 w-6 relative" alt="" />
+</div>
+</div>
+</div>
+<div class="w-num-1232 h-11 relative">
+<div class="absolute top-[0px] left-[0px] rounded-num-4 border-whitesmoke border-solid border-b-[1px] box-border w-num-1232 h-11" />
+<div class="absolute top-[6px] left-[18px] w-num-1198 h-8">
+<div class="absolute top-[11px] left-[0px] leading-[130%] capitalize">20</div>
+<div class="absolute top-[0px] left-[312px] flex items-center gap-4 text-darkslategray">
+<img class="w-8 relative rounded-num-50 max-h-full object-cover" alt="" />
+<div class="relative leading-[130%] capitalize">robat boss</div>
+</div>
+<div class="absolute top-[11px] left-[523px] leading-[130%] capitalize font-medium text-gold">Bluegrass Hemp Oil</div>
+<div class="absolute top-[11px] left-[703px] leading-[130%] capitalize">Great experience working with ...</div>
+<div class="absolute top-[11px] left-[1056px] leading-[130%] capitalize text-gold">Pending</div>
+<div class="absolute top-[11px] left-[58px] leading-[130%] capitalize">12-june-2025 | 10:30 PM</div>
+<div class="absolute top-[4px] left-[959px] flex items-center gap-1 text-darkslategray">
+<img class="h-6 w-6 relative" alt="" />
+<div class="relative leading-[130%] capitalize">5 Star</div>
+</div>
+<div class="absolute top-[4px] left-[1142px] flex items-center gap-2">
+<img class="h-6 w-6 relative" alt="" />
+<img class="h-6 w-6 relative" alt="" />
+</div>
+</div>
+</div>
+</div>
 
-    <!-- Table Container -->
-    <div class="w-full bg-white rounded-xl shadow-lg overflow-hidden">
-      <!-- Desktop Table -->
-      <div class="hidden lg:block">
-        <table class="w-full text-left border-collapse">
-          <thead class="bg-gray-100 text-gray-600 text-sm uppercase tracking-wide">
-            <tr>
-              <th class="px-4 py-3">Reviewer</th>
-              <th class="px-4 py-3 text-center">Rating</th>
-              <th class="px-4 py-3 text-center">Date & Time</th>
-              <th class="px-4 py-3">Review</th>
-              <th class="px-4 py-3 text-center">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              v-for="review in filteredReviews"
-              :key="review.id"
-              class="border-t hover:bg-gray-50 transition"
-            >
-              <td class="px-4 py-3 flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center font-bold text-indigo-700">
-                  {{ getInitials(review.reviewerName) }}
-                </div>
-                <span class="font-medium text-gray-800">{{ review.reviewerName }}</span>
-              </td>
 
-              <td class="px-4 py-3 text-center">
-                <div class="flex justify-center gap-1">
-                  <RatingStars :value="review.rating" />
-                </div>
-              </td>
-
-              <td class="px-4 py-3 text-center text-sm text-gray-600">
-                <div>{{ formatDate(review.date) }}</div>
-                <div class="text-xs">{{ review.time }}</div>
-              </td>
-
-              <td class="px-4 py-3 text-gray-700">
-                <p class="line-clamp-2">"{{ review.content }}"</p>
-              </td>
-
-              <td class="px-4 py-3 text-center flex justify-center gap-2">
-                <button 
-                  class="p-2 text-green-500 hover:bg-green-50 rounded transition"
-                  @click="approveReview(review.id)"
-                  title="Approve review"
-                >
-                  <CheckCircle class="w-5 h-5" />
-                </button>
-                <button 
-                  class="p-2 text-red-500 hover:bg-red-50 rounded transition"
-                  @click="deleteReview(review.id)"
-                  title="Delete review"
-                >
-                  <Trash2 class="w-5 h-5" />
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Mobile Cards -->
-      <div class="lg:hidden space-y-4 p-4">
-        <div
-          v-for="review in filteredReviews"
-          :key="review.id"
-          class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow"
-        >
-          <!-- Header -->
-          <div class="flex items-center justify-between mb-3">
-            <div class="flex items-center gap-3">
-              <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center font-bold text-indigo-700 text-sm">
-                {{ getInitials(review.reviewerName) }}
-              </div>
-              <div>
-                <div class="font-medium text-gray-800 text-sm">{{ review.reviewerName }}</div>
-                <div class="text-xs text-gray-500">{{ formatDate(review.date) }} at {{ review.time }}</div>
-              </div>
-            </div>
-            <div class="flex gap-1">
-              <RatingStars :value="review.rating" :size-class="'w-3 h-3'" />
-            </div>
-          </div>
-
-          <!-- Review Content -->
-          <div class="mb-3">
-            <p class="text-gray-700 text-sm leading-relaxed">"{{ review.content }}"</p>
-          </div>
-
-          <!-- Actions -->
-          <div class="flex justify-end gap-2 pt-2 border-t border-gray-100">
-            <button 
-              class="flex items-center gap-1 px-3 py-1.5 text-green-600 bg-green-50 rounded-lg text-sm hover:bg-green-100 transition"
-              @click="approveReview(review.id)"
-            >
-              <CheckCircle class="w-4 h-4" />
-              Approve
-            </button>
-            <button 
-              class="flex items-center gap-1 px-3 py-1.5 text-red-600 bg-red-50 rounded-lg text-sm hover:bg-red-100 transition"
-              @click="deleteReview(review.id)"
-            >
-              <Trash2 class="w-4 h-4" />
-              Delete
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Load more -->
-      <div class="flex justify-center py-4 border-t border-gray-100">
-        <button
-          v-if="hasMoreReviews"
-          class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition flex items-center gap-2 text-sm"
-          @click="loadMoreReviews"
-        >
-          <Plus class="w-4 h-4" />
-          Load More Reviews
-        </button>
-        <div v-else class="text-gray-500 text-sm py-2">
-          No more reviews to load
-        </div>
-      </div>
-    </div>
-
-    <!-- Empty State -->
-    <div v-if="filteredReviews.length === 0" class="w-full bg-white rounded-xl shadow-lg p-8 text-center">
-      <div class="max-w-md mx-auto">
-        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <Star class="w-8 h-8 text-gray-400" />
-        </div>
-        <h3 class="text-lg font-semibold text-gray-900 mb-2">No reviews found</h3>
-        <p class="text-gray-600 mb-4">Try adjusting your filters or check back later for new reviews.</p>
-        <button
-          @click="resetFilters"
-          class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition text-sm"
-        >
-          Reset Filters
-        </button>
-      </div>
-    </div>
   </div>
 </template>
 
