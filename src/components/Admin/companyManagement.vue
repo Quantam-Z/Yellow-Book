@@ -18,14 +18,28 @@
           v-model="searchQuery"
           @input="handleFilterChange"
           placeholder="Search Companies By Name Or Category"
-          class="flex-1 outline-none border-none bg-transparent text-gray-700 placeholder-gray-400 text-xs sm:text-sm md:text-base min-w-0 
+          class="flex-1 outline-none border-none bg-transparent text-gray-700 placeholder-gray-400 text-[16px] sm:text-sm md:text-base min-w-0 
                  focus:ring-0 focus:outline-none"
         />
       </div>
     </div>
 
-    <div class="mb-4 overflow-x-auto pb-2 scrollbar-thin"> 
-      <div class="flex items-center gap-2 sm:gap-3 min-w-max pr-4">
+    <!-- Mobile header with Filters toggle -->
+    <div class="mb-3 flex md:hidden items-center justify-between">
+      <h2 class="text-sm font-bold text-gray-900">All Company List</h2>
+      <button 
+        @click="showMobileFilters = !showMobileFilters"
+        class="h-10 bg-white rounded-xl px-3 py-2 border border-gray-300 text-gray-700 text-sm outline-none cursor-pointer whitespace-nowrap touch-manipulation flex items-center gap-2 hover:bg-gray-50 active:bg-gray-100 transition"
+        aria-controls="mobile-filters"
+        :aria-expanded="showMobileFilters ? 'true' : 'false'"
+      >
+        <FilterIcon class="w-4 h-4" aria-hidden="true" />
+        <span>Filters</span>
+      </button>
+    </div>
+
+    <div class="mb-4 md:overflow-x-auto md:pb-2 md:scrollbar-thin"> 
+      <div class="hidden md:flex items-center flex-wrap gap-2 md:gap-3 min-w-full md:min-w-max pr-0 md:pr-4">
         <h2 class="text-sm sm:text-base md:text-lg font-bold text-gray-900 whitespace-nowrap pr-12 sm:pr-12">
           All Company List
         </h2>
@@ -36,7 +50,7 @@
             type="date" 
             v-model="filters.dateFrom"
             @change="handleFilterChange"
-            class="text-gray-600 text-sm outline-none bg-transparent cursor-pointer border-none touch-manipulation ring-0 focus:ring-0 w-24 sm:w-28 md:w-32"
+            class="text-gray-600 text-[16px] sm:text-sm outline-none bg-transparent cursor-pointer border-none touch-manipulation ring-0 focus:ring-0 w-24 sm:w-28 md:w-32"
           />
         </div>
 
@@ -46,7 +60,7 @@
             type="date" 
             v-model="filters.dateTo"
             @change="handleFilterChange"
-            class="text-gray-600 text-sm outline-none bg-transparent cursor-pointer border-none touch-manipulation ring-0 focus:ring-0 w-24 sm:w-28 md:w-32"
+            class="text-gray-600 text-[16px] sm:text-sm outline-none bg-transparent cursor-pointer border-none touch-manipulation ring-0 focus:ring-0 w-24 sm:w-28 md:w-32"
           />
         </div>
 
@@ -54,7 +68,7 @@
           <select 
             v-model="filters.timeRange"
             @change="handleFilterChange"
-            class="h-12 relative rounded-xl bg-gray-100 border-none box-border appearance-none py-0 pl-4 pr-10 text-left text-sm text-gray-600 cursor-pointer focus:outline-none focus:ring-0 min-w-[120px]" 
+            class="h-12 relative rounded-xl bg-gray-100 border-none box-border appearance-none py-0 pl-4 pr-10 text-left text-[16px] sm:text-sm text-gray-600 cursor-pointer focus:outline-none focus:ring-0 min-w-[120px]" 
           >
               <option value="">Today</option>
               <option value="yesterday">Yesterday</option>
@@ -68,7 +82,7 @@
           <select 
             v-model="filters.status"
             @change="handleFilterChange"
-            class="h-12 relative rounded-xl bg-gray-100 border-none box-border appearance-none py-0 pl-4 pr-10 text-left text-sm text-gray-600 cursor-pointer
+            class="h-12 relative rounded-xl bg-gray-100 border-none box-border appearance-none py-0 pl-4 pr-10 text-left text-[16px] sm:text-sm text-gray-600 cursor-pointer
                   focus:outline-none focus:ring-0 min-w-[120px]"
           >
               <option value="">Select Status</option>
@@ -83,7 +97,7 @@
           <select 
             v-model="filters.category"
             @change="handleFilterChange"
-            class="h-12 relative rounded-xl bg-gray-100 border-none box-border appearance-none py-0 pl-4 pr-10 text-left text-sm text-gray-600 cursor-pointer
+            class="h-12 relative rounded-xl bg-gray-100 border-none box-border appearance-none py-0 pl-4 pr-10 text-left text-[16px] sm:text-sm text-gray-600 cursor-pointer
                   focus:outline-none focus:ring-0 min-w-[120px]"
           >
               <option value="">Select Category</option>
@@ -91,24 +105,16 @@
           </select>
           <ChevronDownIcon class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" aria-hidden="true" />
         </div>
-
-        <button 
-          @click="showMobileFilters = !showMobileFilters"
-          class="h-12 bg-white rounded-xl px-4 py-2 border border-gray-300 text-gray-600 text-sm outline-none cursor-pointer whitespace-nowrap touch-manipulation lg:hidden flex items-center gap-2 hover:bg-gray-50 active:bg-gray-100 transition"
-        >
-          <FilterIcon class="w-4 h-4" aria-hidden="true" />
-          <span>Filters</span>
-        </button>
       </div>
 
-      <div v-if="showMobileFilters" class="mt-3 p-4 bg-white rounded-lg shadow-sm border border-gray-200 lg:hidden">
+      <div v-if="showMobileFilters" id="mobile-filters" class="mt-3 p-4 bg-white rounded-lg shadow-sm border border-gray-200 lg:hidden">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div class="flex flex-col gap-1.5">
             <label class="text-xs text-gray-500 font-medium">Time Range</label>
             <select 
               v-model="filters.timeRange"
               @change="handleFilterChange"
-              class="bg-gray-50 rounded-lg px-3 py-2 text-sm outline-none border border-gray-200 h-10"
+              class="bg-gray-50 rounded-lg px-3 py-2 text-[16px] sm:text-sm outline-none border border-gray-200 h-10"
             >
               <option value="">Today</option>
               <option value="yesterday">Yesterday</option>
@@ -121,12 +127,47 @@
             <select 
               v-model="filters.category"
               @change="handleFilterChange"
-              class="bg-gray-50 rounded-lg px-3 py-2 text-sm outline-none border border-gray-200 h-10"
+              class="bg-gray-50 rounded-lg px-3 py-2 text-[16px] sm:text-sm outline-none border border-gray-200 h-10"
             >
               <option value="">Select Category</option>
               <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
             </select>
           </div>
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs text-gray-500 font-medium">Status</label>
+            <select
+              v-model="filters.status"
+              @change="handleFilterChange"
+              class="bg-gray-50 rounded-lg px-3 py-2 text-[16px] sm:text-sm outline-none border border-gray-200 h-10"
+            >
+              <option value="">Select Status</option>
+              <option value="Approved">Approved</option>
+              <option value="Pending">Pending</option>
+              <option value="Rejected">Rejected</option>
+            </select>
+          </div>
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs text-gray-500 font-medium">From</label>
+            <input
+              type="date"
+              v-model="filters.dateFrom"
+              @change="handleFilterChange"
+              class="bg-gray-50 rounded-lg px-3 py-2 text-[16px] sm:text-sm outline-none border border-gray-200 h-10 text-gray-700"
+            />
+          </div>
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs text-gray-500 font-medium">To</label>
+            <input
+              type="date"
+              v-model="filters.dateTo"
+              @change="handleFilterChange"
+              class="bg-gray-50 rounded-lg px-3 py-2 text-[16px] sm:text-sm outline-none border border-gray-200 h-10 text-gray-700"
+            />
+          </div>
+        </div>
+        <div class="mt-4 flex items-center justify-end gap-2">
+          <button @click="resetFilters" class="px-3 py-2 text-xs sm:text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 active:bg-gray-100 touch-manipulation">Reset</button>
+          <button @click="applyMobileFilters" class="px-3 py-2 text-xs sm:text-sm text-gray-900 bg-yellow-400 hover:bg-yellow-500 active:bg-yellow-600 rounded-lg touch-manipulation">Apply</button>
         </div>
       </div>
     </div>
@@ -198,7 +239,7 @@
           </div>
 
           <div class="hidden sm:block overflow-x-auto scrollbar-thin">
-            <table class="w-full table-auto" style="min-width: 600px;">
+            <table class="w-full table-auto min-w-[640px] md:min-w-[760px]">
               <thead class="bg-gray-50 border-b border-gray-200">
                 <tr>
                   <th class="px-2 sm:px-3 md:px-4 py-2.5 sm:py-3 text-left" style="width: 40px;">
@@ -455,6 +496,22 @@ const changeStatus = (company) => {
   const nextIndex = (currentIndex + 1) % statuses.length;
   // Mutate the reactive company object directly
   company.status = statuses[nextIndex];
+};
+
+const applyMobileFilters = () => {
+  handleFilterChange();
+  showMobileFilters.value = false;
+};
+
+const resetFilters = () => {
+  filters.value = {
+    dateFrom: '',
+    dateTo: '',
+    timeRange: '',
+    status: '',
+    category: ''
+  };
+  handleFilterChange();
 };
 
 // Pagination Methods
