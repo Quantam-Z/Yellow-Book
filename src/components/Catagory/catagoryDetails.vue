@@ -113,37 +113,65 @@
 
       <!-- Emergency Service Filter -->
       <div v-if="currentCategory?.filters?.emergencyService" class="self-stretch bg-white border border-gainsboro border-solid flex flex-col items-start p-3 lg:p-[10px] gap-4 lg:gap-6">
-    <div class="relative leading-[160%] capitalize font-medium text-sm lg:text-base">Emergency Service Available</div>
-    <div class="flex items-center gap-4 lg:gap-[22px] text-[14px] lg:text-[16px] text-gray-500">
-      
-      <div 
-        class="flex items-center gap-2 cursor-pointer" 
-        @click="setEmergencyService(true)"
-      >
-        <div class="w-5 h-5 lg:w-6 lg:h-6 border border-gray-700 rounded-full bg-white flex items-center justify-center">
-          <div :class="[
-            'w-3 h-3 rounded-full transition-colors', 
-            filters.emergencyService === true ? 'bg-black' : 'bg-transparent'
-          ]"></div>
+        <div class="relative leading-[160%] capitalize font-medium text-sm lg:text-base">Emergency Service Available</div>
+        <div
+          class="flex items-center gap-6 lg:gap-8 text-[14px] lg:text-[16px] text-gray-700"
+          role="radiogroup"
+          aria-label="Emergency Service Available"
+        >
+          <!-- Yes -->
+          <button
+            type="button"
+            class="flex items-center gap-2 focus:outline-none"
+            role="radio"
+            :aria-checked="filters.emergencyService === true"
+            @click="setEmergencyService(true)"
+            @keydown.enter.prevent="setEmergencyService(true)"
+            @keydown.space.prevent="setEmergencyService(true)"
+          >
+            <span
+              :class="[
+                'w-6 h-6 lg:w-6 lg:h-6 flex items-center justify-center rounded-full border transition-colors',
+                filters.emergencyService === true ? 'border-amber-500 ring-2 ring-amber-100' : 'border-gray-400'
+              ]"
+            >
+              <span
+                :class="[
+                  'w-3 h-3 rounded-full transition-transform duration-200',
+                  filters.emergencyService === true ? 'bg-amber-500 scale-100' : 'bg-transparent scale-0'
+                ]"
+              ></span>
+            </span>
+            <span class="relative leading-[160%] capitalize font-medium">Yes</span>
+          </button>
+
+          <!-- No -->
+          <button
+            type="button"
+            class="flex items-center gap-2 focus:outline-none"
+            role="radio"
+            :aria-checked="filters.emergencyService === false"
+            @click="setEmergencyService(false)"
+            @keydown.enter.prevent="setEmergencyService(false)"
+            @keydown.space.prevent="setEmergencyService(false)"
+          >
+            <span
+              :class="[
+                'w-6 h-6 lg:w-6 lg:h-6 flex items-center justify-center rounded-full border transition-colors',
+                filters.emergencyService === false ? 'border-amber-500 ring-2 ring-amber-100' : 'border-gray-400'
+              ]"
+            >
+              <span
+                :class="[
+                  'w-3 h-3 rounded-full transition-transform duration-200',
+                  filters.emergencyService === false ? 'bg-amber-500 scale-100' : 'bg-transparent scale-0'
+                ]"
+              ></span>
+            </span>
+            <span class="relative leading-[160%] capitalize font-medium">No</span>
+          </button>
         </div>
-        <div class="relative leading-[160%] capitalize font-medium text-gray-700">Yes</div>
       </div>
-      
-      <div 
-        class="flex items-center gap-2 cursor-pointer" 
-        @click="setEmergencyService(false)"
-      >
-        <div class="w-5 h-5 lg:w-6 lg:h-6 border border-gray-700 rounded-full bg-white flex items-center justify-center">
-          <div :class="[
-            'w-3 h-3 rounded-full transition-colors', 
-            filters.emergencyService === false ? 'bg-black' : 'bg-transparent'
-          ]"></div>
-        </div>
-        <div class="relative leading-[160%] capitalize font-medium text-gray-700">No</div>
-      </div>
-      
-    </div>
-</div>
 
       <div v-if="currentCategory?.filters?.serviceTypes" class="self-stretch rounded-[4px] border border-gainsboro border-solid flex flex-col items-start p-3 lg:p-[10px] gap-2">
         <div class="w-full flex items-center justify-between gap-0">
@@ -159,22 +187,35 @@
         </div>
         <div class="self-stretch bg-ghostwhite flex flex-col items-start p-3 lg:p-[10px] relative text-left text-[14px] lg:text-[16px] text-darkslategray max-h-64 overflow-y-auto">
           <div class="self-stretch flex flex-col items-start gap-0.5 z-[0]">
-            <div 
-              v-for="service in currentCategory.filters.serviceTypes.options" 
-              :key="service" 
-              class="self-stretch border-b border-whitesmoke border-solid box-border h-10 flex items-center gap-2 cursor-pointer transition-colors hover:bg-gray-100"
+            <div
+              v-for="service in currentCategory.filters.serviceTypes.options"
+              :key="service"
+              class="self-stretch border-b border-whitesmoke border-solid box-border h-10 flex items-center gap-2 cursor-pointer transition-colors hover:bg-gray-100 focus:bg-gray-100 outline-none"
               @click="toggleService(service)"
+              @keydown.enter.prevent="toggleService(service)"
+              @keydown.space.prevent="toggleService(service)"
+              tabindex="0"
+              role="checkbox"
+              :aria-checked="filters.services.has(service)"
             >
-              <div class="w-5 h-5 lg:w-6 lg:h-6 relative overflow-hidden shrink-0">
-                <div class="w-full h-full border-2 border-gray-300 rounded-sm bg-white flex items-center justify-center transition-colors">
-                  <div class="w-3.5 h-3.5 lg:w-4.5 lg:h-4.5 border border-gray-400 rounded-xs bg-white flex items-center justify-center transition-colors">
-                    <div v-if="filters.services.has(service)" class="w-3 h-3 flex items-center justify-center transition-all duration-200">
-                      <svg viewBox="0 0 24 24" class="w-3 h-3 text-black" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M20 6L9 17l-5-5"></path>
-                      </svg>
-                    </div>
-                  </div>
-                </div>
+              <div
+                :class="[
+                  'w-5 h-5 lg:w-6 lg:h-6 flex items-center justify-center rounded-[3px] border-2 transition-colors shrink-0',
+                  filters.services.has(service) ? 'border-amber-500 bg-amber-50' : 'border-gray-300 bg-white'
+                ]"
+              >
+                <svg
+                  v-if="filters.services.has(service)"
+                  viewBox="0 0 24 24"
+                  class="w-3.5 h-3.5 text-amber-500"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="3"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M20 6L9 17l-5-5"></path>
+                </svg>
               </div>
               <div class="relative leading-[130%] capitalize font-medium text-sm lg:text-base">{{ service }}</div>
             </div>
