@@ -11,13 +11,13 @@
         </NuxtLink>
       </div>
 
-      <!-- Search Bar (match manageUsers design) -->
+      <!-- Search Bar (aligned with Manage Users) -->
       <div class="w-full relative rounded-lg bg-white/80 backdrop-blur-sm flex items-center px-4 py-3 gap-3">
         <Search class="w-5 h-5 text-gray-400 flex-shrink-0" />
         <input
           type="text"
           v-model="searchQuery"
-          @input="filterAdmins"
+          @input="handleFilterChange"
           placeholder="Search admins by name or email"
           class="flex-1 outline-none border-none bg-transparent text-gray-700 placeholder-gray-400 text-base min-w-0 focus:ring-0 focus:outline-none"
         />
@@ -89,7 +89,7 @@
           <input 
             type="date" 
             v-model="filters.dateFrom"
-            @change="filterAdmins"
+            @change="handleFilterChange"
             class="text-gray-600 text-sm outline-none bg-transparent cursor-pointer border-none touch-manipulation ring-0 focus:ring-0 w-32"
           />
         </div>
@@ -100,7 +100,7 @@
           <input 
             type="date" 
             v-model="filters.dateTo"
-            @change="filterAdmins"
+            @change="handleFilterChange"
             class="text-gray-600 text-sm outline-none bg-transparent cursor-pointer border-none touch-manipulation ring-0 focus:ring-0 w-32"
           />
         </div>
@@ -109,7 +109,7 @@
         <div class="relative">
           <select 
             v-model="filters.timeRange"
-            @change="filterAdmins"
+            @change="handleFilterChange"
             class="h-12 rounded-xl bg-gray-100 border border-gray-200 appearance-none py-0 pl-4 pr-10 text-left text-sm text-gray-600 cursor-pointer focus:outline-none focus:ring-0 min-w-[140px]" 
           >
             <option value="">Today</option>
@@ -124,7 +124,7 @@
         <div class="relative">
           <select 
             v-model="filters.role"
-            @change="filterAdmins"
+            @change="handleFilterChange"
             class="h-12 rounded-xl bg-gray-100 border border-gray-200 appearance-none py-0 pl-4 pr-10 text-left text-sm text-gray-600 cursor-pointer focus:outline-none focus:ring-0 min-w-[160px]"
           >
             <option value="">All Roles</option>
@@ -140,7 +140,7 @@
         <div class="relative">
           <select 
             v-model="filters.status"
-            @change="filterAdmins"
+            @change="handleFilterChange"
             class="h-12 rounded-xl bg-gray-100 border border-gray-200 appearance-none py-0 pl-4 pr-10 text-left text-sm text-gray-600 cursor-pointer focus:outline-none focus:ring-0 min-w-[160px]"
           >
             <option value="">All Status</option>
@@ -163,7 +163,7 @@
                 <input
                   type="date"
                   v-model="filters.dateFrom"
-                  @change="filterAdmins"
+                  @change="handleFilterChange"
                   class="text-gray-600 text-sm outline-none bg-transparent cursor-pointer border-none touch-manipulation ring-0 focus:ring-0 w-full"
                 />
               </div>
@@ -174,7 +174,7 @@
                 <input
                   type="date"
                   v-model="filters.dateTo"
-                  @change="filterAdmins"
+                  @change="handleFilterChange"
                   class="text-gray-600 text-sm outline-none bg-transparent cursor-pointer border-none touch-manipulation ring-0 focus:ring-0 w-full"
                 />
               </div>
@@ -187,7 +187,7 @@
             <div class="relative">
               <select 
                 v-model="filters.timeRange"
-                @change="filterAdmins"
+                @change="handleFilterChange"
                 class="h-12 w-full rounded-xl bg-gray-100 border border-gray-200 appearance-none py-0 pl-4 pr-10 text-left text-sm text-gray-600 cursor-pointer focus:outline-none focus:ring-0" 
               >
                 <option value="">Today</option>
@@ -205,7 +205,7 @@
             <div class="relative">
               <select 
                 v-model="filters.role"
-                @change="filterAdmins"
+                @change="handleFilterChange"
                 class="h-12 w-full rounded-xl bg-gray-100 border border-gray-200 appearance-none py-0 pl-4 pr-10 text-left text-sm text-gray-600 cursor-pointer focus:outline-none focus:ring-0"
               >
                 <option value="">All Roles</option>
@@ -224,7 +224,7 @@
             <div class="relative">
               <select
                 v-model="filters.status"
-                @change="filterAdmins"
+                @change="handleFilterChange"
                 class="h-12 w-full rounded-xl bg-gray-100 border border-gray-200 appearance-none py-0 pl-4 pr-10 text-left text-sm text-gray-600 cursor-pointer focus:outline-none focus:ring-0"
               >
                 <option value="">All Status</option>
@@ -253,9 +253,9 @@
               <th class="px-3 py-2.5 text-left w-12">
                 <input 
                   type="checkbox" 
-                  v-model="selectAll"
+                  :checked="allSelected"
                   @change="toggleSelectAll"
-                  class="w-4 h-4 rounded border-gray-300 cursor-pointer" 
+                  class="w-5 h-5 rounded border-gray-300 cursor-pointer" 
                 />
               </th>
               <th class="px-3 py-2.5 text-left text-xs font-semibold text-gray-700 whitespace-nowrap">No</th>
@@ -278,10 +278,10 @@
                 <input 
                   type="checkbox" 
                   v-model="admin.selected"
-                  class="w-4 h-4 rounded border-gray-300 cursor-pointer" 
+                  class="w-5 h-5 rounded border-gray-300 cursor-pointer" 
                 />
               </td>
-              <td class="px-3 py-2.5 text-gray-700 text-xs whitespace-nowrap">{{ String(((currentPage - 1) * itemsPerPage) + index + 1).padStart(2, '0') }}</td>
+              <td class="px-3 py-2.5 text-gray-700 text-xs whitespace-nowrap">{{ getDisplayIndex(index) }}</td>
               <td class="px-3 py-2.5 text-gray-900 font-medium text-xs whitespace-nowrap">
                 <div class="flex items-center gap-1.5">
                   {{ admin.name }}
@@ -351,7 +351,7 @@
               v-model="admin.selected"
               class="w-4 h-4 rounded border-gray-300" 
             />
-            <span class="text-xs text-gray-500 font-medium">#{{ String(index + 1).padStart(2, '0') }}</span>
+            <span class="text-xs text-gray-500 font-medium">#{{ getDisplayIndex(index) }}</span>
           </div>
           <div class="flex items-center gap-1.5">
             <CheckCircle v-if="admin.verified" class="w-3.5 h-3.5 text-green-500" />
@@ -523,9 +523,8 @@ const openAddModal = () => {
   // Add your modal logic here
 };
 
-// Filter function replaced by shared noop; computed handles filtering
-import { noop } from '~/composables/useCommon'
-const filterAdmins = noop
+// Filtering is driven by computed; we only need a page reset
+const handleFilterChange = () => { currentPage.value = 1 }
 
 // Select all checkbox using shared selection helper
 const currentPage = ref(1)
@@ -537,7 +536,7 @@ const paginatedAdmins = computed(() => {
   return filteredAdmins.value.slice(start, end)
 })
 
-const { toggleAll } = useSelection(admins)
+const { allSelected, toggleAll } = useSelection(admins)
 const toggleSelectAll = () => {
   toggleAll(paginatedAdmins.value)
 }
@@ -585,7 +584,12 @@ onMounted(() => {
   updateStats();
 });
 
-// Pagination controls
+// Helpers aligned with Manage Users
+const getDisplayIndex = (indexInPage) => {
+  const trueIndex = (currentPage.value - 1) * itemsPerPage + indexInPage + 1
+  return String(trueIndex).padStart(2, '0')
+}
+
 const nextPage = () => { if (currentPage.value < totalPages.value) currentPage.value++ }
 const prevPage = () => { if (currentPage.value > 1) currentPage.value-- }
 
