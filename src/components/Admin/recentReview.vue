@@ -9,49 +9,40 @@
     </div>
 
     <!-- Desktop Table -->
-    <div class="hidden lg:block w-full flex-1 flex flex-col">
-      <!-- Table Header -->
-      <div class="w-full rounded-lg bg-gray-50 px-4 py-3 mb-2">
-        <div class="grid grid-cols-6 gap-4 text-sm font-semibold text-gray-700">
-          <div class="text-left">Reviewer</div>
-          <div class="text-left">Rating</div>
-          <div class="text-left">Date</div>
-          <div class="text-left">Review</div>
-          <div class="text-left">Status</div>
-          <div class="text-left">Action</div>
-        </div>
-      </div>
-
-      <!-- Table Body -->
-      <div class="w-full flex-1 flex flex-col">
-        <div 
-          v-for="(review, index) in reviews" 
-          :key="index"
-          class="w-full"
-        >
-          <div class="grid grid-cols-6 gap-4 px-4 py-3 hover:bg-gray-50 transition-colors text-sm text-gray-700">
-            <div class="text-left truncate">{{ review.reviewer }}</div>
-            <div class="text-left flex items-center gap-1">
-              <RatingStars :value="Number(review.rating)" :size-class="'w-4 h-4'" />
-              <span>{{ review.rating }}</span>
-            </div>
-            <div class="text-left truncate">{{ review.date }}</div>
-            <div class="text-left truncate">{{ review.review }}</div>
-            <div class="text-left truncate font-medium" :class="getStatusClass(review.status, 'soft')">
-              {{ review.status }}
-            </div>
-            <div class="text-left">
+    <div class="hidden lg:block w-full overflow-x-auto">
+      <table class="w-full table-auto min-w-[800px]">
+        <thead class="bg-gray-50 border-b border-gray-200">
+          <tr>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 whitespace-nowrap">Reviewer</th>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 whitespace-nowrap">Rating</th>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 whitespace-nowrap">Date</th>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 whitespace-nowrap">Review</th>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 whitespace-nowrap">Status</th>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 whitespace-nowrap">Action</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          <tr v-for="(review, index) in reviews" :key="index" class="hover:bg-gray-50 active:bg-gray-100 transition">
+            <td class="px-4 py-3 text-gray-900 font-medium text-sm truncate">{{ review.reviewer }}</td>
+            <td class="px-4 py-3 text-gray-700 text-sm whitespace-nowrap">
+              <div class="flex items-center gap-1">
+                <RatingStars :value="Number(review.rating)" :size-class="'w-4 h-4'" />
+                <span>{{ review.rating }}</span>
+              </div>
+            </td>
+            <td class="px-4 py-3 text-gray-700 text-sm whitespace-nowrap">{{ review.date }}</td>
+            <td class="px-4 py-3 text-gray-700 text-sm truncate">{{ review.review }}</td>
+            <td class="px-4 py-3 whitespace-nowrap">
+              <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-md font-medium text-sm" :class="getStatusClass(review.status, 'soft')">
+                {{ review.status }}
+              </span>
+            </td>
+            <td class="px-4 py-3 whitespace-nowrap">
               <MoreHorizontal class="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer" />
-            </div>
-          </div>
-          
-          <!-- Divider -->
-          <div 
-            v-if="index < reviews.length - 1" 
-            class="w-full relative border-t border-dashed border-gray-100 h-px mt-3" 
-          />
-        </div>
-      </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
     <!-- Mobile Cards -->

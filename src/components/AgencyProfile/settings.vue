@@ -1,12 +1,12 @@
 <template>
     <div class="w-full min-h-screen bg-gray-50 p-4 sm:p-6">
       
-      <!-- Header Section -->
-      <div class="w-full rounded-xl bg-gradient-to-tr from-indigo-500/10 to-pink-500/10 p-4 mb-6 border border-gray-200 shadow-sm">
-        <div class="flex items-center justify-between">
-          <h1 class="text-2xl font-bold text-gray-900">Settings</h1>
-        </div>
-      </div>
+  <!-- Header Section (match admin manage pages) -->
+  <div class="w-full rounded-lg bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 p-3 sm:p-4 md:p-6 mb-4">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+      <h1 class="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">Settings</h1>
+    </div>
+  </div>
   
       <!-- Main Content Card -->
       <div class="w-full relative bg-white flex flex-col gap-8 p-6 lg:p-8 rounded-xl shadow-2xl shadow-gray-200/50">

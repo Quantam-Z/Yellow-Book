@@ -9,42 +9,41 @@
     </div>
 
     <!-- Desktop Table -->
-    <div class="hidden lg:block w-full flex flex-col items-start text-center text-base">
-      <!-- Table Header -->
-      <div class="w-full relative h-12">
-        <div class="absolute top-0 left-0 bg-gray-50 w-full h-12 rounded-lg" />
-        <div class="absolute top-[18px] left-[11px] w-full grid grid-cols-7 gap-4 items-center text-sm font-semibold">
-          <div class="text-left">Company Name</div>
-          <div class="text-left">Date</div>
-          <div class="text-left">Phone</div>
-          <div class="text-left">Website</div>
-          <div class="text-left">Category</div>
-          <div class="text-left">Status</div>
-          <div class="text-left">Actions</div>
-        </div>
-      </div>
-
-      <!-- Table Rows -->
-      <div class="w-full flex flex-col items-start text-gray-700">
-        <!-- Row Template -->
-        <div 
-          v-for="(row, index) in rows" 
-          :key="index" 
-          class="w-full relative h-12 border-b border-dashed border-gray-100 hover:bg-gray-50 transition-colors"
-        >
-          <div class="absolute top-3 left-4 w-full grid grid-cols-7 gap-4 items-center text-sm">
-            <div class="text-left truncate">{{ row.name }}</div>
-            <div class="text-left truncate">{{ row.date }}</div>
-            <div class="text-left truncate">{{ row.phone }}</div>
-            <div class="text-left truncate text-amber-500 hover:text-amber-600 cursor-pointer">{{ row.website }}</div>
-            <div class="text-left truncate">{{ row.category }}</div>
-            <div class="text-left truncate font-semibold" :class="getStatusClass(row.status)">{{ row.status }}</div>
-            <div class="text-left">
-              <MoreHorizontal class="w-6 h-6 text-gray-400 hover:text-gray-600 cursor-pointer ml-auto" />
-            </div>
-          </div>
-        </div>
-      </div>
+    <div class="hidden lg:block w-full overflow-x-auto">
+      <table class="w-full table-auto min-w-[800px]">
+        <thead class="bg-gray-50 border-b border-gray-200">
+          <tr>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 whitespace-nowrap min-w-[160px]">Company Name</th>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 whitespace-nowrap min-w-[120px]">Date</th>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 whitespace-nowrap min-w-[120px]">Phone</th>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 whitespace-nowrap min-w-[160px]">Website</th>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 whitespace-nowrap min-w-[120px]">Category</th>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 whitespace-nowrap min-w-[120px]">Status</th>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 whitespace-nowrap">Action</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          <tr 
+            v-for="(row, index) in rows" 
+            :key="index" 
+            class="hover:bg-gray-50 active:bg-gray-100 transition"
+          >
+            <td class="px-4 py-3 text-gray-900 font-medium text-sm truncate">{{ row.name }}</td>
+            <td class="px-4 py-3 text-gray-700 text-sm whitespace-nowrap">{{ row.date }}</td>
+            <td class="px-4 py-3 text-gray-700 text-sm whitespace-nowrap">{{ row.phone }}</td>
+            <td class="px-4 py-3 text-yellow-500 text-sm truncate">{{ row.website }}</td>
+            <td class="px-4 py-3 text-gray-700 text-sm whitespace-nowrap">{{ row.category }}</td>
+            <td class="px-4 py-3 whitespace-nowrap">
+              <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-md font-medium text-sm" :class="getStatusClass(row.status)">
+                {{ row.status }}
+              </span>
+            </td>
+            <td class="px-4 py-3 whitespace-nowrap">
+              <MoreHorizontal class="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer" />
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
     <!-- Mobile Cards -->
