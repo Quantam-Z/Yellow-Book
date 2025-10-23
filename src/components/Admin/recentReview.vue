@@ -87,13 +87,28 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue';
 import { MoreHorizontal } from 'lucide-vue-next';
 import RatingStars from '~/components/common/ratingStars.vue'
 import { getStatusClass } from '~/composables/useStatusClass'
 
 // Load recent reviews from stub
-const { data: reviewsData } = await useFetch('/stubs/recentReviews.json')
-const reviews = reviewsData.value || []
+const reviews = ref([]);
+
+const fetchData = async () => {
+  try {
+    const response = await fetch('/stubs/recentReviews.json');
+    const reviewsData = await response.json();
+    reviews.value = reviewsData || [];
+  } catch (error) {
+    console.error('Failed to load recent reviews:', error);
+    reviews.value = [];
+  }
+};
+
+onMounted(() => {
+  fetchData();
+});
 </script>
 
 <style scoped>

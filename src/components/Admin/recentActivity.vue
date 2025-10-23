@@ -35,15 +35,30 @@
   </template>
   
   <script setup>
+  import { ref, onMounted } from 'vue';
   import { Plus, CheckCircle, MessageSquare, UserPlus, Building2 } from 'lucide-vue-next';
   
   const iconMap = { Building2, CheckCircle, MessageSquare };
-  const { data: activitiesData } = await useFetch('/stubs/recentActivities.json')
-  const activities = (activitiesData.value || []).map(a => ({
-    icon: iconMap[a.icon] || MessageSquare,
-    title: a.title,
-    time: a.time
-  }))
+  const activities = ref([]);
+  
+  const fetchData = async () => {
+    try {
+      const response = await fetch('/stubs/recentActivities.json');
+      const activitiesData = await response.json();
+      activities.value = (activitiesData || []).map(a => ({
+        icon: iconMap[a.icon] || MessageSquare,
+        title: a.title,
+        time: a.time
+      }));
+    } catch (error) {
+      console.error('Failed to load recent activities:', error);
+      activities.value = [];
+    }
+  };
+  
+  onMounted(() => {
+    fetchData();
+  });
   </script>
   
   <style scoped>

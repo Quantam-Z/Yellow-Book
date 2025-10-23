@@ -528,21 +528,32 @@ const filters = ref({
 })
 
 // --- Data Fetching ---
-const { data: reviewsData } = await useFetch('/stubs/agencyReviews.json')
+const fetchData = async () => {
+  isLoading.value = true;
+  try {
+    await new Promise(resolve => setTimeout(resolve, 500));
+    const response = await fetch('/stubs/agencyReviews.json');
+    const reviewsData = await response.json();
+    const base = (reviewsData || []).map(r => ({ ...r, status: r.status || 'Pending' }));
+    reviews.value = base;
+    
+    // Calculate stats
+    stats.value.totalReviews = base.length;
+    stats.value.pending = base.filter(r => r.status === 'Pending').length;
+    stats.value.approved = base.filter(r => r.status === 'Approved').length;
+    stats.value.rejected = base.filter(r => r.status === 'Rejected').length;
+    stats.value.onHold = base.filter(r => r.status === 'On Hold').length;
+    stats.value.bannedUsers = Math.floor(Math.random() * 10); // Mock data for banned users
+  } catch (error) {
+    console.error('Failed to load reviews:', error);
+    reviews.value = [];
+  } finally {
+    isLoading.value = false;
+  }
+};
 
 onMounted(() => {
-  const base = (reviewsData.value || []).map(r => ({ ...r, status: 'Pending' }))
-  reviews.value = base
-  
-  // Calculate stats
-  stats.value.totalReviews = base.length
-  stats.value.pending = base.filter(r => r.status === 'Pending').length
-  stats.value.approved = base.filter(r => r.status === 'Approved').length
-  stats.value.rejected = base.filter(r => r.status === 'Rejected').length
-  stats.value.onHold = base.filter(r => r.status === 'On Hold').length
-  stats.value.bannedUsers = Math.floor(Math.random() * 10) // Mock data for banned users
-  
-  isLoading.value = false
+  fetchData();
 })
 
 // --- Helpers ---

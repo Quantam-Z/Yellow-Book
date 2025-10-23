@@ -64,8 +64,33 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue';
 import { Search, Building, Clock, XCircle, Star, Hourglass, Users } from "lucide-vue-next";
+
 // Dynamic stats
-const { data: adminStats } = await useFetch('/stubs/adminStats.json')
+const adminStats = ref(null);
+
+const fetchData = async () => {
+  try {
+    const response = await fetch('/stubs/adminStats.json');
+    const data = await response.json();
+    adminStats.value = data;
+  } catch (error) {
+    console.error('Failed to load admin stats:', error);
+    adminStats.value = {
+      welcomeName: 'User',
+      registeredCompanies: 0,
+      pendingVerifications: 0,
+      rejectedVerifications: 0,
+      totalReviews: 0,
+      pendingReviews: 0,
+      adminUsers: 0
+    };
+  }
+};
+
+onMounted(() => {
+  fetchData();
+});
 </script>
 
