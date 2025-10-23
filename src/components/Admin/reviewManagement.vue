@@ -20,6 +20,64 @@
       </div>
     </div>
 
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-2 lg:grid-cols-6 gap-3 sm:gap-4 mb-6">
+      <div class="rounded-lg bg-white border-whitesmoke border-solid border-[1px] flex items-center p-3 sm:p-4 gap-3">
+        <div class="h-8 w-8 sm:h-10 sm:w-10 md:h-11 md:w-11 rounded bg-blue-100 flex items-center justify-center flex-shrink-0">
+          <UsersIcon class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-blue-600" />
+        </div>
+        <div class="flex-1 flex flex-col items-start gap-1 sm:gap-2 min-w-0">
+          <div class="text-xs sm:text-sm leading-[130%] capitalize text-gray-500 truncate w-full">Total reviews</div>
+          <b class="text-base sm:text-lg md:text-xl leading-[160%] capitalize text-gray-900">{{ stats.totalReviews }}</b>
+        </div>
+      </div>
+      <div class="rounded-lg bg-white border-whitesmoke border-solid border-[1px] flex items-center p-3 sm:p-4 gap-3">
+        <div class="h-8 w-8 sm:h-10 sm:w-10 md:h-11 md:w-11 rounded bg-yellow-100 flex items-center justify-center flex-shrink-0">
+          <UserPlusIcon class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-yellow-600" />
+        </div>
+        <div class="flex-1 flex flex-col items-start gap-1 sm:gap-2 min-w-0">
+          <div class="text-xs sm:text-sm leading-[130%] capitalize text-gray-500 truncate w-full">Pending</div>
+          <b class="text-base sm:text-lg md:text-xl leading-[160%] capitalize text-gray-900">{{ stats.pending }}</b>
+        </div>
+      </div>
+      <div class="rounded-lg bg-white border-whitesmoke border-solid border-[1px] flex items-center p-3 sm:p-4 gap-3">
+        <div class="h-8 w-8 sm:h-10 sm:w-10 md:h-11 md:w-11 rounded bg-green-100 flex items-center justify-center flex-shrink-0">
+          <CheckCircleIcon class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-green-600" />
+        </div>
+        <div class="flex-1 flex flex-col items-start gap-1 sm:gap-2 min-w-0">
+          <div class="text-xs sm:text-sm leading-[130%] capitalize text-gray-500 truncate w-full">Approved</div>
+          <b class="text-base sm:text-lg md:text-xl leading-[160%] capitalize text-gray-900">{{ stats.approved }}</b>
+        </div>
+      </div>
+      <div class="rounded-lg bg-white border-whitesmoke border-solid border-[1px] flex items-center p-3 sm:p-4 gap-3">
+        <div class="h-8 w-8 sm:h-10 sm:w-10 md:h-11 md:w-11 rounded bg-red-100 flex items-center justify-center flex-shrink-0">
+          <XCircleIcon class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-red-600" />
+        </div>
+        <div class="flex-1 flex flex-col items-start gap-1 sm:gap-2 min-w-0">
+          <div class="text-xs sm:text-sm leading-[130%] capitalize text-gray-500 truncate w-full">Rejected</div>
+          <b class="text-base sm:text-lg md:text-xl leading-[160%] capitalize text-gray-900">{{ stats.rejected }}</b>
+        </div>
+      </div>
+      <div class="rounded-lg bg-white border-whitesmoke border-solid border-[1px] flex items-center p-3 sm:p-4 gap-3">
+        <div class="h-8 w-8 sm:h-10 sm:w-10 md:h-11 md:w-11 rounded bg-gray-100 flex items-center justify-center flex-shrink-0">
+          <AlertCircleIcon class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-gray-600" />
+        </div>
+        <div class="flex-1 flex flex-col items-start gap-1 sm:gap-2 min-w-0">
+          <div class="text-xs sm:text-sm leading-[130%] capitalize text-gray-500 truncate w-full">On Hold</div>
+          <b class="text-base sm:text-lg md:text-xl leading-[160%] capitalize text-gray-900">{{ stats.onHold }}</b>
+        </div>
+      </div>
+      <div class="rounded-lg bg-white border-whitesmoke border-solid border-[1px] flex items-center p-3 sm:p-4 gap-3">
+        <div class="h-8 w-8 sm:h-10 sm:w-10 md:h-11 md:w-11 rounded bg-orange-100 flex items-center justify-center flex-shrink-0">
+          <UserXIcon class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-orange-600" />
+        </div>
+        <div class="flex-1 flex flex-col items-start gap-1 sm:gap-2 min-w-0">
+          <div class="text-xs sm:text-sm leading-[130%] capitalize text-gray-500 truncate w-full">Banned Users</div>
+          <b class="text-base sm:text-lg md:text-xl leading-[160%] capitalize text-gray-900">{{ stats.bannedUsers }}</b>
+        </div>
+      </div>
+    </div>
+
     <!-- Mobile Filters Toggle -->
     <div class="mb-4 flex lg:hidden items-center justify-between">
       <h2 class="text-base font-bold text-gray-900">All Review List</h2>
@@ -109,10 +167,10 @@
         </div>
       </div>
 
-      <!-- Mobile Filters - Same design as desktop -->
+      <!-- Mobile Filters -->
       <div v-if="showMobileFilters" id="mobile-filters" class="mt-3 p-4 bg-white rounded-lg shadow-sm border border-gray-200 lg:hidden">
         <div class="space-y-4">
-          <!-- Date Range - Same as desktop -->
+          <!-- Date Range -->
           <div class="grid grid-cols-2 gap-3">
             <div class="flex flex-col gap-2">
               <label class="text-sm text-gray-700 font-medium">From</label>
@@ -138,7 +196,7 @@
             </div>
           </div>
 
-          <!-- Time Range - Same as desktop -->
+          <!-- Time Range -->
           <div class="flex flex-col gap-2">
             <label class="text-sm text-gray-700 font-medium">Time Range</label>
             <div class="relative">
@@ -156,7 +214,7 @@
             </div>
           </div>
 
-          <!-- Rating Filter - Same as desktop -->
+          <!-- Rating Filter -->
           <div class="flex flex-col gap-2">
             <label class="text-sm text-gray-700 font-medium">Rating</label>
             <div class="relative">
@@ -172,7 +230,7 @@
             </div>
           </div>
 
-          <!-- Status Filter - Same as desktop -->
+          <!-- Status Filter -->
           <div class="flex flex-col gap-2">
             <label class="text-sm text-gray-700 font-medium">Status</label>
             <div class="relative">
@@ -231,7 +289,7 @@
                 </div>
               </div>
               <div class="flex items-center gap-2">
-                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium" :class="getStatusClass(review.status, 'soft')">
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium" :class="getStatusClass(review.status)">
                   {{ review.status || 'Pending' }}
                 </span>
               </div>
@@ -310,7 +368,7 @@
                 <td class="px-4 py-3 whitespace-nowrap">
                   <span 
                     class="inline-flex items-center gap-1 px-3 py-1.5 rounded-md font-medium text-sm"
-                    :class="getStatusClass(review.status, 'soft')"
+                    :class="getStatusClass(review.status)"
                   >
                     {{ review.status || 'Pending' }}
                   </span>
@@ -391,50 +449,10 @@
       </div>
     </div>
   </div>
-
-  <!-- Stats Cards - Responsive Grid (match manageUsers design) -->
-  <div class="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
-    <div class="rounded-lg bg-white border-whitesmoke border-solid border-[1px] flex items-center p-3 sm:p-4 gap-3">
-      <div class="h-8 w-8 sm:h-10 sm:w-10 md:h-11 md:w-11 rounded bg-blue-100 flex items-center justify-center flex-shrink-0">
-        <MessageSquareIcon class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-blue-600" />
-      </div>
-      <div class="flex-1 flex flex-col items-start gap-1 sm:gap-2 min-w-0">
-        <div class="text-xs sm:text-sm leading-[130%] capitalize text-gray-500 truncate w-full">Total Reviews</div>
-        <b class="text-base sm:text-lg md:text-xl leading-[160%] capitalize text-gray-900">{{ stats.totalReviews }}</b>
-      </div>
-    </div>
-    <div class="rounded-lg bg-white border-whitesmoke border-solid border-[1px] flex items-center p-3 sm:p-4 gap-3">
-      <div class="h-8 w-8 sm:h-10 sm:w-10 md:h-11 md:w-11 rounded bg-yellow-100 flex items-center justify-center flex-shrink-0">
-        <StarIcon class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-yellow-600" />
-      </div>
-      <div class="flex-1 flex flex-col items-start gap-1 sm:gap-2 min-w-0">
-        <div class="text-xs sm:text-sm leading-[130%] capitalize text-gray-500 truncate w-full">Average Rating</div>
-        <b class="text-base sm:text-lg md:text-xl leading-[160%] capitalize text-gray-900">{{ stats.avgRating }}</b>
-      </div>
-    </div>
-    <div class="rounded-lg bg-white border-whitesmoke border-solid border-[1px] flex items-center p-3 sm:p-4 gap-3">
-      <div class="h-8 w-8 sm:h-10 sm:w-10 md:h-11 md:w-11 rounded bg-green-100 flex items-center justify-center flex-shrink-0">
-        <CheckCircleIcon class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-green-600" />
-      </div>
-      <div class="flex-1 flex flex-col items-start gap-1 sm:gap-2 min-w-0">
-        <div class="text-xs sm:text-sm leading-[130%] capitalize text-gray-500 truncate w-full">Approved</div>
-        <b class="text-base sm:text-lg md:text-xl leading-[160%] capitalize text-gray-900">{{ stats.approved }}</b>
-      </div>
-    </div>
-    <div class="rounded-lg bg-white border-whitesmoke border-solid border-[1px] flex items-center p-3 sm:p-4 gap-3">
-      <div class="h-8 w-8 sm:h-10 sm:w-10 md:h-11 md:w-11 rounded bg-orange-100 flex items-center justify-center flex-shrink-0">
-        <ClockIcon class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-orange-600" />
-      </div>
-      <div class="flex-1 flex flex-col items-start gap-1 sm:gap-2 min-w-0">
-        <div class="text-xs sm:text-sm leading-[130%] capitalize text-gray-500 truncate w-full">Pending</div>
-        <b class="text-base sm:text-lg md:text-xl leading-[160%] capitalize text-gray-900">{{ stats.pending }}</b>
-      </div>
-    </div>
-  </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { 
   Search as SearchIcon, 
   Filter as FilterIcon,
@@ -444,8 +462,11 @@ import {
   CheckCircle as CheckCircleIcon,
   Trash2 as Trash2Icon,
   Star as StarIcon,
-  Clock as ClockIcon,
-  MessageSquare as MessageSquareIcon
+  Users as UsersIcon,
+  UserPlus as UserPlusIcon,
+  XCircle as XCircleIcon,
+  AlertCircle as AlertCircleIcon,
+  UserX as UserXIcon
 } from 'lucide-vue-next'
 import RatingStars from '~/components/common/ratingStars.vue'
 import { getStatusClass } from '~/composables/useStatusClass'
@@ -455,6 +476,16 @@ const showMobileFilters = ref(false)
 const searchQuery = ref('')
 const isLoading = ref(true)
 const reviews = ref([])
+
+// Stats data
+const stats = ref({
+  totalReviews: 0,
+  pending: 0,
+  approved: 0,
+  rejected: 0,
+  onHold: 0,
+  bannedUsers: 0
+})
 
 // Pagination State
 const currentPage = ref(1)
@@ -475,8 +506,16 @@ const { data: reviewsData } = await useFetch('/stubs/agencyReviews.json')
 onMounted(() => {
   const base = (reviewsData.value || []).map(r => ({ ...r, status: 'Pending' }))
   reviews.value = base
+  
+  // Calculate stats
+  stats.value.totalReviews = base.length
+  stats.value.pending = base.filter(r => r.status === 'Pending').length
+  stats.value.approved = base.filter(r => r.status === 'Approved').length
+  stats.value.rejected = base.filter(r => r.status === 'Rejected').length
+  stats.value.onHold = base.filter(r => r.status === 'On Hold').length
+  stats.value.bannedUsers = Math.floor(Math.random() * 10) // Mock data for banned users
+  
   isLoading.value = false
-  updateStats()
 })
 
 // --- Helpers ---
@@ -572,9 +611,22 @@ const getDisplayIndex = (indexInPage) => {
   return String(trueIndex).padStart(2, '0')
 }
 
-const approveReview = (review) => { review.status = 'Approved' }
+const approveReview = (review) => { 
+  review.status = 'Approved' 
+  // Update stats
+  stats.value.approved++
+  stats.value.pending = Math.max(0, stats.value.pending - 1)
+}
 
 const deleteReview = (review) => { 
+  // Update stats before deleting
+  if (review.status === 'Approved') stats.value.approved--
+  if (review.status === 'Pending') stats.value.pending--
+  if (review.status === 'Rejected') stats.value.rejected--
+  if (review.status === 'On Hold') stats.value.onHold--
+  
+  stats.value.totalReviews--
+  
   reviews.value = reviews.value.filter(r => r.id !== review.id) 
 }
 
@@ -586,31 +638,6 @@ const resetFilters = () => {
   filters.value = { dateFrom: '', dateTo: '', timeRange: '', rating: '', status: '' }
   handleFilterChange()
 }
-
-// --- Stats ---
-const stats = ref({ totalReviews: 0, avgRating: '0.0', approved: 0, pending: 0 })
-
-const updateStats = () => {
-  const list = reviews.value
-  const total = list.length
-  const approved = list.filter(r => (r.status || 'Pending') === 'Approved').length
-  const pending = list.filter(r => (r.status || 'Pending') === 'Pending').length
-  const sumRatings = list.reduce((acc, r) => acc + Number(r.rating || 0), 0)
-  const avg = total ? (sumRatings / total) : 0
-  stats.value = {
-    totalReviews: total,
-    avgRating: avg.toFixed(1),
-    approved,
-    pending
-  }
-}
-
-// Keep stats in sync on data changes
-watch(
-  () => reviews.value.map(r => ({ id: r.id, status: r.status, rating: r.rating })),
-  () => updateStats(),
-  { deep: true }
-)
 </script>
 
 <style scoped>
@@ -621,7 +648,6 @@ watch(
   overflow: hidden;
 }
 
-/* Enhanced touch targets for mobile */
 @media (max-width: 640px) {
   input[type="date"] {
     min-height: 44px;
@@ -636,9 +662,8 @@ watch(
   }
 }
 
-/* Better focus states for accessibility */
 input:focus, select:focus, button:focus {
-  outline: 2px solid #fbbf24; /* yellow-400 */
+  outline: 2px solid #fbbf24;
   outline-offset: 2px;
 }
 </style>
