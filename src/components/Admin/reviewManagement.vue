@@ -305,6 +305,11 @@
             </div>
 
             <div class="flex items-center justify-end gap-2">
+              <EyeIcon 
+                @click="openViewReview(review)"
+                class="p-2 w-5 h-5 text-yellow-500 hover:bg-yellow-50 active:bg-yellow-100 rounded-lg cursor-pointer transition touch-manipulation" 
+                aria-label="View review"
+              />
               <button 
                 @click="approveReview(review)"
                 class="p-2 text-green-600 hover:bg-green-50 active:bg-green-100 rounded-lg touch-manipulation transition"
@@ -325,7 +330,7 @@
 
         <!-- Desktop Table -->
         <div class="hidden lg:block overflow-x-auto">
-          <table class="w-full table-auto min-w-[900px]">
+          <table class="w-full table-auto min-w-[800px]">
             <thead class="bg-gray-50 border-b border-gray-200">
               <tr>
                 <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 whitespace-nowrap" style="width: 60px;">No</th>
@@ -334,7 +339,7 @@
                 <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 whitespace-nowrap min-w-[160px]">Date & Time</th>
                 <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 whitespace-nowrap min-w-[240px]">Review</th>
                 <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 whitespace-nowrap min-w-[120px]">Status</th>
-                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 whitespace-nowrap" style="width: 100px;">Action</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 whitespace-nowrap" style="width: 80px;">Action</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-200">
@@ -375,6 +380,11 @@
                 </td>
                 <td class="px-4 py-3 whitespace-nowrap">
                   <div class="flex items-center gap-2">
+                    <EyeIcon 
+                      @click="openViewReview(review)"
+                      class="w-5 h-5 text-yellow-500 cursor-pointer hover:text-yellow-600 active:text-yellow-700 transition touch-manipulation" 
+                      aria-label="View review"
+                    />
                     <button 
                       @click="approveReview(review)"
                       class="p-2 text-green-600 hover:bg-green-50 active:bg-green-100 rounded-lg touch-manipulation transition"
@@ -448,11 +458,13 @@
         </button>
       </div>
     </div>
+    <!-- Modals -->
+    <ViewReview v-if="isViewOpen" :review="selectedReview" @close="closeViewModal" />
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, defineAsyncComponent } from 'vue'
 import { 
   Search as SearchIcon, 
   Filter as FilterIcon,
@@ -466,16 +478,21 @@ import {
   UserPlus as UserPlusIcon,
   XCircle as XCircleIcon,
   AlertCircle as AlertCircleIcon,
-  UserX as UserXIcon
+  UserX as UserXIcon,
+  Eye as EyeIcon
 } from 'lucide-vue-next'
 import RatingStars from '~/components/common/ratingStars.vue'
 import { getStatusClass } from '~/composables/useStatusClass'
+
+const ViewReview = defineAsyncComponent(() => import('~/components/modal/viewReview.vue'))
 
 // --- State ---
 const showMobileFilters = ref(false)
 const searchQuery = ref('')
 const isLoading = ref(true)
 const reviews = ref([])
+const isViewOpen = ref(false)
+const selectedReview = ref(null)
 
 // Stats data
 const stats = ref({
@@ -637,6 +654,16 @@ const applyMobileFilters = () => { handleFilterChange(); showMobileFilters.value
 const resetFilters = () => {
   filters.value = { dateFrom: '', dateTo: '', timeRange: '', rating: '', status: '' }
   handleFilterChange()
+}
+
+const openViewReview = (review) => {
+  selectedReview.value = review
+  isViewOpen.value = true
+}
+
+const closeViewModal = () => {
+  isViewOpen.value = false
+  selectedReview.value = null
 }
 </script>
 
