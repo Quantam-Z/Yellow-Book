@@ -1,14 +1,14 @@
 <template>
-  <div class="w-full min-h-screen bg-gray-50 p-4 sm:p-6 space-y-4 sm:space-y-6">
-    <!-- Header -->
-    <div class="w-full rounded-xl bg-gradient-to-tr from-indigo-500/10 to-pink-500/10 p-4 sm:p-6 border border-gray-200 shadow-sm">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+  <div class="w-full font-plus-jakarta-sans max-w-full overflow-hidden">
+    <!-- Header Section with Gradient Background -->
+    <div class="w-full rounded-lg bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 p-3 sm:p-4 md:p-6 mb-4">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
         <div>
-          <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900">Reviews</h1>
-          <p class="text-gray-600 mt-1 text-sm sm:text-base">Manage and monitor customer feedback</p>
+          <h1 class="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">Review Management</h1>
+          <p class="text-gray-600 mt-1 text-sm">Manage and monitor customer feedback</p>
         </div>
         <button
-          class="flex items-center justify-center gap-2 rounded-full px-4 py-1.5 text-sm font-semibold bg-white border border-indigo-400 text-indigo-600 shadow-md hover:bg-indigo-50 transition-colors w-full sm:w-auto"
+          class="bg-yellow-400 hover:bg-yellow-500 active:bg-yellow-600 text-gray-900 font-semibold px-4 py-2.5 rounded-lg transition shadow-md whitespace-nowrap text-sm w-full sm:w-auto text-center touch-manipulation flex items-center justify-center gap-2"
         >
           <Pencil class="w-4 h-4" />
           Manage Reviews
@@ -17,20 +17,20 @@
     </div>
 
     <!-- Overall Rating -->
-    <div class="w-full bg-white rounded-xl shadow-lg p-4 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-      <div class="font-semibold text-lg sm:text-xl text-gray-800">Overall Rating</div>
-      <div class="text-center sm:text-right">
-        <div class="text-2xl sm:text-3xl font-bold text-gray-900">{{ overallRating }}</div>
-        <div class="flex justify-center sm:justify-end gap-1 mt-1">
-          <RatingStars :value="Number(overallRating)" :size-class="'w-4 h-4 sm:w-5 sm:h-5'" />
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-4">
+      <div class="rounded-lg bg-white border-whitesmoke border-solid border-[1px] flex flex-col items-center p-3 sm:p-4 gap-2">
+      <div class="font-semibold text-base sm:text-lg text-gray-800">Overall Rating</div>
+        <div class="text-2xl sm:text-3xl font-bold text-yellow-500">{{ overallRating }}</div>
+        <div class="flex justify-center gap-1">
+          <RatingStars :value="Number(overallRating)" :size-class="'w-4 h-4'" />
         </div>
-        <div class="text-sm text-gray-500">Based on {{ totalReviews }} reviews</div>
+        <div class="text-xs sm:text-sm text-gray-500">Based on {{ totalReviews }} reviews</div>
       </div>
     </div>
 
-    <!-- Filters -->
-    <div class="w-full bg-white rounded-xl shadow-lg p-4 sm:p-6">
-      <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+    <!-- Filters Section -->
+    <div class="mb-4">
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 bg-white rounded-xl p-4 shadow-sm border border-gray-200">
         <select v-model="selectedRating" class="border rounded-lg px-3 py-2 text-gray-700 flex-1">
           <option value="">All ratings</option>
           <option v-for="opt in [5,4,3,2,1]" :key="opt" :value="opt">{{ opt }} Stars</option>
@@ -42,7 +42,7 @@
         </div>
 
         <button
-          class="bg-green-600 text-white px-4 sm:px-6 py-2 rounded-lg shadow hover:bg-green-700 transition flex items-center justify-center gap-2 w-full sm:w-auto"
+          class="bg-yellow-400 hover:bg-yellow-500 active:bg-yellow-600 text-gray-900 font-semibold px-4 py-2 rounded-lg shadow transition flex items-center justify-center gap-2 w-full sm:w-auto touch-manipulation"
           @click="applyFilters"
         >
           <Filter class="w-4 h-4" />

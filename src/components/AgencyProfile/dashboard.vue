@@ -1,10 +1,11 @@
 <template>
-  <div class="w-full min-h-screen bg-gray-50 p-3 sm:p-4 md:p-6">
-    <!-- Header Section -->
+  <div class="w-full font-plus-jakarta-sans max-w-full overflow-hidden">
+    <!-- Header Section with Gradient Background -->
     <div
-      class="w-full rounded-lg bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 p-3 sm:p-4 md:p-6 mb-4 sm:mb-6"
+      class="w-full rounded-lg bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 p-3 sm:p-4 md:p-6 mb-4"
     >
-      <h1 class="text-xl sm:text-2xl font-bold text-gray-900 mb-2">My Assigned Tasks</h1>
+      <h1 class="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">Dashboard</h1>
+      <p class="text-gray-600 mt-1 text-xs sm:text-sm">Welcome back! Here's your company overview.</p>
     </div>
 
     <!-- Stats Section -->

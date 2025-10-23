@@ -1,23 +1,23 @@
 <template>
-    <div class="w-full min-h-screen bg-gray-50 p-4 sm:p-6">
+    <div class="w-full font-plus-jakarta-sans max-w-full overflow-hidden">
       
-      <!-- Header Section -->
-      <div class="w-full rounded-xl bg-gradient-to-tr from-indigo-500/10 to-pink-500/10 p-4 mb-6 border border-gray-200 shadow-sm">
-        <div class="flex items-center justify-between">
-          <h1 class="text-2xl font-bold text-gray-900">My Profile</h1>
+      <!-- Header Section with Gradient Background -->
+      <div class="w-full rounded-lg bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 p-3 sm:p-4 md:p-6 mb-4">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+          <h1 class="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">My Profile</h1>
           <button
-            class="flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-semibold bg-white border border-indigo-400 text-indigo-600 shadow-md hover:bg-indigo-50 transition-colors"
+            class="bg-yellow-400 hover:bg-yellow-500 active:bg-yellow-600 text-gray-900 font-semibold px-4 py-2.5 rounded-lg transition shadow-md whitespace-nowrap text-sm w-full sm:w-auto text-center touch-manipulation flex items-center justify-center gap-2"
           >
             <Pencil class="w-4 h-4" />
-            Edit
+            Edit Profile
           </button>
         </div>
       </div>
   
       <!-- Main Content Card -->
-      <div class="w-full relative bg-white flex flex-col gap-8 p-6 lg:p-8 rounded-xl shadow-2xl shadow-gray-200/50">
-        
-        <!-- Two Column Layout -->
+      <div class="w-full bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200">
+        <div class="p-4 sm:p-6 md:p-8 space-y-6">
+          <!-- Two Column Layout -->
         <div class="flex flex-col md:flex-row gap-8">
           
           <!-- Left Column - Branding Assets -->
@@ -106,17 +106,17 @@
               </button>
             </div>
           </div>
-        </div>
-  
-        <!-- Save Button -->
+          
+          <!-- Save Button -->
         <div class="flex justify-end pt-4 border-t border-gray-100">
           <button
-            class="w-full sm:w-[200px] rounded-xl bg-green-500 text-white py-3 font-medium flex items-center justify-center gap-2 shadow-lg shadow-green-500/30 hover:bg-green-600 transition-colors"
+            class="bg-yellow-400 hover:bg-yellow-500 active:bg-yellow-600 text-gray-900 font-semibold px-6 py-3 rounded-lg transition shadow-md touch-manipulation flex items-center justify-center gap-2 w-full sm:w-auto"
             @click="saveChanges"
           >
             <Save class="w-4 h-4" />
             Save & Apply Changes
           </button>
+        </div>
         </div>
       </div>
   

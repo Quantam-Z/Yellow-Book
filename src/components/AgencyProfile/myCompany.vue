@@ -1,27 +1,28 @@
 <template>
-  <div class="w-full min-h-screen bg-gray-50 p-4 sm:p-6">
+  <div class="w-full font-plus-jakarta-sans max-w-full overflow-hidden">
     <div
-      class="w-full rounded-xl bg-gradient-to-tr from-indigo-500/10 to-pink-500/10 p-4 mb-6 border border-gray-200 shadow-sm"
+      class="w-full rounded-lg bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 p-3 sm:p-4 md:p-6 mb-4"
     >
-      <div class="flex items-center justify-between">
-        <h1 class="text-2xl font-bold text-gray-900">My Company Profile</h1>
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <h1 class="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">My Company Profile</h1>
         <button
           @click="isEditing = !isEditing"
-          class="flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium bg-white border border-indigo-400 text-indigo-600 shadow-md hover:bg-indigo-50 transition-colors"
+          class="bg-yellow-400 hover:bg-yellow-500 active:bg-yellow-600 text-gray-900 font-semibold px-4 py-2.5 rounded-lg transition shadow-md whitespace-nowrap text-sm w-full sm:w-auto text-center touch-manipulation flex items-center justify-center gap-2"
         >
           <Pencil class="w-4 h-4" />
           {{ isEditing ? 'Viewing Mode' : 'Edit Profile' }}
         </button>
       </div>
-      <p class="mt-1 text-sm text-gray-600">
+      <p class="mt-2 text-xs sm:text-sm text-gray-600">
         {{ isEditing ? 'Fields below are editable.' : 'Click "Edit Profile" to modify the details.' }}
       </p>
     </div>
 
     <form
       @submit.prevent="saveChanges"
-      class="w-full relative bg-white flex flex-col gap-8 p-6 lg:p-8 rounded-xl shadow-2xl shadow-gray-200/50"
+      class="w-full bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200"
     >
+      <div class="p-4 sm:p-6 md:p-8 space-y-6">
       <div class="space-y-4">
         <h2 class="text-xl font-bold text-gray-800 border-b pb-2">Branding Assets</h2>
         <div class="flex flex-col md:flex-row items-start justify-between gap-6">
@@ -278,14 +279,15 @@
             </div>
         </div>
       </div>
-      <div class="flex justify-end pt-4 border-t border-gray-100">
-        <button
-          type="submit"
-          class="w-full sm:w-[250px] rounded-xl bg-green-500 text-white py-3 font-medium flex items-center justify-center gap-2 shadow-lg shadow-green-500/30 hover:bg-green-600 transition-colors"
-        >
-          <Save class="w-4 h-4" />
-          Save & Apply Changes
-        </button>
+        <div class="flex justify-end pt-4 border-t border-gray-100">
+          <button
+            type="submit"
+            class="bg-yellow-400 hover:bg-yellow-500 active:bg-yellow-600 text-gray-900 font-semibold px-6 py-3 rounded-lg transition shadow-md touch-manipulation flex items-center justify-center gap-2 w-full sm:w-auto"
+          >
+            <Save class="w-4 h-4" />
+            Save & Apply Changes
+          </button>
+        </div>
       </div>
     </form>
   </div>

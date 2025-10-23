@@ -1,7 +1,7 @@
 <template>
-    <div class="w-full min-h-screen bg-gray-50 p-4 sm:p-6">
+    <div class="w-full font-plus-jakarta-sans max-w-full overflow-hidden">
       
-  <!-- Header Section (match admin manage pages) -->
+  <!-- Header Section with Gradient Background -->
   <div class="w-full rounded-lg bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 p-3 sm:p-4 md:p-6 mb-4">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
       <h1 class="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">Settings</h1>
@@ -9,7 +9,8 @@
   </div>
   
       <!-- Main Content Card -->
-      <div class="w-full relative bg-white flex flex-col gap-8 p-6 lg:p-8 rounded-xl shadow-2xl shadow-gray-200/50">
+      <div class="w-full bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200">
+        <div class="p-4 sm:p-6 md:p-8 space-y-6">
         
         <!-- Two Column Layout -->
         <div class="w-full relative flex flex-col lg:flex-row items-start gap-6">
@@ -61,7 +62,7 @@
               
               <!-- Update Password Button -->
               <button 
-                class="w-full sm:w-[200px] rounded-lg bg-green-500 h-12 flex items-center justify-center gap-2 text-white font-semibold shadow-md hover:bg-green-600 transition-colors"
+                class="bg-yellow-400 hover:bg-yellow-500 active:bg-yellow-600 text-gray-900 font-semibold px-6 py-3 rounded-lg transition shadow-md touch-manipulation flex items-center justify-center gap-2 w-full sm:w-auto"
                 @click="updatePassword"
               >
                 <Save class="w-5 h-5" />
@@ -157,15 +158,16 @@
           </div>
         </div>
   
-        <!-- Save All Changes Button -->
-        <div class="flex justify-end pt-4 border-t border-gray-100">
-          <button
-            class="w-full sm:w-[200px] rounded-xl bg-indigo-600 text-white py-3 font-medium flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/30 hover:bg-indigo-700 transition-colors"
-            @click="saveAllChanges"
-          >
-            <Save class="w-4 h-4" />
-            Save All Changes
-          </button>
+          <!-- Save All Changes Button -->
+          <div class="flex justify-end pt-4 border-t border-gray-100">
+            <button
+              class="bg-yellow-400 hover:bg-yellow-500 active:bg-yellow-600 text-gray-900 font-semibold px-6 py-3 rounded-lg transition shadow-md touch-manipulation flex items-center justify-center gap-2 w-full sm:w-auto"
+              @click="saveAllChanges"
+            >
+              <Save class="w-4 h-4" />
+              Save All Changes
+            </button>
+          </div>
         </div>
       </div>
     </div>
