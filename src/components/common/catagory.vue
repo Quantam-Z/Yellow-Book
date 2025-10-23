@@ -1,42 +1,47 @@
 <template>
-  <div class="category-section w-full relative flex flex-col items-center gap-8 text-center text-[#212121]  px-4 sm:px-6 md:px-10 lg:px-20 z-0 mt-7">
-    <div class="text-2xl sm:text-3xl lg:text-[30px] leading-[126%] capitalize font-semibold">
-      Category's
+  <div class="category-section w-full relative flex flex-col items-center gap-12 text-center text-[#212121] px-4 sm:px-6 md:px-10 lg:px-20 z-0 mt-16">
+    <div class="text-3xl sm:text-4xl lg:text-5xl leading-[120%] capitalize font-bold bg-gradient-to-r from-[#212121] to-[#616161] bg-clip-text text-transparent">
+      Categories
     </div>
 
-    <div class="w-full max-w-6xl">
-      <div class="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 text-[#757575]">
+    <div class="w-full max-w-7xl">
+      <div class="grid grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 md:gap-10 text-[#757575]">
         
         <div 
-  v-for="category in categories"
-  :key="category.name"
-  @click="goToCategory(category.name)"
-  class="
-    w-full 
-    relative 
-    rounded-xl 
-    hover:border-[#fcc207] active:border-[#fcc207] focus:border-[#fcc207]
-    hover:shadow-lg active:shadow-lg focus:shadow-lg
-    hover:scale-[1.02] active:scale-[1.02] focus:scale-[1.02] 
-    transition-all 
-    duration-300
-    h-[150px] sm:h-[180px] lg:h-[200px] 
-    flex flex-col items-center justify-center 
-    p-3 sm:p-5 md:p-6 
-    gap-2 sm:gap-3 
-    cursor-pointer
-    border-[1px] border-solid border-[#DCDCDC]
-  "
->
-  <component 
-    :is="category.icon" 
-    class="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-black transition-colors"
-  />
-  
-  <div class="text-sm sm:text-base md:text-xl leading-[130%] capitalize font-medium text-[#212121]">
-    {{ category.name }}
-  </div>
-</div>
+          v-for="category in categories"
+          :key="category.name"
+          @click="goToCategory(category.name)"
+          class="
+            w-full 
+            relative 
+            rounded-2xl 
+            hover:border-[#fcc207] active:border-[#fcc207] focus:border-[#fcc207]
+            hover:shadow-2xl active:shadow-2xl focus:shadow-2xl
+            hover:scale-[1.05] active:scale-[1.02] focus:scale-[1.05] 
+            transition-all 
+            duration-500
+            h-[180px] sm:h-[220px] lg:h-[250px] 
+            flex flex-col items-center justify-center 
+            p-6 sm:p-8 md:p-10 
+            gap-4 sm:gap-5 
+            cursor-pointer
+            border-2 border-solid border-[#DCDCDC]
+            bg-gradient-to-br from-white to-[#fafafa]
+            hover:bg-gradient-to-br hover:from-[#fff9e6] hover:to-[#feecb2]
+            group
+          "
+        >
+          <div class="p-4 rounded-2xl bg-gradient-to-br from-[#fcc207]/10 to-[#e5b106]/10 group-hover:from-[#fcc207]/20 group-hover:to-[#e5b106]/20 transition-all duration-300">
+            <component 
+              :is="category.icon" 
+              class="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 text-[#212121] group-hover:text-[#fcc207] transition-all duration-300"
+            />
+          </div>
+          
+          <div class="text-base sm:text-lg md:text-xl leading-[130%] capitalize font-bold text-[#212121] group-hover:text-[#fcc207] transition-colors duration-300">
+            {{ category.name }}
+          </div>
+        </div>
 
       </div>
     </div>
