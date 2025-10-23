@@ -40,6 +40,46 @@
       </button>
     </div>
 
+    <!-- Stats Cards - Responsive Grid -->
+    <div class="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
+      <div class="rounded-lg bg-white border-whitesmoke border-solid border-[1px] flex items-center p-3 sm:p-4 gap-3">
+        <div class="h-8 w-8 sm:h-10 sm:w-10 md:h-11 md:w-11 rounded bg-blue-100 flex items-center justify-center flex-shrink-0">
+          <BuildingIcon class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-blue-600" />
+        </div>
+        <div class="flex-1 flex flex-col items-start gap-1 sm:gap-2 min-w-0">
+          <div class="text-xs sm:text-sm leading-[130%] capitalize text-gray-500 truncate w-full">Total Companies</div>
+          <b class="text-base sm:text-lg md:text-xl leading-[160%] capitalize text-gray-900">{{ stats.totalCompanies }}</b>
+        </div>
+      </div>
+      <div class="rounded-lg bg-white border-whitesmoke border-solid border-[1px] flex items-center p-3 sm:p-4 gap-3">
+        <div class="h-8 w-8 sm:h-10 sm:w-10 md:h-11 md:w-11 rounded bg-green-100 flex items-center justify-center flex-shrink-0">
+          <CheckCircleIcon class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-green-600" />
+        </div>
+        <div class="flex-1 flex flex-col items-start gap-1 sm:gap-2 min-w-0">
+          <div class="text-xs sm:text-sm leading-[130%] capitalize text-gray-500 truncate w-full">Approved</div>
+          <b class="text-base sm:text-lg md:text-xl leading-[160%] capitalize text-gray-900">{{ stats.approved }}</b>
+        </div>
+      </div>
+      <div class="rounded-lg bg-white border-whitesmoke border-solid border-[1px] flex items-center p-3 sm:p-4 gap-3">
+        <div class="h-8 w-8 sm:h-10 sm:w-10 md:h-11 md:w-11 rounded bg-yellow-100 flex items-center justify-center flex-shrink-0">
+          <ClockIcon class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-yellow-600" />
+        </div>
+        <div class="flex-1 flex flex-col items-start gap-1 sm:gap-2 min-w-0">
+          <div class="text-xs sm:text-sm leading-[130%] capitalize text-gray-500 truncate w-full">Pending</div>
+          <b class="text-base sm:text-lg md:text-xl leading-[160%] capitalize text-gray-900">{{ stats.pending }}</b>
+        </div>
+      </div>
+      <div class="rounded-lg bg-white border-whitesmoke border-solid border-[1px] flex items-center p-3 sm:p-4 gap-3">
+        <div class="h-8 w-8 sm:h-10 sm:w-10 md:h-11 md:w-11 rounded bg-red-100 flex items-center justify-center flex-shrink-0">
+          <XCircleIcon class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-red-600" />
+        </div>
+        <div class="flex-1 flex flex-col items-start gap-1 sm:gap-2 min-w-0">
+          <div class="text-xs sm:text-sm leading-[130%] capitalize text-gray-500 truncate w-full">Rejected</div>
+          <b class="text-base sm:text-lg md:text-xl leading-[160%] capitalize text-gray-900">{{ stats.rejected }}</b>
+        </div>
+      </div>
+    </div>
+
     <!-- Filters Section -->
     <div class="mb-6">
       <!-- Desktop Filters -->
@@ -403,7 +443,20 @@
 
 <script setup>
 import { ref, computed, defineAsyncComponent, onMounted } from 'vue';
-import { Search as SearchIcon, Eye as EyeIcon, CheckCircle as CheckCircleIcon, ChevronDown as ChevronDownIcon, ChevronLeft as ChevronLeftIcon, ChevronRight as ChevronRightIcon, Filter as FilterIcon, Phone as PhoneIcon, Globe as GlobeIcon } from "lucide-vue-next";
+import { 
+  Search as SearchIcon, 
+  Eye as EyeIcon, 
+  CheckCircle as CheckCircleIcon, 
+  ChevronDown as ChevronDownIcon, 
+  ChevronLeft as ChevronLeftIcon, 
+  ChevronRight as ChevronRightIcon, 
+  Filter as FilterIcon, 
+  Phone as PhoneIcon, 
+  Globe as GlobeIcon,
+  Building as BuildingIcon,
+  Clock as ClockIcon,
+  XCircle as XCircleIcon
+} from "lucide-vue-next";
 import { getStatusClass, getStatusShort } from '~/composables/useStatusClass'
 import { useSelection } from '~/composables/useSelection'
 
@@ -415,6 +468,14 @@ const showMobileFilters = ref(false);
 const searchQuery = ref('');
 const isLoading = ref(true); 
 const companies = ref([]);
+
+// Stats State
+const stats = ref({
+  totalCompanies: 0,
+  approved: 0,
+  pending: 0,
+  rejected: 0
+});
 
 // Pagination State
 const currentPage = ref(1);
@@ -440,9 +501,11 @@ const fetchData = async () => {
         const response = await fetch('/stubs/companies.json');
         const companiesData = await response.json();
         companies.value = (companiesData || []).map(c => ({ ...c, selected: false }));
+        updateStats();
     } catch (error) {
         console.error("Failed to load companies:", error);
         companies.value = [];
+        updateStats();
     } finally {
         isLoading.value = false;
     }
@@ -451,6 +514,16 @@ const fetchData = async () => {
 onMounted(() => {
     fetchData();
 });
+
+// Update stats based on company data
+const updateStats = () => {
+  stats.value = {
+    totalCompanies: companies.value.length,
+    approved: companies.value.filter(c => c.status === 'Approved').length,
+    pending: companies.value.filter(c => c.status === 'Pending').length,
+    rejected: companies.value.filter(c => c.status === 'Rejected').length
+  };
+};
 
 // --- Computed Properties ---
 const categories = computed(() => {

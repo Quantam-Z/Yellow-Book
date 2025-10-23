@@ -20,20 +20,20 @@
       </div>
     </div>
 
-    <!-- Stats Grid -->
-    <div class="grid grid-cols-2 lg:grid-cols-6 gap-3 sm:gap-4 mb-6">
+    <!-- Stats Grid - Consistent 4-column layout -->
+    <div class="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
       <div class="rounded-lg bg-white border-whitesmoke border-solid border-[1px] flex items-center p-3 sm:p-4 gap-3">
         <div class="h-8 w-8 sm:h-10 sm:w-10 md:h-11 md:w-11 rounded bg-blue-100 flex items-center justify-center flex-shrink-0">
-          <UsersIcon class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-blue-600" />
+          <StarIcon class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-blue-600" />
         </div>
         <div class="flex-1 flex flex-col items-start gap-1 sm:gap-2 min-w-0">
-          <div class="text-xs sm:text-sm leading-[130%] capitalize text-gray-500 truncate w-full">Total reviews</div>
+          <div class="text-xs sm:text-sm leading-[130%] capitalize text-gray-500 truncate w-full">Total Reviews</div>
           <b class="text-base sm:text-lg md:text-xl leading-[160%] capitalize text-gray-900">{{ stats.totalReviews }}</b>
         </div>
       </div>
       <div class="rounded-lg bg-white border-whitesmoke border-solid border-[1px] flex items-center p-3 sm:p-4 gap-3">
         <div class="h-8 w-8 sm:h-10 sm:w-10 md:h-11 md:w-11 rounded bg-yellow-100 flex items-center justify-center flex-shrink-0">
-          <UserPlusIcon class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-yellow-600" />
+          <ClockIcon class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-yellow-600" />
         </div>
         <div class="flex-1 flex flex-col items-start gap-1 sm:gap-2 min-w-0">
           <div class="text-xs sm:text-sm leading-[130%] capitalize text-gray-500 truncate w-full">Pending</div>
@@ -56,24 +56,6 @@
         <div class="flex-1 flex flex-col items-start gap-1 sm:gap-2 min-w-0">
           <div class="text-xs sm:text-sm leading-[130%] capitalize text-gray-500 truncate w-full">Rejected</div>
           <b class="text-base sm:text-lg md:text-xl leading-[160%] capitalize text-gray-900">{{ stats.rejected }}</b>
-        </div>
-      </div>
-      <div class="rounded-lg bg-white border-whitesmoke border-solid border-[1px] flex items-center p-3 sm:p-4 gap-3">
-        <div class="h-8 w-8 sm:h-10 sm:w-10 md:h-11 md:w-11 rounded bg-gray-100 flex items-center justify-center flex-shrink-0">
-          <AlertCircleIcon class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-gray-600" />
-        </div>
-        <div class="flex-1 flex flex-col items-start gap-1 sm:gap-2 min-w-0">
-          <div class="text-xs sm:text-sm leading-[130%] capitalize text-gray-500 truncate w-full">On Hold</div>
-          <b class="text-base sm:text-lg md:text-xl leading-[160%] capitalize text-gray-900">{{ stats.onHold }}</b>
-        </div>
-      </div>
-      <div class="rounded-lg bg-white border-whitesmoke border-solid border-[1px] flex items-center p-3 sm:p-4 gap-3">
-        <div class="h-8 w-8 sm:h-10 sm:w-10 md:h-11 md:w-11 rounded bg-orange-100 flex items-center justify-center flex-shrink-0">
-          <UserXIcon class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-orange-600" />
-        </div>
-        <div class="flex-1 flex flex-col items-start gap-1 sm:gap-2 min-w-0">
-          <div class="text-xs sm:text-sm leading-[130%] capitalize text-gray-500 truncate w-full">Banned Users</div>
-          <b class="text-base sm:text-lg md:text-xl leading-[160%] capitalize text-gray-900">{{ stats.bannedUsers }}</b>
         </div>
       </div>
     </div>
@@ -474,11 +456,8 @@ import {
   CheckCircle as CheckCircleIcon,
   Trash2 as Trash2Icon,
   Star as StarIcon,
-  Users as UsersIcon,
-  UserPlus as UserPlusIcon,
+  Clock as ClockIcon,
   XCircle as XCircleIcon,
-  AlertCircle as AlertCircleIcon,
-  UserX as UserXIcon,
   Eye as EyeIcon
 } from 'lucide-vue-next'
 import RatingStars from '~/components/common/ratingStars.vue'
@@ -499,9 +478,7 @@ const stats = ref({
   totalReviews: 0,
   pending: 0,
   approved: 0,
-  rejected: 0,
-  onHold: 0,
-  bannedUsers: 0
+  rejected: 0
 })
 
 // Pagination State
@@ -529,8 +506,6 @@ onMounted(() => {
   stats.value.pending = base.filter(r => r.status === 'Pending').length
   stats.value.approved = base.filter(r => r.status === 'Approved').length
   stats.value.rejected = base.filter(r => r.status === 'Rejected').length
-  stats.value.onHold = base.filter(r => r.status === 'On Hold').length
-  stats.value.bannedUsers = Math.floor(Math.random() * 10) // Mock data for banned users
   
   isLoading.value = false
 })
@@ -629,10 +604,13 @@ const getDisplayIndex = (indexInPage) => {
 }
 
 const approveReview = (review) => { 
-  review.status = 'Approved' 
+  const oldStatus = review.status
+  review.status = 'Approved'
+  
   // Update stats
+  if (oldStatus === 'Pending') stats.value.pending = Math.max(0, stats.value.pending - 1)
+  if (oldStatus === 'Rejected') stats.value.rejected = Math.max(0, stats.value.rejected - 1)
   stats.value.approved++
-  stats.value.pending = Math.max(0, stats.value.pending - 1)
 }
 
 const deleteReview = (review) => { 
@@ -640,7 +618,6 @@ const deleteReview = (review) => {
   if (review.status === 'Approved') stats.value.approved--
   if (review.status === 'Pending') stats.value.pending--
   if (review.status === 'Rejected') stats.value.rejected--
-  if (review.status === 'On Hold') stats.value.onHold--
   
   stats.value.totalReviews--
   
