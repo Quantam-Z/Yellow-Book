@@ -21,8 +21,8 @@
             to="/catagory"
             class="flex flex-col items-center gap-[6px] text-[#212121] cursor-pointer no-underline group hover:scale-105 transition-all duration-200"
           >
-            <div class="relative leading-[160%] font-semibold text-lg group-hover:text-[#fcc207] transition-colors">Category</div>
-            <div class="w-[35px] bg-[#212121] h-[3px] rounded-full group-hover:bg-[#fcc207] transition-colors"></div>
+            <div class="relative leading-[160%] font-semibold text-lg group-hover:text-primary-200 transition-colors">Category</div>
+            <div class="w-[35px] bg-[#212121] h-[3px] rounded-full group-hover:bg-primary-200 transition-colors"></div>
           </nuxt-link>
 
           <nuxt-link
@@ -43,11 +43,11 @@
         <!-- Desktop Actions -->
         <div class="hidden lg:flex items-center gap-8 text-[#212121]">
           <div class="flex items-center justify-center cursor-pointer group hover:scale-105 transition-all duration-200" @click="openLoginModal">
-            <div class="relative leading-[160%] font-semibold text-lg group-hover:text-[#fcc207] transition-colors">Login</div>
+            <div class="relative leading-[160%] font-semibold text-lg group-hover:text-primary-200 transition-colors">Login</div>
           </div>
           <nuxt-link
             to="/agency"
-            class="relative rounded-xl border-2 border-[#fcc207] border-solid box-border h-14 flex items-center justify-center py-4 px-8 text-center text-lg text-[#212121] font-plus-jakarta-sans no-underline bg-gradient-to-r from-[#fcc207] to-[#e5b106] hover:from-[#e5b106] hover:to-[#fcc207] hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
+            class="relative rounded-xl border-2 border-primary-200 border-solid box-border h-14 flex items-center justify-center py-4 px-8 text-center text-lg text-[#212121] font-plus-jakarta-sans no-underline bg-gradient-to-r from-primary-200 to-primary-300 hover:from-primary-300 hover:to-primary-200 hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
           >
             <div class="relative leading-[130%] capitalize font-bold">List Your Agency</div>
           </nuxt-link>
@@ -56,7 +56,7 @@
         <!-- Mobile Menu Button -->
         <button
           @click="toggleMobileMenu"
-          class="lg:hidden p-3 rounded-full border-2 border-[#fcc207] bg-white shadow-lg z-50 relative transform hover:scale-110 transition-all duration-300 hover:shadow-xl"
+          class="lg:hidden p-3 rounded-full border-2 border-primary-200 bg-white shadow-lg z-50 relative transform hover:scale-110 transition-all duration-300 hover:shadow-xl"
           aria-label="Toggle menu"
         >
           <component :is="isMobileMenuOpen ? 'X' : 'Menu'" class="w-7 h-7 text-[#212121]" />
@@ -91,7 +91,7 @@
             <nav class="flex-1 flex flex-col space-y-4 text-xl">
               <nuxt-link
                 to="/catagory"
-                class="py-5 px-6 text-[#212121] font-bold hover:bg-gradient-to-r hover:from-[#fff9e6] hover:to-[#feecb2] rounded-xl transition-all duration-300 border-b-2 border-[#fcc207]/20 hover:border-[#fcc207] no-underline"
+                class="py-5 px-6 text-[#212121] font-bold hover:bg-gradient-to-r hover:from-[#fff9e6] hover:to-[#feecb2] rounded-xl transition-all duration-300 border-b-2 border-primary-200/20 hover:border-primary-200 no-underline"
                 @click.native="closeMobileMenu"
               >
                 Category
@@ -99,7 +99,7 @@
 
               <nuxt-link
                 to="/agency"
-                class="py-5 px-6 text-[#616161] font-semibold hover:bg-gradient-to-r hover:from-[#fff9e6] hover:to-[#feecb2] rounded-xl transition-all duration-300 border-b-2 border-gray-100 hover:border-[#fcc207] no-underline"
+                class="py-5 px-6 text-[#616161] font-semibold hover:bg-gradient-to-r hover:from-[#fff9e6] hover:to-[#feecb2] rounded-xl transition-all duration-300 border-b-2 border-gray-100 hover:border-primary-200 no-underline"
                 @click.native="closeMobileMenu"
               >
                 Popular Listing
@@ -107,7 +107,7 @@
 
               <nuxt-link
                 to="/faq"
-                class="py-5 px-6 text-[#616161] font-semibold hover:bg-gradient-to-r hover:from-[#fff9e6] hover:to-[#feecb2] rounded-xl transition-all duration-300 border-b-2 border-gray-100 hover:border-[#fcc207] no-underline"
+                class="py-5 px-6 text-[#616161] font-semibold hover:bg-gradient-to-r hover:from-[#fff9e6] hover:to-[#feecb2] rounded-xl transition-all duration-300 border-b-2 border-gray-100 hover:border-primary-200 no-underline"
                 @click.native="closeMobileMenu"
               >
                 FAQ
@@ -115,7 +115,7 @@
             </nav>
 
             <!-- Mobile Footer Buttons -->
-            <div class="space-y-4 mt-auto pt-8 border-t-2 border-[#fcc207]/20">
+            <div class="space-y-4 mt-auto pt-8 border-t-2 border-primary-200/20">
               <button
                 @click="openLoginModal"
                 class="w-full py-4 px-8 text-[#212121] font-bold text-xl border-2 border-[#212121] rounded-xl hover:bg-[#212121] hover:text-white transition-all duration-300 hover:scale-105"
@@ -124,7 +124,7 @@
               </button>
               <nuxt-link
                 to="/agency"
-                class="w-full py-4 px-8 bg-gradient-to-r from-[#fcc207] to-[#e5b106] text-[#212121] font-bold text-xl rounded-xl hover:from-[#e5b106] hover:to-[#fcc207] transition-all duration-300 text-center no-underline block hover:scale-105 shadow-lg"
+                class="w-full py-4 px-8 bg-gradient-to-r from-primary-200 to-primary-300 text-[#212121] font-bold text-xl rounded-xl hover:from-primary-300 hover:to-primary-200 transition-all duration-300 text-center no-underline block hover:scale-105 shadow-lg"
                 @click.native="closeMobileMenu"
               >
                 List Your Agency
@@ -149,7 +149,7 @@
           <!-- Search Box -->
           <div ref="searchContainer" class="w-full relative px-4">
             <div
-              class="backdrop-blur-[20px] rounded-2xl sm:rounded-3xl bg-white/90 shadow-2xl flex flex-row items-center p-4 sm:p-5 md:p-6 gap-4 sm:gap-5 md:gap-6 text-[16px] sm:text-[18px] md:text-[20px] border border-[#fcc207]/20"
+              class="backdrop-blur-[20px] rounded-2xl sm:rounded-3xl bg-white/90 shadow-2xl flex flex-row items-center p-4 sm:p-5 md:p-6 gap-4 sm:gap-5 md:gap-6 text-[16px] sm:text-[18px] md:text-[20px] border border-primary-200/20"
             >
               <div class="flex-1 rounded-xl bg-gradient-to-r from-[#fff9e6] to-[#feecb2] flex flex-col items-start justify-center p-4 min-h-[56px] sm:min-h-[60px] shadow-inner">
                 <div class="w-full flex items-center">
@@ -160,7 +160,7 @@
               </div>
 
               <div
-                class="relative rounded-xl bg-gradient-to-r from-[#fcc207] to-[#e5b106] border-2 border-[#e5b106] border-solid box-border flex items-center p-4 gap-3 text-center text-xl text-white font-plus-jakarta-sans cursor-pointer hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
+                class="relative rounded-xl bg-gradient-to-r from-primary-200 to-primary-300 border-2 border-primary-300 border-solid box-border flex items-center p-4 gap-3 text-center text-xl text-white font-plus-jakarta-sans cursor-pointer hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
                 @click="toggleDropdown"
               >
                 <div class="relative leading-[160%] capitalize font-bold">Search</div>
@@ -179,7 +179,7 @@
             <transition name="dropdown">
               <div
                 v-if="showDropdown"
-                class="absolute top-full mt-3 left-4 right-4 rounded-2xl border-2 border-[#fcc207]/30 overflow-hidden bg-white shadow-2xl z-20 max-h-[250px] sm:max-h-[300px] md:max-h-[350px] overflow-y-auto backdrop-blur-sm"
+                class="absolute top-full mt-3 left-4 right-4 rounded-2xl border-2 border-primary-200/30 overflow-hidden bg-white shadow-2xl z-20 max-h-[250px] sm:max-h-[300px] md:max-h-[350px] overflow-y-auto backdrop-blur-sm"
               >
                 <div
                   v-for="(item, index) in searchData"

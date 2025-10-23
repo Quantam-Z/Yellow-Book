@@ -58,7 +58,7 @@
               <div :class="$style.button12">your email/contact number</div>
             </div>
           </div>
-          <div :class="$style.button13">
+            <div :class="$style.button13">
             <div :class="$style.button14">Send Code</div>
           </div>
         </div>
@@ -610,7 +610,7 @@ align-self: stretch;
 
 border-radius: 4px;
 
-background-color: #fcc207;
+  background-color: #fcc207;
 
 height: 48px;
 

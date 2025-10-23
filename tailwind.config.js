@@ -4,7 +4,30 @@ module.exports = {
     "./src/**/*.{js,jsx,ts,tsx,vue}",
   ],
   theme: {
+    // Container defaults to better match Figma spacing
+    container: {
+      center: true,
+      padding: {
+        DEFAULT: "1rem",
+        sm: "1.25rem",
+        md: "2rem",
+        lg: "3rem",
+        xl: "4rem",
+      },
+      screens: {
+        sm: "640px",
+        md: "768px",
+        lg: "1024px",
+        xl: "1280px",
+        "2xl": "1440px",
+      },
+    },
     extend: {
+      // Add finer-grained responsive breakpoints often used in design specs
+      screens: {
+        xs: "375px",
+        "3xl": "1920px",
+      },
       colors: {
         // Primary brand colors
         primary: {
@@ -95,6 +118,11 @@ module.exports = {
         black: 900,
         body: 500,
         heading: 500,
+      },
+      backgroundImage: {
+        'brand': 'linear-gradient(135deg, #fcc207 0%, #e5b106 100%)',
+        'brand-to-r': 'linear-gradient(to right, #fcc207, #e5b106)',
+        'brand-to-br': 'linear-gradient(to bottom right, #fcc207, #e5b106)',
       },
       boxShadow: {
         'soft': '0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)',

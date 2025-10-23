@@ -4,7 +4,7 @@
     <Navbar />
 
     <!-- Page Content -->
-    <main class="flex-1 container mx-auto">
+    <main class="flex-1 container mx-auto px-4 sm:px-6 md:px-8">
       <slot />
     </main>
 

@@ -13,7 +13,7 @@
       v-for="n in visiblePages"
       :key="n"
       class="px-3 py-1 rounded border text-sm"
-      :class="n === modelValue ? 'bg-[#fcc207] border-[#e5b106] text-[#212121]' : 'bg-white border-gray-300 text-gray-700'"
+      :class="n === modelValue ? 'bg-primary-200 border-primary-300 text-secondary-900' : 'bg-white border-gray-300 text-gray-700'"
       @click="$emit('update:modelValue', n)"
       :aria-current="n === modelValue ? 'page' : undefined"
     >

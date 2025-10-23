@@ -42,7 +42,7 @@ const statCards = ref<StatCard[]>([
 </script>
 
 <template>
-  <div class="w-full relative bg-gradient-to-r from-[#fcc207] to-[#e5b106] flex items-center justify-start mt-16 overflow-x-auto stat-scroll-container shadow-2xl">
+  <div class="w-full relative bg-gradient-to-r from-primary-200 to-primary-300 flex items-center justify-start mt-16 overflow-x-auto stat-scroll-container shadow-2xl">
     <div 
       class="flex flex-row items-center justify-start lg:justify-center px-6 lg:px-40 md:px-24 gap-8 text-left text-white font-['Plus_Jakarta_Sans'] flex-nowrap"
       :class="{ 'w-full': statCards.length <= 4 }"
@@ -50,7 +50,7 @@ const statCards = ref<StatCard[]>([
       <div 
         v-for="card in statCards"
         :key="card.id"
-        class="flex items-center p-12 sm:p-8 gap-6 bg-gradient-to-br from-[#e5b106] to-[#d4a005] min-w-[320px] flex-shrink-0 rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
+        class="flex items-center p-12 sm:p-8 gap-6 bg-gradient-to-br from-primary-300 to-primary-400 min-w-[320px] flex-shrink-0 rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
       >
         <div class="p-4 rounded-2xl bg-white/20 backdrop-blur-sm">
           <img class="w-20 h-20 flex-shrink-0" :src="card.iconSrc" :alt="card.altText" />

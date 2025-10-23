@@ -129,20 +129,20 @@ const sortedLimitedAgencies = computed(() => {
 
         <!-- Agency Info -->
         <div class="p-6 flex flex-col gap-5 text-left bg-gradient-to-br from-white to-[#fafafa] group-hover:from-[#fff9e6] group-hover:to-[#feecb2] transition-all duration-300">
-          <div class="text-2xl font-bold capitalize text-[#212121] group-hover:text-[#fcc207] transition-colors duration-300">{{ agency.title }}</div>
+          <div class="text-2xl font-bold capitalize text-[#212121] group-hover:text-primary-200 transition-colors duration-300">{{ agency.title }}</div>
           <div class="text-base text-gray-600 leading-relaxed">{{ agency.description }}</div>
 
           <!-- Rating -->
           <div class="flex items-center gap-2">
             <div class="flex items-center gap-1">
-              <Star v-for="i in getStars(agency.rating).length" :key="i" class="w-6 h-6 text-[#fcc207] fill-[#fcc207]" />
+              <Star v-for="i in getStars(agency.rating).length" :key="i" class="w-6 h-6 text-primary-200 fill-primary-200" />
             </div>
             <span class="text-lg font-semibold text-[#212121]">{{ agency.rating }}/5</span>
           </div>
 
           <!-- Location -->
           <div class="flex items-center gap-3 text-gray-600 text-base">
-            <MapPin class="w-5 h-5 text-[#fcc207]" />
+            <MapPin class="w-5 h-5 text-primary-200" />
             <span class="capitalize font-semibold">{{ agency.location }}</span>
           </div>
         </div>

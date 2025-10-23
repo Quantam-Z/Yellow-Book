@@ -5,7 +5,7 @@
     </div>
 
     <div class="w-full max-w-7xl">
-      <div class="grid grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 md:gap-10 text-[#757575]">
+      <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8 md:gap-10 text-[#757575]">
         
         <div 
           v-for="category in categories"
@@ -15,7 +15,7 @@
             w-full 
             relative 
             rounded-2xl 
-            hover:border-[#fcc207] active:border-[#fcc207] focus:border-[#fcc207]
+            hover:border-primary-200 active:border-primary-200 focus:border-primary-200
             hover:shadow-2xl active:shadow-2xl focus:shadow-2xl
             hover:scale-[1.05] active:scale-[1.02] focus:scale-[1.05] 
             transition-all 
@@ -31,14 +31,14 @@
             group
           "
         >
-          <div class="p-4 rounded-2xl bg-gradient-to-br from-[#fcc207]/10 to-[#e5b106]/10 group-hover:from-[#fcc207]/20 group-hover:to-[#e5b106]/20 transition-all duration-300">
+          <div class="p-4 rounded-2xl bg-gradient-to-br from-primary-200/10 to-primary-300/10 group-hover:from-primary-200/20 group-hover:to-primary-300/20 transition-all duration-300">
             <component 
               :is="category.icon" 
-              class="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 text-[#212121] group-hover:text-[#fcc207] transition-all duration-300"
+              class="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 text-[#212121] group-hover:text-primary-200 transition-all duration-300"
             />
           </div>
           
-          <div class="text-base sm:text-lg md:text-xl leading-[130%] capitalize font-bold text-[#212121] group-hover:text-[#fcc207] transition-colors duration-300">
+          <div class="text-base sm:text-lg md:text-xl leading-[130%] capitalize font-bold text-[#212121] group-hover:text-primary-200 transition-colors duration-300">
             {{ category.name }}
           </div>
         </div>
