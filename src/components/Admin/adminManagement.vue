@@ -482,7 +482,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, watchEffect } from 'vue';
 import { 
   Search as SearchIcon,
   Eye as EyeIcon,
@@ -504,7 +504,6 @@ import { useSelection } from '~/composables/useSelection'
 // --- State ---
 const showMobileFilters = ref(false);
 const searchQuery = ref('');
-const isLoading = ref(true);
 const admins = ref([]);
 
 // Pagination State
@@ -531,28 +530,9 @@ const stats = ref({
 // --- Composables ---
 const { allSelected, toggleSelection, toggleAll } = useSelection(admins);
 
-// --- Data Fetching ---
-const fetchData = async () => {
-  isLoading.value = true;
-  try {
-    // Small delay to show loading and simulate network
-    await new Promise(resolve => setTimeout(resolve, 500));
-    const response = await fetch('/stubs/admins.json');
-    const adminsData = await response.json();
-    admins.value = (adminsData || []).map(u => ({ ...u, selected: false }));
-    updateStats();
-  } catch (error) {
-    console.error('Failed to load admins:', error);
-    admins.value = [];
-    updateStats();
-  } finally {
-    isLoading.value = false;
-  }
-};
-
-onMounted(() => {
-  fetchData();
-});
+// --- Data Fetching (SSR-friendly) ---
+const { data: adminsData, pending } = await useFetch('/stubs/admins.json')
+const isLoading = computed(() => pending.value)
 
 // --- Computed ---
 const filteredAdmins = computed(() => {
@@ -676,6 +656,13 @@ const nextPage = () => {
 const prevPage = () => {
   if (currentPage.value > 1) currentPage.value--;
 };
+
+// Populate admins when fetch completes
+watchEffect(() => {
+  const raw = adminsData?.value || []
+  admins.value = raw.map(u => ({ ...u, selected: false }))
+  updateStats()
+})
 </script>
 
 <style scoped>

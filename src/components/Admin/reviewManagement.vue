@@ -474,7 +474,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, defineAsyncComponent } from 'vue'
+import { ref, computed, watchEffect, defineAsyncComponent } from 'vue'
 import { 
   Search as SearchIcon, 
   Filter as FilterIcon,
@@ -499,7 +499,6 @@ const ViewReview = defineAsyncComponent(() => import('~/components/modal/viewRev
 // --- State ---
 const showMobileFilters = ref(false)
 const searchQuery = ref('')
-const isLoading = ref(true)
 const reviews = ref([])
 const isViewOpen = ref(false)
 const selectedReview = ref(null)
@@ -527,23 +526,9 @@ const filters = ref({
   status: ''
 })
 
-// --- Data Fetching ---
-const { data: reviewsData } = await useFetch('/stubs/agencyReviews.json')
-
-onMounted(() => {
-  const base = (reviewsData.value || []).map(r => ({ ...r, status: 'Pending' }))
-  reviews.value = base
-  
-  // Calculate stats
-  stats.value.totalReviews = base.length
-  stats.value.pending = base.filter(r => r.status === 'Pending').length
-  stats.value.approved = base.filter(r => r.status === 'Approved').length
-  stats.value.rejected = base.filter(r => r.status === 'Rejected').length
-  stats.value.onHold = base.filter(r => r.status === 'On Hold').length
-  stats.value.bannedUsers = Math.floor(Math.random() * 10) // Mock data for banned users
-  
-  isLoading.value = false
-})
+// --- Data Fetching (SSR-friendly) ---
+const { data: reviewsData, pending } = await useFetch('/stubs/agencyReviews.json')
+const isLoading = computed(() => pending.value)
 
 // --- Helpers ---
 const formatDate = (date) => {
@@ -687,6 +672,13 @@ const closeViewModal = () => {
   isViewOpen.value = false
   selectedReview.value = null
 }
+
+// Populate reviews and stats when fetch completes
+watchEffect(() => {
+  const base = (reviewsData?.value || []).map(r => ({ ...r, status: r.status || 'Pending' }))
+  reviews.value = base
+  updateStats()
+})
 </script>
 
 <style scoped>

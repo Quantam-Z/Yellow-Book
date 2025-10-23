@@ -440,7 +440,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, watchEffect } from 'vue';
 import { 
   Search as SearchIcon,
   Eye as EyeIcon,
@@ -460,7 +460,6 @@ import { useSelection } from '~/composables/useSelection'
 // --- State ---
 const showMobileFilters = ref(false);
 const searchQuery = ref('');
-const isLoading = ref(true);
 const users = ref([]);
 
 // Pagination State
@@ -487,28 +486,9 @@ const stats = ref({
 // --- Composables ---
 const { allSelected, toggleSelection, toggleAll } = useSelection(users);
 
-// --- Data Fetching ---
-const fetchData = async () => {
-  isLoading.value = true;
-  try {
-    // Small delay to show loading and simulate network
-    await new Promise(resolve => setTimeout(resolve, 500));
-    const response = await fetch('/stubs/users.json');
-    const usersData = await response.json();
-    users.value = (usersData || []).map(u => ({ ...u, selected: false }));
-    updateStats();
-  } catch (error) {
-    console.error('Failed to load users:', error);
-    users.value = [];
-    updateStats();
-  } finally {
-    isLoading.value = false;
-  }
-};
-
-onMounted(() => {
-  fetchData();
-});
+// --- Data Fetching (SSR-friendly) ---
+const { data: usersData, pending } = await useFetch('/stubs/users.json')
+const isLoading = computed(() => pending.value)
 
 // --- Computed ---
 const signupMethods = computed(() => {
@@ -620,6 +600,13 @@ const nextPage = () => {
 const prevPage = () => {
   if (currentPage.value > 1) currentPage.value--;
 };
+
+// Populate users when fetch completes
+watchEffect(() => {
+  const raw = usersData?.value || []
+  users.value = raw.map(u => ({ ...u, selected: false }))
+  updateStats()
+})
 </script>
 
 <style scoped>
