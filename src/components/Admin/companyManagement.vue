@@ -402,7 +402,7 @@
 </template>
 
 <script setup>
-import { ref, computed, defineAsyncComponent, onMounted } from 'vue';
+import { ref, computed, defineAsyncComponent, watchEffect } from 'vue';
 import { Search as SearchIcon, Eye as EyeIcon, CheckCircle as CheckCircleIcon, ChevronDown as ChevronDownIcon, ChevronLeft as ChevronLeftIcon, ChevronRight as ChevronRightIcon, Filter as FilterIcon, Phone as PhoneIcon, Globe as GlobeIcon } from "lucide-vue-next";
 import { getStatusClass, getStatusShort } from '~/composables/useStatusClass'
 import { useSelection } from '~/composables/useSelection'
@@ -413,7 +413,6 @@ const AddCompany = defineAsyncComponent(() => import('~/components/modal/addComp
 const isModalOpen = ref(false);
 const showMobileFilters = ref(false);
 const searchQuery = ref('');
-const isLoading = ref(true); 
 const companies = ref([]);
 
 // Pagination State
@@ -432,25 +431,9 @@ const filters = ref({
 // --- Composables ---
 const { selectAll, toggleSelection, toggleAll } = useSelection(companies); 
 
-// --- Data Fetching ---
-const fetchData = async () => {
-    isLoading.value = true;
-    try {
-        await new Promise(resolve => setTimeout(resolve, 800));
-        const response = await fetch('/stubs/companies.json');
-        const companiesData = await response.json();
-        companies.value = (companiesData || []).map(c => ({ ...c, selected: false }));
-    } catch (error) {
-        console.error("Failed to load companies:", error);
-        companies.value = [];
-    } finally {
-        isLoading.value = false;
-    }
-}
-
-onMounted(() => {
-    fetchData();
-});
+// --- Data Fetching (SSR-friendly) ---
+const { data: companiesData, pending } = await useFetch('/stubs/companies.json')
+const isLoading = computed(() => pending.value)
 
 // --- Computed Properties ---
 const categories = computed(() => {
@@ -542,6 +525,12 @@ const prevPage = () => {
         currentPage.value--;
     }
 };
+
+// Populate companies when fetch completes
+watchEffect(() => {
+  const raw = companiesData?.value || []
+  companies.value = raw.map(c => ({ ...c, selected: false }))
+})
 </script>
 
 <style scoped>

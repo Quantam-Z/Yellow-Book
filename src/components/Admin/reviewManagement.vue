@@ -474,7 +474,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, defineAsyncComponent } from 'vue'
+import { ref, computed, watchEffect, defineAsyncComponent } from 'vue'
 import { 
   Search as SearchIcon, 
   Filter as FilterIcon,
@@ -499,7 +499,6 @@ const ViewReview = defineAsyncComponent(() => import('~/components/modal/viewRev
 // --- State ---
 const showMobileFilters = ref(false)
 const searchQuery = ref('')
-const isLoading = ref(true)
 const reviews = ref([])
 const isViewOpen = ref(false)
 const selectedReview = ref(null)
@@ -555,6 +554,9 @@ const fetchData = async () => {
 onMounted(() => {
   fetchData();
 })
+// --- Data Fetching (SSR-friendly) ---
+const { data: reviewsData, pending } = await useFetch('/stubs/agencyReviews.json')
+const isLoading = computed(() => pending.value)
 
 // --- Helpers ---
 const formatDate = (date) => {
@@ -698,6 +700,13 @@ const closeViewModal = () => {
   isViewOpen.value = false
   selectedReview.value = null
 }
+
+// Populate reviews and stats when fetch completes
+watchEffect(() => {
+  const base = (reviewsData?.value || []).map(r => ({ ...r, status: r.status || 'Pending' }))
+  reviews.value = base
+  updateStats()
+})
 </script>
 
 <style scoped>
