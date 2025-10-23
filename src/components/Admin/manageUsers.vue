@@ -21,22 +21,62 @@
       </div>
     </div>
 
-    <!-- Mobile Filters Toggle -->
-    <div class="mb-4 flex lg:hidden items-center justify-between">
-      <h2 class="text-base font-bold text-gray-900">All Users List</h2>
-      <button 
-        @click="showMobileFilters = !showMobileFilters"
-        class="h-12 bg-white rounded-xl px-4 py-2 border border-gray-300 text-gray-700 text-sm outline-none cursor-pointer whitespace-nowrap touch-manipulation flex items-center gap-2 hover:bg-gray-50 active:bg-gray-100 transition"
-        aria-controls="mobile-filters"
-        :aria-expanded="showMobileFilters ? 'true' : 'false'"
-      >
-        <FilterIcon class="w-4 h-4" aria-hidden="true" />
-        <span>Filters</span>
-      </button>
+    <!-- Stats Cards - Responsive Grid - SECOND ROW -->
+    <div class="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
+      <div class="rounded-lg bg-white border-whitesmoke border-solid border-[1px] flex items-center p-3 sm:p-4 gap-3">
+        <div class="h-8 w-8 sm:h-10 sm:w-10 md:h-11 md:w-11 rounded bg-blue-100 flex items-center justify-center flex-shrink-0">
+          <UsersIcon class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-blue-600" />
+        </div>
+        <div class="flex-1 flex flex-col items-start gap-1 sm:gap-2 min-w-0">
+          <div class="text-xs sm:text-sm leading-[130%] capitalize text-gray-500 truncate w-full">Total Users</div>
+          <b class="text-base sm:text-lg md:text-xl leading-[160%] capitalize text-gray-900">{{ stats.totalUsers }}</b>
+        </div>
+      </div>
+      <div class="rounded-lg bg-white border-whitesmoke border-solid border-[1px] flex items-center p-3 sm:p-4 gap-3">
+        <div class="h-8 w-8 sm:h-10 sm:w-10 md:h-11 md:w-11 rounded bg-green-100 flex items-center justify-center flex-shrink-0">
+          <UserPlusIcon class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-green-600" />
+        </div>
+        <div class="flex-1 flex flex-col items-start gap-1 sm:gap-2 min-w-0">
+          <div class="text-xs sm:text-sm leading-[130%] capitalize text-gray-500 truncate w-full">Google Signups</div>
+          <b class="text-base sm:text-lg md:text-xl leading-[160%] capitalize text-gray-900">{{ stats.googleSignups }}</b>
+        </div>
+      </div>
+      <div class="rounded-lg bg-white border-whitesmoke border-solid border-[1px] flex items-center p-3 sm:p-4 gap-3">
+        <div class="h-8 w-8 sm:h-10 sm:w-10 md:h-11 md:w-11 rounded bg-purple-100 flex items-center justify-center flex-shrink-0">
+          <Share2Icon class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-purple-600" />
+        </div>
+        <div class="flex-1 flex flex-col items-start gap-1 sm:gap-2 min-w-0">
+          <div class="text-xs sm:text-sm leading-[130%] capitalize text-gray-500 truncate w-full">Social Signups</div>
+          <b class="text-base sm:text-lg md:text-xl leading-[160%] capitalize text-gray-900">{{ stats.socialSignups }}</b>
+        </div>
+      </div>
+      <div class="rounded-lg bg-white border-whitesmoke border-solid border-[1px] flex items-center p-3 sm:p-4 gap-3">
+        <div class="h-8 w-8 sm:h-10 sm:w-10 md:h-11 md:w-11 rounded bg-orange-100 flex items-center justify-center flex-shrink-0">
+          <MailIcon class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-orange-600" />
+        </div>
+        <div class="flex-1 flex flex-col items-start gap-1 sm:gap-2 min-w-0">
+          <div class="text-xs sm:text-sm leading-[130%] capitalize text-gray-500 truncate w-full">Email Signups</div>
+          <b class="text-base sm:text-lg md:text-xl leading-[160%] capitalize text-gray-900">{{ stats.emailSignups }}</b>
+        </div>
+      </div>
     </div>
 
-    <!-- Filters Section -->
+    <!-- Filters Section - THIRD ROW -->
     <div class="mb-6">
+      <!-- Mobile Filters Toggle -->
+      <div class="flex lg:hidden items-center justify-between mb-4">
+        <h2 class="text-base font-bold text-gray-900">All Users List</h2>
+        <button 
+          @click="showMobileFilters = !showMobileFilters"
+          class="h-12 bg-white rounded-xl px-4 py-2 border border-gray-300 text-gray-700 text-sm outline-none cursor-pointer whitespace-nowrap touch-manipulation flex items-center gap-2 hover:bg-gray-50 active:bg-gray-100 transition"
+          aria-controls="mobile-filters"
+          :aria-expanded="showMobileFilters ? 'true' : 'false'"
+        >
+          <FilterIcon class="w-4 h-4" aria-hidden="true" />
+          <span>Filters</span>
+        </button>
+      </div>
+
       <!-- Desktop Filters -->
       <div class="hidden lg:flex items-center flex-wrap gap-3 min-w-full">
         <h2 class="text-lg font-bold text-gray-900 whitespace-nowrap">
@@ -80,7 +120,7 @@
           <ChevronDownIcon class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" aria-hidden="true" />
         </div>
 
-        <!-- Status Filter (aligned with stub data) -->
+        <!-- Status Filter -->
         <div class="relative">
           <select 
             v-model="filters.status"
@@ -96,7 +136,7 @@
           <ChevronDownIcon class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" aria-hidden="true" />
         </div>
 
-        <!-- Signup Method Filter (like Category) -->
+        <!-- Signup Method Filter -->
         <div class="relative">
           <select 
             v-model="filters.signupMethod"
@@ -110,7 +150,7 @@
         </div>
       </div>
 
-      <!-- Mobile Filters - Same design as desktop -->
+      <!-- Mobile Filters -->
       <div v-if="showMobileFilters" id="mobile-filters" class="mt-3 p-4 bg-white rounded-lg shadow-sm border border-gray-200 lg:hidden">
         <div class="space-y-4">
           <!-- Date Range -->
@@ -200,47 +240,7 @@
       </div>
     </div>
 
-    <!-- Stats Cards - Responsive Grid -->
-    <div class="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
-      <div class="rounded-lg bg-white border-whitesmoke border-solid border-[1px] flex items-center p-3 sm:p-4 gap-3">
-        <div class="h-8 w-8 sm:h-10 sm:w-10 md:h-11 md:w-11 rounded bg-blue-100 flex items-center justify-center flex-shrink-0">
-          <UsersIcon class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-blue-600" />
-        </div>
-        <div class="flex-1 flex flex-col items-start gap-1 sm:gap-2 min-w-0">
-          <div class="text-xs sm:text-sm leading-[130%] capitalize text-gray-500 truncate w-full">Total Users</div>
-          <b class="text-base sm:text-lg md:text-xl leading-[160%] capitalize text-gray-900">{{ stats.totalUsers }}</b>
-        </div>
-      </div>
-      <div class="rounded-lg bg-white border-whitesmoke border-solid border-[1px] flex items-center p-3 sm:p-4 gap-3">
-        <div class="h-8 w-8 sm:h-10 sm:w-10 md:h-11 md:w-11 rounded bg-green-100 flex items-center justify-center flex-shrink-0">
-          <UserPlusIcon class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-green-600" />
-        </div>
-        <div class="flex-1 flex flex-col items-start gap-1 sm:gap-2 min-w-0">
-          <div class="text-xs sm:text-sm leading-[130%] capitalize text-gray-500 truncate w-full">Google Signups</div>
-          <b class="text-base sm:text-lg md:text-xl leading-[160%] capitalize text-gray-900">{{ stats.googleSignups }}</b>
-        </div>
-      </div>
-      <div class="rounded-lg bg-white border-whitesmoke border-solid border-[1px] flex items-center p-3 sm:p-4 gap-3">
-        <div class="h-8 w-8 sm:h-10 sm:w-10 md:h-11 md:w-11 rounded bg-purple-100 flex items-center justify-center flex-shrink-0">
-          <Share2Icon class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-purple-600" />
-        </div>
-        <div class="flex-1 flex flex-col items-start gap-1 sm:gap-2 min-w-0">
-          <div class="text-xs sm:text-sm leading-[130%] capitalize text-gray-500 truncate w-full">Social Signups</div>
-          <b class="text-base sm:text-lg md:text-xl leading-[160%] capitalize text-gray-900">{{ stats.socialSignups }}</b>
-        </div>
-      </div>
-      <div class="rounded-lg bg-white border-whitesmoke border-solid border-[1px] flex items-center p-3 sm:p-4 gap-3">
-        <div class="h-8 w-8 sm:h-10 sm:w-10 md:h-11 md:w-11 rounded bg-orange-100 flex items-center justify-center flex-shrink-0">
-          <MailIcon class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-orange-600" />
-        </div>
-        <div class="flex-1 flex flex-col items-start gap-1 sm:gap-2 min-w-0">
-          <div class="text-xs sm:text-sm leading-[130%] capitalize text-gray-500 truncate w-full">Email Signups</div>
-          <b class="text-base sm:text-lg md:text-xl leading-[160%] capitalize text-gray-900">{{ stats.emailSignups }}</b>
-        </div>
-      </div>
-    </div>
-
-    <!-- Users Table / Cards -->
+    <!-- Users Table / Cards - FOURTH ROW -->
     <div class="w-full bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200">
       <!-- Loading State -->
       <div v-if="isLoading" class="text-center py-16 text-gray-500 text-lg font-medium animate-pulse">
@@ -395,7 +395,7 @@
       </template>
     </div>
 
-    <!-- Pagination -->
+    <!-- Pagination - FIFTH ROW -->
     <div class="flex flex-col sm:flex-row justify-between items-center mt-6 gap-4">
       <p class="text-sm text-gray-600 text-center sm:text-left">
         Showing <span class="font-semibold">{{ paginatedUsers.length }}</span> of 

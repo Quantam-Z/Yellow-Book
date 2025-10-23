@@ -1,7 +1,8 @@
 <template>
   <div class="w-full font-plus-jakarta-sans max-w-full overflow-hidden">
-    <!-- Header Section -->
+    <!-- Header Section with Gradient Background -->
     <div class="w-full rounded-lg bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 p-3 sm:p-4 md:p-6 mb-4">
+      <!-- Header -->
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
         <h1 class="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">Review Management</h1>
       </div>
@@ -20,14 +21,14 @@
       </div>
     </div>
 
-    <!-- Stats Grid -->
+    <!-- Stats Cards - Responsive Grid - SECOND ROW -->
     <div class="grid grid-cols-2 lg:grid-cols-6 gap-3 sm:gap-4 mb-6">
       <div class="rounded-lg bg-white border-whitesmoke border-solid border-[1px] flex items-center p-3 sm:p-4 gap-3">
         <div class="h-8 w-8 sm:h-10 sm:w-10 md:h-11 md:w-11 rounded bg-blue-100 flex items-center justify-center flex-shrink-0">
           <UsersIcon class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-blue-600" />
         </div>
         <div class="flex-1 flex flex-col items-start gap-1 sm:gap-2 min-w-0">
-          <div class="text-xs sm:text-sm leading-[130%] capitalize text-gray-500 truncate w-full">Total reviews</div>
+          <div class="text-xs sm:text-sm leading-[130%] capitalize text-gray-500 truncate w-full">Total Reviews</div>
           <b class="text-base sm:text-lg md:text-xl leading-[160%] capitalize text-gray-900">{{ stats.totalReviews }}</b>
         </div>
       </div>
@@ -92,14 +93,14 @@
       </button>
     </div>
 
-    <!-- Filters Section -->
+    <!-- Filters Section - THIRD ROW -->
     <div class="mb-6">
       <!-- Desktop Filters -->
       <div class="hidden lg:flex items-center flex-wrap gap-3 min-w-full">
         <h2 class="text-lg font-bold text-gray-900 whitespace-nowrap">
           All Review List
         </h2>
-        
+
         <!-- Date From -->
         <div class="h-12 relative rounded-xl bg-gray-100 border border-gray-200 flex items-center px-4 gap-2 text-sm">
           <span class="text-gray-400 text-sm">From:</span>
@@ -155,7 +156,7 @@
           <select 
             v-model="filters.status"
             @change="handleFilterChange"
-            class="h-12 rounded-xl bg-gray-100 border border-gray-200 appearance-none py-0 pl-4 pr-10 text-left text-sm text-gray-600 cursor-pointer focus:outline-none focus:ring-0 min-w-[160px]"
+            class="h-12 rounded-xl bg-gray-100 border border-gray-200 appearance-none py-0 pl-4 pr-10 text-left text-sm text-gray-600 cursor-pointer focus:outline-none focus:ring-0 min-w-[140px]"
           >
             <option value="">Select Status</option>
             <option value="Approved">Approved</option>
@@ -249,7 +250,7 @@
             </div>
           </div>
         </div>
-        
+
         <div class="mt-6 flex items-center justify-end gap-3">
           <button @click="resetFilters" class="px-4 py-3 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 active:bg-gray-100 touch-manipulation transition">Reset</button>
           <button @click="applyMobileFilters" class="px-4 py-3 text-sm text-gray-900 bg-yellow-400 hover:bg-yellow-500 active:bg-yellow-600 rounded-lg touch-manipulation transition">Apply</button>
@@ -257,9 +258,8 @@
       </div>
     </div>
 
-    <!-- Reviews Table -->
+    <!-- Reviews Table / Cards - FOURTH ROW -->
     <div class="w-full bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200">
-      
       <!-- Loading State -->
       <div v-if="isLoading" class="text-center py-16 text-gray-500 text-lg font-medium animate-pulse">
         <svg class="animate-spin h-8 w-8 text-yellow-500 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -271,7 +271,7 @@
 
       <!-- Content -->
       <template v-else>
-        <!-- Mobile Cards -->
+        <!-- Mobile Card View -->
         <div class="block lg:hidden">
           <div 
             v-for="(review, index) in paginatedReviews" 
@@ -280,55 +280,66 @@
           >
             <div class="flex items-center justify-between mb-3">
               <div class="flex items-center gap-3">
+                <span class="text-sm text-gray-500 font-medium">{{ getDisplayIndex(index) }}</span>
                 <div class="w-9 h-9 rounded-full bg-indigo-100 flex items-center justify-center font-bold text-indigo-700 text-xs">
                   {{ getInitials(review.reviewerName) }}
                 </div>
-                <div class="flex flex-col">
-                  <span class="text-sm font-semibold text-gray-900">{{ review.reviewerName }}</span>
-                  <span class="text-xs text-gray-500">{{ formatDate(review.date) }} • {{ review.time }}</span>
-                </div>
               </div>
               <div class="flex items-center gap-2">
-                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium" :class="getStatusClass(review.status)">
-                  {{ review.status || 'Pending' }}
+                <span 
+                  class="inline-flex items-center gap-1 px-2 py-1 rounded-md font-medium text-xs cursor-pointer touch-manipulation"
+                  :class="getStatusClass(review.status)"
+                  @click="changeStatus(review)"
+                >
+                  <span>{{ review.status || 'Pending' }}</span>
+                  <ChevronDownIcon class="w-3 h-3 flex-shrink-0" aria-hidden="true" />
                 </span>
+                <EyeIcon 
+                  @click="openViewReview(review)"
+                  class="w-5 h-5 text-yellow-500 cursor-pointer hover:text-yellow-600 transition touch-manipulation" 
+                />
+              </div>
+            </div>
+            
+            <!-- Review Info -->
+            <div class="space-y-2">
+              <div class="flex items-center gap-2">
+                <span class="text-base font-semibold text-gray-900 truncate flex-1">{{ review.reviewerName }}</span>
+              </div>
+              
+              <div class="flex items-center gap-2 text-sm text-gray-700">
+                <RatingStars :value="Number(review.rating)" :size-class="'w-4 h-4'" />
+                <span class="text-gray-600">{{ review.rating }}</span>
+              </div>
+
+              <div class="text-sm text-gray-600 line-clamp-2">
+                "{{ review.content }}"
+              </div>
+              
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-500">{{ formatDate(review.date) }} • {{ review.time }}</span>
               </div>
             </div>
 
-            <div class="flex items-center gap-2 text-sm text-gray-700 mb-2">
-              <RatingStars :value="Number(review.rating)" :size-class="'w-4 h-4'" />
-              <span class="text-gray-600">{{ review.rating }}</span>
-            </div>
-
-            <div class="text-sm text-gray-700 mb-3">
-              <p class="line-clamp-2">"{{ review.content }}"</p>
-            </div>
-
-            <div class="flex items-center justify-end gap-2">
-              <EyeIcon 
-                @click="openViewReview(review)"
-                class="p-2 w-5 h-5 text-yellow-500 hover:bg-yellow-50 active:bg-yellow-100 rounded-lg cursor-pointer transition touch-manipulation" 
-                aria-label="View review"
-              />
+            <!-- Action Buttons -->
+            <div class="flex items-center justify-end gap-2 mt-3">
               <button 
                 @click="approveReview(review)"
-                class="p-2 text-green-600 hover:bg-green-50 active:bg-green-100 rounded-lg touch-manipulation transition"
-                title="Approve review"
+                class="px-3 py-1.5 text-green-600 bg-green-50 hover:bg-green-100 active:bg-green-200 rounded-lg text-xs font-medium touch-manipulation transition"
               >
-                <CheckCircleIcon class="w-5 h-5" aria-hidden="true" />
+                Approve
               </button>
               <button 
                 @click="deleteReview(review)"
-                class="p-2 text-red-600 hover:bg-red-50 active:bg-red-100 rounded-lg touch-manipulation transition"
-                title="Delete review"
+                class="px-3 py-1.5 text-red-600 bg-red-50 hover:bg-red-100 active:bg-red-200 rounded-lg text-xs font-medium touch-manipulation transition"
               >
-                <Trash2Icon class="w-5 h-5" aria-hidden="true" />
+                Delete
               </button>
             </div>
           </div>
         </div>
 
-        <!-- Desktop Table -->
+        <!-- Desktop Table View -->
         <div class="hidden lg:block overflow-x-auto">
           <table class="w-full table-auto min-w-[800px]">
             <thead class="bg-gray-50 border-b border-gray-200">
@@ -339,7 +350,7 @@
                 <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 whitespace-nowrap min-w-[160px]">Date & Time</th>
                 <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 whitespace-nowrap min-w-[240px]">Review</th>
                 <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 whitespace-nowrap min-w-[120px]">Status</th>
-                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 whitespace-nowrap" style="width: 80px;">Action</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 whitespace-nowrap" style="width: 120px;">Action</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-200">
@@ -368,37 +379,35 @@
                   <div class="text-xs text-gray-500">{{ review.time }}</div>
                 </td>
                 <td class="px-4 py-3 text-gray-700 text-sm">
-                  <span class="truncate block max-w-[420px]">{{ review.content }}</span>
+                  <span class="truncate block max-w-[420px]">"{{ review.content }}"</span>
                 </td>
                 <td class="px-4 py-3 whitespace-nowrap">
-                  <span 
-                    class="inline-flex items-center gap-1 px-3 py-1.5 rounded-md font-medium text-sm"
+                  <div 
+                    class="inline-flex items-center gap-1 px-3 py-1.5 rounded-md font-medium text-sm cursor-pointer touch-manipulation"
                     :class="getStatusClass(review.status)"
+                    @click="changeStatus(review)"
                   >
-                    {{ review.status || 'Pending' }}
-                  </span>
+                    <span>{{ review.status || 'Pending' }}</span>
+                    <ChevronDownIcon class="w-3 h-3 flex-shrink-0" aria-hidden="true" />
+                  </div>
                 </td>
                 <td class="px-4 py-3 whitespace-nowrap">
                   <div class="flex items-center gap-2">
                     <EyeIcon 
                       @click="openViewReview(review)"
                       class="w-5 h-5 text-yellow-500 cursor-pointer hover:text-yellow-600 active:text-yellow-700 transition touch-manipulation" 
-                      aria-label="View review"
+                      title="View review"
                     />
-                    <button 
+                    <CheckCircleIcon 
                       @click="approveReview(review)"
-                      class="p-2 text-green-600 hover:bg-green-50 active:bg-green-100 rounded-lg touch-manipulation transition"
+                      class="w-5 h-5 text-green-600 cursor-pointer hover:text-green-700 active:text-green-800 transition touch-manipulation"
                       title="Approve review"
-                    >
-                      <CheckCircleIcon class="w-5 h-5" aria-hidden="true" />
-                    </button>
-                    <button 
+                    />
+                    <Trash2Icon 
                       @click="deleteReview(review)"
-                      class="p-2 text-red-600 hover:bg-red-50 active:bg-red-100 rounded-lg touch-manipulation transition"
+                      class="w-5 h-5 text-red-600 cursor-pointer hover:text-red-700 active:text-red-800 transition touch-manipulation"
                       title="Delete review"
-                    >
-                      <Trash2Icon class="w-5 h-5" aria-hidden="true" />
-                    </button>
+                    />
                   </div>
                 </td>
               </tr>
@@ -417,7 +426,7 @@
       </template>
     </div>
 
-    <!-- Pagination -->
+    <!-- Pagination - FIFTH ROW -->
     <div class="flex flex-col sm:flex-row justify-between items-center mt-6 gap-4">
       <p class="text-sm text-gray-600 text-center sm:text-left">
         Showing <span class="font-semibold">{{ paginatedReviews.length }}</span> of 
@@ -458,6 +467,7 @@
         </button>
       </div>
     </div>
+
     <!-- Modals -->
     <ViewReview v-if="isViewOpen" :review="selectedReview" @close="closeViewModal" />
   </div>
@@ -628,23 +638,35 @@ const getDisplayIndex = (indexInPage) => {
   return String(trueIndex).padStart(2, '0')
 }
 
+const changeStatus = (review) => {
+  // Cycle through statuses to demo behavior
+  const statuses = ['Pending', 'Approved', 'Rejected', 'On Hold']
+  const currentIndex = statuses.indexOf(review.status || 'Pending')
+  const nextIndex = (currentIndex + 1) % statuses.length
+  review.status = statuses[nextIndex]
+  
+  // Update stats
+  updateStats()
+}
+
 const approveReview = (review) => { 
   review.status = 'Approved' 
-  // Update stats
-  stats.value.approved++
-  stats.value.pending = Math.max(0, stats.value.pending - 1)
+  updateStats()
 }
 
 const deleteReview = (review) => { 
   // Update stats before deleting
-  if (review.status === 'Approved') stats.value.approved--
-  if (review.status === 'Pending') stats.value.pending--
-  if (review.status === 'Rejected') stats.value.rejected--
-  if (review.status === 'On Hold') stats.value.onHold--
-  
-  stats.value.totalReviews--
-  
   reviews.value = reviews.value.filter(r => r.id !== review.id) 
+  updateStats()
+}
+
+const updateStats = () => {
+  const base = reviews.value
+  stats.value.totalReviews = base.length
+  stats.value.pending = base.filter(r => (r.status || 'Pending') === 'Pending').length
+  stats.value.approved = base.filter(r => r.status === 'Approved').length
+  stats.value.rejected = base.filter(r => r.status === 'Rejected').length
+  stats.value.onHold = base.filter(r => r.status === 'On Hold').length
 }
 
 const nextPage = () => { if (currentPage.value < totalPages.value) currentPage.value++ }
@@ -668,6 +690,10 @@ const closeViewModal = () => {
 </script>
 
 <style scoped>
+.font-plus-jakarta-sans {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -675,6 +701,7 @@ const closeViewModal = () => {
   overflow: hidden;
 }
 
+/* Enhanced touch targets for mobile */
 @media (max-width: 640px) {
   input[type="date"] {
     min-height: 44px;
@@ -689,8 +716,72 @@ const closeViewModal = () => {
   }
 }
 
+/* Improved scrollbar for tables */
+.scrollbar-thin::-webkit-scrollbar {
+  height: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Better focus states for accessibility */
 input:focus, select:focus, button:focus {
   outline: 2px solid #fbbf24;
   outline-offset: 2px;
+}
+
+/* Improved transitions */
+.transition {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Fix for mobile dropdown overflow */
+@media (max-width: 1024px) {
+  #mobile-filters {
+    position: relative;
+    z-index: 40;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  
+  /* Prevent body scroll when filters are open */
+  body:has(#mobile-filters[style*="display: block"]) {
+    overflow: hidden;
+  }
+}
+
+/* Ensure date inputs and selects have consistent styling */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0.6;
+  cursor: pointer;
+}
+
+input[type="date"]:hover::-webkit-calendar-picker-indicator {
+  opacity: 1;
+}
+
+/* Consistent border radius and styling */
+.rounded-xl {
+  border-radius: 12px;
+}
+
+/* Ensure consistent background colors */
+.bg-gray-100 {
+  background-color: #f3f4f6;
+}
+
+.border-gray-200 {
+  border-color: #e5e7eb;
 }
 </style>
