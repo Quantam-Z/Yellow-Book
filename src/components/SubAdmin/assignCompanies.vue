@@ -13,6 +13,7 @@
         <input
           type="text"
           v-model="searchQuery"
+          @input="handleFilterChange"
           placeholder="Search companies by name or category"
           class="flex-1 outline-none bg-transparent text-gray-600 placeholder-gray-400 text-xs sm:text-sm md:text-base leading-[130%] capitalize min-w-0"
         />
@@ -52,6 +53,15 @@
 
     <!-- Table Container with Mobile Card View -->
     <div class="w-full bg-white rounded-xl shadow-md overflow-hidden">
+      <!-- Loading State -->
+      <div v-if="isLoading" class="text-center py-12 text-gray-500 text-sm sm:text-base">
+        <svg class="animate-spin h-6 w-6 text-yellow-500 mx-auto mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        Loading Companies...
+      </div>
+      <template v-else>
       <!-- Mobile Card View -->
       <div class="block sm:hidden">
         <div 
@@ -63,11 +73,12 @@
             <div class="flex items-center gap-3">
               <input 
                 type="checkbox" 
-                v-model="company.selected"
+                :checked="company.selected"
+                @change="toggleSelection(company)"
                 class="w-4 h-4 rounded border-gray-300 cursor-pointer touch-manipulation" 
               />
               <span class="text-[10px] text-gray-500 font-medium">
-                {{ String((currentPage - 1) * itemsPerPage + index + 1).padStart(2, '0') }}
+                {{ getDisplayIndex(index) }}
               </span>
             </div>
             <div class="flex items-center gap-2">
@@ -126,7 +137,7 @@
               <th class="px-2 sm:px-3 md:px-4 py-2.5 sm:py-3 text-left w-12">
                 <input 
                   type="checkbox" 
-                  v-model="selectAll"
+                  :checked="allSelected"
                   @change="toggleSelectAll"
                   class="w-4 h-4 rounded border-gray-300 cursor-pointer touch-manipulation" 
                 />
@@ -149,12 +160,13 @@
               <td class="px-2 sm:px-3 md:px-4 py-2.5 sm:py-3">
                 <input 
                   type="checkbox" 
-                  v-model="company.selected"
+                  :checked="company.selected"
+                  @change="toggleSelection(company)"
                   class="w-4 h-4 rounded border-gray-300 cursor-pointer touch-manipulation" 
                 />
               </td>
               <td class="px-2 sm:px-3 md:px-4 py-2.5 sm:py-3 text-gray-700 text-[10px] sm:text-xs whitespace-nowrap">
-                {{ String((currentPage - 1) * itemsPerPage + index + 1).padStart(2, '0') }}
+                {{ getDisplayIndex(index) }}
               </td>
               <td class="px-2 sm:px-3 md:px-4 py-2.5 sm:py-3 text-gray-900 font-medium text-[10px] sm:text-xs">
                 <div class="flex items-center gap-1.5 max-w-[120px]">
@@ -213,6 +225,7 @@
         <p class="text-gray-500 text-xs sm:text-sm">No companies found matching your criteria</p>
         <p class="text-gray-400 text-[10px] sm:text-xs mt-1">Try adjusting your search or filters</p>
       </div>
+      </template>
     </div>
 
     <!-- Enhanced Pagination -->
@@ -270,19 +283,19 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { getStatusClass, getStatusShort } from '~/composables/useStatusClass'
+import { useSelection } from '~/composables/useSelection'
 import { Search, Eye, CheckCircle, ChevronDown, ChevronLeft, ChevronRight } from "lucide-vue-next";
 
-// Load from stub
-const { data: companiesData } = await useFetch('/stubs/companies.json')
-const companies = ref((companiesData.value || []).map(c => ({ ...c, selected: false })))
+// --- State ---
+const isLoading = ref(true)
+const companies = ref([])
 
 // Search and filters
 const searchQuery = ref('');
-const selectAll = ref(false);
 const currentPage = ref(1);
-const itemsPerPage = 8;
+const itemsPerPage = 10;
 
 const filters = ref({
   status: '',
@@ -301,7 +314,7 @@ const filteredCompanies = computed(() => {
   const q = (searchQuery.value || '').toLowerCase()
   const status = filters.value.status
   const category = filters.value.category
-  const result = companies.value.filter(company => {
+  return companies.value.filter(company => {
     if (q) {
       const matches = company.name.toLowerCase().includes(q) || company.category.toLowerCase().includes(q) || company.website.toLowerCase().includes(q)
       if (!matches) return false
@@ -310,8 +323,6 @@ const filteredCompanies = computed(() => {
     if (category && company.category !== category) return false
     return true
   })
-  currentPage.value = 1
-  return result
 })
 
 // Pagination
@@ -350,12 +361,32 @@ const getVisiblePages = () => {
   return pages;
 };
 
-// Select all checkbox
+// --- Selection ---
+const { allSelected, toggleSelection, toggleAll } = useSelection(companies)
+
 const toggleSelectAll = () => {
-  paginatedCompanies.value.forEach(company => {
-    company.selected = selectAll.value;
-  });
-};
+  toggleAll(paginatedCompanies.value)
+}
+
+// --- Fetch Data ---
+const fetchData = async () => {
+  isLoading.value = true
+  try {
+    await new Promise(r => setTimeout(r, 500))
+    const response = await fetch('/stubs/companies.json')
+    const companiesData = await response.json()
+    companies.value = (companiesData || []).map(c => ({ ...c, selected: false }))
+  } catch (e) {
+    companies.value = []
+    console.error('Failed to load companies', e)
+  } finally {
+    isLoading.value = false
+  }
+}
+
+onMounted(() => {
+  fetchData()
+})
 
 // Status helpers moved to composable
 
@@ -365,6 +396,16 @@ const goToPage = (page) => {
     currentPage.value = page;
   }
 };
+
+// --- Helpers ---
+const handleFilterChange = () => {
+  currentPage.value = 1
+}
+
+const getDisplayIndex = (indexInPage) => {
+  const trueIndex = (currentPage.value - 1) * itemsPerPage + indexInPage + 1
+  return String(trueIndex).padStart(2, '0')
+}
 
 // Action handlers
 const viewCompany = (company) => {
@@ -376,7 +417,10 @@ const editCompany = (company) => {
 };
 
 const changeStatus = (company) => {
-  // Add your status change logic here
+  const statuses = ['Approved', 'Pending', 'Rejected']
+  const currentIndex = statuses.indexOf(company.status)
+  const nextIndex = (currentIndex + 1) % statuses.length
+  company.status = statuses[nextIndex]
 };
 </script>
 
