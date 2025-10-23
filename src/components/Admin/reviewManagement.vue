@@ -391,10 +391,50 @@
       </div>
     </div>
   </div>
+
+  <!-- Stats Cards - Responsive Grid (match manageUsers design) -->
+  <div class="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
+    <div class="rounded-lg bg-white border-whitesmoke border-solid border-[1px] flex items-center p-3 sm:p-4 gap-3">
+      <div class="h-8 w-8 sm:h-10 sm:w-10 md:h-11 md:w-11 rounded bg-blue-100 flex items-center justify-center flex-shrink-0">
+        <MessageSquareIcon class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-blue-600" />
+      </div>
+      <div class="flex-1 flex flex-col items-start gap-1 sm:gap-2 min-w-0">
+        <div class="text-xs sm:text-sm leading-[130%] capitalize text-gray-500 truncate w-full">Total Reviews</div>
+        <b class="text-base sm:text-lg md:text-xl leading-[160%] capitalize text-gray-900">{{ stats.totalReviews }}</b>
+      </div>
+    </div>
+    <div class="rounded-lg bg-white border-whitesmoke border-solid border-[1px] flex items-center p-3 sm:p-4 gap-3">
+      <div class="h-8 w-8 sm:h-10 sm:w-10 md:h-11 md:w-11 rounded bg-yellow-100 flex items-center justify-center flex-shrink-0">
+        <StarIcon class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-yellow-600" />
+      </div>
+      <div class="flex-1 flex flex-col items-start gap-1 sm:gap-2 min-w-0">
+        <div class="text-xs sm:text-sm leading-[130%] capitalize text-gray-500 truncate w-full">Average Rating</div>
+        <b class="text-base sm:text-lg md:text-xl leading-[160%] capitalize text-gray-900">{{ stats.avgRating }}</b>
+      </div>
+    </div>
+    <div class="rounded-lg bg-white border-whitesmoke border-solid border-[1px] flex items-center p-3 sm:p-4 gap-3">
+      <div class="h-8 w-8 sm:h-10 sm:w-10 md:h-11 md:w-11 rounded bg-green-100 flex items-center justify-center flex-shrink-0">
+        <CheckCircleIcon class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-green-600" />
+      </div>
+      <div class="flex-1 flex flex-col items-start gap-1 sm:gap-2 min-w-0">
+        <div class="text-xs sm:text-sm leading-[130%] capitalize text-gray-500 truncate w-full">Approved</div>
+        <b class="text-base sm:text-lg md:text-xl leading-[160%] capitalize text-gray-900">{{ stats.approved }}</b>
+      </div>
+    </div>
+    <div class="rounded-lg bg-white border-whitesmoke border-solid border-[1px] flex items-center p-3 sm:p-4 gap-3">
+      <div class="h-8 w-8 sm:h-10 sm:w-10 md:h-11 md:w-11 rounded bg-orange-100 flex items-center justify-center flex-shrink-0">
+        <ClockIcon class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-orange-600" />
+      </div>
+      <div class="flex-1 flex flex-col items-start gap-1 sm:gap-2 min-w-0">
+        <div class="text-xs sm:text-sm leading-[130%] capitalize text-gray-500 truncate w-full">Pending</div>
+        <b class="text-base sm:text-lg md:text-xl leading-[160%] capitalize text-gray-900">{{ stats.pending }}</b>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { 
   Search as SearchIcon, 
   Filter as FilterIcon,
@@ -403,7 +443,9 @@ import {
   ChevronRight as ChevronRightIcon,
   CheckCircle as CheckCircleIcon,
   Trash2 as Trash2Icon,
-  Star as StarIcon
+  Star as StarIcon,
+  Clock as ClockIcon,
+  MessageSquare as MessageSquareIcon
 } from 'lucide-vue-next'
 import RatingStars from '~/components/common/ratingStars.vue'
 import { getStatusClass } from '~/composables/useStatusClass'
@@ -434,6 +476,7 @@ onMounted(() => {
   const base = (reviewsData.value || []).map(r => ({ ...r, status: 'Pending' }))
   reviews.value = base
   isLoading.value = false
+  updateStats()
 })
 
 // --- Helpers ---
@@ -543,6 +586,31 @@ const resetFilters = () => {
   filters.value = { dateFrom: '', dateTo: '', timeRange: '', rating: '', status: '' }
   handleFilterChange()
 }
+
+// --- Stats ---
+const stats = ref({ totalReviews: 0, avgRating: '0.0', approved: 0, pending: 0 })
+
+const updateStats = () => {
+  const list = reviews.value
+  const total = list.length
+  const approved = list.filter(r => (r.status || 'Pending') === 'Approved').length
+  const pending = list.filter(r => (r.status || 'Pending') === 'Pending').length
+  const sumRatings = list.reduce((acc, r) => acc + Number(r.rating || 0), 0)
+  const avg = total ? (sumRatings / total) : 0
+  stats.value = {
+    totalReviews: total,
+    avgRating: avg.toFixed(1),
+    approved,
+    pending
+  }
+}
+
+// Keep stats in sync on data changes
+watch(
+  () => reviews.value.map(r => ({ id: r.id, status: r.status, rating: r.rating })),
+  () => updateStats(),
+  { deep: true }
+)
 </script>
 
 <style scoped>
