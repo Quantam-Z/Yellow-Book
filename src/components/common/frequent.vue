@@ -40,52 +40,54 @@ const toggleFaq = (faqId) => {
 </script>
 
 <template>
-  <div class="w-full relative flex flex-col items-center gap-[44px] text-center text-[30px] text-[#212121] font-['Plus_Jakarta_Sans'] mt-20 mb-7">
-    <div class="self-stretch flex flex-col items-start gap-4">
-      <div class="self-stretch relative leading-[126%] capitalize font-semibold">Frequently Asked Questions</div>
-      <div class="self-stretch relative text-[16px] leading-[160%] capitalize font-medium text-[#9e9e9e]">Everything you need to know about using Yellow Book.</div>
+  <div class="w-full relative flex flex-col items-center gap-16 text-center text-[#212121] font-['Plus_Jakarta_Sans'] mt-24 mb-16 px-4">
+    <div class="w-full max-w-4xl flex flex-col items-center gap-6">
+      <div class="text-4xl sm:text-5xl lg:text-6xl leading-[120%] capitalize font-bold bg-gradient-to-r from-[#212121] to-[#616161] bg-clip-text text-transparent">Frequently Asked Questions</div>
+      <div class="text-lg sm:text-xl lg:text-2xl leading-[140%] text-[#9e9e9e] font-medium max-w-2xl">Everything you need to know about using Yellow Book.</div>
     </div>
     
-    <div class="w-[588px] flex flex-col items-start gap-4 text-[18px]">
+    <div class="w-full max-w-4xl flex flex-col items-start gap-6 text-lg">
       <div 
         v-for="faq in faqs" 
         :key="faq.id" 
-        class="self-stretch rounded-[8px] bg-[#feecb2] flex flex-col items-start transition-all duration-300 cursor-pointer"
-        :class="faq.open ? 'p-[10px_16px] gap-1' : 'p-[10px_16px] gap-0'"
+        class="w-full rounded-2xl bg-gradient-to-r from-[#feecb2] to-[#fff9e6] flex flex-col items-start transition-all duration-500 cursor-pointer shadow-lg hover:shadow-xl"
+        :class="faq.open ? 'p-6 gap-4' : 'p-6 gap-0'"
       >
         <div 
-          class="self-stretch flex items-center justify-between gap-[10px]"
+          class="w-full flex items-center justify-between gap-4"
           @click="toggleFaq(faq.id)"
           role="button"
           :aria-expanded="faq.open"
           :aria-controls="`faq-answer-${faq.id}`"
         >
-          <div class="relative leading-[160%] capitalize font-semibold text-left flex-grow">{{ faq.question }}</div>
+          <div class="relative leading-[140%] capitalize font-bold text-left flex-grow text-xl text-[#212121]">{{ faq.question }}</div>
           
-          <svg 
-            class="w-11 h-11 rounded-[22px] bg-white p-[10px] box-border text-[#212121] transition-transform duration-300 flex-shrink-0"
-            :class="{ 'rotate-180': !faq.open }"
-            viewBox="0 0 24 24" 
-            fill="currentColor"
-          >
-            <path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z"/>
-          </svg>
+          <div class="w-14 h-14 rounded-full bg-white shadow-lg flex items-center justify-center transition-all duration-300 flex-shrink-0 hover:scale-110"
+               :class="{ 'rotate-180': !faq.open }">
+            <svg 
+              class="w-6 h-6 text-[#212121]"
+              viewBox="0 0 24 24" 
+              fill="currentColor"
+            >
+              <path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z"/>
+            </svg>
+          </div>
         </div>
         
         <div 
           v-if="faq.open"
           :id="`faq-answer-${faq.id}`"
-          class="self-stretch flex items-center py-[10px] text-left text-[16px] text-[#424242]"
+          class="w-full flex items-start py-4 text-left text-lg text-[#424242] leading-relaxed"
         >
-          <div class="flex-1 relative leading-[160%] capitalize font-medium">{{ faq.answer }}</div>
+          <div class="flex-1 relative font-medium">{{ faq.answer }}</div>
         </div>
       </div>
     </div>
   </div>
 </template>
 
-<style>
-/* Responsive Media Queries */
+<style scoped>
+/* Enhanced responsive design with better mobile experience */
 @media (max-width: 1200px) {
   .w-full\.relative\.flex\.flex-col\.items-center\.gap-\[44px\] {
     margin-top: 60px;
