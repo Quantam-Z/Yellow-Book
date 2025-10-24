@@ -80,11 +80,7 @@
               <CheckCircle v-if="company.verified" class="w-3 h-3 text-green-500 flex-shrink-0" />
             </div>
             
-            <div class="text-[11px] text-blue-500 truncate">
-              <a :href="'https://' + company.website" target="_blank" class="hover:underline">
-                {{ company.website }}
-              </a>
-            </div>
+        
             
             <div class="flex items-center justify-between text-[11px]">
               <div class="flex items-center gap-2">
@@ -154,21 +150,16 @@
                 </div>
               </td>
               <td class="px-2 sm:px-3 md:px-4 py-2.5 sm:py-3 whitespace-nowrap">
-                <div class="flex items-center gap-1 sm:gap-2">
-                  <Eye 
-                    @click="viewCompany(company)"
-                    class="w-4 h-4 text-blue-500 cursor-pointer hover:text-blue-600 active:text-blue-700 transition touch-manipulation" 
-                    title="View Details"
-                  />
-                  <button 
-                    @click="editCompany(company)"
-                    class="w-4 h-4 text-green-500 cursor-pointer hover:text-green-600 active:text-green-700 transition touch-manipulation"
-                    title="Edit Company"
-                  >
-                    ✏️
-                  </button>
-                </div>
-              </td>
+  <div class="flex items-center">
+    <button
+      @click="viewCompany(company)"
+      class="text-primary-500 hover:text-primary-600 active:text-primary-700 font-medium cursor-pointer transition touch-manipulation border-0 outline-none ring-0 focus:outline-none focus:ring-0 focus:border-0 shadow-none"
+    >
+      View Details
+    </button>
+  </div>
+</td>
+
             </tr>
           </tbody>
         </table>
