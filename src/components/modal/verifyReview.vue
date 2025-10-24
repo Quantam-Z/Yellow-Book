@@ -18,41 +18,41 @@
         <!-- Company Content -->
         <div class="w-full rounded-lg border border-gray-200 box-border flex flex-col items-center p-4 gap-3 text-left text-sm text-gray-600">
           
-          <!-- Company Details Card -->
-          <div class="self-stretch rounded-lg border border-gray-200 flex flex-col items-start justify-center p-4 gap-3">
+        <!-- Company Details Card -->
+        <div class="self-stretch rounded-lg border border-gray-200 flex flex-col items-start justify-center p-4 gap-3 divide-y divide-transparent">
             
             <!-- Company Name -->
-            <div class="self-stretch flex items-start gap-3">
+            <div class="self-stretch flex items-start gap-3 py-1">
               <div class="w-36 flex items-center gap-2">
                 <div class="flex-1 relative leading-[130%] capitalize font-semibold text-gray-900 text-xs">Company Name</div>
                 <b class="relative text-sm leading-[160%] capitalize text-center">:</b>
               </div>
               <div class="flex-1 relative leading-[160%] capitalize text-gray-700 text-sm">{{ company.name }}</div>
             </div>
-            <div class="self-stretch relative border-gray-200 border-dashed border-t-[1px] box-border h-px" />
+            
             
             <!-- Category -->
-            <div class="self-stretch flex items-start gap-3">
+            <div class="self-stretch flex items-start gap-3 py-1">
               <div class="w-36 flex items-center gap-2">
                 <div class="flex-1 relative leading-[130%] capitalize font-semibold text-gray-900 text-xs">Category</div>
                 <b class="relative text-sm leading-[160%] capitalize text-center">:</b>
               </div>
               <div class="flex-1 relative leading-[160%] text-gray-700 text-sm">{{ company.category }}</div>
             </div>
-            <div class="self-stretch relative border-gray-200 border-dashed border-t-[1px] box-border h-px" />
+            
             
             <!-- Industry -->
-            <div class="self-stretch flex items-start gap-3">
+            <div class="self-stretch flex items-start gap-3 py-1">
               <div class="w-36 flex items-center gap-2">
                 <div class="flex-1 relative leading-[130%] capitalize font-semibold text-gray-900 text-xs">Industry</div>
                 <b class="relative text-sm leading-[160%] capitalize text-center">:</b>
               </div>
               <div class="flex-1 relative leading-[160%] capitalize text-gray-700 text-sm">{{ company.industry }}</div>
             </div>
-            <div class="self-stretch relative border-gray-200 border-dashed border-t-[1px] box-border h-px" />
+            
             
             <!-- Contact Email -->
-            <div class="self-stretch flex items-start gap-3">
+            <div class="self-stretch flex items-start gap-3 py-1">
               <div class="w-36 flex items-center gap-2">
                 <div class="flex-1 relative leading-[130%] capitalize font-semibold text-gray-900 text-xs">Contact Email</div>
                 <b class="relative text-sm leading-[160%] capitalize text-center">:</b>
@@ -84,12 +84,12 @@
           </div>
           
           <!-- Verification Checklist Card -->
-          <div class="self-stretch rounded-lg border border-gray-200 flex flex-col items-start p-4 gap-3">
+          <div class="self-stretch rounded-lg border border-gray-200 flex flex-col items-start p-4 gap-3 divide-y divide-transparent">
             <div class="self-stretch relative leading-[130%] capitalize font-semibold text-gray-900 text-sm">Verification Checklist</div>
             <div class="self-stretch flex flex-col items-start justify-center gap-3 text-center text-gray-700 text-sm">
               
               <!-- Phone Verification -->
-              <div class="flex items-center gap-2">
+              <div class="flex items-center gap-2 py-0.5">
                 <input
                   type="checkbox"
                   v-model="verification.phoneVerified"
@@ -97,10 +97,10 @@
                 />
                 <div class="relative leading-[130%] capitalize text-xs">Verified Via Phone Call</div>
               </div>
-              <div class="self-stretch relative border-gray-200 border-dashed border-t-[1px] box-border h-px" />
+              
               
               <!-- Email Verification -->
-              <div class="flex items-center gap-2">
+              <div class="flex items-center gap-2 py-0.5">
                 <input
                   type="checkbox"
                   v-model="verification.emailVerified"
@@ -110,8 +110,8 @@
               </div>
               
               <!-- Website Verification -->
-              <div class="self-stretch relative border-gray-200 border-dashed border-t-[1px] box-border h-px" />
-              <div class="flex items-center gap-2">
+              
+              <div class="flex items-center gap-2 py-0.5">
                 <input
                   type="checkbox"
                   v-model="verification.websiteVerified"
@@ -121,8 +121,8 @@
               </div>
               
               <!-- Business Registration -->
-              <div class="self-stretch relative border-gray-200 border-dashed border-t-[1px] box-border h-px" />
-              <div class="flex items-center gap-2">
+              
+              <div class="flex items-center gap-2 py-0.5">
                 <input
                   type="checkbox"
                   v-model="verification.businessVerified"
@@ -146,7 +146,7 @@
           <button 
             @click="approveVerification"
             :disabled="!canApprove"
-            class="flex-1 rounded bg-green-600 hover:bg-green-700 disabled:bg-green-400 flex items-center justify-center py-3 px-6 text-white transition-colors font-semibold text-sm"
+            class="flex-1 rounded bg-gold hover:bg-goldenrod disabled:bg-[#ffe08a] disabled:text-gray-700 active:bg-[#d4a007] flex items-center justify-center py-3 px-6 text-black transition-colors font-semibold text-sm"
           >
             Approve Verification
           </button>
