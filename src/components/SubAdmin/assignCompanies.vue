@@ -77,12 +77,16 @@
 
             <!-- Action: Details (mobile) -->
             <div class="pt-2 flex justify-center">
-              <button
+              <span
+                role="button"
+                tabindex="0"
                 @click="viewDetails(company)"
-                class="inline-flex items-center justify-center px-3 py-1.5 rounded-md bg-blue-50 text-blue-700 text-xs font-medium hover:bg-blue-100 active:bg-blue-200 transition"
+                @keydown.enter="viewDetails(company)"
+                @keydown.space.prevent="viewDetails(company)"
+                class="inline-flex items-center justify-center px-3 py-1.5 rounded-md bg-blue-50 text-blue-700 text-xs font-medium hover:bg-blue-100 active:bg-blue-200 transition cursor-pointer select-none"
               >
                 Details
-              </button>
+              </span>
             </div>
           </div>
         </div>
