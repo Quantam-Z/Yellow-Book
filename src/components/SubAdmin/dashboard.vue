@@ -67,7 +67,7 @@
             >
               <div class="flex-1 min-w-0">
                 <div class="w-full relative leading-[160%] capitalize mb-3 line-clamp-2">"{{ review.text }}"</div>
-                <div class="self-stretch flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6 text-gray-500">
+                <div class="self-stretch flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6 text-gray-500 flex-wrap">
                   <div class="flex items-center gap-2">
                     <div class="relative leading-[130%] capitalize">For:</div>
                     <div class="relative leading-[130%] capitalize truncate">{{ review.company }}</div>
