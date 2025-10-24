@@ -27,15 +27,15 @@
             <div 
               v-for="(company, index) in companies" 
               :key="index"
-              class="w-full relative rounded-lg border border-gray-200 border-solid flex items-center justify-between p-4 gap-5 text-left text-base text-gray-900 font-plus-jakarta-sans hover:border-yellow-400 transition-colors"
+              class="w-full relative rounded-lg border border-gray-200 border-solid flex flex-col md:flex-row md:items-center justify-between p-4 gap-3 md:gap-5 text-left text-base text-gray-900 font-plus-jakarta-sans hover:border-yellow-400 transition-colors"
             >
-              <div class="flex items-center gap-4">
+              <div class="flex items-start md:items-center gap-3 sm:gap-4 flex-1 min-w-0">
                 <div class="h-8 w-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded flex items-center justify-center flex-shrink-0">
                   <span class="text-white font-bold text-xs">{{ company.name.charAt(0) }}</span>
                 </div>
-                <div class="w-[260px] flex flex-col items-start gap-2">
+                <div class="flex-1 min-w-0 flex flex-col items-start gap-2">
                   <b class="self-stretch relative leading-[130%] capitalize truncate">{{ company.name }}</b>
-                  <div class="self-stretch flex items-center gap-2 text-gray-500">
+                  <div class="self-stretch flex flex-wrap items-center gap-2 text-gray-500">
                     <div class="relative leading-[130%] capitalize bg-gray-100 px-2 py-1 rounded">{{ company.category }}</div>
                     <div class="flex items-center gap-2">
                       <div class="h-1.5 w-1.5 relative rounded-[50%] bg-gray-300" />
@@ -46,7 +46,7 @@
               </div>
               <button 
   @click="openCompanyVerification(company)"
-  class="h-12 rounded bg-yellow-500 hover:bg-yellow-600 flex items-center justify-center py-3 px-9 box-border text-center touch-manipulation transition-colors border-0 ring-0 focus:ring-0 focus:border-0 outline-none focus:outline-none active:outline-none active:ring-0"
+  class="h-12 rounded bg-yellow-500 hover:bg-yellow-600 flex items-center justify-center py-3 px-6 sm:px-8 md:px-9 box-border text-center touch-manipulation transition-colors w-full md:w-auto md:flex-shrink-0 mt-2 md:mt-0 border-0 ring-0 focus:ring-0 focus:border-0 outline-none focus:outline-none active:outline-none active:ring-0"
   style="border: 0 !important; box-shadow: none !important;"
 >
   <div class="relative leading-[130%] capitalize font-semibold text-black">Review & Verify</div>
@@ -85,7 +85,7 @@
               </div>
               <button 
   @click="openReviewModeration(review)"
-  class="h-12 rounded bg-[#FFF9E6] hover:bg-[#FFF2CC] flex items-center justify-center py-3 px-9 box-border text-center touch-manipulation transition-colors sm:flex-shrink-0 w-full sm:w-auto border-0 outline-none focus:outline-none focus:ring-0"
+  class="h-12 rounded bg-[#FFF9E6] hover:bg-[#FFF2CC] flex items-center justify-center py-3 px-6 sm:px-8 md:px-9 box-border text-center touch-manipulation transition-colors sm:flex-shrink-0 w-full sm:w-auto border-0 outline-none focus:outline-none focus:ring-0"
 >
   <div class="relative leading-[130%] capitalize font-semibold text-[#0369a1]">
     Moderate Review
@@ -186,7 +186,6 @@
 </template>
 
 <script setup>
-import RatingStars from '~/components/common/RatingStars.vue'
 import CompanyVerificationModal from '~/components/modal/verifyReview.vue';
 import ReviewModal from '~/components/modal/reviewModal.vue';
 
