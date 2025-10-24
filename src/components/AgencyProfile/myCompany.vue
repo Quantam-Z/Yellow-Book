@@ -10,7 +10,7 @@
           class="flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium bg-white border border-indigo-400 text-indigo-600 shadow-md hover:bg-indigo-50 transition-colors"
         >
           <Pencil class="w-4 h-4" />
-          {{ isEditing ? 'Viewing Mode' : 'Edit Profile' }}
+          {{ isEditing ? 'Viewing Mode' : 'Edit' }}
         </button>
       </div>
       <p class="mt-1 text-sm text-gray-600">

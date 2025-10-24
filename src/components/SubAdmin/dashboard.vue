@@ -1,6 +1,5 @@
 <template>
   <div class="w-full min-h-screen bg-gray-50 p-3 sm:p-4 md:p-6">
-    <!-- Header Section -->
     <div
       class="w-full rounded-lg bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 p-3 sm:p-4 md:p-6 mb-4 sm:mb-6"
     >
@@ -10,7 +9,6 @@
       </p>
     </div>
 
-    <!-- Welcome Text -->
     <div class="mb-4 sm:mb-6">
       <p class="text-sm sm:text-base text-gray-600 leading-relaxed">
         Welcome! You have tasks that require your attention. This page provides a "to-do list" of items assigned to you, helping you focus on the most important actions for verification and content moderation.
@@ -18,149 +16,146 @@
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
-      <!-- Main Content - Left Side -->
-      <div class="lg:col-span-2 space-y-4 sm:space-y-6">
-        <!-- Companies Awaiting Verification Section -->
+      <div class="space-y-3 sm:space-y-4 lg:col-span-1 order-first lg:order-last">
+        
+        <div 
+          class="w-full relative rounded-xl border-[#E5E5E5] border-solid border-[1px] box-border flex flex-col items-center justify-center p-6 sm:p-8 gap-4 sm:gap-6 text-center text-lg sm:text-2xl text-gray-900 font-plus-jakarta-sans bg-white shadow-sm sticky top-4"
+        >
+          <b class="self-stretch relative leading-[130%] capitalize text-xl sm:text-2xl">Task Summary</b>
+          
+          <div class="self-stretch flex flex-col items-center justify-center gap-4 text-left text-sm sm:text-base text-gray-700">
+            
+            <div class="flex justify-center mb-1">
+              <div class="relative w-32 h-32 sm:w-[156px] sm:h-[156px]">
+                <svg class="w-full h-full" viewBox="0 0 100 100">
+                  <circle 
+                    cx="50" 
+                    cy="50" 
+                    r="45" 
+                    fill="none" 
+                    stroke="#f3f4f6" 
+                    stroke-width="8"
+                  />
+                  <circle 
+                    cx="50" 
+                    cy="50" 
+                    r="45" 
+                    fill="none" 
+                    stroke="#3b82f6" 
+                    stroke-width="8"
+                    :stroke-dasharray="`${(companiesLen / 10) * circumference} ${circumference}`"
+                    stroke-dashoffset="70.65"
+                    transform="rotate(-90 50 50)"
+                  />
+                  <circle 
+                    cx="50" 
+                    cy="50" 
+                    r="45" 
+                    fill="none" 
+                    stroke="#10b981" 
+                    stroke-width="8"
+                    :stroke-dasharray="`${(reviewsLen / 10) * circumference} ${circumference}`"
+                    :stroke-dashoffset="70.65 - (companiesLen / 10) * circumference"
+                    transform="rotate(-90 50 50)"
+                  />
+                </svg>
+                <div class="absolute inset-0 flex items-center justify-center">
+                  <div class="text-center">
+                    <div class="text-lg sm:text-xl font-bold text-gray-900">{{ totalTasks }}</div>
+                    <div class="text-xs text-gray-500">Total Tasks</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="self-stretch flex flex-col items-center justify-center">
+              <div class="flex flex-col items-start justify-center gap-2 sm:gap-4">
+                <div class="flex items-center gap-3 sm:gap-4">
+                  <div class="h-2.5 w-[23px] relative bg-blue-500 flex-shrink-0" />
+                  <div class="relative leading-[130%] capitalize whitespace-nowrap">Pending Verification ({{ companiesLen }})</div>
+                </div>
+                <div class="flex items-center gap-3 sm:gap-4">
+                  <div class="h-2.5 w-[23px] relative bg-green-500 flex-shrink-0" />
+                  <div class="relative leading-[130%] capitalize whitespace-nowrap">Pending Reviews ({{ reviewsLen }})</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="lg:col-span-2 space-y-4 sm:space-y-6 order-last lg:order-first">
         <div class="w-full relative flex flex-col items-start gap-6 text-left text-[24px] text-gray-900 font-plus-jakarta-sans">
-          <b class="self-stretch relative leading-[130%] capitalize">Companies Awaiting Your Verification</b>
+          <b class="self-stretch relative leading-[130%] capitalize text-xl sm:text-2xl">Companies Awaiting Your Verification</b>
           <div class="self-stretch flex flex-col items-start gap-2 text-base">
             <div 
               v-for="(company, index) in companies" 
               :key="company.id"
-              class="self-stretch rounded-lg border border-[#E5E5E5] border-solid flex items-center justify-between p-4 gap-5 hover:border-blue-400 transition-colors"
+              class="self-stretch rounded-lg border border-[#E5E5E5] border-solid flex flex-col sm:flex-row sm:items-center justify-between p-4 gap-4 sm:gap-5 hover:border-blue-400 transition-colors"
             >
-              <div class="flex items-center gap-4">
+              <div class="flex items-center gap-4 min-w-0 flex-1">
                 <div class="h-8 w-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded flex items-center justify-center flex-shrink-0">
                   <span class="text-white font-bold text-xs">{{ company.name.charAt(0) }}</span>
                 </div>
-                <div class="w-[260px] flex flex-col items-start gap-2">
-                  <b class="self-stretch relative leading-[130%] capitalize truncate">{{ company.name }}</b>
-                  <div class="self-stretch flex items-center gap-2 text-gray-500">
-                    <div class="relative leading-[130%] capitalize bg-gray-100 px-2 py-1 rounded">{{ company.category }}</div>
-                    <div class="flex items-center gap-2">
-                      <div class="h-1.5 w-1.5 relative rounded-[50%] bg-gray-300" />
-                      <div class="relative leading-[130%] capitalize">Assigned: {{ company.assignedDate }}</div>
+                <div class="flex flex-col items-start gap-1 sm:gap-2 min-w-0">
+                  <b class="self-stretch relative leading-[130%] capitalize truncate text-sm sm:text-base">{{ company.name }}</b>
+                  <div class="self-stretch flex flex-wrap items-center gap-2 text-gray-500 text-xs sm:text-sm">
+                    <div class="relative leading-[130%] capitalize bg-gray-100 px-2 py-0.5 rounded flex-shrink-0">{{ company.category }}</div>
+                    <div class="flex items-center gap-2 flex-nowrap min-w-0">
+                      <div class="h-1.5 w-1.5 relative rounded-[50%] bg-gray-300 flex-shrink-0 hidden sm:block" />
+                      <div class="relative leading-[130%] capitalize whitespace-nowrap flex-shrink-0">Assigned: {{ company.assignedDate }}</div>
                     </div>
                   </div>
                 </div>
               </div>
               <button 
                 @click="openCompanyVerification(company)"
-                class="h-12 rounded bg-[#FCC207] hover:bg-[#E0A900] flex items-center justify-center py-3 px-9 box-border text-center touch-manipulation transition-colors border-0 outline-none focus:outline-none focus:ring-0"
+                class="h-9 rounded bg-[#FCC207] hover:bg-[#E0A900] flex items-center justify-center py-2 px-6 box-border text-center touch-manipulation transition-colors border-0 outline-none focus:outline-none focus:ring-0 w-3/4 mx-auto sm:w-auto sm:h-12 sm:py-3 sm:px-9 flex-shrink-0"
               >
-                <div class="relative leading-[130%] capitalize font-semibold text-black">Review & Verify</div>
+                <div class="relative leading-[130%] capitalize font-semibold text-black text-sm sm:text-base">Review & Verify</div>
               </button>
             </div>
           </div>
         </div>
-
-        <!-- New Reviews for Your Companies Section -->
+        
         <div class="w-full relative flex flex-col items-start gap-6 text-left text-[24px] text-gray-900 font-plus-jakarta-sans">
-          <b class="self-stretch relative leading-[130%] capitalize">New Reviews for Your Companies</b>
+          <b class="self-stretch relative leading-[130%] capitalize text-xl sm:text-2xl">New Reviews for Your Companies</b>
           <div class="self-stretch flex flex-col items-start gap-2">
             <div 
               v-for="(review, index) in reviews" 
               :key="review.id"
-              class="w-full relative rounded-lg border border-[#E5E5E5] border-solid box-border flex flex-col sm:flex-row sm:items-center justify-between p-4 gap-5 text-left text-base text-gray-700 font-plus-jakarta-sans hover:border-blue-400 transition-colors"
+              class="w-full relative rounded-lg border border-[#E5E5E5] border-solid box-border flex flex-col sm:flex-row sm:items-center justify-between p-4 gap-4 sm:gap-5 text-left text-base text-gray-700 font-plus-jakarta-sans hover:border-blue-400 transition-colors"
             >
               <div class="flex-1 min-w-0">
-                <div class="w-full relative leading-[160%] capitalize mb-3 line-clamp-2">"{{ review.text }}"</div>
-                <div class="self-stretch flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6 text-gray-500 flex-wrap">
-                  <div class="flex items-center gap-2">
-                    <div class="relative leading-[130%] capitalize">For:</div>
-                    <div class="relative leading-[130%] capitalize truncate">{{ review.company }}</div>
+                <div class="w-full relative leading-[160%] capitalize mb-2 sm:mb-3 line-clamp-2 text-sm sm:text-base">"{{ review.text }}"</div>
+                <div class="self-stretch flex flex-wrap items-center gap-x-4 gap-y-1 text-gray-500 text-xs sm:text-sm">
+                  <div class="flex items-center gap-1.5">
+                    <div class="relative leading-[130%] capitalize font-medium">For:</div>
+                    <div class="relative leading-[130%] capitalize truncate max-w-[150px] sm:max-w-none">{{ review.company }}</div>
                   </div>
-                  <div class="flex items-center gap-2">
-                    <div class="relative leading-[130%] capitalize">{{ review.date }} | {{ review.time }}</div>
+                  <div class="flex items-center gap-1.5">
+                    <div class="relative leading-[130%] capitalize whitespace-nowrap">{{ review.date }} | {{ review.time }}</div>
                   </div>
-                  <div class="flex items-center gap-2">
-                    <div class="relative leading-[130%] capitalize">Rating:</div>
-                    <div class="flex items-center gap-2">
-                      <div class="relative leading-[130%] capitalize ml-1">{{ review.rating }} Star</div>
+                  <div class="flex items-center gap-1.5">
+                    <div class="relative leading-[130%] capitalize font-medium">Rating:</div>
+                    <div class="flex items-center gap-1.5">
+                      <div class="relative leading-[130%] capitalize ml-0.5">{{ review.rating }} Star</div>
                     </div>
                   </div>
                 </div>
               </div>
               <button 
                 @click="openReviewModeration(review)"
-                class="h-12 rounded bg-[#FFF9E6] hover:bg-[#FFF2CC] flex items-center justify-center py-3 px-9 box-border text-center touch-manipulation transition-colors sm:flex-shrink-0 w-full sm:w-auto border-0 outline-none focus:outline-none focus:ring-0"
+                class="h-9 rounded bg-[#FFF9E6] hover:bg-[#FFF2CC] flex items-center justify-center py-2 px-6 box-border text-center touch-manipulation transition-colors w-3/4 mx-auto sm:w-auto sm:h-12 sm:py-3 sm:px-9 flex-shrink-0 border-0 outline-none focus:outline-none focus:ring-0"
               >
-                <div class="relative leading-[130%] capitalize font-semibold text-[#0b0c0c]">Moderate Review</div>
+                <div class="relative leading-[130%] capitalize font-semibold text-[#0b0c0c] text-sm sm:text-base">Moderate Review</div>
               </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Sidebar - Right Side -->
-      <div class="space-y-3 sm:space-y-4">
-        <!-- Task Summary Card -->
-        <div class="bg-white rounded-xl shadow-sm border border-[#E5E5E5] p-3 sm:p-4">
-          <h3 class="text-base sm:text-lg font-bold text-gray-900 mb-3 sm:mb-4 text-center">Task Summary</h3>
-          
-          <!-- Progress Chart -->
-          <div class="flex justify-center mb-3 sm:mb-4">
-            <div class="relative w-24 h-24 sm:w-32 sm:h-32">
-              <svg class="w-full h-full" viewBox="0 0 100 100">
-                <!-- Background Circle -->
-                <circle 
-                  cx="50" 
-                  cy="50" 
-                  r="45" 
-                  fill="none" 
-                  stroke="#f3f4f6" 
-                  stroke-width="8"
-                />
-                <!-- Pending Verification -->
-                <circle 
-                  cx="50" 
-                  cy="50" 
-                  r="45" 
-                  fill="none" 
-                  stroke="#3b82f6" 
-                  stroke-width="8"
-                  :stroke-dasharray="`${(companiesLen / 10) * circumference} ${circumference}`"
-                  stroke-dashoffset="70.65"
-                  transform="rotate(-90 50 50)"
-                />
-                <!-- Pending Reviews -->
-                <circle 
-                  cx="50" 
-                  cy="50" 
-                  r="45" 
-                  fill="none" 
-                  stroke="#10b981" 
-                  stroke-width="8"
-                  :stroke-dasharray="`${(reviewsLen / 10) * circumference} ${circumference}`"
-                  :stroke-dashoffset="70.65 - (companiesLen / 10) * circumference"
-                  transform="rotate(-90 50 50)"
-                />
-              </svg>
-              <div class="absolute inset-0 flex items-center justify-center">
-                <div class="text-center">
-                  <div class="text-base sm:text-lg font-bold text-gray-900">{{ totalTasks }}</div>
-                  <div class="text-xs text-gray-500">Total Tasks</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Legend -->
-          <div class="space-y-2">
-            <div class="flex items-center gap-2">
-              <div class="w-3 h-3 bg-blue-500 rounded flex-shrink-0"></div>
-              <span class="text-gray-700 text-xs sm:text-sm truncate">Pending Verification ({{ companiesLen }})</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <div class="w-3 h-3 bg-green-500 rounded flex-shrink-0"></div>
-              <span class="text-gray-700 text-xs sm:text-sm truncate">Pending Reviews ({{ reviewsLen }})</span>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Company Verification Modal -->
     <CompanyVerificationModal 
       v-if="selectedCompany"
       :company="selectedCompany"
@@ -169,7 +164,6 @@
       @reject="handleCompanyReject"
     />
 
-    <!-- Review Moderation Modal -->
     <ReviewModal 
       v-if="selectedReview"
       :review="selectedReview"
@@ -179,6 +173,26 @@
     />
   </div>
 </template>
+
+<style scoped>
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.touch-manipulation {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.font-plus-jakarta-sans {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+</style>
+
+
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';

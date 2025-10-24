@@ -1,35 +1,32 @@
 <template>
   <div class="min-h-screen bg-gray-50 p-4">
-    <!-- Header -->
     <div class="w-full rounded-lg bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 p-4 mb-6">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <h1 class="text-xl md:text-2xl font-bold text-gray-900">My Profile</h1>
       </div>
     </div>
 
-    <!-- Toggle Buttons -->
-    <div class="flex gap-4 mb-6">
+    <div class="flex gap-2 sm:gap-4 mb-6">
   <button 
     @click="activeSection = 'profile'"
-    class="px-6 py-3 rounded-lg text-sm font-medium transition-all duration-300"
+    class="px-3 py-2 sm:px-6 sm:py-3 rounded-lg text-xs sm:text-sm font-medium transition-all duration-300 whitespace-nowrap"
     :class="activeSection === 'profile' 
-      ? 'bg-gold text-black shadow-md' 
-      : 'bg-white text-gray-600 hover:bg-gray-50'"
+      ? 'bg-gold text-black' // Removed shadow-md here for mobile
+      : 'bg-white text-gray-600 hover:bg-gray-50 border border-transparent'"
   >
-    Profile Information
+    Profile Info
   </button>
   <button 
     @click="activeSection = 'password'"
-    class="px-6 py-3 rounded-lg text-sm font-medium transition-all duration-300"
+    class="px-3 py-2 sm:px-6 sm:py-3 rounded-lg text-xs sm:text-sm font-medium transition-all duration-300 whitespace-nowrap"
     :class="activeSection === 'password' 
-      ? 'bg-gold text-black' 
-      : 'bg-white text-gray-600 hover:bg-gray-50'"
+      ? 'bg-gold text-black' // Removed shadow-md here for mobile
+      : 'bg-white text-gray-600 hover:bg-gray-50 border border-transparent'"
   >
     Change Password
   </button>
 </div>
 
-    <!-- Profile Information Section -->
     <div 
       v-if="activeSection === 'profile'"
       class="w-full lg:w-[60%] relative shadow-[0px_0px_9px_rgba(0,_0,_0,_0.05)] rounded-2xl bg-white border-whitesmoke border-solid border-[1px] box-border flex flex-col items-center p-6 sm:p-8 lg:p-12 gap-6 sm:gap-8 text-left text-gray font-plus-jakarta-sans"
@@ -75,7 +72,6 @@
       </div>
     </div>
 
-    <!-- Change Password Section -->
     <div 
       v-if="activeSection === 'password'"
       class="w-full lg:w-[60%] relative shadow-[0px_0px_9px_rgba(0,_0,_0,_0.05)] rounded-2xl bg-white border-whitesmoke border-solid border-[1px] box-border flex flex-col items-center p-6 sm:p-8 lg:p-12 gap-6 sm:gap-8 text-left text-gray font-plus-jakarta-sans"
@@ -121,7 +117,6 @@
       </div>
     </div>
 
-    <!-- Success Message -->
     <div 
       v-if="showMessage" 
       class="fixed top-4 right-4 rounded-lg p-4 text-white transition-all duration-300 z-50"

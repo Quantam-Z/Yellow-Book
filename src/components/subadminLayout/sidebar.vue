@@ -1,21 +1,25 @@
 <template>
   <div class="flex">
+    <!-- Hamburger/Close Button -->
     <button
       @click="isOpen = !isOpen"
       class="md:hidden fixed top-3 left-4 z-50 p-1 rounded-lg bg-white border shadow-md transition-opacity duration-300 ease-in-out"
       aria-label="Toggle navigation menu"
       
-      :class="{ 'opacity-0 pointer-events-none': isScrolled || isOpen }"
+      :class="{ 'opacity-0 pointer-events-none': isScrolled && !isOpen }"
     >
-      <component :is="isOpen ? X : Menu" class="w-6 h-6 text-gray-700" />
+      <!-- ICON SIZE REDUCED HERE: w-5 h-5 -->
+      <component :is="isOpen ? X : Menu" class="w-5 h-5 text-gray-700" />
     </button>
 
+    <!-- Overlay (only visible when sidebar is open on mobile) -->
     <div
       v-if="isOpen"
       class="fixed inset-0 bg-black bg-opacity-40 z-[51] md:hidden"
       @click="closeOnMobile"
     />
 
+    <!-- Sidebar Aside -->
     <aside
       class="w-[280px] min-h-screen bg-white border-r border-[#eee] shadow-[4px_12px_23px_rgba(0,0,0,0.08)] py-6 px-4 flex flex-col justify-between
              fixed md:static top-0 left-0 h-full z-[52] transition-transform duration-300 ease-in-out"
@@ -88,11 +92,14 @@ const bottomMenu = [
 // NEW: Function to handle scroll event
 const handleScroll = () => {
   // Set isScrolled to true if the user scrolls more than 50 pixels down
+  // Note: We use !isOpen in the class binding to prevent the button from disappearing when the menu is open, 
+  // even if scrolled, allowing the user to close it.
   isScrolled.value = window.scrollY > 50; 
 };
 
 // Function to close the sidebar only on small screens
 const closeOnMobile = () => {
+  // Note: Tailwind's 'md' breakpoint is 768px, so we use this value for consistency.
   if (window.innerWidth < 768) {
     isOpen.value = false;
   }
