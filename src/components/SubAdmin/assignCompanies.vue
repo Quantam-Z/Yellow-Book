@@ -80,7 +80,7 @@
               <CheckCircle v-if="company.verified" class="w-3 h-3 text-green-500 flex-shrink-0" />
             </div>
             
-            <div class="flex items-center justify-between text-[11px]">
+            <div class="flex items-center justify-between text-[11px] flex-wrap gap-y-1">
               <div class="flex items-center gap-2">
                 <span class="bg-gray-100 px-2 py-1 rounded text-gray-700">{{ company.category }}</span>
                 <span class="text-gray-600">{{ company.mobile }}</span>
@@ -205,21 +205,21 @@
           :class="currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''"
         >
           <ChevronLeft class="w-3 h-3" />
-          <span class="hidden xs:inline">Previous</span>
+          <span class="hidden sm:inline">Previous</span>
         </button>
         
         <button 
           v-for="page in getVisiblePages()" 
           :key="page"
           @click="goToPage(page)"
-          class="px-2.5 sm:px-3 py-1.5 rounded-lg text-[10px] sm:text-xs font-medium transition touch-manipulation hidden xs:block focus:outline-none focus:ring-2 focus:ring-yellow-400"
+          class="px-2.5 sm:px-3 py-1.5 rounded-lg text-[10px] sm:text-xs font-medium transition touch-manipulation hidden sm:block focus:outline-none focus:ring-2 focus:ring-yellow-400"
           :class="page === currentPage ? 'bg-yellow-400 text-gray-900' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'"
         >
           {{ page }}
         </button>
 
         <button 
-          class="px-2.5 sm:px-3 py-1.5 bg-yellow-400 text-gray-900 rounded-lg text-[10px] sm:text-xs font-medium xs:hidden"
+          class="px-2.5 sm:px-3 py-1.5 bg-yellow-400 text-gray-900 rounded-lg text-[10px] sm:text-xs font-medium sm:hidden"
         >
           {{ currentPage }}
         </button>
@@ -230,7 +230,7 @@
           :disabled="currentPage === totalPages"
           :class="currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''"
         >
-          <span class="hidden xs:inline">Next</span>
+          <span class="hidden sm:inline">Next</span>
           <ChevronRight class="w-3 h-3" />
         </button>
       </div>
@@ -429,10 +429,5 @@ watch([() => filters.value.status, () => filters.value.category], () => {
   background: #94a3b8;
 }
 
-/* Enhanced responsive breakpoints */
-@media (max-width: 475px) {
-  .hidden.xs\\:inline {
-    display: none !important;
-  }
-}
+/* Rely on Tailwind's sm breakpoint for pagination labels */
 </style>
