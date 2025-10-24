@@ -74,6 +74,16 @@
                 <span class="text-gray-600">{{ company.mobile }}</span>
               </div>
             </div>
+
+            <!-- Action: Details (mobile) -->
+            <div class="pt-2 flex justify-center">
+              <button
+                @click="viewDetails(company)"
+                class="inline-flex items-center justify-center px-3 py-1.5 rounded-md bg-blue-50 text-blue-700 text-xs font-medium hover:bg-blue-100 active:bg-blue-200 transition"
+              >
+                Details
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -95,6 +105,7 @@
               <th class="px-2 sm:px-3 md:px-4 py-2.5 sm:py-3 text-left text-[10px] sm:text-xs font-semibold text-gray-700 whitespace-nowrap min-w-[120px]">Company Name</th>
               <th class="px-2 sm:px-3 md:px-4 py-2.5 sm:py-3 text-left text-[10px] sm:text-xs font-semibold text-gray-700 whitespace-nowrap min-w-[90px]">Category</th>
               <th class="px-2 sm:px-3 md:px-4 py-2.5 sm:py-3 text-left text-[10px] sm:text-xs font-semibold text-gray-700 whitespace-nowrap min-w-[80px]">Status</th>
+              <th class="px-2 sm:px-3 md:px-4 py-2.5 sm:py-3 text-center text-[10px] sm:text-xs font-semibold text-gray-700 whitespace-nowrap min-w-[90px]">Action</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200">
@@ -133,6 +144,16 @@
                   <span class="sm:hidden">{{ getStatusShort(company.status) }}</span>
                   <ChevronDown class="w-2.5 h-2.5 sm:w-3 sm:h-3 flex-shrink-0" />
                 </div>
+              </td>
+
+              <!-- Action: Details (desktop) -->
+              <td class="px-2 sm:px-3 md:px-4 py-2.5 sm:py-3 text-center">
+                <button
+                  @click="viewDetails(company)"
+                  class="inline-flex items-center justify-center px-2.5 sm:px-3 py-1 rounded-md bg-blue-50 text-blue-700 text-[10px] sm:text-xs font-medium hover:bg-blue-100 active:bg-blue-200 transition"
+                >
+                  Details
+                </button>
               </td>
 
             </tr>
@@ -303,6 +324,13 @@ const goToPage = (page) => {
 
 const changeStatus = (company) => {
   // Add your status change logic here
+};
+
+// Action: Details
+const viewDetails = (company) => {
+  // Implement navigation or modal as needed
+  // Placeholder to avoid unused var lint errors
+  if (!company) return;
 };
 </script>
 
