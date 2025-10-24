@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Star } from "lucide-vue-next";
 import { computed } from 'vue';
+import RatingStars from '@/components/common/RatingStars.vue';
 
 const props = defineProps<{
   agencyName?: string,
@@ -50,13 +50,17 @@ const logoImageSrc = computed(() => props.logoImage || '/logo/image7.png');
 
       <!-- Rating Section -->
       <div class="flex items-center gap-2 text-sm sm:text-base text-gray-600">
-        <!-- Stars -->
-        <div class="flex items-center gap-0.5">
-          <Star v-for="n in 5" :key="n" class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-black" />
-        </div>
-        <!-- Rating Number -->
+        <RatingStars
+          :rating="Number(props.rating || 0)"
+          :max="5"
+          size="sm"
+          color="#FFC107"
+          empty-color="#E0E0E0"
+          stroke-color="#FFC107"
+          :gap="2"
+          :show-value="false"
+        />
         <b class="leading-relaxed capitalize text-sm sm:text-base">{{ roundedRating }}</b>
-        <!-- Reviews -->
         <span class="leading-relaxed font-medium text-gray-500 text-xs sm:text-sm">{{ ratingCountText }}</span>
       </div>
     </div>

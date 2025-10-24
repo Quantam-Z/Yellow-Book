@@ -204,16 +204,19 @@
                 {{ ratingLabelText }}
               </p>
               <div class="space-y-1.5 sm:space-y-2">
-                <div class="flex items-center justify-center gap-0.5">
-                  <Star
-                    v-for="star in 5"
-                    :key="star"
-                    class="w-4 h-4 sm:w-5 sm:h-5 fill-yellow-400 text-yellow-400"
-                  />
-                </div>
-                <p class="text-xs sm:text-sm font-medium text-gray-600 capitalize">
-                  ({{ totalReviews }} reviews)
-                </p>
+                <RatingStars
+                  :rating="overallRating"
+                  :max="5"
+                  size="sm"
+                  color="#FFC107"
+                  empty-color="#E0E0E0"
+                  stroke-color="#FFC107"
+                  :gap="2"
+                  :show-value="false"
+                  :show-count="true"
+                  :count="totalReviews"
+                  align="center"
+                />
               </div>
             </div>
 
@@ -324,11 +327,12 @@
 
 <script setup lang="ts">
   import { ref, computed, onMounted, onUnmounted } from 'vue';
-  import { MessageSquare, ChevronDown, ExternalLink, Star, X } from 'lucide-vue-next';
+  import { MessageSquare, ChevronDown, ExternalLink, X } from 'lucide-vue-next';
   import { Teleport } from 'vue';
   
   import StarRatingBox from '@/components/common/starRatingBox.vue';
   import CompanyReview from '@/components/modal/companyReview.vue'; 
+  import RatingStars from '@/components/common/RatingStars.vue';
 
   interface CompanyResponse {
     name: string;

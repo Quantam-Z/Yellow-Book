@@ -89,7 +89,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { MoreHorizontal } from 'lucide-vue-next';
-import RatingStars from '~/components/common/ratingStars.vue'
+import RatingStars from '~/components/common/RatingStars.vue'
 import { getStatusClass } from '~/composables/useStatusClass'
 
 // Load recent reviews from stub
