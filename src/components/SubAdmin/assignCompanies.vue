@@ -56,20 +56,6 @@
               >
                 <span>{{ getStatusShort(company.status) }}</span>
               </div>
-              <div class="flex items-center gap-1">
-                <Eye 
-                  @click="viewCompany(company)"
-                  class="w-4 h-4 text-blue-500 cursor-pointer hover:text-blue-600 transition touch-manipulation" 
-                  title="View Details"
-                />
-                <button 
-                  @click="editCompany(company)"
-                  class="w-4 h-4 text-green-500 cursor-pointer hover:text-green-600 transition touch-manipulation"
-                  title="Edit Company"
-                >
-                  ✏️
-                </button>
-              </div>
             </div>
           </div>
           
@@ -109,7 +95,6 @@
               <th class="px-2 sm:px-3 md:px-4 py-2.5 sm:py-3 text-left text-[10px] sm:text-xs font-semibold text-gray-700 whitespace-nowrap min-w-[120px]">Company Name</th>
               <th class="px-2 sm:px-3 md:px-4 py-2.5 sm:py-3 text-left text-[10px] sm:text-xs font-semibold text-gray-700 whitespace-nowrap min-w-[90px]">Category</th>
               <th class="px-2 sm:px-3 md:px-4 py-2.5 sm:py-3 text-left text-[10px] sm:text-xs font-semibold text-gray-700 whitespace-nowrap min-w-[80px]">Status</th>
-              <th class="px-2 sm:px-3 md:px-4 py-2.5 sm:py-3 text-left text-[10px] sm:text-xs font-semibold text-gray-700 whitespace-nowrap w-16">Action</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200">
@@ -149,16 +134,6 @@
                   <ChevronDown class="w-2.5 h-2.5 sm:w-3 sm:h-3 flex-shrink-0" />
                 </div>
               </td>
-              <td class="px-2 sm:px-3 md:px-4 py-2.5 sm:py-3 whitespace-nowrap">
-  <div class="flex items-center">
-    <button
-      @click="viewCompany(company)"
-      class="text-primary-500 hover:text-primary-600 active:text-primary-700 font-medium cursor-pointer transition touch-manipulation border-0 outline-none ring-0 focus:outline-none focus:ring-0 focus:border-0 shadow-none"
-    >
-      View Details
-    </button>
-  </div>
-</td>
 
             </tr>
           </tbody>
@@ -232,7 +207,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { getStatusClass, getStatusShort } from '~/composables/useStatusClass'
-import { Search, Eye, CheckCircle, ChevronDown, ChevronLeft, ChevronRight } from "lucide-vue-next";
+import { Search, CheckCircle, ChevronDown, ChevronLeft, ChevronRight } from "lucide-vue-next";
 
 // Load from stub
 const { data: companiesData } = await useFetch('/stubs/companies.json')
@@ -324,15 +299,6 @@ const goToPage = (page) => {
   if (page >= 1 && page <= totalPages.value) {
     currentPage.value = page;
   }
-};
-
-// Action handlers
-const viewCompany = (company) => {
-  // Add your view logic here
-};
-
-const editCompany = (company) => {
-  // Add your edit logic here
 };
 
 const changeStatus = (company) => {
