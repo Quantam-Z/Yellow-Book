@@ -491,7 +491,7 @@ import {
   UserX as UserXIcon,
   Eye as EyeIcon
 } from 'lucide-vue-next'
-import RatingStars from '~/components/common/ratingStars.vue'
+import RatingStars from '~/components/common/RatingStars.vue'
 import { getStatusClass } from '~/composables/useStatusClass'
 
 const ViewReview = defineAsyncComponent(() => import('~/components/modal/viewReview.vue'))

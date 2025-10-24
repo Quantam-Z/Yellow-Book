@@ -77,7 +77,7 @@
   </template>
 
 <script setup>
-import RatingStars from '~/components/common/ratingStars.vue'
+import RatingStars from '~/components/common/RatingStars.vue'
 
 const props = defineProps({
   review: { type: Object, default: null }

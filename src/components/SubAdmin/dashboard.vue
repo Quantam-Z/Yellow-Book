@@ -227,7 +227,7 @@
 </template>
 
 <script setup>
-import RatingStars from '~/components/common/ratingStars.vue'
+import RatingStars from '~/components/common/RatingStars.vue'
 import CompanyVerificationModal from '~/components/modal/verifyReview.vue';
 import ReviewModal from '~/components/modal/reviewModal.vue';
 

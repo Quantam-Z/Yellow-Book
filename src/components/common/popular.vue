@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { Star, MapPin } from 'lucide-vue-next';
+import { MapPin } from 'lucide-vue-next';
+import RatingStars from '~/components/common/RatingStars.vue';
 
 // --- Types ---
 type StubAgency = {
@@ -114,11 +115,11 @@ const sortedLimitedAgencies = computed(() => {
       {{ props.heading }}
     </div>
 
-    <div class="w-full flex flex-wrap justify-center items-stretch gap-8">
+    <div class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
       <div
         v-for="(agency, index) in sortedLimitedAgencies"
         :key="agency.id"
-        class="flex-1 basis-[320px] max-w-full sm:max-w-[420px] rounded-2xl overflow-hidden flex flex-col cursor-pointer bg-white shadow-xl transition-all duration-500 hover:-translate-y-4 hover:shadow-2xl group"
+        class="rounded-2xl overflow-hidden flex flex-col cursor-pointer bg-white shadow-xl transition-all duration-500 hover:-translate-y-4 hover:shadow-2xl group"
         @click="goToAgency(agency.title, agency.slug, agency.id)"
       >
         <!-- Agency Image -->
@@ -134,10 +135,17 @@ const sortedLimitedAgencies = computed(() => {
 
           <!-- Rating -->
           <div class="flex items-center gap-2">
-            <div class="flex items-center gap-1">
-              <Star v-for="i in getStars(agency.rating).length" :key="i" class="w-6 h-6 text-[#fcc207] fill-[#fcc207]" />
-            </div>
-            <span class="text-lg font-semibold text-[#212121]">{{ agency.rating }}/5</span>
+            <RatingStars
+              :rating="agency.rating"
+              :max="5"
+              size="md"
+              color="#FFC107"
+              empty-color="#E0E0E0"
+              stroke-color="#FFC107"
+              :gap="4"
+              :show-value="false"
+            />
+            <span class="text-lg font-semibold text-[#212121]">{{ agency.rating.toFixed(1) }}/5</span>
           </div>
 
           <!-- Location -->
