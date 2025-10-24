@@ -9,25 +9,25 @@
 
     <!-- Toggle Buttons -->
     <div class="flex gap-4 mb-6">
-      <button 
-        @click="activeSection = 'profile'"
-        class="px-6 py-3 rounded-lg text-sm font-medium transition-all duration-300"
-        :class="activeSection === 'profile' 
-          ? 'bg-yellow-500 text-black shadow-md' 
-          : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'"
-      >
-        Profile Information
-      </button>
-      <button 
-        @click="activeSection = 'password'"
-        class="px-6 py-3 rounded-lg text-sm font-medium transition-all duration-300"
-        :class="activeSection === 'password' 
-          ? 'bg-yellow-500 text-black shadow-md' 
-          : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'"
-      >
-        Change Password
-      </button>
-    </div>
+  <button 
+    @click="activeSection = 'profile'"
+    class="px-6 py-3 rounded-lg text-sm font-medium transition-all duration-300"
+    :class="activeSection === 'profile' 
+      ? 'bg-gold text-black shadow-md' 
+      : 'bg-white text-gray-600 hover:bg-gray-50'"
+  >
+    Profile Information
+  </button>
+  <button 
+    @click="activeSection = 'password'"
+    class="px-6 py-3 rounded-lg text-sm font-medium transition-all duration-300"
+    :class="activeSection === 'password' 
+      ? 'bg-gold text-black' 
+      : 'bg-white text-gray-600 hover:bg-gray-50'"
+  >
+    Change Password
+  </button>
+</div>
 
     <!-- Profile Information Section -->
     <div 

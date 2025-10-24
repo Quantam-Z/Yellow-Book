@@ -21,21 +21,21 @@
       <!-- Main Content - Left Side -->
       <div class="lg:col-span-2 space-y-4 sm:space-y-6">
         <!-- Companies Awaiting Verification Section -->
-        <div class="w-full relative flex flex-col items-start gap-6 text-left text-2xl text-gray-900 font-plus-jakarta-sans">
+        <div class="w-full relative flex flex-col items-start gap-6 text-left text-[24px] text-gray-900 font-plus-jakarta-sans">
           <b class="self-stretch relative leading-[130%] capitalize">Companies Awaiting Your Verification</b>
           <div class="self-stretch flex flex-col items-start gap-2 text-base">
             <div 
               v-for="(company, index) in companies" 
-              :key="index"
-              class="w-full relative rounded-lg border border-white/30 border-solid flex flex-col md:flex-row md:items-center justify-between p-4 gap-3 md:gap-5 text-left text-base text-gray-900 font-plus-jakarta-sans hover:border-yellow-400 transition-colors"
+              :key="company.id"
+              class="self-stretch rounded-lg border border-[#E5E5E5] border-solid flex items-center justify-between p-4 gap-5 hover:border-blue-400 transition-colors"
             >
-              <div class="flex items-start md:items-center gap-3 sm:gap-4 flex-1 min-w-0">
+              <div class="flex items-center gap-4">
                 <div class="h-8 w-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded flex items-center justify-center flex-shrink-0">
                   <span class="text-white font-bold text-xs">{{ company.name.charAt(0) }}</span>
                 </div>
-                <div class="flex-1 min-w-0 flex flex-col items-start gap-2">
+                <div class="w-[260px] flex flex-col items-start gap-2">
                   <b class="self-stretch relative leading-[130%] capitalize truncate">{{ company.name }}</b>
-                  <div class="self-stretch flex flex-wrap items-center gap-2 text-gray-500">
+                  <div class="self-stretch flex items-center gap-2 text-gray-500">
                     <div class="relative leading-[130%] capitalize bg-gray-100 px-2 py-1 rounded">{{ company.category }}</div>
                     <div class="flex items-center gap-2">
                       <div class="h-1.5 w-1.5 relative rounded-[50%] bg-gray-300" />
@@ -46,24 +46,22 @@
               </div>
               <button 
                 @click="openCompanyVerification(company)"
-                class="h-12 rounded bg-gold hover:bg-goldenrod active:bg-[#d4a007] flex items-center justify-center py-3 px-6 sm:px-8 md:px-9 box-border text-center touch-manipulation transition-colors w-full md:w-auto md:flex-shrink-0 mt-2 md:mt-0 border-0 outline-none focus:outline-none focus:ring-2 focus:ring-yellow-300"
-                style="border: 0 !important; box-shadow: none !important;"
+                class="h-12 rounded bg-[#FCC207] hover:bg-[#E0A900] flex items-center justify-center py-3 px-9 box-border text-center touch-manipulation transition-colors border-0 outline-none focus:outline-none focus:ring-0"
               >
                 <div class="relative leading-[130%] capitalize font-semibold text-black">Review & Verify</div>
               </button>
-
             </div>
           </div>
         </div>
 
         <!-- New Reviews for Your Companies Section -->
-        <div class="w-full relative flex flex-col items-start gap-6 text-left text-2xl text-gray-900 font-plus-jakarta-sans">
+        <div class="w-full relative flex flex-col items-start gap-6 text-left text-[24px] text-gray-900 font-plus-jakarta-sans">
           <b class="self-stretch relative leading-[130%] capitalize">New Reviews for Your Companies</b>
           <div class="self-stretch flex flex-col items-start gap-2">
             <div 
               v-for="(review, index) in reviews" 
-              :key="index"
-              class="w-full relative rounded-lg border border-white/30 border-solid box-border flex flex-col sm:flex-row sm:items-center justify-between p-4 gap-5 text-left text-base text-gray-700 font-plus-jakarta-sans hover:border-blue-400 transition-colors"
+              :key="review.id"
+              class="w-full relative rounded-lg border border-[#E5E5E5] border-solid box-border flex flex-col sm:flex-row sm:items-center justify-between p-4 gap-5 text-left text-base text-gray-700 font-plus-jakarta-sans hover:border-blue-400 transition-colors"
             >
               <div class="flex-1 min-w-0">
                 <div class="w-full relative leading-[160%] capitalize mb-3 line-clamp-2">"{{ review.text }}"</div>
@@ -85,11 +83,10 @@
               </div>
               <button 
                 @click="openReviewModeration(review)"
-                class="h-12 rounded bg-[#FFF9E6] hover:bg-[#FFF2CC] active:bg-[#FEE299] flex items-center justify-center py-3 px-6 sm:px-8 md:px-9 box-border text-center touch-manipulation transition-colors sm:flex-shrink-0 w-full sm:w-auto border-0 outline-none focus:outline-none focus:ring-2 focus:ring-yellow-300"
+                class="h-12 rounded bg-[#FFF9E6] hover:bg-[#FFF2CC] flex items-center justify-center py-3 px-9 box-border text-center touch-manipulation transition-colors sm:flex-shrink-0 w-full sm:w-auto border-0 outline-none focus:outline-none focus:ring-0"
               >
-                <div class="relative leading-[130%] capitalize font-semibold text-[#0369a1]">Moderate Review</div>
+                <div class="relative leading-[130%] capitalize font-semibold text-[#0b0c0c]">Moderate Review</div>
               </button>
-
             </div>
           </div>
         </div>
@@ -98,7 +95,7 @@
       <!-- Sidebar - Right Side -->
       <div class="space-y-3 sm:space-y-4">
         <!-- Task Summary Card -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-3 sm:p-4">
+        <div class="bg-white rounded-xl shadow-sm border border-[#E5E5E5] p-3 sm:p-4">
           <h3 class="text-base sm:text-lg font-bold text-gray-900 mb-3 sm:mb-4 text-center">Task Summary</h3>
           
           <!-- Progress Chart -->
@@ -184,34 +181,47 @@
 </template>
 
 <script setup>
+import { ref, computed, onMounted } from 'vue';
+import RatingStars from '~/components/common/RatingStars.vue'
 import CompanyVerificationModal from '~/components/modal/verifyReview.vue';
 import ReviewModal from '~/components/modal/reviewModal.vue';
-
-definePageMeta({
-  layout: "subadminpanel",
-});
 
 // Modal states
 const selectedCompany = ref(null);
 const selectedReview = ref(null);
 
-// Load sample data from stubs with resilient hydration on reload
-const { data: companiesData, refresh: refreshCompanies } = await useFetch('/stubs/subadminAssignedCompanies.json', { default: () => [] })
-const companies = companiesData.value || []
+// Data with proper initialization
+const companies = ref([]);
+const reviews = ref([]);
 
-const { data: reviewsData, refresh: refreshReviews } = await useFetch('/stubs/subadminReviews.json', { default: () => [] })
-const reviews = reviewsData.value || []
+// Load data on component mount and handle refresh
+onMounted(async () => {
+  await loadData();
+});
 
-onMounted(() => {
-  if (!companiesData.value || companiesData.value.length === 0) refreshCompanies()
-  if (!reviewsData.value || reviewsData.value.length === 0) refreshReviews()
-})
+// Function to load data
+const loadData = async () => {
+  try {
+    // Load companies data
+    const { data: companiesData } = await useFetch('/stubs/subadminAssignedCompanies.json');
+    companies.value = companiesData.value || [];
+    
+    // Load reviews data
+    const { data: reviewsData } = await useFetch('/stubs/subadminReviews.json');
+    reviews.value = reviewsData.value || [];
+  } catch (error) {
+    console.error('Error loading data:', error);
+    // Fallback to empty arrays if data fails to load
+    companies.value = [];
+    reviews.value = [];
+  }
+};
 
-// Computed
-const companiesLen = computed(() => companies.length);
-const reviewsLen = computed(() => reviews.length);
+// Computed properties
+const companiesLen = computed(() => companies.value.length);
+const reviewsLen = computed(() => reviews.value.length);
 const totalTasks = computed(() => companiesLen.value + reviewsLen.value);
-const circumference = 2 * Math.PI * 45; // For the progress chart
+const circumference = 2 * Math.PI * 45;
 
 // Company Verification Methods
 const openCompanyVerification = (company) => {
@@ -223,19 +233,17 @@ const closeCompanyVerification = () => {
 };
 
 const handleCompanyApprove = ({ companyId, verification }) => {
-  // Remove company from list after approval
-  const index = companies.findIndex(c => c.id === companyId);
+  const index = companies.value.findIndex(c => c.id === companyId);
   if (index !== -1) {
-    companies.splice(index, 1);
+    companies.value.splice(index, 1);
   }
   closeCompanyVerification();
 };
 
 const handleCompanyReject = ({ companyId, verification }) => {
-  // Remove company from list after rejection
-  const index = companies.findIndex(c => c.id === companyId);
+  const index = companies.value.findIndex(c => c.id === companyId);
   if (index !== -1) {
-    companies.splice(index, 1);
+    companies.value.splice(index, 1);
   }
   closeCompanyVerification();
 };
@@ -250,19 +258,17 @@ const closeReviewModeration = () => {
 };
 
 const handleReviewStatusUpdate = ({ reviewId, status }) => {
-  // Remove review from list after status update
-  const index = reviews.findIndex(r => r.id === reviewId);
+  const index = reviews.value.findIndex(r => r.id === reviewId);
   if (index !== -1) {
-    reviews.splice(index, 1);
+    reviews.value.splice(index, 1);
   }
   closeReviewModeration();
 };
 
 const handleReviewBan = (reviewId) => {
-  // Remove review from list after banning reviewer
-  const index = reviews.findIndex(r => r.id === reviewId);
+  const index = reviews.value.findIndex(r => r.id === reviewId);
   if (index !== -1) {
-    reviews.splice(index, 1);
+    reviews.value.splice(index, 1);
   }
   closeReviewModeration();
 };
@@ -276,9 +282,12 @@ const handleReviewBan = (reviewId) => {
   overflow: hidden;
 }
 
-/* Better touch targets for mobile */
 .touch-manipulation {
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+}
+
+.font-plus-jakarta-sans {
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 </style>

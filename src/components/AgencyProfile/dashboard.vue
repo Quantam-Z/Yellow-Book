@@ -1,11 +1,21 @@
 <template>
   <div class="w-full min-h-screen bg-gray-50 p-3 sm:p-4 md:p-6">
     <!-- Header Section -->
-    <div
-      class="w-full rounded-lg bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 p-3 sm:p-4 md:p-6 mb-4 sm:mb-6"
-    >
-      <h1 class="text-xl sm:text-2xl font-bold text-gray-900 mb-2">My Assigned Tasks</h1>
-    </div>
+    <div class="w-full rounded-lg bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 p-3 sm:p-4 md:p-6 mb-4 sm:mb-6 flex flex-col sm:flex-row sm:items-center justify-between">
+  <!-- Header Text -->
+  <h1 class="text-xl sm:text-2xl font-bold text-gray-900 mb-2 sm:mb-0">
+    My Assigned Tasks
+  </h1>
+
+  <!-- List Company Link -->
+  <NuxtLink
+    to="/dashboard/agencyprofile/CreatesubAdmin"
+    class="bg-white/20 hover:bg-white/30 text-black font-semibold px-4 py-2.5 rounded-lg transition shadow-md whitespace-nowrap text-sm w-full sm:w-auto text-center no-underline"
+  >
+    List Company
+  </NuxtLink>
+</div>
+
 
     <!-- Stats Section -->
     <div class="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-4 sm:mb-6">
