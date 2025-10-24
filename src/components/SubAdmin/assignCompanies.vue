@@ -1,36 +1,51 @@
 <template>
   <div class="w-full font-plus-jakarta-sans">
-    <!-- Header Section with Gradient Background -->
+    <!-- Header Section -->
     <div class="w-full rounded-lg bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 p-3 sm:p-4 md:p-6 mb-4">
-      <!-- Header -->
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
         <h1 class="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">My Assign Companies</h1>
       </div>
 
       <div class="w-full relative rounded-lg bg-gray-50 border-white border-solid border box-border flex items-center p-2.5 sm:p-3 md:p-4 gap-2 sm:gap-3">
-  <Search class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-gray-400 flex-shrink-0" />
-  <input
-    type="text"
-    v-model="searchQuery"
-    placeholder="Search companies by name or category"
-    class="flex-1 outline-none border-none bg-transparent text-gray-600 placeholder-gray-400 text-xs sm:text-sm md:text-base leading-[130%] capitalize min-w-0"
-  />
-</div>
-
+        <Search class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-gray-400 flex-shrink-0" />
+        <input
+          type="text"
+          v-model="searchQuery"
+          placeholder="Search companies by name or category"
+          class="flex-1 outline-none border-none bg-transparent text-gray-600 placeholder-gray-400 text-xs sm:text-sm md:text-base leading-[130%] capitalize min-w-0"
+        />
+      </div>
     </div>
 
-    <!-- Filters Section - Enhanced for Mobile -->
-    <div class="mb-4 flex flex-col xs:flex-row gap-3 items-start xs:items-center justify-between">
-      <h2 class="text-xs sm:text-sm md:text-base font-semibold text-gray-900 whitespace-nowrap hidden xs:block">
-        All Company List
-      </h2>
+    <!-- Header with "All List" and Filters -->
+    <div class="w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mb-4">
+      <!-- "All List" on the left -->
+      <h2 class="text-base sm:text-lg font-semibold text-gray-900 whitespace-nowrap">All List</h2>
       
-  
+      <!-- Filters on the right -->
+      <div class="flex flex-wrap gap-2 sm:gap-3 items-center justify-end w-full sm:w-auto">
+        <!-- Status Filter -->
+        <div class="relative min-w-[120px] sm:min-w-[140px]">
+          <select 
+            v-model="filters.status"
+            class="h-9 sm:h-10 w-full rounded-lg bg-white border border-gray-200 box-border flex items-center py-0 pl-3 pr-8 text-xs sm:text-sm text-gray-700 leading-[130%] font-medium appearance-none cursor-pointer focus:ring-1 focus:ring-yellow-400 focus:border-yellow-400 transition"
+          >
+            <option value="">All</option>
+            <option value="pending">Pending</option>
+            <option value="verified">Verified</option>
+            <option value="rejected">Rejected</option>
+          </select>
+          <ChevronDown class="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none"/>
+        </div>
+
+      
+      </div>
     </div>
 
-    <!-- Table Container with Mobile Card View -->
+    <!-- Companies Table -->
     <div class="w-full bg-white rounded-xl shadow-md overflow-hidden">
-      <!-- Mobile Card View -->
+      
+      <!-- Mobile View -->
       <div class="block sm:hidden">
         <div 
           v-for="(company, index) in paginatedCompanies" 
@@ -59,14 +74,11 @@
             </div>
           </div>
           
-          <!-- Company Info -->
           <div class="space-y-2">
             <div class="flex items-center gap-2">
               <span class="text-sm font-semibold text-gray-900 truncate flex-1">{{ company.name }}</span>
               <CheckCircle v-if="company.verified" class="w-3 h-3 text-green-500 flex-shrink-0" />
             </div>
-            
-        
             
             <div class="flex items-center justify-between text-[11px]">
               <div class="flex items-center gap-2">
@@ -75,11 +87,10 @@
               </div>
             </div>
 
-            <!-- Action: Details (mobile) -->
             <div class="pt-2 flex justify-center">
               <button
                 @click="viewDetails(company)"
-                class="inline-flex items-center justify-center px-3 py-1.5 rounded-md bg-blue-50 text-blue-700 text-xs font-medium hover:bg-blue-100 active:bg-blue-200 transition"
+                class="text-xs font-medium text-yellow-600 hover:text-yellow-700 active:text-yellow-800 transition touch-manipulation underline"
               >
                 Details
               </button>
@@ -88,7 +99,7 @@
         </div>
       </div>
 
-      <!-- Desktop Table View -->
+      <!-- Desktop View -->
       <div class="hidden sm:block overflow-x-auto scrollbar-thin">
         <table class="w-full table-auto" style="min-width: 700px;">
           <thead class="bg-gray-50 border-b border-gray-200">
@@ -146,22 +157,22 @@
                 </div>
               </td>
 
-              <!-- Action: Details (desktop) -->
               <td class="px-2 sm:px-3 md:px-4 py-2.5 sm:py-3 text-center">
-                <button
-                  @click="viewDetails(company)"
-                  class="inline-flex items-center justify-center px-2.5 sm:px-3 py-1 rounded-md bg-blue-50 text-blue-700 text-[10px] sm:text-xs font-medium hover:bg-blue-100 active:bg-blue-200 transition"
-                >
-                  Details
-                </button>
-              </td>
+  <span
+    @click="viewDetails(company)"
+    class="text-[10px] sm:text-xs font-medium text-yellow-600 hover:text-yellow-700 active:text-yellow-800 transition touch-manipulation underline cursor-pointer"
+  >
+    Details
+  </span>
+</td>
+
 
             </tr>
           </tbody>
         </table>
       </div>
 
-      <!-- No Results -->
+      <!-- Empty State -->
       <div v-if="filteredCompanies.length === 0" class="text-center py-8 sm:py-12">
         <div class="w-12 h-12 mx-auto mb-3 bg-gray-100 rounded-full flex items-center justify-center">
           <Search class="w-6 h-6 text-gray-400" />
@@ -171,7 +182,7 @@
       </div>
     </div>
 
-    <!-- Enhanced Pagination -->
+    <!-- Pagination -->
     <div class="flex flex-col sm:flex-row justify-between items-center mt-4 gap-3">
       <p class="text-[10px] sm:text-xs text-gray-600 text-center sm:text-left">
         Showing 
@@ -193,7 +204,6 @@
           <span class="hidden xs:inline">Previous</span>
         </button>
         
-        <!-- Page Numbers - Show limited on mobile -->
         <button 
           v-for="page in getVisiblePages()" 
           :key="page"
@@ -204,7 +214,6 @@
           {{ page }}
         </button>
 
-        <!-- Current page indicator for mobile -->
         <button 
           class="px-2.5 sm:px-3 py-1.5 bg-yellow-400 text-gray-900 rounded-lg text-[10px] sm:text-xs font-medium xs:hidden"
         >
@@ -218,7 +227,7 @@
           :class="currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''"
         >
           <span class="hidden xs:inline">Next</span>
-          <ChevronRight class="w-3 h-3 xs:hidden" />
+          <ChevronRight class="w-3 h-3" />
         </button>
       </div>
     </div>
@@ -226,9 +235,27 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
-import { getStatusClass, getStatusShort } from '~/composables/useStatusClass'
+import { ref, computed, onMounted } from 'vue';
 import { Search, CheckCircle, ChevronDown, ChevronLeft, ChevronRight } from "lucide-vue-next";
+
+// Status utility functions
+const getStatusClass = (status) => {
+  const statusMap = {
+    'pending': 'bg-yellow-100 text-yellow-800 border border-yellow-200',
+    'verified': 'bg-green-100 text-green-800 border border-green-200',
+    'rejected': 'bg-red-100 text-red-800 border border-red-200'
+  };
+  return statusMap[status?.toLowerCase()] || 'bg-gray-100 text-gray-800 border border-gray-200';
+};
+
+const getStatusShort = (status) => {
+  const shortMap = {
+    'pending': 'Pend',
+    'verified': 'Verif',
+    'rejected': 'Rej'
+  };
+  return shortMap[status?.toLowerCase()] || status?.substring(0, 4) || 'N/A';
+};
 
 // Load from stub
 const { data: companiesData } = await useFetch('/stubs/companies.json')
@@ -245,11 +272,17 @@ const filters = ref({
   category: ''
 });
 
-// Unique categories without copying whole arrays
+// Unique categories and statuses
 const categories = computed(() => {
   const seen = new Set()
   for (const c of companies.value) seen.add(c.category)
-  return Array.from(seen)
+  return Array.from(seen).sort()
+})
+
+const statuses = computed(() => {
+  const seen = new Set()
+  for (const c of companies.value) seen.add(c.status)
+  return Array.from(seen).sort()
 })
 
 // Filtered companies
@@ -257,15 +290,24 @@ const filteredCompanies = computed(() => {
   const q = (searchQuery.value || '').toLowerCase()
   const status = filters.value.status
   const category = filters.value.category
+  
   const result = companies.value.filter(company => {
+    // Search
     if (q) {
-      const matches = company.name.toLowerCase().includes(q) || company.category.toLowerCase().includes(q) || company.website.toLowerCase().includes(q)
+      const matches = company.name.toLowerCase().includes(q) || 
+                     company.category.toLowerCase().includes(q) || 
+                     (company.website && company.website.toLowerCase().includes(q))
       if (!matches) return false
     }
+    // Status Filter
     if (status && company.status !== status) return false
+    // Category Filter
     if (category && company.category !== category) return false
+    
     return true
   })
+  
+  // Reset pagination on filter change
   currentPage.value = 1
   return result
 })
@@ -281,18 +323,19 @@ const paginatedCompanies = computed(() => {
   return filteredCompanies.value.slice(start, end);
 });
 
-// Get visible pages for pagination (limited on mobile)
+// Get visible pages for pagination
 const getVisiblePages = () => {
   const pages = [];
-  const maxVisible = 3; // Show only 3 pages on mobile
+  const maxVisible = 5;
+  const total = totalPages.value;
   
-  if (totalPages.value <= maxVisible) {
-    for (let i = 1; i <= totalPages.value; i++) {
+  if (total <= maxVisible) {
+    for (let i = 1; i <= total; i++) {
       pages.push(i);
     }
   } else {
-    let start = Math.max(1, currentPage.value - 1);
-    let end = Math.min(totalPages.value, start + maxVisible - 1);
+    let start = Math.max(1, currentPage.value - Math.floor(maxVisible / 2));
+    let end = Math.min(total, start + maxVisible - 1);
     
     if (end - start + 1 < maxVisible) {
       start = Math.max(1, end - maxVisible + 1);
@@ -306,14 +349,11 @@ const getVisiblePages = () => {
   return pages;
 };
 
-// Select all checkbox
 const toggleSelectAll = () => {
   paginatedCompanies.value.forEach(company => {
     company.selected = selectAll.value;
   });
 };
-
-// Status helpers moved to composable
 
 // Navigation
 const goToPage = (page) => {
@@ -323,15 +363,19 @@ const goToPage = (page) => {
 };
 
 const changeStatus = (company) => {
-  // Add your status change logic here
+  console.log('Change status for:', company.name);
 };
 
 // Action: Details
 const viewDetails = (company) => {
   // Implement navigation or modal as needed
-  // Placeholder to avoid unused var lint errors
-  if (!company) return;
+  console.log('Viewing details for:', company.name);
 };
+
+// Watch for filter changes to reset pagination
+watch([() => filters.value.status, () => filters.value.category], () => {
+  currentPage.value = 1;
+});
 </script>
 
 <style scoped>
@@ -367,50 +411,8 @@ const viewDetails = (company) => {
 
 /* Enhanced responsive breakpoints */
 @media (max-width: 475px) {
-  .xs\\:hidden {
+  .hidden.xs\\:inline {
     display: none !important;
-  }
-  
-  .xs\\:block {
-    display: block !important;
-  }
-  
-  .xs\\:inline {
-    display: inline !important;
-  }
-
-  .xs\\:flex-row {
-    flex-direction: row !important;
-  }
-
-  .xs\\:items-center {
-    align-items: center !important;
-  }
-
-  .xs\\:w-auto {
-    width: auto !important;
-  }
-}
-
-/* Mobile specific adjustments */
-@media (max-width: 640px) {
-  .scrollbar-thin::-webkit-scrollbar {
-    height: 4px;
-  }
-}
-
-/* Extra small devices optimization */
-@media (max-width: 375px) {
-  .text-\[10px\] {
-    font-size: 9px;
-  }
-  
-  .gap-1 {
-    gap: 0.25rem;
-  }
-  
-  .p-3 {
-    padding: 0.75rem;
   }
 }
 </style>
