@@ -1,12 +1,41 @@
 <template>
   <div class="w-full min-h-screen bg-gray-50 p-3 sm:p-4 md:p-6">
     <!-- Header Section -->
-    <div class="mb-4 sm:mb-6">
-      <h1 class="text-xl sm:text-2xl font-bold text-gray-900 mb-2">My Assigned Tasks</h1>
-      <p class="text-sm sm:text-base text-gray-600 max-w-4xl leading-relaxed">
-        Welcome! You have tasks that require your attention. This page provides a "to-do list" of items assigned to you, 
-        helping you focus on the most important actions for verification and content moderation.
+    <div
+      class="w-full rounded-lg bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 p-3 sm:p-4 md:p-6 mb-4 sm:mb-6"
+    >
+      <h1 class="text-xl sm:text-2xl font-bold text-gray-900 mb-1">My Assigned Tasks</h1>
+      <p class="text-xs sm:text-sm text-gray-700 max-w-3xl leading-relaxed">
+        Overview of companies awaiting verification and new reviews assigned to you.
       </p>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-4 sm:mb-6">
+      <div class="flex items-center justify-between p-3 sm:p-4 rounded-lg bg-white border shadow-sm">
+        <div class="min-w-0 flex-1">
+          <p class="text-gray-600 font-medium text-xs sm:text-sm truncate">Awaiting Verification</p>
+          <p class="text-xl sm:text-2xl font-semibold truncate">{{ companiesLen }}</p>
+        </div>
+      </div>
+      <div class="flex items-center justify-between p-3 sm:p-4 rounded-lg bg-white border shadow-sm">
+        <div class="min-w-0 flex-1">
+          <p class="text-gray-600 font-medium text-xs sm:text-sm truncate">New Reviews</p>
+          <p class="text-xl sm:text-2xl font-semibold truncate">{{ reviewsLen }}</p>
+        </div>
+      </div>
+      <div class="flex items-center justify-between p-3 sm:p-4 rounded-lg bg-white border shadow-sm">
+        <div class="min-w-0 flex-1">
+          <p class="text-gray-600 font-medium text-xs sm:text-sm truncate">Avg. Response Time</p>
+          <p class="text-xl sm:text-2xl font-semibold truncate">2.3h</p>
+        </div>
+      </div>
+      <div class="flex items-center justify-between p-3 sm:p-4 rounded-lg bg-white border shadow-sm">
+        <div class="min-w-0 flex-1">
+          <p class="text-gray-600 font-medium text-xs sm:text-sm truncate">SLA Compliance</p>
+          <p class="text-xl sm:text-2xl font-semibold text-green-600 truncate">98%</p>
+        </div>
+      </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
@@ -125,7 +154,7 @@
                   fill="none" 
                   stroke="#3b82f6" 
                   stroke-width="8"
-                  :stroke-dasharray="`${(companies.length / 10) * 282.6} 282.6`"
+                  :stroke-dasharray="`${(companiesLen / 10) * circumference} ${circumference}`"
                   stroke-dashoffset="70.65"
                   transform="rotate(-90 50 50)"
                 />
@@ -137,8 +166,8 @@
                   fill="none" 
                   stroke="#10b981" 
                   stroke-width="8"
-                  :stroke-dasharray="`${(reviews.length / 10) * 282.6} 282.6`"
-                  :stroke-dashoffset="70.65 - (companies.length / 10) * 282.6"
+                  :stroke-dasharray="`${(reviewsLen / 10) * circumference} ${circumference}`"
+                  :stroke-dashoffset="70.65 - (companiesLen / 10) * circumference"
                   transform="rotate(-90 50 50)"
                 />
               </svg>
@@ -155,11 +184,11 @@
           <div class="space-y-2">
             <div class="flex items-center gap-2">
               <div class="w-3 h-3 bg-blue-500 rounded flex-shrink-0"></div>
-              <span class="text-gray-700 text-xs sm:text-sm truncate">Pending Verification ({{ companies.length }})</span>
+              <span class="text-gray-700 text-xs sm:text-sm truncate">Pending Verification ({{ companiesLen }})</span>
             </div>
             <div class="flex items-center gap-2">
               <div class="w-3 h-3 bg-green-500 rounded flex-shrink-0"></div>
-              <span class="text-gray-700 text-xs sm:text-sm truncate">Pending Reviews ({{ reviews.length }})</span>
+              <span class="text-gray-700 text-xs sm:text-sm truncate">Pending Reviews ({{ reviewsLen }})</span>
             </div>
           </div>
         </div>
@@ -218,10 +247,8 @@
       v-if="selectedReview"
       :review="selectedReview"
       @close="closeReviewModeration"
-      @approve="handleReviewApprove"
-      @reject="handleReviewReject"
-      @hold="handleReviewHold"
-      @ban="handleReviewBan"
+      @update-status="handleReviewStatusUpdate"
+      @ban-reviewer="handleReviewBan"
     />
   </div>
 </template>
