@@ -43,14 +43,14 @@
     </div>
 
     <!-- Companies Table -->
-    <div class="w-full bg-white rounded-xl shadow-md overflow-hidden">
+      <div class="w-full bg-white rounded-xl shadow-md overflow-hidden">
       
       <!-- Mobile View -->
       <div class="block sm:hidden">
         <div 
           v-for="(company, index) in paginatedCompanies" 
           :key="company.id"
-          class="p-4 border-b border-gray-200 hover:bg-gray-50 active:bg-gray-100 transition"
+          class="p-4 hover:bg-gray-50 active:bg-gray-100 transition"
         >
           <div class="flex items-center justify-between mb-3">
             <div class="flex items-center gap-3">
@@ -105,7 +105,7 @@
 
       <!-- Desktop View -->
       <div class="hidden sm:block overflow-x-auto scrollbar-thin">
-        <table class="w-full table-auto" style="min-width: 700px;">
+        <table class="w-full table-auto min-w-[700px]">
           <thead class="bg-gray-50 border-b border-gray-200">
             <tr>
               <th class="px-2 sm:px-3 md:px-4 py-2.5 sm:py-3 text-left w-12">
@@ -212,7 +212,7 @@
           v-for="page in getVisiblePages()" 
           :key="page"
           @click="goToPage(page)"
-          class="px-2.5 sm:px-3 py-1.5 rounded-lg text-[10px] sm:text-xs font-medium transition touch-manipulation hidden xs:block"
+          class="px-2.5 sm:px-3 py-1.5 rounded-lg text-[10px] sm:text-xs font-medium transition touch-manipulation hidden xs:block focus:outline-none focus:ring-2 focus:ring-yellow-400"
           :class="page === currentPage ? 'bg-yellow-400 text-gray-900' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'"
         >
           {{ page }}
@@ -239,7 +239,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch, watchEffect } from 'vue';
 import { Search, CheckCircle, ChevronDown, ChevronLeft, ChevronRight } from "lucide-vue-next";
 
 // Status utility functions
@@ -261,9 +261,25 @@ const getStatusShort = (status) => {
   return shortMap[status?.toLowerCase()] || status?.substring(0, 4) || 'N/A';
 };
 
-// Load from stub
-const { data: companiesData } = await useFetch('/stubs/companies.json')
-const companies = ref((companiesData.value || []).map(c => ({ ...c, selected: false })))
+// Load from stub with safe defaults and reactive hydration on reload
+const { data: companiesData, refresh: refreshCompanies, pending, error } = await useFetch('/stubs/companies.json', {
+  default: () => []
+})
+
+const companies = ref([])
+
+// Hydrate companies when data becomes available (e.g., after page reload/CSR)
+watchEffect(() => {
+  const source = Array.isArray(companiesData.value) ? companiesData.value : []
+  companies.value = source.map(c => ({ ...c, selected: false }))
+})
+
+// Ensure data is fetched on client mount if not present
+onMounted(() => {
+  if (!companiesData.value || companiesData.value.length === 0) {
+    refreshCompanies()
+  }
+})
 
 // Search and filters
 const searchQuery = ref('');

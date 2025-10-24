@@ -27,7 +27,7 @@
             <div 
               v-for="(company, index) in companies" 
               :key="index"
-              class="w-full relative rounded-lg border border-gray-200 border-solid flex flex-col md:flex-row md:items-center justify-between p-4 gap-3 md:gap-5 text-left text-base text-gray-900 font-plus-jakarta-sans hover:border-yellow-400 transition-colors"
+              class="w-full relative rounded-lg border border-white/30 border-solid flex flex-col md:flex-row md:items-center justify-between p-4 gap-3 md:gap-5 text-left text-base text-gray-900 font-plus-jakarta-sans hover:border-yellow-400 transition-colors"
             >
               <div class="flex items-start md:items-center gap-3 sm:gap-4 flex-1 min-w-0">
                 <div class="h-8 w-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded flex items-center justify-center flex-shrink-0">
@@ -45,12 +45,12 @@
                 </div>
               </div>
               <button 
-  @click="openCompanyVerification(company)"
-  class="h-12 rounded bg-yellow-500 hover:bg-yellow-600 flex items-center justify-center py-3 px-6 sm:px-8 md:px-9 box-border text-center touch-manipulation transition-colors w-full md:w-auto md:flex-shrink-0 mt-2 md:mt-0 border-0 ring-0 focus:ring-0 focus:border-0 outline-none focus:outline-none active:outline-none active:ring-0"
-  style="border: 0 !important; box-shadow: none !important;"
->
-  <div class="relative leading-[130%] capitalize font-semibold text-black">Review & Verify</div>
-</button>
+                @click="openCompanyVerification(company)"
+                class="h-12 rounded bg-gold hover:bg-goldenrod active:bg-[#d4a007] flex items-center justify-center py-3 px-6 sm:px-8 md:px-9 box-border text-center touch-manipulation transition-colors w-full md:w-auto md:flex-shrink-0 mt-2 md:mt-0 border-0 outline-none focus:outline-none focus:ring-2 focus:ring-yellow-300"
+                style="border: 0 !important; box-shadow: none !important;"
+              >
+                <div class="relative leading-[130%] capitalize font-semibold text-black">Review & Verify</div>
+              </button>
 
             </div>
           </div>
@@ -63,7 +63,7 @@
             <div 
               v-for="(review, index) in reviews" 
               :key="index"
-              class="w-full relative rounded-lg border border-gray-200 border-solid box-border flex flex-col sm:flex-row sm:items-center justify-between p-4 gap-5 text-left text-base text-gray-700 font-plus-jakarta-sans hover:border-blue-400 transition-colors"
+              class="w-full relative rounded-lg border border-white/30 border-solid box-border flex flex-col sm:flex-row sm:items-center justify-between p-4 gap-5 text-left text-base text-gray-700 font-plus-jakarta-sans hover:border-blue-400 transition-colors"
             >
               <div class="flex-1 min-w-0">
                 <div class="w-full relative leading-[160%] capitalize mb-3 line-clamp-2">"{{ review.text }}"</div>
@@ -84,13 +84,11 @@
                 </div>
               </div>
               <button 
-  @click="openReviewModeration(review)"
-  class="h-12 rounded bg-[#FFF9E6] hover:bg-[#FFF2CC] flex items-center justify-center py-3 px-6 sm:px-8 md:px-9 box-border text-center touch-manipulation transition-colors sm:flex-shrink-0 w-full sm:w-auto border-0 outline-none focus:outline-none focus:ring-0"
->
-  <div class="relative leading-[130%] capitalize font-semibold text-[#0369a1]">
-    Moderate Review
-  </div>
-</button>
+                @click="openReviewModeration(review)"
+                class="h-12 rounded bg-[#FFF9E6] hover:bg-[#FFF2CC] active:bg-[#FEE299] flex items-center justify-center py-3 px-6 sm:px-8 md:px-9 box-border text-center touch-manipulation transition-colors sm:flex-shrink-0 w-full sm:w-auto border-0 outline-none focus:outline-none focus:ring-2 focus:ring-yellow-300"
+              >
+                <div class="relative leading-[130%] capitalize font-semibold text-[#0369a1]">Moderate Review</div>
+              </button>
 
             </div>
           </div>
@@ -197,12 +195,17 @@ definePageMeta({
 const selectedCompany = ref(null);
 const selectedReview = ref(null);
 
-// Load sample data from stubs
-const { data: companiesData } = await useFetch('/stubs/subadminAssignedCompanies.json')
+// Load sample data from stubs with resilient hydration on reload
+const { data: companiesData, refresh: refreshCompanies } = await useFetch('/stubs/subadminAssignedCompanies.json', { default: () => [] })
 const companies = companiesData.value || []
 
-const { data: reviewsData } = await useFetch('/stubs/subadminReviews.json')
+const { data: reviewsData, refresh: refreshReviews } = await useFetch('/stubs/subadminReviews.json', { default: () => [] })
 const reviews = reviewsData.value || []
+
+onMounted(() => {
+  if (!companiesData.value || companiesData.value.length === 0) refreshCompanies()
+  if (!reviewsData.value || reviewsData.value.length === 0) refreshReviews()
+})
 
 // Computed
 const companiesLen = computed(() => companies.length);
