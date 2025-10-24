@@ -7,16 +7,16 @@
         <h1 class="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">My Assign Companies</h1>
       </div>
 
-      <!-- Search Bar -->
       <div class="w-full relative rounded-lg bg-gray-50 border-white border-solid border box-border flex items-center p-2.5 sm:p-3 md:p-4 gap-2 sm:gap-3">
-        <Search class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-gray-400 flex-shrink-0" />
-        <input
-          type="text"
-          v-model="searchQuery"
-          placeholder="Search companies by name or category"
-          class="flex-1 outline-none bg-transparent text-gray-600 placeholder-gray-400 text-xs sm:text-sm md:text-base leading-[130%] capitalize min-w-0"
-        />
-      </div>
+  <Search class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-gray-400 flex-shrink-0" />
+  <input
+    type="text"
+    v-model="searchQuery"
+    placeholder="Search companies by name or category"
+    class="flex-1 outline-none border-none bg-transparent text-gray-600 placeholder-gray-400 text-xs sm:text-sm md:text-base leading-[130%] capitalize min-w-0"
+  />
+</div>
+
     </div>
 
     <!-- Filters Section - Enhanced for Mobile -->
@@ -25,29 +25,7 @@
         All Company List
       </h2>
       
-      <!-- Status Filter -->
-      <div class="flex items-center gap-1.5 sm:gap-2 w-full xs:w-auto">
-        <select 
-          v-model="filters.status"
-          class="flex-1 xs:w-32 sm:w-40 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg border border-gray-200 bg-white text-[10px] sm:text-xs text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 touch-manipulation"
-        >
-          <option value="">All Status</option>
-          <option value="Approved">Approved</option>
-          <option value="Pending">Pending</option>
-          <option value="Rejected">Rejected</option>
-        </select>
-        
-        <!-- Category Filter -->
-        <select 
-          v-model="filters.category"
-          class="flex-1 xs:w-32 sm:w-40 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg border border-gray-200 bg-white text-[10px] sm:text-xs text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 touch-manipulation"
-        >
-          <option value="">All Categories</option>
-          <option v-for="category in categories" :key="category" :value="category">
-            {{ category }}
-          </option>
-        </select>
-      </div>
+  
     </div>
 
     <!-- Table Container with Mobile Card View -->
@@ -133,8 +111,6 @@
               </th>
               <th class="px-2 sm:px-3 md:px-4 py-2.5 sm:py-3 text-left text-[10px] sm:text-xs font-semibold text-gray-700 whitespace-nowrap w-12">No</th>
               <th class="px-2 sm:px-3 md:px-4 py-2.5 sm:py-3 text-left text-[10px] sm:text-xs font-semibold text-gray-700 whitespace-nowrap min-w-[120px]">Company Name</th>
-              <th class="px-2 sm:px-3 md:px-4 py-2.5 sm:py-3 text-left text-[10px] sm:text-xs font-semibold text-gray-700 whitespace-nowrap min-w-[120px] hidden md:table-cell">Website</th>
-              <th class="px-2 sm:px-3 md:px-4 py-2.5 sm:py-3 text-left text-[10px] sm:text-xs font-semibold text-gray-700 whitespace-nowrap min-w-[80px] hidden sm:table-cell">Mobile</th>
               <th class="px-2 sm:px-3 md:px-4 py-2.5 sm:py-3 text-left text-[10px] sm:text-xs font-semibold text-gray-700 whitespace-nowrap min-w-[90px]">Category</th>
               <th class="px-2 sm:px-3 md:px-4 py-2.5 sm:py-3 text-left text-[10px] sm:text-xs font-semibold text-gray-700 whitespace-nowrap min-w-[80px]">Status</th>
               <th class="px-2 sm:px-3 md:px-4 py-2.5 sm:py-3 text-left text-[10px] sm:text-xs font-semibold text-gray-700 whitespace-nowrap w-16">Action</th>
@@ -162,14 +138,7 @@
                   <CheckCircle v-if="company.verified" class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-green-500 flex-shrink-0" />
                 </div>
               </td>
-              <td class="px-2 sm:px-3 md:px-4 py-2.5 sm:py-3 text-blue-500 text-[10px] sm:text-xs whitespace-nowrap hidden md:table-cell">
-                <a :href="'https://' + company.website" target="_blank" class="hover:underline truncate max-w-[120px] block">
-                  {{ company.website }}
-                </a>
-              </td>
-              <td class="px-2 sm:px-3 md:px-4 py-2.5 sm:py-3 text-gray-700 text-[10px] sm:text-xs whitespace-nowrap hidden sm:table-cell">
-                {{ company.mobile }}
-              </td>
+           
               <td class="px-2 sm:px-3 md:px-4 py-2.5 sm:py-3 text-gray-700 text-[10px] sm:text-xs">
                 <span class="truncate max-w-[70px] sm:max-w-[90px] md:max-w-none block">{{ company.category }}</span>
               </td>

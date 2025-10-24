@@ -10,121 +10,91 @@
       </p>
     </div>
 
-    <!-- KPI Cards -->
-    <div class="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-4 sm:mb-6">
-      <div class="flex items-center justify-between p-3 sm:p-4 rounded-lg bg-white border shadow-sm">
-        <div class="min-w-0 flex-1">
-          <p class="text-gray-600 font-medium text-xs sm:text-sm truncate">Awaiting Verification</p>
-          <p class="text-xl sm:text-2xl font-semibold truncate">{{ companiesLen }}</p>
-        </div>
-      </div>
-      <div class="flex items-center justify-between p-3 sm:p-4 rounded-lg bg-white border shadow-sm">
-        <div class="min-w-0 flex-1">
-          <p class="text-gray-600 font-medium text-xs sm:text-sm truncate">New Reviews</p>
-          <p class="text-xl sm:text-2xl font-semibold truncate">{{ reviewsLen }}</p>
-        </div>
-      </div>
-      <div class="flex items-center justify-between p-3 sm:p-4 rounded-lg bg-white border shadow-sm">
-        <div class="min-w-0 flex-1">
-          <p class="text-gray-600 font-medium text-xs sm:text-sm truncate">Avg. Response Time</p>
-          <p class="text-xl sm:text-2xl font-semibold truncate">2.3h</p>
-        </div>
-      </div>
-      <div class="flex items-center justify-between p-3 sm:p-4 rounded-lg bg-white border shadow-sm">
-        <div class="min-w-0 flex-1">
-          <p class="text-gray-600 font-medium text-xs sm:text-sm truncate">SLA Compliance</p>
-          <p class="text-xl sm:text-2xl font-semibold text-green-600 truncate">98%</p>
-        </div>
-      </div>
+    <!-- Welcome Text -->
+    <div class="mb-4 sm:mb-6">
+      <p class="text-sm sm:text-base text-gray-600 leading-relaxed">
+        Welcome! You have tasks that require your attention. This page provides a "to-do list" of items assigned to you, helping you focus on the most important actions for verification and content moderation.
+      </p>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
       <!-- Main Content - Left Side -->
       <div class="lg:col-span-2 space-y-4 sm:space-y-6">
         <!-- Companies Awaiting Verification Section -->
-        <section class="bg-white rounded-xl shadow-sm border border-gray-200 p-3 sm:p-4 md:p-6">
-          <h2 class="text-lg sm:text-xl font-bold text-gray-900 mb-3 sm:mb-4">Companies Awaiting Your Verification</h2>
-          
-          <div class="space-y-2 sm:space-y-3">
+        <div class="w-full relative flex flex-col items-start gap-6 text-left text-2xl text-gray-900 font-plus-jakarta-sans">
+          <b class="self-stretch relative leading-[130%] capitalize">Companies Awaiting Your Verification</b>
+          <div class="self-stretch flex flex-col items-start gap-2 text-base">
             <div 
               v-for="(company, index) in companies" 
               :key="index"
-              class="flex flex-col xs:flex-row xs:items-center justify-between p-3 border border-gray-200 rounded-lg hover:border-yellow-400 transition-colors gap-3"
+              class="w-full relative rounded-lg border border-gray-200 border-solid flex items-center justify-between p-4 gap-5 text-left text-base text-gray-900 font-plus-jakarta-sans hover:border-yellow-400 transition-colors"
             >
-              <div class="flex items-center gap-3 flex-1 min-w-0">
-                <!-- Company Avatar -->
-                <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
+              <div class="flex items-center gap-4">
+                <div class="h-8 w-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded flex items-center justify-center flex-shrink-0">
                   <span class="text-white font-bold text-xs">{{ company.name.charAt(0) }}</span>
                 </div>
-                
-                <!-- Company Info -->
-                <div class="flex-1 min-w-0">
-                  <h3 class="font-semibold text-gray-900 text-sm sm:text-base mb-1 truncate">{{ company.name }}</h3>
-                  <div class="flex flex-col xs:flex-row xs:items-center gap-1 xs:gap-3 text-xs text-gray-500">
-                    <span class="bg-gray-100 px-2 py-1 rounded w-fit">{{ company.category }}</span>
-                    <div class="flex items-center gap-1">
-                      <div class="w-1.5 h-1.5 bg-gray-300 rounded-full hidden xs:block"></div>
-                      <span class="text-xs">Assigned: {{ company.assignedDate }}</span>
+                <div class="w-[260px] flex flex-col items-start gap-2">
+                  <b class="self-stretch relative leading-[130%] capitalize truncate">{{ company.name }}</b>
+                  <div class="self-stretch flex items-center gap-2 text-gray-500">
+                    <div class="relative leading-[130%] capitalize bg-gray-100 px-2 py-1 rounded">{{ company.category }}</div>
+                    <div class="flex items-center gap-2">
+                      <div class="h-1.5 w-1.5 relative rounded-[50%] bg-gray-300" />
+                      <div class="relative leading-[130%] capitalize">Assigned: {{ company.assignedDate }}</div>
                     </div>
                   </div>
                 </div>
               </div>
-              
-              <!-- Action Button -->
               <button 
-                @click="openCompanyVerification(company)"
-                class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold px-3 sm:px-4 py-2 rounded-lg transition-colors whitespace-nowrap text-xs sm:text-sm w-full xs:w-auto touch-manipulation"
-              >
-                Review & Verify
-              </button>
+  @click="openCompanyVerification(company)"
+  class="h-12 rounded bg-yellow-500 hover:bg-yellow-600 flex items-center justify-center py-3 px-9 box-border text-center touch-manipulation transition-colors border-0 ring-0 focus:ring-0 focus:border-0 outline-none focus:outline-none active:outline-none active:ring-0"
+  style="border: 0 !important; box-shadow: none !important;"
+>
+  <div class="relative leading-[130%] capitalize font-semibold text-black">Review & Verify</div>
+</button>
+
             </div>
           </div>
-        </section>
+        </div>
 
-        <!-- New Reviews Section -->
-        <section class="bg-white rounded-xl shadow-sm border border-gray-200 p-3 sm:p-4 md:p-6">
-          <h2 class="text-lg sm:text-xl font-bold text-gray-900 mb-3 sm:mb-4">New Reviews for Your Companies</h2>
-          
-          <div class="space-y-2 sm:space-y-3">
+        <!-- New Reviews for Your Companies Section -->
+        <div class="w-full relative flex flex-col items-start gap-6 text-left text-2xl text-gray-900 font-plus-jakarta-sans">
+          <b class="self-stretch relative leading-[130%] capitalize">New Reviews for Your Companies</b>
+          <div class="self-stretch flex flex-col items-start gap-2">
             <div 
               v-for="(review, index) in reviews" 
               :key="index"
-              class="flex flex-col xs:flex-row xs:items-center justify-between p-3 border border-gray-200 rounded-lg hover:border-blue-400 transition-colors gap-3"
+              class="w-full relative rounded-lg border border-gray-200 border-solid box-border flex flex-col sm:flex-row sm:items-center justify-between p-4 gap-5 text-left text-base text-gray-700 font-plus-jakarta-sans hover:border-blue-400 transition-colors"
             >
               <div class="flex-1 min-w-0">
-                <!-- Review Text -->
-                <p class="text-gray-700 text-xs sm:text-sm mb-2 line-clamp-2 leading-relaxed">{{ review.text }}</p>
-                
-                <!-- Review Meta -->
-                <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-xs text-gray-500">
-                  <div class="flex items-center gap-1">
-                    <span class="font-medium hidden sm:inline">For:</span>
-                    <span class="truncate">{{ review.company }}</span>
+                <div class="w-full relative leading-[160%] capitalize mb-3 line-clamp-2">"{{ review.text }}"</div>
+                <div class="self-stretch flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6 text-gray-500">
+                  <div class="flex items-center gap-2">
+                    <div class="relative leading-[130%] capitalize">For:</div>
+                    <div class="relative leading-[130%] capitalize truncate">{{ review.company }}</div>
                   </div>
                   <div class="flex items-center gap-2">
-                    <span class="text-gray-400 hidden sm:inline">•</span>
-                    <span>{{ review.date }} | {{ review.time }}</span>
+                    <div class="relative leading-[130%] capitalize">{{ review.date }} | {{ review.time }}</div>
                   </div>
-                  <div class="flex items-center gap-1">
-                    <span class="font-medium">Rating:</span>
-                    <div class="flex items-center gap-1">
-                      <RatingStars :value="review.rating" :size-class="'w-3 h-3'" />
-                      <span class="ml-1 text-xs">{{ review.rating }} Star</span>
+                  <div class="flex items-center gap-2">
+                    <div class="relative leading-[130%] capitalize">Rating:</div>
+                    <div class="flex items-center gap-2">
+                      <div class="relative leading-[130%] capitalize ml-1">{{ review.rating }} Star</div>
                     </div>
                   </div>
                 </div>
               </div>
-              
-              <!-- Action Button -->
               <button 
-                @click="openReviewModeration(review)"
-                class="bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold px-3 sm:px-4 py-2 rounded-lg transition-colors border border-blue-200 whitespace-nowrap text-xs sm:text-sm w-full xs:w-auto touch-manipulation"
-              >
-                Moderate Review
-              </button>
+  @click="openReviewModeration(review)"
+  class="h-12 rounded bg-[#FFF9E6] hover:bg-[#FFF2CC] flex items-center justify-center py-3 px-9 box-border text-center touch-manipulation transition-colors sm:flex-shrink-0 w-full sm:w-auto border-0 outline-none focus:outline-none focus:ring-0"
+>
+  <div class="relative leading-[130%] capitalize font-semibold text-[#0369a1]">
+    Moderate Review
+  </div>
+</button>
+
             </div>
           </div>
-        </section>
+        </div>
       </div>
 
       <!-- Sidebar - Right Side -->
@@ -192,44 +162,6 @@
             </div>
           </div>
         </div>
-
-        <!-- Quick Stats -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-3 sm:p-4">
-          <h3 class="text-base sm:text-lg font-bold text-gray-900 mb-3">Quick Stats</h3>
-          <div class="space-y-2 sm:space-y-3">
-            <div class="flex justify-between items-center">
-              <span class="text-gray-600 text-xs sm:text-sm">Completed Today</span>
-              <span class="font-semibold text-gray-900 text-xs sm:text-sm">12</span>
-            </div>
-            <div class="flex justify-between items-center">
-              <span class="text-gray-600 text-xs sm:text-sm">Avg. Response Time</span>
-              <span class="font-semibold text-gray-900 text-xs sm:text-sm">2.3h</span>
-            </div>
-            <div class="flex justify-between items-center">
-              <span class="text-gray-600 text-xs sm:text-sm">SLA Compliance</span>
-              <span class="font-semibold text-green-600 text-xs sm:text-sm">98%</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Recent Activity -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-3 sm:p-4">
-          <h3 class="text-base sm:text-lg font-bold text-gray-900 mb-3">Recent Activity</h3>
-          <div class="space-y-2">
-            <div 
-              v-for="(activity, index) in recentActivities" 
-              :key="index"
-              class="flex items-center gap-2 text-xs"
-            >
-              <div 
-                class="w-1.5 h-1.5 rounded-full flex-shrink-0"
-                :class="activity.type === 'verification' ? 'bg-blue-500' : 'bg-green-500'"
-              ></div>
-              <span class="text-gray-600 flex-1 leading-tight text-xs line-clamp-1">{{ activity.description }}</span>
-              <span class="text-gray-400 text-xs whitespace-nowrap flex-shrink-0">{{ activity.time }}</span>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
 
@@ -273,15 +205,11 @@ const companies = companiesData.value || []
 const { data: reviewsData } = await useFetch('/stubs/subadminReviews.json')
 const reviews = reviewsData.value || []
 
-const recentActivities = [
-  { type: 'verification', description: 'Verified Creative Design Studio', time: '2h ago' },
-  { type: 'review', description: 'Moderated review for Tech Corp', time: '4h ago' },
-  { type: 'verification', description: 'Rejected incomplete application', time: '6h ago' },
-  { type: 'review', description: 'Approved 5-star review', time: '8h ago' },
-];
-
 // Computed
-const totalTasks = computed(() => companies.length + reviews.length);
+const companiesLen = computed(() => companies.length);
+const reviewsLen = computed(() => reviews.length);
+const totalTasks = computed(() => companiesLen.value + reviewsLen.value);
+const circumference = 2 * Math.PI * 45; // For the progress chart
 
 // Company Verification Methods
 const openCompanyVerification = (company) => {
@@ -319,26 +247,12 @@ const closeReviewModeration = () => {
   selectedReview.value = null;
 };
 
-const handleReviewApprove = (reviewId) => {
-  // Remove review from list after approval
+const handleReviewStatusUpdate = ({ reviewId, status }) => {
+  // Remove review from list after status update
   const index = reviews.findIndex(r => r.id === reviewId);
   if (index !== -1) {
     reviews.splice(index, 1);
   }
-  closeReviewModeration();
-};
-
-const handleReviewReject = (reviewId) => {
-  // Remove review from list after rejection
-  const index = reviews.findIndex(r => r.id === reviewId);
-  if (index !== -1) {
-    reviews.splice(index, 1);
-  }
-  closeReviewModeration();
-};
-
-const handleReviewHold = (reviewId) => {
-  // You might want to keep the review in the list but mark it as on hold
   closeReviewModeration();
 };
 
@@ -360,65 +274,9 @@ const handleReviewBan = (reviewId) => {
   overflow: hidden;
 }
 
-.line-clamp-1 {
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
 /* Better touch targets for mobile */
 .touch-manipulation {
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
-}
-
-/* Enhanced responsive breakpoints */
-@media (max-width: 475px) {
-  .xs\\:hidden {
-    display: none !important;
-  }
-  
-  .xs\\:block {
-    display: block !important;
-  }
-  
-  .xs\\:inline {
-    display: inline !important;
-  }
-
-  .xs\\:flex-row {
-    flex-direction: row !important;
-  }
-
-  .xs\\:items-center {
-    align-items: center !important;
-  }
-
-  .xs\\:w-auto {
-    width: auto !important;
-  }
-}
-
-/* Mobile specific adjustments */
-@media (max-width: 640px) {
-  .min-h-screen {
-    min-height: auto;
-  }
-}
-
-/* Extra small devices optimization */
-@media (max-width: 375px) {
-  .text-xs {
-    font-size: 11px;
-  }
-  
-  .gap-1 {
-    gap: 0.25rem;
-  }
-  
-  .p-3 {
-    padding: 0.75rem;
-  }
 }
 </style>
