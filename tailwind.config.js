@@ -6,60 +6,31 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Primary brand colors
-        primary: {
-          50: "#fff9e6",
-          100: "#feecb2",
-          200: "#fcc207",
-          300: "#e5b106",
-          400: "#d4a005",
-          500: "#c29504",
-          600: "#b08a03",
-          700: "#9e7f02",
-          800: "#8c7401",
-          900: "#7a6900",
-        },
-        // Secondary colors
-        secondary: {
-          50: "#fafafa",
-          100: "#f5f5f5",
-          200: "#eeeeee",
-          300: "#e0e0e0",
-          400: "#bdbdbd",
-          500: "#9e9e9e",
-          600: "#757575",
-          700: "#616161",
-          800: "#424242",
-          900: "#212121",
-        },
-        // Legacy colors for backward compatibility
         gold: "#fcc207",
         goldenrod: "#e5b106",
         white: "#fff",
         whitesmoke: "#eee",
+        // Brand/semantic colors used across the landing navbar template
         oldlace: "#fff9e6",
         palegoldenrod: "#feecb2",
         dimgray: "#616161",
         khaki: "#f0e68c",
         ghostwhite: "#f8f8ff",
+        gray: {
+          100: "#fafafa",
+          200: "#212121",
+        },
         gainsboro: "#e0e0e0",
       },
       spacing: {
         "num-52": "52px",
         "num-10": "10px",
-        "18": "4.5rem",
-        "88": "22rem",
-        "112": "28rem",
-        "128": "32rem",
       },
       fontFamily: {
         "plus-jakarta-sans": ["Plus Jakarta Sans", "sans-serif"],
-        "noto-sans-bengali": ["Noto Sans Bengali", "sans-serif"],
       },
       borderRadius: {
         "num-8": "8px",
-        "4xl": "2rem",
-        "5xl": "2.5rem",
       },
       padding: {
         "num-20": "20px",
@@ -69,68 +40,10 @@ module.exports = {
       fontSize: {
         "num-16": "16px",
         "num-14": "14px",
-        "xs": ["0.75rem", { lineHeight: "1rem" }],
-        "sm": ["0.875rem", { lineHeight: "1.25rem" }],
-        "base": ["1rem", { lineHeight: "1.5rem" }],
-        "lg": ["1.125rem", { lineHeight: "1.75rem" }],
-        "xl": ["1.25rem", { lineHeight: "1.75rem" }],
-        "2xl": ["1.5rem", { lineHeight: "2rem" }],
-        "3xl": ["1.875rem", { lineHeight: "2.25rem" }],
-        "4xl": ["2.25rem", { lineHeight: "2.5rem" }],
-        "5xl": ["3rem", { lineHeight: "1" }],
-        "6xl": ["3.75rem", { lineHeight: "1" }],
-        "7xl": ["4.5rem", { lineHeight: "1" }],
-        "8xl": ["6rem", { lineHeight: "1" }],
-        "9xl": ["8rem", { lineHeight: "1" }],
       },
       fontWeight: {
-        thin: 100,
-        extralight: 200,
-        light: 300,
-        normal: 400,
-        medium: 500,
-        semibold: 600,
-        bold: 700,
-        extrabold: 800,
-        black: 900,
-        body: 500,
-        heading: 500,
-      },
-      boxShadow: {
-        'soft': '0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)',
-        'medium': '0 4px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-        'hard': '0 10px 40px -10px rgba(0, 0, 0, 0.2), 0 2px 10px -2px rgba(0, 0, 0, 0.1)',
-        'glow': '0 0 20px rgba(252, 194, 7, 0.3)',
-        'glow-lg': '0 0 40px rgba(252, 194, 7, 0.4)',
-      },
-      animation: {
-        'fade-in': 'fadeIn 0.5s ease-in-out',
-        'slide-up': 'slideUp 0.5s ease-out',
-        'slide-down': 'slideDown 0.5s ease-out',
-        'scale-in': 'scaleIn 0.3s ease-out',
-        'bounce-gentle': 'bounceGentle 2s infinite',
-      },
-      keyframes: {
-        fadeIn: {
-          '0%': { opacity: '0' },
-          '100%': { opacity: '1' },
-        },
-        slideUp: {
-          '0%': { transform: 'translateY(20px)', opacity: '0' },
-          '100%': { transform: 'translateY(0)', opacity: '1' },
-        },
-        slideDown: {
-          '0%': { transform: 'translateY(-20px)', opacity: '0' },
-          '100%': { transform: 'translateY(0)', opacity: '1' },
-        },
-        scaleIn: {
-          '0%': { transform: 'scale(0.9)', opacity: '0' },
-          '100%': { transform: 'scale(1)', opacity: '1' },
-        },
-        bounceGentle: {
-          '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-5px)' },
-        },
+        body: 500,    // Medium/Semi-Bold for body
+        heading: 500, // Medium for H1
       },
     },
   },

@@ -1,65 +1,65 @@
 <template>
-  <div class="w-full relative flex-shrink-0 text-left text-base text-[#616161] bg-gradient-to-br from-[#fff9e6] to-[#feecb2] rounded-sm font-['Plus_Jakarta_Sans'] pb-12 boat-bottom-radius shadow-lg">
-    <div class="relative z-10 w-full px-4 sm:px-6 md:px-12 lg:px-[120px] py-6 sm:py-8 flex flex-col">
+  <div class="w-full relative flex-shrink-0 text-left text-base text-[#616161] bg-[#fff9e6] rounded-sm font-['Plus_Jakarta_Sans'] pb-7 boat-bottom-radius">
+    <div class="relative z-10 w-full px-4 sm:px-6 md:px-12 lg:px-[120px] py-4 sm:py-6 flex flex-col">
       <!-- Top Navigation -->
-      <div class="flex items-center justify-between mb-8 sm:mb-12 md:mb-16">
+      <div class="flex items-center justify-between mb-6 sm:mb-12 md:mb-16">
         <!-- Logo -->
         <nuxt-link
           to="/"
-          class="w-[140px] sm:w-[150px] md:w-[160px] rounded-[8px] flex flex-col items-start p-3 box-border hover:scale-105 transition-transform duration-200"
+          class="w-[120px] sm:w-[118px] md:w-[118px] rounded-[4px] flex flex-col items-start p-2 box-border"
         >
           <img
-            class="self-stretch max-w-full overflow-hidden h-[40px] sm:h-[45px] md:h-[50px] flex-shrink-0 object-contain"
+            class="self-stretch max-w-full overflow-hidden h-[34px] sm:h-[30px] md:h-[30px] flex-shrink-0 object-cover"
             src="/logo/logo.png"
-            alt="Yellow Book Logo"
+            alt="Logo"
           />
         </nuxt-link>
 
         <!-- Desktop Links -->
-        <div class="hidden lg:flex items-center gap-10">
+        <div class="hidden lg:flex items-center gap-8">
           <nuxt-link
             to="/catagory"
-            class="flex flex-col items-center gap-[6px] text-[#212121] cursor-pointer no-underline group hover:scale-105 transition-all duration-200"
+            class="flex flex-col items-center gap-[4px] text-[#212121] cursor-pointer no-underline"
           >
-            <div class="relative leading-[160%] font-semibold text-lg group-hover:text-[#fcc207] transition-colors">Category</div>
-            <div class="w-[35px] bg-[#212121] h-[3px] rounded-full group-hover:bg-[#fcc207] transition-colors"></div>
+            <div class="relative leading-[160%] font-medium text-base">Category</div>
+            <div class="w-[30px] bg-[#212121] h-[2px]"></div>
           </nuxt-link>
 
           <nuxt-link
             to="/agency"
-            class="flex items-center justify-center cursor-pointer no-underline group hover:scale-105 transition-all duration-200"
+            class="flex items-center justify-center cursor-pointer no-underline"
           >
-            <div class="relative leading-[160%] font-medium text-lg text-[#616161] group-hover:text-[#212121] transition-colors">Popular Listing</div>
+            <div class="relative leading-[160%] font-normal text-base text-[#616161]">Popular Listing</div>
           </nuxt-link>
 
           <nuxt-link
             to="/faq"
-            class="flex items-center justify-center cursor-pointer no-underline group hover:scale-105 transition-all duration-200"
+            class="flex items-center justify-center cursor-pointer no-underline"
           >
-            <div class="relative leading-[160%] font-medium text-lg text-[#616161] group-hover:text-[#212121] transition-colors">FAQ</div>
+            <div class="relative leading-[160%] font-normal text-base text-[#616161]">FAQ</div>
           </nuxt-link>
         </div>
 
         <!-- Desktop Actions -->
-        <div class="hidden lg:flex items-center gap-8 text-[#212121]">
-          <div class="flex items-center justify-center cursor-pointer group hover:scale-105 transition-all duration-200" @click="openLoginModal">
-            <div class="relative leading-[160%] font-semibold text-lg group-hover:text-[#fcc207] transition-colors">Login</div>
+        <div class="hidden lg:flex items-center gap-6 text-[#212121]">
+          <div class="flex items-center justify-center cursor-pointer" @click="openLoginModal">
+            <div class="relative leading-[160%] font-normal text-base">Login</div>
           </div>
           <nuxt-link
             to="/agency"
-            class="relative rounded-xl border-2 border-[#fcc207] border-solid box-border h-14 flex items-center justify-center py-4 px-8 text-center text-lg text-[#212121] font-plus-jakarta-sans no-underline bg-gradient-to-r from-[#fcc207] to-[#e5b106] hover:from-[#e5b106] hover:to-[#fcc207] hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
+            class="relative rounded border-gray border-solid border-[1px] box-border h-12 flex items-center justify-center py-[18px] px-9 text-center text-base text-[#212121] font-plus-jakarta-sans no-underline"
           >
-            <div class="relative leading-[130%] capitalize font-bold">List Your Agency</div>
+            <div class="relative leading-[130%] capitalize font-semibold">List Your Agency</div>
           </nuxt-link>
         </div>
 
         <!-- Mobile Menu Button -->
         <button
           @click="toggleMobileMenu"
-          class="lg:hidden p-3 rounded-full border-2 border-[#fcc207] bg-white shadow-lg z-50 relative transform hover:scale-110 transition-all duration-300 hover:shadow-xl"
+          class="lg:hidden p-2 rounded-full border-2 border-[#fcc207] bg-white shadow-md z-50 relative transform hover:scale-110 transition-transform"
           aria-label="Toggle menu"
         >
-          <component :is="isMobileMenuOpen ? 'X' : 'Menu'" class="w-7 h-7 text-[#212121]" />
+          <component :is="isMobileMenuOpen ? 'X' : 'Menu'" class="w-6 h-6 text-[#212121]" />
         </button>
       </div>
 
@@ -76,22 +76,22 @@
       <transition name="slide">
         <div
           v-if="isMobileMenuOpen"
-          class="lg:hidden fixed top-0 right-0 h-screen w-[85vw] max-w-[450px] bg-white shadow-2xl z-50 overflow-y-auto"
+          class="lg:hidden fixed top-0 right-0 h-screen w-[80vw] max-w-[400px] bg-white shadow-2xl z-50 overflow-y-auto"
         >
-          <div class="p-8 h-full flex flex-col">
-            <div class="flex justify-end mb-10">
-              <button @click="toggleMobileMenu" class="p-3 hover:bg-[#fff9e6] rounded-full transition-all duration-300">
-                <svg class="w-7 h-7 text-[#212121]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+          <div class="p-6 h-full flex flex-col">
+            <div class="flex justify-end mb-8">
+              <button @click="toggleMobileMenu" class="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
 
             <!-- Mobile Nav Links -->
-            <nav class="flex-1 flex flex-col space-y-4 text-xl">
+            <nav class="flex-1 flex flex-col space-y-2 text-lg">
               <nuxt-link
                 to="/catagory"
-                class="py-5 px-6 text-[#212121] font-bold hover:bg-gradient-to-r hover:from-[#fff9e6] hover:to-[#feecb2] rounded-xl transition-all duration-300 border-b-2 border-[#fcc207]/20 hover:border-[#fcc207] no-underline"
+                class="py-4 px-4 text-[#212121] font-semibold hover:bg-[#fff9e6] rounded-lg transition-colors border-b border-gray-100 no-underline"
                 @click.native="closeMobileMenu"
               >
                 Category
@@ -99,7 +99,7 @@
 
               <nuxt-link
                 to="/agency"
-                class="py-5 px-6 text-[#616161] font-semibold hover:bg-gradient-to-r hover:from-[#fff9e6] hover:to-[#feecb2] rounded-xl transition-all duration-300 border-b-2 border-gray-100 hover:border-[#fcc207] no-underline"
+                class="py-4 px-4 text-[#616161] hover:bg-[#fff9e6] rounded-lg transition-colors border-b border-gray-100 no-underline"
                 @click.native="closeMobileMenu"
               >
                 Popular Listing
@@ -107,7 +107,7 @@
 
               <nuxt-link
                 to="/faq"
-                class="py-5 px-6 text-[#616161] font-semibold hover:bg-gradient-to-r hover:from-[#fff9e6] hover:to-[#feecb2] rounded-xl transition-all duration-300 border-b-2 border-gray-100 hover:border-[#fcc207] no-underline"
+                class="py-4 px-4 text-[#616161] hover:bg-[#fff9e6] rounded-lg transition-colors border-b border-gray-100 no-underline"
                 @click.native="closeMobileMenu"
               >
                 FAQ
@@ -115,16 +115,16 @@
             </nav>
 
             <!-- Mobile Footer Buttons -->
-            <div class="space-y-4 mt-auto pt-8 border-t-2 border-[#fcc207]/20">
+            <div class="space-y-3 mt-auto pt-6 border-t border-gray-200">
               <button
                 @click="openLoginModal"
-                class="w-full py-4 px-8 text-[#212121] font-bold text-xl border-2 border-[#212121] rounded-xl hover:bg-[#212121] hover:text-white transition-all duration-300 hover:scale-105"
+                class="w-full py-3 px-6 text-[#212121] font-semibold text-lg border-2 border-[#212121] rounded-lg hover:bg-[#212121] hover:text-white transition-all"
               >
                 Login
               </button>
               <nuxt-link
                 to="/agency"
-                class="w-full py-4 px-8 bg-gradient-to-r from-[#fcc207] to-[#e5b106] text-[#212121] font-bold text-xl rounded-xl hover:from-[#e5b106] hover:to-[#fcc207] transition-all duration-300 text-center no-underline block hover:scale-105 shadow-lg"
+                class="w-full py-3 px-6 bg-[#fcc207] text-[#212121] font-semibold text-lg rounded-lg border-b-2 border-[#e5b106] hover:bg-[#e5b106] transition-all text-center no-underline block"
                 @click.native="closeMobileMenu"
               >
                 List Your Agency
@@ -136,12 +136,12 @@
 
       <!-- Hero Section -->
       <div class="flex-1 flex justify-center items-start">
-        <div class="max-w-[800px] w-full mx-auto flex flex-col items-center gap-8 sm:gap-10 text-center text-[#212121]">
-          <div class="w-full flex flex-col items-center justify-center gap-6 sm:gap-8 md:gap-10">
-            <h1 class="w-full text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-[120%] sm:leading-[115%] capitalize font-bold px-4 bg-gradient-to-r from-[#212121] to-[#616161] bg-clip-text text-transparent">
+        <div class="max-w-[676px] w-full mx-auto flex flex-col items-center gap-6 sm:gap-8 text-center text-[#212121]">
+          <div class="w-full flex flex-col items-center justify-center gap-3 sm:gap-4 md:gap-[26px]">
+            <h1 class="w-full text-2xl sm:text-3xl md:text-[46px] leading-[140%] sm:leading-[135%] capitalize font-medium px-4">
               Trusted Help, Right When<br />You Need It
             </h1>
-            <p class="w-full max-w-[600px] text-lg sm:text-xl md:text-2xl leading-[140%] text-[#616161] px-4 font-medium">
+            <p class="w-full max-w-[536px] text-sm sm:text-base md:text-[16px] leading-[130%] capitalize text-[#616161] px-4">
               Reliable support from real people, solving everyday problems with care, speed, and integrity.
             </p>
           </div>
@@ -149,26 +149,26 @@
           <!-- Search Box -->
           <div ref="searchContainer" class="w-full relative px-4">
             <div
-              class="backdrop-blur-[20px] rounded-2xl sm:rounded-3xl bg-white/90 shadow-2xl flex flex-row items-center p-4 sm:p-5 md:p-6 gap-4 sm:gap-5 md:gap-6 text-[16px] sm:text-[18px] md:text-[20px] border border-[#fcc207]/20"
+              class="backdrop-blur-[16px] rounded-[12px] sm:rounded-[16px] bg-[#feecb2] flex flex-row items-center p-2 sm:p-3 md:p-3 gap-2 sm:gap-3 md:gap-[20px] text-[14px] sm:text-[16px] md:text-[16px]"
             >
-              <div class="flex-1 rounded-xl bg-gradient-to-r from-[#fff9e6] to-[#feecb2] flex flex-col items-start justify-center p-4 min-h-[56px] sm:min-h-[60px] shadow-inner">
+              <div class="flex-1 rounded-[8px] bg-[#fff9e6] flex flex-col items-start justify-center p-[10px] min-h-[44px] sm:min-h-[48px]">
                 <div class="w-full flex items-center">
-                  <div class="relative leading-[160%] capitalize truncate text-lg sm:text-xl md:text-xl font-semibold text-[#212121]">
+                  <div class="relative leading-[160%] capitalize truncate text-sm sm:text-base md:text-base">
                     {{ selectedSearch }}
                   </div>
                 </div>
               </div>
 
               <div
-                class="relative rounded-xl bg-gradient-to-r from-[#fcc207] to-[#e5b106] border-2 border-[#e5b106] border-solid box-border flex items-center p-4 gap-3 text-center text-xl text-white font-plus-jakarta-sans cursor-pointer hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
+                class="relative rounded-lg bg-gold border-goldenrod border-solid border-b-[2px] box-border flex items-center p-2.5 gap-2 text-center text-lg text-gray font-plus-jakarta-sans cursor-pointer"
                 @click="toggleDropdown"
               >
-                <div class="relative leading-[160%] capitalize font-bold">Search</div>
-                <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="relative leading-[160%] capitalize font-medium">Search</div>
+                <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     stroke-linecap="round"
                     stroke-linejoin="round"
-                    stroke-width="2.5"
+                    stroke-width="2"
                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                   />
                 </svg>
@@ -179,19 +179,19 @@
             <transition name="dropdown">
               <div
                 v-if="showDropdown"
-                class="absolute top-full mt-3 left-4 right-4 rounded-2xl border-2 border-[#fcc207]/30 overflow-hidden bg-white shadow-2xl z-20 max-h-[250px] sm:max-h-[300px] md:max-h-[350px] overflow-y-auto backdrop-blur-sm"
+                class="absolute top-full mt-2 left-4 right-4 rounded-[8px] border border-[#fee38d] overflow-hidden bg-white shadow-xl z-20 max-h-[200px] sm:max-h-[250px] md:max-h-[300px] overflow-y-auto"
               >
                 <div
                   v-for="(item, index) in searchData"
                   :key="index"
                   @click="selectSearch(item)"
                   :class="[
-                    'w-full h-[50px] sm:h-[56px] flex items-center px-5 sm:px-6 cursor-pointer transition-all text-sm sm:text-base md:text-lg active:scale-[0.98] hover:bg-gradient-to-r hover:from-[#fff9e6] hover:to-[#feecb2]',
-                    index === 0 ? 'bg-gradient-to-r from-[#f6fafd] to-[#e3f2fd] hover:from-[#e3f2fd] hover:to-[#f6fafd]' : 'bg-white hover:bg-gradient-to-r hover:from-[#fff9e6] hover:to-[#feecb2]',
-                    index !== searchData.length - 1 ? 'border-b border-[#e0e0e0]/50' : ''
+                    'w-full h-[40px] sm:h-[44px] flex items-center px-3 sm:px-4 cursor-pointer transition-all text-xs sm:text-sm md:text-[14px] active:scale-[0.98]',
+                    index === 0 ? 'bg-[#f6fafd] hover:bg-[#e3f2fd]' : 'bg-[#fafafa] hover:bg-[#f0f0f0]',
+                    index !== searchData.length - 1 ? 'border-b border-[#e0e0e0]' : ''
                   ]"
                 >
-                  <div class="leading-[170%] capitalize font-medium text-[#212121]">{{ item }}</div>
+                  <div class="leading-[170%] capitalize">{{ item }}</div>
                 </div>
               </div>
             </transition>
@@ -293,19 +293,19 @@ nuxt-link {
 
 /* Boat Bottom Shape */
 .boat-bottom-radius {
-  border-bottom-left-radius: 120px 30px;
-  border-bottom-right-radius: 120px 30px;
+  border-bottom-left-radius: 100px 25px;
+  border-bottom-right-radius: 100px 25px;
 }
 @media (min-width: 640px) {
   .boat-bottom-radius {
-    border-bottom-left-radius: 200px 50px;
-    border-bottom-right-radius: 200px 50px;
+    border-bottom-left-radius: 180px 40px;
+    border-bottom-right-radius: 180px 40px;
   }
 }
 @media (min-width: 1024px) {
   .boat-bottom-radius {
-    border-bottom-left-radius: 320px 70px;
-    border-bottom-right-radius: 320px 70px;
+    border-bottom-left-radius: 280px 60px;
+    border-bottom-right-radius: 280px 60px;
   }
 }
 

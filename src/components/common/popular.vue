@@ -110,8 +110,8 @@ const sortedLimitedAgencies = computed(() => {
 
 
 <template>
-  <div class="w-full max-w-[1400px] mx-auto mt-20 px-5 flex flex-col items-center gap-16 text-center font-plus-jakarta-sans">
-    <div class="text-4xl sm:text-5xl lg:text-6xl font-bold capitalize leading-[120%] bg-gradient-to-r from-[#212121] to-[#616161] bg-clip-text text-transparent">
+  <div class="w-full max-w-[1200px] mx-auto mt-16 px-5 flex flex-col items-center gap-10 text-center font-plus-jakarta-sans">
+    <div class="text-3xl sm:text-4xl lg:text-[30px] font-semibold capitalize leading-[130%]">
       {{ props.heading }}
     </div>
 
@@ -123,15 +123,12 @@ const sortedLimitedAgencies = computed(() => {
         @click="goToAgency(agency.title, agency.slug, agency.id)"
       >
         <!-- Agency Image -->
-        <div class="relative overflow-hidden">
-          <img class="w-full h-[280px] sm:h-[320px] object-cover group-hover:scale-110 transition-transform duration-500" :src="agency.image" :alt="agency.title" />
-          <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-        </div>
+        <img class="w-full h-[250px] sm:h-[280px] object-cover" :src="agency.image" :alt="agency.title" />
 
         <!-- Agency Info -->
-        <div class="p-6 flex flex-col gap-5 text-left bg-gradient-to-br from-white to-[#fafafa] group-hover:from-[#fff9e6] group-hover:to-[#feecb2] transition-all duration-300">
-          <div class="text-2xl font-bold capitalize text-[#212121] group-hover:text-[#fcc207] transition-colors duration-300">{{ agency.title }}</div>
-          <div class="text-base text-gray-600 leading-relaxed">{{ agency.description }}</div>
+        <div class="p-4 flex flex-col gap-4 text-left">
+          <div class="text-xl font-semibold capitalize">{{ agency.title }}</div>
+          <div class="text-sm text-gray-600">{{ agency.description }}</div>
 
           <!-- Rating -->
           <div class="flex items-center gap-2">
@@ -149,9 +146,9 @@ const sortedLimitedAgencies = computed(() => {
           </div>
 
           <!-- Location -->
-          <div class="flex items-center gap-3 text-gray-600 text-base">
-            <MapPin class="w-5 h-5 text-[#fcc207]" />
-            <span class="capitalize font-semibold">{{ agency.location }}</span>
+          <div class="flex items-center gap-2 text-gray-500 text-sm">
+            <MapPin class="w-4 h-4 text-blue-500" />
+            <span class="capitalize font-medium">{{ agency.location }}</span>
           </div>
         </div>
       </div>

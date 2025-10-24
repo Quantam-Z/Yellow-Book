@@ -42,22 +42,20 @@ const statCards = ref<StatCard[]>([
 </script>
 
 <template>
-  <div class="w-full relative bg-gradient-to-r from-[#fcc207] to-[#e5b106] flex items-center justify-start mt-16 overflow-x-auto stat-scroll-container shadow-2xl">
+  <div class="w-full relative bg-[#fcc207] flex items-center justify-start mt-12 overflow-x-auto stat-scroll-container">
     <div 
-      class="flex flex-row items-center justify-start lg:justify-center px-6 lg:px-40 md:px-24 gap-8 text-left text-white font-['Plus_Jakarta_Sans'] flex-nowrap"
+      class="flex flex-row items-center justify-start lg:justify-center px-4 lg:px-32 md:px-20 gap-6 text-left text-white font-['Plus_Jakarta_Sans'] flex-nowrap"
       :class="{ 'w-full': statCards.length <= 4 }"
     >
       <div 
         v-for="card in statCards"
         :key="card.id"
-        class="flex items-center p-12 sm:p-8 gap-6 bg-gradient-to-br from-[#e5b106] to-[#d4a005] min-w-[320px] flex-shrink-0 rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
+        class="flex items-center p-10 sm:p-6 gap-4 bg-[#e5b106] min-w-[280px] flex-shrink-0"
       >
-        <div class="p-4 rounded-2xl bg-white/20 backdrop-blur-sm">
-          <img class="w-20 h-20 flex-shrink-0" :src="card.iconSrc" :alt="card.altText" />
-        </div>
-        <div class="flex flex-col justify-center gap-4 flex-1">
-          <b class="text-6xl font-black leading-none capitalize sm:text-5xl xs:text-4xl drop-shadow-lg">{{ card.value }}</b>
-          <div class="text-lg font-bold leading-normal capitalize drop-shadow-md">{{ card.label }}</div>
+        <img class="w-16 h-auto flex-shrink-0" :src="card.iconSrc" :alt="card.altText" />
+        <div class="flex flex-col justify-center gap-3 flex-1">
+          <b class="text-5xl font-bold leading-none capitalize sm:text-4xl xs:text-3xl">{{ card.value }}</b>
+          <div class="text-base font-semibold leading-normal capitalize">{{ card.label }}</div>
         </div>
       </div>
     </div>
