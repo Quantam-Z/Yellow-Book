@@ -1,10 +1,10 @@
 <template>
-    <div class="w-full min-h-screen bg-gray-50 p-4 sm:p-6">
+    <div class="w-full min-h-screen bg-gray-50 p-3 sm:p-4 md:p-6">
       
       <!-- Header Section -->
-      <div class="w-full rounded-xl bg-gradient-to-tr from-indigo-500/10 to-pink-500/10 p-4 mb-6 border border-gray-200 shadow-sm">
+      <div class="w-full rounded-xl bg-gradient-to-tr from-indigo-500/10 to-pink-500/10 p-3 sm:p-4 mb-4 sm:mb-6 border border-gray-200 shadow-sm">
         <div class="flex items-center justify-between">
-          <h1 class="text-2xl font-bold text-gray-900">Notifications</h1>
+          <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Notifications</h1>
           <button
             class="flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-semibold bg-white border border-indigo-400 text-indigo-600 shadow-md hover:bg-indigo-50 transition-colors"
           >
@@ -21,8 +21,8 @@
         <div class="w-full relative shadow-lg rounded-lg bg-white overflow-hidden flex flex-col items-start">
           
           <!-- Header -->
-          <div class="self-stretch border-b border-gray-200 flex items-center p-5">
-            <h2 class="text-xl font-bold text-gray-800 capitalize">Recent Notifications</h2>
+          <div class="self-stretch border-b border-gray-200 flex items-center p-4 sm:p-5">
+            <h2 class="text-lg sm:text-xl font-bold text-gray-800 capitalize">Recent Notifications</h2>
           </div>
           
           <!-- Notifications List -->
@@ -30,16 +30,16 @@
             <div 
               v-for="n in notifications" 
               :key="n.id"
-              class="self-stretch bg-white border-b border-gray-200 flex items-start justify-between p-5 hover:bg-gray-50 transition-colors"
+              class="self-stretch bg-white border-b border-gray-200 flex items-start justify-between p-4 sm:p-5 hover:bg-gray-50 transition-colors"
             >
               <div class="flex items-start gap-3">
-                <div class="h-11 w-11 rounded-full flex items-center justify-center" :class="n.bgColor">
-                  <component :is="n.icon" class="w-5 h-5" :class="n.iconColor" />
+                <div class="h-10 w-10 sm:h-11 sm:w-11 rounded-full flex items-center justify-center" :class="n.bgColor">
+                  <component :is="n.icon" class="w-4 h-4 sm:w-5 sm:h-5" :class="n.iconColor" />
                 </div>
                 <div class="flex-1 flex flex-col items-start gap-3">
                   <div class="flex flex-col items-start gap-1">
-                    <div class="text-sm font-medium text-gray-800 capitalize">{{ n.title }}</div>
-                    <div class="text-sm text-gray-600">{{ n.message }}</div>
+                    <div class="text-sm sm:text-base font-medium text-gray-800 capitalize">{{ n.title }}</div>
+                    <div class="text-xs sm:text-sm text-gray-600">{{ n.message }}</div>
                   </div>
                   <div class="text-xs text-gray-500">{{ n.time }}</div>
                 </div>
