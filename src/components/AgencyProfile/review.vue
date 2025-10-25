@@ -1,7 +1,7 @@
 <template>
   <div class="w-full min-h-screen bg-gray-50 p-4 sm:p-6 space-y-4 sm:space-y-6">
     <!-- Header -->
-    <div class="w-full rounded-xl bg-gradient-to-tr from-indigo-500/10 to-pink-500/10 p-4 sm:p-6 border border-gray-200 shadow-sm">
+    <div class="w-full rounded-xl bg-gradient-to-tr from-indigo-500/10 to-pink-500/10 p-4 sm:p-6 border-[0.5px] border-gray-200 shadow-sm">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900">Reviews</h1>
@@ -55,8 +55,9 @@
     <div class="w-full bg-white rounded-xl shadow-lg overflow-hidden">
       <!-- Desktop Table -->
       <div class="hidden lg:block">
-        <table class="w-full text-left border-collapse">
-          <thead class="bg-gray-100 text-gray-600 text-sm uppercase tracking-wide">
+        <div class="overflow-x-auto">
+          <table class="w-full min-w-[760px] text-left border-collapse">
+            <thead class="bg-gray-100 text-gray-600 text-sm uppercase tracking-wide border-b border-b-[0.5px] border-gray-200">
             <tr>
               <th class="px-4 py-3">Reviewer</th>
               <th class="px-4 py-3 text-center">Rating</th>
@@ -64,50 +65,55 @@
               <th class="px-4 py-3">Review</th>
               <th class="px-4 py-3 text-center">Actions</th>
             </tr>
-          </thead>
-          <tbody>
-            <tr
-              v-for="review in filteredReviews"
-              :key="review.id"
-              class="border-t hover:bg-gray-50 transition"
-            >
-              <td class="px-4 py-3 flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center font-bold text-indigo-700">
-                  {{ getInitials(review.reviewerName) }}
-                </div>
-                <span class="font-medium text-gray-800">{{ review.reviewerName }}</span>
-              </td>
-              <td class="px-4 py-3 text-center">
-                <div class="flex justify-center gap-1">
-                  <RatingStars :value="review.rating" />
-                </div>
-              </td>
-              <td class="px-4 py-3 text-center text-sm text-gray-600">
-                <div>{{ formatDate(review.date) }}</div>
-                <div class="text-xs">{{ review.time }}</div>
-              </td>
-              <td class="px-4 py-3 text-gray-700">
-                <p class="line-clamp-2">"{{ review.content }}"</p>
-              </td>
-              <td class="px-4 py-3 text-center flex justify-center gap-2">
-                <button 
-                  class="p-2 text-green-500 hover:bg-green-50 rounded transition"
-                  @click="approveReview(review.id)"
-                  title="Approve review"
-                >
-                  <CheckCircle class="w-5 h-5" />
-                </button>
-                <button 
-                  class="p-2 text-red-500 hover:bg-red-50 rounded transition"
-                  @click="deleteReview(review.id)"
-                  title="Delete review"
-                >
-                  <Trash2 class="w-5 h-5" />
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              <tr
+                v-for="review in filteredReviews"
+                :key="review.id"
+                class="border-t-[0.5px] border-gray-200 hover:bg-gray-50 transition-colors"
+              >
+                <td class="px-4 py-3">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center font-bold text-indigo-700">
+                      {{ getInitials(review.reviewerName) }}
+                    </div>
+                    <span class="font-medium text-gray-800">{{ review.reviewerName }}</span>
+                  </div>
+                </td>
+                <td class="px-4 py-3 text-center">
+                  <div class="flex justify-center gap-1">
+                    <RatingStars :value="review.rating" />
+                  </div>
+                </td>
+                <td class="px-4 py-3 text-center text-sm text-gray-600 whitespace-nowrap">
+                  <div>{{ formatDate(review.date) }}</div>
+                  <div class="text-xs">{{ review.time }}</div>
+                </td>
+                <td class="px-4 py-3 text-gray-700">
+                  <p class="line-clamp-2">"{{ review.content }}"</p>
+                </td>
+                <td class="px-4 py-3">
+                  <div class="flex justify-center gap-2">
+                    <button 
+                      class="p-2 text-green-500 hover:bg-green-50 rounded transition-colors"
+                      @click="approveReview(review.id)"
+                      title="Approve review"
+                    >
+                      <CheckCircle class="w-5 h-5" />
+                    </button>
+                    <button 
+                      class="p-2 text-red-500 hover:bg-red-50 rounded transition-colors"
+                      @click="deleteReview(review.id)"
+                      title="Delete review"
+                    >
+                      <Trash2 class="w-5 h-5" />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <!-- Mobile Cards -->
@@ -115,7 +121,7 @@
         <div
           v-for="review in filteredReviews"
           :key="review.id"
-          class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow"
+          class="bg-white border-[0.5px] border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow"
         >
           <!-- Header -->
           <div class="flex items-center justify-between mb-3">
@@ -139,7 +145,7 @@
           </div>
 
           <!-- Actions -->
-          <div class="flex justify-end gap-2 pt-2 border-t border-gray-100">
+          <div class="flex justify-end gap-2 pt-2 border-t-[0.5px] border-gray-200/60">
             <button 
               class="flex items-center gap-1 px-3 py-1.5 text-green-600 bg-green-50 rounded-lg text-sm hover:bg-green-100 transition"
               @click="approveReview(review.id)"
@@ -159,7 +165,7 @@
       </div>
 
       <!-- Load more -->
-      <div class="flex justify-center py-4 border-t border-gray-100">
+      <div class="flex justify-center py-4 border-t-[0.5px] border-gray-200/60">
         <button
           v-if="hasMoreReviews"
           class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition flex items-center gap-2"
