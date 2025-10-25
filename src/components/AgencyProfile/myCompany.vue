@@ -1,10 +1,10 @@
 <template>
-  <div class="w-full min-h-screen bg-gray-50 p-4 sm:p-6">
+  <div class="w-full min-h-screen bg-gray-50 p-3 sm:p-4 md:p-6">
     <div
-      class="w-full rounded-xl bg-gradient-to-tr from-indigo-500/10 to-pink-500/10 p-4 mb-6 border border-gray-200 shadow-sm"
+      class="w-full rounded-xl bg-gradient-to-tr from-indigo-500/10 to-pink-500/10 p-3 sm:p-4 mb-4 sm:mb-6 border border-gray-200 shadow-sm"
     >
       <div class="flex items-center justify-between">
-        <h1 class="text-2xl font-bold text-gray-900">My Company Profile</h1>
+        <h1 class="text-xl sm:text-2xl font-bold text-gray-900">My Company Profile</h1>
         <button
           @click="isEditing = !isEditing"
           class="flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium bg-white border border-indigo-400 text-indigo-600 shadow-md hover:bg-indigo-50 transition-colors"
@@ -13,22 +13,22 @@
           {{ isEditing ? 'Viewing Mode' : 'Edit' }}
         </button>
       </div>
-      <p class="mt-1 text-sm text-gray-600">
+      <p class="mt-1 text-xs sm:text-sm text-gray-600">
         {{ isEditing ? 'Fields below are editable.' : 'Click "Edit Profile" to modify the details.' }}
       </p>
     </div>
 
     <form
       @submit.prevent="saveChanges"
-      class="w-full relative bg-white flex flex-col gap-8 p-6 lg:p-8 rounded-xl shadow-2xl shadow-gray-200/50"
+      class="w-full relative bg-white flex flex-col gap-6 sm:gap-8 p-4 sm:p-6 lg:p-8 rounded-xl shadow-2xl shadow-gray-200/50"
     >
       <div class="space-y-4">
-        <h2 class="text-xl font-bold text-gray-800 border-b pb-2">Branding Assets</h2>
+        <h2 class="text-lg sm:text-xl font-bold text-gray-800 border-b pb-2">Branding Assets</h2>
         <div class="flex flex-col md:flex-row items-start justify-between gap-6">
           <div class="flex flex-col items-start gap-4 w-full md:w-[350px]">
             <label class="font-medium text-sm text-gray-700">Company Logo</label>
             <div
-              class="w-full rounded-xl bg-gray-50 border-2 border-dashed border-gray-300 h-[180px] flex items-center justify-center p-4 hover:border-blue-400 transition-colors cursor-pointer"
+              class="w-full rounded-xl bg-gray-50 border-2 border-dashed border-gray-300 h-[160px] sm:h-[180px] flex items-center justify-center p-4 hover:border-blue-400 transition-colors cursor-pointer"
             >
               <div class="flex flex-col items-center justify-center gap-2 text-center">
                 <Image class="w-8 h-8 text-gray-400" />
@@ -49,7 +49,7 @@
           <div class="flex flex-col items-start gap-4 flex-1">
             <label class="font-medium text-sm text-gray-700">Cover Photo</label>
             <div
-              class="w-full rounded-xl bg-gray-50 border-2 border-dashed border-gray-300 h-[180px] flex items-center justify-center p-4 hover:border-blue-400 transition-colors cursor-pointer"
+              class="w-full rounded-xl bg-gray-50 border-2 border-dashed border-gray-300 h-[160px] sm:h-[180px] flex items-center justify-center p-4 hover:border-blue-400 transition-colors cursor-pointer"
             >
               <div class="flex flex-col items-center justify-center gap-2 text-center">
                 <Monitor class="w-8 h-8 text-gray-400" />
@@ -71,7 +71,7 @@
       <hr class="border-gray-100" />
 
       <div class="space-y-6">
-        <h2 class="text-xl font-bold text-gray-800 border-b pb-2">Core Information</h2>
+        <h2 class="text-lg sm:text-xl font-bold text-gray-800 border-b pb-2">Core Information</h2>
         <div class="grid md:grid-cols-2 gap-6">
           <div class="space-y-6">
             <div>

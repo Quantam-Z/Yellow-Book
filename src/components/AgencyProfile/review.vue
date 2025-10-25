@@ -194,7 +194,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { Pencil, CheckCircle, Trash2, Filter, Plus } from 'lucide-vue-next'
 import RatingStars from '~/components/common/RatingStars.vue'
 
@@ -220,38 +220,52 @@ const getInitials = (name) => {
 }
 
 // Computed
-const overallRating = computed(() => {
-  if (!reviews.value.length) return 0
-  const sum = reviews.value.reduce((acc, r) => acc + r.rating, 0)
-  return (sum / reviews.value.length).toFixed(1)
+// Normalize date range and apply all filters in one place
+const normalizedDateRange = computed(() => {
+  const from = dateFrom.value ? new Date(dateFrom.value) : null
+  const to = dateTo.value ? new Date(dateTo.value) : null
+
+  // Make "to" inclusive end-of-day
+  if (to) {
+    to.setHours(23, 59, 59, 999)
+  }
+
+  // Swap if range is inverted
+  if (from && to && from > to) {
+    return { from: to, to: from }
+  }
+  return { from, to }
 })
 
-const totalReviews = computed(() => reviews.value.length)
+const allFilteredReviews = computed(() => {
+  const { from, to } = normalizedDateRange.value
+  const rating = selectedRating.value ? parseInt(selectedRating.value) : null
+
+  return reviews.value.filter(r => {
+    const matchesRating = rating ? r.rating === rating : true
+    const reviewDate = r.date ? new Date(r.date) : null
+    const matchesFrom = from ? (reviewDate && reviewDate >= from) : true
+    const matchesTo = to ? (reviewDate && reviewDate <= to) : true
+    return matchesRating && matchesFrom && matchesTo
+  })
+})
 
 const filteredReviews = computed(() => {
-  let filtered = reviews.value
-
-  if (selectedRating.value) {
-    filtered = filtered.filter(r => r.rating === parseInt(selectedRating.value))
-  }
-
-  if (dateFrom.value) {
-    filtered = filtered.filter(r => new Date(r.date) >= new Date(dateFrom.value))
-  }
-  if (dateTo.value) {
-    filtered = filtered.filter(r => new Date(r.date) <= new Date(dateTo.value))
-  }
-
-  return filtered.slice(0, currentPage.value * reviewsPerPage)
+  return allFilteredReviews.value.slice(0, currentPage.value * reviewsPerPage)
 })
 
 const hasMoreReviews = computed(() => {
-  let filtered = reviews.value
-  if (selectedRating.value) {
-    filtered = filtered.filter(r => r.rating === parseInt(selectedRating.value))
-  }
-  return filteredReviews.value.length < filtered.length
+  return filteredReviews.value.length < allFilteredReviews.value.length
 })
+
+// Stats reflect current filter
+const overallRating = computed(() => {
+  if (!allFilteredReviews.value.length) return 0
+  const sum = allFilteredReviews.value.reduce((acc, r) => acc + r.rating, 0)
+  return (sum / allFilteredReviews.value.length).toFixed(1)
+})
+
+const totalReviews = computed(() => allFilteredReviews.value.length)
 
 // Methods
 const applyFilters = () => { 
@@ -280,6 +294,11 @@ const loadMoreReviews = () => {
 // Init
 onMounted(() => { 
   reviews.value = reviewsData.value || [] 
+})
+
+// Auto-apply when filter inputs change
+watch([selectedRating, dateFrom, dateTo], () => {
+  currentPage.value = 1
 })
 </script>
 

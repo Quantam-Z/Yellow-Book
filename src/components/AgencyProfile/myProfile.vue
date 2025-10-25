@@ -1,10 +1,10 @@
 <template>
-    <div class="w-full min-h-screen bg-gray-50 p-4 sm:p-6">
+    <div class="w-full min-h-screen bg-gray-50 p-3 sm:p-4 md:p-6">
       
       <!-- Header Section -->
-      <div class="w-full rounded-xl bg-gradient-to-tr from-indigo-500/10 to-pink-500/10 p-4 mb-6 border border-gray-200 shadow-sm">
+      <div class="w-full rounded-xl bg-gradient-to-tr from-indigo-500/10 to-pink-500/10 p-3 sm:p-4 mb-4 sm:mb-6 border border-gray-200 shadow-sm">
         <div class="flex items-center justify-between">
-          <h1 class="text-2xl font-bold text-gray-900">My Profile</h1>
+          <h1 class="text-xl sm:text-2xl font-bold text-gray-900">My Profile</h1>
           <button
             class="flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-semibold bg-white border border-indigo-400 text-indigo-600 shadow-md hover:bg-indigo-50 transition-colors"
           >
@@ -15,14 +15,14 @@
       </div>
   
       <!-- Main Content Card -->
-      <div class="w-full relative bg-white flex flex-col gap-8 p-6 lg:p-8 rounded-xl shadow-2xl shadow-gray-200/50">
+      <div class="w-full relative bg-white flex flex-col gap-6 sm:gap-8 p-4 sm:p-6 lg:p-8 rounded-xl shadow-2xl shadow-gray-200/50">
         
         <!-- Two Column Layout -->
         <div class="flex flex-col md:flex-row gap-8">
           
           <!-- Left Column - Branding Assets -->
           <div class="w-full md:w-[350px] space-y-4">
-            <h2 class="text-xl font-bold text-gray-800 border-b pb-2">Branding Assets</h2>
+            <h2 class="text-lg sm:text-xl font-bold text-gray-800 border-b pb-2">Branding Assets</h2>
             <div class="flex flex-col items-start gap-4">
               <label class="font-medium text-sm text-gray-700">Company Logo</label>
               <div
@@ -45,7 +45,7 @@
   
           <!-- Right Column - Core Information -->
           <div class="flex-1 space-y-6">
-            <h2 class="text-xl font-bold text-gray-800 border-b pb-2">Core Information</h2>
+            <h2 class="text-lg sm:text-xl font-bold text-gray-800 border-b pb-2">Core Information</h2>
             
             <!-- Form Fields -->
             <div class="space-y-6">
@@ -58,7 +58,7 @@
               </div>
   
               <!-- Contact Info Row -->
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 <!-- Phone Number -->
                 <div class="flex flex-col gap-3">
                   <label class="font-medium text-sm text-gray-700">Phone Number</label>
@@ -98,7 +98,7 @@
   
               <!-- Update Profile Button -->
               <button
-                class="w-full md:w-[223px] rounded-lg bg-green-500 text-white h-[52px] flex items-center justify-center gap-2 font-semibold shadow-md hover:bg-green-600 transition-colors mt-4"
+                class="w-full md:w-[223px] rounded-lg bg-green-500 text-white h-[48px] sm:h-[52px] flex items-center justify-center gap-2 font-semibold shadow-md hover:bg-green-600 transition-colors mt-2 sm:mt-4"
                 @click="updateProfile"
               >
                 <Save class="w-5 h-5" />
