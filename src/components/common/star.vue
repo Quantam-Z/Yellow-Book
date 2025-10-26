@@ -42,7 +42,7 @@ const statCards = ref<StatCard[]>([
 </script>
 
 <template>
-  <div class="w-full relative bg-[#fcc207] flex items-center justify-start mt-12 overflow-x-auto stat-scroll-container">
+  <div class="w-screen relative bg-[#fcc207] flex items-center justify-start mt-12 overflow-x-auto stat-scroll-container ml-[calc(-50vw+50%)] mr-[calc(-50vw+50%)]">
     <div 
       class="flex flex-row items-center justify-start lg:justify-center px-4 lg:px-32 md:px-20 gap-6 text-left text-white font-['Plus_Jakarta_Sans'] flex-nowrap"
       :class="{ 'w-full': statCards.length <= 4 }"

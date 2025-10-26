@@ -323,19 +323,21 @@
 
             <!-- Action Buttons -->
             <div class="flex items-center justify-end gap-2 mt-3">
-              <button 
-                @click="approveReview(review)"
-                class="px-3 py-1.5 text-green-600 bg-green-50 hover:bg-green-100 active:bg-green-200 rounded-lg text-xs font-medium touch-manipulation transition"
-              >
-                Approve
-              </button>
-              <button 
-                @click="deleteReview(review)"
-                class="px-3 py-1.5 text-red-600 bg-red-50 hover:bg-red-100 active:bg-red-200 rounded-lg text-xs font-medium touch-manipulation transition"
-              >
-                Delete
-              </button>
-            </div>
+  <button 
+    @click="approveReview(review)"
+    class="px-3 py-1.5 text-green-600 bg-green-50 hover:bg-green-100 active:bg-green-200 rounded-lg text-xs font-medium touch-manipulation transition border-0"
+  >
+    Approve
+  </button>
+
+  <button 
+    @click="deleteReview(review)"
+    class="px-3 py-1.5 text-red-600 bg-red-50 hover:bg-red-100 active:bg-red-200 rounded-lg text-xs font-medium touch-manipulation transition border-0"
+  >
+    Delete
+  </button>
+</div>
+
           </div>
         </div>
 

@@ -40,13 +40,13 @@ const toggleFaq = (faqId) => {
 </script>
 
 <template>
-  <div class="w-full relative flex flex-col items-center gap-[44px] text-center text-[30px] text-[#212121] font-['Plus_Jakarta_Sans'] mt-20 mb-7">
+  <div class="w-full relative flex flex-col items-center gap-[44px] text-center text-[30px] text-[#212121] font-['Plus_Jakarta_Sans'] mt-20 mb-7 px-4 sm:px-6 md:px-8">
     <div class="self-stretch flex flex-col items-start gap-4">
       <div class="self-stretch relative leading-[126%] capitalize font-semibold">Frequently Asked Questions</div>
       <div class="self-stretch relative text-[16px] leading-[160%] capitalize font-medium text-[#9e9e9e]">Everything you need to know about using Yellow Book.</div>
     </div>
     
-    <div class="w-[588px] flex flex-col items-start gap-4 text-[18px]">
+    <div class="w-full max-w-[588px] flex flex-col items-start gap-4 text-[18px] px-2 sm:px-0">
       <div 
         v-for="faq in faqs" 
         :key="faq.id" 

@@ -296,6 +296,7 @@ nuxt-link {
   border-bottom-left-radius: 100px 25px;
   border-bottom-right-radius: 100px 25px;
 }
+
 @media (min-width: 640px) {
   .boat-bottom-radius {
     border-bottom-left-radius: 180px 40px;

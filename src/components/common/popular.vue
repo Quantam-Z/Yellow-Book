@@ -2,7 +2,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { MapPin } from 'lucide-vue-next';
-import RatingStars from '~/components/common/RatingStars.vue';
+import StarRatingBox from '@/components/common/starRatingBox.vue';
 
 // --- Types ---
 type StubAgency = {
@@ -132,17 +132,11 @@ const sortedLimitedAgencies = computed(() => {
 
           <!-- Rating -->
           <div class="flex items-center gap-2">
-            <RatingStars
-              :rating="agency.rating"
-              :max="5"
-              size="md"
-              color="#FFC107"
-              empty-color="#E0E0E0"
-              stroke-color="#FFC107"
-              :gap="4"
-              :show-value="false"
+            <StarRatingBox
+              :model-value="Number(agency.rating)"
+              :readonly="true"
+              class="star-rating-custom"
             />
-            <span class="text-lg font-semibold text-[#212121]">{{ agency.rating.toFixed(1) }}/5</span>
           </div>
 
           <!-- Location -->
@@ -159,5 +153,41 @@ const sortedLimitedAgencies = computed(() => {
 <style scoped>
 .font-plus-jakarta-sans {
   font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Simple scaling to make StarRatingBox smaller but visible */
+.star-rating-custom {
+  transform: scale(0.8);
+  transform-origin: left center;
+}
+
+/* Alternative: Use smaller size with proper visibility */
+.star-rating-custom {
+  font-size: 14px;
+  line-height: 1;
+}
+
+/* Ensure the stars are visible */
+.star-rating-custom :deep(*) {
+  display: inline-block;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Make sure the container is properly sized */
+.star-rating-custom :deep(.star-rating) {
+  display: flex !important;
+  gap: 2px !important;
+  align-items: center !important;
+}
+
+/* Individual star styling */
+.star-rating-custom :deep(.star) {
+  width: 16px !important;
+  height: 16px !important;
+  min-width: 16px !important;
+  min-height: 16px !important;
+  display: inline-block !important;
+  visibility: visible !important;
 }
 </style>

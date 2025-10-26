@@ -202,28 +202,28 @@
           </div>
         </div>
         <div class="self-stretch bg-ghostwhite flex flex-col items-start p-3 lg:p-[10px] relative text-left text-[14px] lg:text-[16px] text-darkslategray max-h-64 overflow-y-auto">
-          <div class="self-stretch flex flex-col items-start gap-0.5 z-[0]">
-            <div 
-              v-for="service in currentCategory.filters.serviceTypes.options" 
-              :key="service" 
-              class="self-stretch border-b border-whitesmoke border-solid box-border h-10 flex items-center gap-2 cursor-pointer transition-colors hover:bg-gray-100"
-              @click="toggleService(service)"
-            >
-              <div class="w-5 h-5 lg:w-6 lg:h-6 relative overflow-hidden shrink-0">
-                <div class="w-full h-full border-2 border-gray-300 rounded-sm bg-white flex items-center justify-center transition-colors">
-                  <div class="w-3.5 h-3.5 lg:w-4.5 lg:h-4.5 border border-gray-400 rounded-xs bg-white flex items-center justify-center transition-colors">
-                    <div v-if="filters.services.has(service)" class="w-3 h-3 flex items-center justify-center transition-all duration-200">
-                      <svg viewBox="0 0 24 24" class="w-3 h-3 text-black" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M20 6L9 17l-5-5"></path>
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="relative leading-[130%] capitalize font-medium text-sm lg:text-base">{{ service }}</div>
+  <div class="self-stretch flex flex-col items-start gap-0.5 z-[0]">
+    <div 
+      v-for="service in currentCategory.filters.serviceTypes.options" 
+      :key="service" 
+      class="self-stretch border-b border-whitesmoke border-solid box-border h-10 flex items-center gap-2 cursor-pointer transition-colors hover:bg-gray-100 pl-3 lg:pl-4"
+      @click="toggleService(service)"
+    >
+      <div class="w-5 h-5 lg:w-6 lg:h-6 relative overflow-hidden shrink-0">
+        <div class="w-full h-full border border-gainsboro rounded-none bg-white flex items-center justify-center transition-colors">
+          <div class="w-3.5 h-3.5 lg:w-4.5 lg:h-4.5 border border-gainsboro rounded-none bg-white flex items-center justify-center transition-colors">
+            <div v-if="filters.services.has(service)" class="w-3 h-3 flex items-center justify-center transition-all duration-200">
+              <svg viewBox="0 0 24 24" class="w-3 h-3 text-black" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 6L9 17l-5-5"></path>
+              </svg>
             </div>
           </div>
         </div>
+      </div>
+      <div class="relative leading-[130%] capitalize font-medium text-sm lg:text-base">{{ service }}</div>
+    </div>
+  </div>
+</div>
       </div>
 
       <!-- Specializations Filter -->

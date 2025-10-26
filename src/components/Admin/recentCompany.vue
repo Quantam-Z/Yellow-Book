@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full rounded-lg  bg-white border-whitesmoke border-solid border-[1px]r flex flex-col items-start p-4 lg:p-6 gap-4 text-left text-xl text-gray-900 font-plus-jakarta-sans">
+  <div class="w-full rounded-lg bg-white border-whitesmoke border-solid border-[1px] flex flex-col items-start p-4 lg:p-6 gap-4 text-left text-xl text-gray-900 font-plus-jakarta-sans">
     <!-- Header -->
     <div class="w-full flex items-center justify-between">
       <h2 class="relative leading-[130%] capitalize font-bold text-lg lg:text-xl">Recent Company</h2>
@@ -53,9 +53,9 @@
         :key="index"
         class="w-full rounded-lg border border-gray-200 p-4 bg-white hover:bg-gray-50 transition-colors"
       >
-        <!-- Card Header -->
+        <!-- Card Header - Now includes View Details in the same row -->
         <div class="flex justify-between items-start mb-3">
-          <div class="flex flex-col">
+          <div class="flex flex-col flex-1">
             <h3 class="font-semibold text-gray-900 text-base">{{ row.name }}</h3>
             <span class="text-sm text-gray-600 mt-1">{{ row.category }}</span>
           </div>
@@ -67,29 +67,34 @@
           </div>
         </div>
 
-        <!-- Company Details -->
-        <div class="grid grid-cols-2 gap-3 mb-3 text-sm">
-          <div class="flex flex-col">
-            <span class="text-gray-500 text-xs">Date</span>
-            <span class="text-gray-700">{{ row.date }}</span>
+        <!-- Company Details and View Details in same row -->
+        <div class="flex justify-between items-end">
+          <!-- Company Details -->
+          <div class="grid grid-cols-2 gap-3 text-sm flex-1">
+            <div class="flex flex-col">
+              <span class="text-gray-500 text-xs">Date</span>
+              <span class="text-gray-700">{{ row.date }}</span>
+            </div>
+            <div class="flex flex-col">
+              <span class="text-gray-500 text-xs">Phone</span>
+              <span class="text-gray-700">{{ row.phone }}</span>
+            </div>
+            <div class="flex flex-col col-span-2">
+              <span class="text-gray-500 text-xs">Website</span>
+              <a :href="'https://' + row.website" class="text-amber-500 hover:text-amber-600 truncate" target="_blank">
+                {{ row.website }}
+              </a>
+            </div>
           </div>
-          <div class="flex flex-col">
-            <span class="text-gray-500 text-xs">Phone</span>
-            <span class="text-gray-700">{{ row.phone }}</span>
-          </div>
-          <div class="flex flex-col col-span-2">
-            <span class="text-gray-500 text-xs">Website</span>
-            <a :href="'https://' + row.website" class="text-amber-500 hover:text-amber-600 truncate" target="_blank">
-              {{ row.website }}
-            </a>
-          </div>
-        </div>
 
-        <!-- Action Button -->
-        <div class="flex justify-end">
-          <button class="text-amber-500 hover:text-amber-600 font-medium text-sm">
-            View Details
-          </button>
+          <!-- View Details Button - Now aligned with the content -->
+          <div class="ml-4 flex-shrink-0">
+            <span
+              class="text-amber-500 hover:text-amber-600 font-medium text-sm cursor-pointer whitespace-nowrap"
+            >
+              View Details
+            </span>
+          </div>
         </div>
       </div>
     </div>

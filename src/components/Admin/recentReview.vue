@@ -26,7 +26,6 @@
             <td class="px-4 py-3 text-gray-900 font-medium text-sm truncate">{{ review.reviewer }}</td>
             <td class="px-4 py-3 text-gray-700 text-sm whitespace-nowrap">
               <div class="flex items-center gap-1">
-                <RatingStars :value="Number(review.rating)" :size-class="'w-4 h-4'" />
                 <span>{{ review.rating }}</span>
               </div>
             </td>
@@ -79,9 +78,13 @@
         <!-- Footer -->
         <div class="flex justify-between items-center text-xs text-gray-500">
           <span>{{ review.date }}</span>
-          <button class="text-amber-500 hover:text-amber-600 font-medium">
-            View Details
-          </button>
+          <span
+  @click="viewDetails(company)"
+  class="text-amber-500 hover:text-amber-600 font-medium cursor-pointer"
+>
+  View Details
+</span>
+
         </div>
       </div>
     </div>
