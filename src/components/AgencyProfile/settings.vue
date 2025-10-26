@@ -1,229 +1,312 @@
 <template>
-    <div class="w-full min-h-screen bg-gray-50 p-3 sm:p-4 md:p-6">
-      
-  <!-- Header Section (match admin manage pages) -->
-  <div class="w-full rounded-lg bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 p-3 sm:p-4 md:p-6 mb-4">
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-      <h1 class="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">Settings</h1>
+  <div class="w-full min-h-screen bg-white p-3 sm:p-4 md:p-6">
+    
+    <!-- Header Section -->
+    <div class="w-full rounded-xl bg-gradient-to-br from-indigo-500/10 to-pink-500/10 p-4 sm:p-6 border border-gray-200 shadow-lg mb-4 sm:mb-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900">Welcome John</h1>
+        </div>
+        <button
+          class="bg-white/90 hover:bg-white text-gray-800 font-semibold px-4 py-2.5 transition shadow-md whitespace-nowrap text-sm w-full sm:w-auto text-center rounded-none border-none"
+          aria-label="List Company"
+        >
+          List Company
+        </button>
+      </div>
     </div>
-  </div>
-  
-      <!-- Main Content Card -->
-      <div class="w-full relative bg-white flex flex-col gap-6 sm:gap-8 p-4 sm:p-6 lg:p-8 rounded-xl shadow-2xl shadow-gray-200/50">
-        
-        <!-- Two Column Layout -->
-        <div class="w-full relative flex flex-col lg:flex-row items-start gap-6">
-          
-          <!-- Left Column - Change Password -->
-          <div class="flex-1 shadow-lg rounded-xl bg-white flex flex-col items-start p-4 sm:p-6 gap-6 border border-gray-100">
-            <h2 class="text-lg sm:text-xl font-bold text-gray-800 capitalize">Change Password</h2>
+
+    <!-- Main Content -->
+    <div class="w-full relative flex flex-col lg:flex-row items-start gap-4 sm:gap-6 text-left text-black font-plus-jakarta-sans">
+      
+      <!-- Left Column - Change Password -->
+      <div class="w-full lg:flex-1 shadow-[0px_4px_38px_rgba(0,_0,_0,_0.1)] rounded-xl bg-white flex flex-col items-start justify-end p-4 sm:p-5 md:p-6 gap-4 sm:gap-5 md:gap-6">
+        <b class="relative leading-[130%] capitalize text-xl sm:text-2xl text-black">Change Password</b>
+        <div class="self-stretch flex flex-col items-end gap-4 sm:gap-5 md:gap-6 text-sm sm:text-base">
+          <div class="self-stretch flex flex-col items-start justify-center gap-3 sm:gap-4 md:gap-5">
             
-            <div class="self-stretch flex flex-col items-end gap-6">
-              <div class="self-stretch flex flex-col items-start justify-center gap-5">
-                
-                <!-- Current Password -->
-                <div class="self-stretch flex flex-col items-start gap-3">
-                  <label class="self-stretch text-sm font-medium text-gray-700 capitalize">Current Password</label>
-                  <div class="self-stretch rounded-lg border border-gray-300 flex items-center justify-between py-2.5 sm:py-3 px-3 sm:px-4 gap-2">
-                    <div class="flex items-center gap-2.5">
-                      <Lock class="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
-                      <div class="text-gray-600">************</div>
-                    </div>
-                    <Eye class="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 cursor-pointer" />
-                  </div>
+            <!-- Current Password -->
+            <div class="self-stretch flex flex-col items-start gap-2 sm:gap-3">
+              <div class="self-stretch relative leading-[130%] capitalize font-medium text-black">Current Password</div>
+              <div class="self-stretch rounded border-gainsboro border-solid border-[1px] flex items-center justify-between py-3 sm:py-4 md:py-5 px-3 sm:px-4 gap-3 sm:gap-4 md:gap-5 text-center text-black">
+                <div class="flex items-center gap-2 sm:gap-2.5 flex-1">
+                  <Lock class="h-5 w-5 sm:h-6 sm:w-6 relative text-gray-600 flex-shrink-0" />
+                  <input 
+                    type="password"
+                    v-model="passwordData.currentPassword"
+                    placeholder="Enter current password"
+                    class="flex-1 bg-transparent border-none outline-none text-black placeholder-gray-400 leading-[130%] capitalize"
+                  />
                 </div>
-                
-                <!-- New Password -->
-                <div class="self-stretch flex flex-col items-start gap-3">
-                  <label class="self-stretch text-sm font-medium text-gray-700 capitalize">New Password</label>
-                  <div class="self-stretch rounded-lg border border-gray-300 flex items-center justify-between py-2.5 sm:py-3 px-3 sm:px-4 gap-2">
-                    <div class="flex items-center gap-2.5">
-                      <Lock class="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
-                      <div class="text-gray-600">************</div>
-                    </div>
-                    <Eye class="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 cursor-pointer" />
-                  </div>
-                </div>
-                
-                <!-- Confirm New Password -->
-                <div class="self-stretch flex flex-col items-start gap-3">
-                  <label class="self-stretch text-sm font-medium text-gray-700 capitalize">Confirm New Password</label>
-                  <div class="self-stretch rounded-lg border border-gray-300 flex items-center justify-between py-2.5 sm:py-3 px-3 sm:px-4 gap-2">
-                    <div class="flex items-center gap-2.5">
-                      <Lock class="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
-                      <div class="text-gray-600">************</div>
-                    </div>
-                    <Eye class="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 cursor-pointer" />
-                  </div>
-                </div>
-                
+                <Eye 
+                  class="h-5 w-5 sm:h-6 sm:w-6 relative text-gray-600 cursor-pointer flex-shrink-0" 
+                  @click="togglePasswordVisibility('currentPassword')"
+                />
               </div>
-              
-              <!-- Update Password Button -->
-              <button 
-                class="w-full sm:w-[200px] rounded-lg bg-green-500 h-11 sm:h-12 flex items-center justify-center gap-2 text-white font-semibold shadow-md hover:bg-green-600 transition-colors"
-                @click="updatePassword"
-              >
-                <Save class="w-5 h-5" />
-                Update Password
-              </button>
             </div>
+            
+            <!-- New Password -->
+            <div class="self-stretch flex flex-col items-start gap-2 sm:gap-3">
+              <div class="self-stretch relative leading-[130%] capitalize font-medium text-black">New Password</div>
+              <div class="self-stretch rounded border-gainsboro border-solid border-[1px] flex items-center justify-between py-3 sm:py-4 md:py-5 px-3 sm:px-4 gap-3 sm:gap-4 md:gap-5 text-center text-black">
+                <div class="flex items-center gap-2 sm:gap-2.5 flex-1">
+                  <Lock class="h-5 w-5 sm:h-6 sm:w-6 relative text-gray-600 flex-shrink-0" />
+                  <input 
+                    :type="passwordVisibility.newPassword ? 'text' : 'password'"
+                    v-model="passwordData.newPassword"
+                    placeholder="Enter new password"
+                    class="flex-1 bg-transparent border-none outline-none text-black placeholder-gray-400 leading-[130%] capitalize"
+                  />
+                </div>
+                <Eye 
+                  class="h-5 w-5 sm:h-6 sm:w-6 relative text-gray-600 cursor-pointer flex-shrink-0" 
+                  @click="togglePasswordVisibility('newPassword')"
+                />
+              </div>
+            </div>
+            
+            <!-- Confirm New Password -->
+            <div class="self-stretch flex flex-col items-start gap-3 sm:gap-4 md:gap-5">
+              <div class="self-stretch relative leading-[130%] capitalize font-medium text-black">Confirm New Password</div>
+              <div class="self-stretch rounded border-gainsboro border-solid border-[1px] flex items-center justify-between py-3 sm:py-4 md:py-5 px-3 sm:px-4 gap-3 sm:gap-4 md:gap-5 text-center text-black">
+                <div class="flex items-center gap-2 sm:gap-2.5 flex-1">
+                  <Lock class="h-5 w-5 sm:h-6 sm:w-6 relative text-gray-600 flex-shrink-0" />
+                  <input 
+                    :type="passwordVisibility.confirmPassword ? 'text' : 'password'"
+                    v-model="passwordData.confirmPassword"
+                    placeholder="Confirm new password"
+                    class="flex-1 bg-transparent border-none outline-none text-black placeholder-gray-400 leading-[130%] capitalize"
+                  />
+                </div>
+                <Eye 
+                  class="h-5 w-5 sm:h-6 sm:w-6 relative text-gray-600 cursor-pointer flex-shrink-0" 
+                  @click="togglePasswordVisibility('confirmPassword')"
+                />
+              </div>
+            </div>
+            
           </div>
-  
-          <!-- Right Column - Notification Preferences -->
-          <div class="flex-1 shadow-lg rounded-xl bg-white flex flex-col items-start p-4 sm:p-6 gap-6 border border-gray-100">
-            <h2 class="text-lg sm:text-xl font-bold text-gray-800 capitalize">Notification Preferences</h2>
-            
-            <!-- Email Notifications Toggle -->
-            <div class="self-stretch flex items-start gap-4 sm:gap-6">
-              <div class="flex-1 flex flex-col items-start gap-2">
-                <div class="self-stretch text-sm font-medium text-gray-700 capitalize">Email Notifications</div>
-                <div class="self-stretch text-sm text-gray-500">Receive email notifications for new reviews and updates</div>
-              </div>
-              <div 
-                class="w-12 sm:w-14 h-6 sm:h-7 rounded-full bg-gray-200 border border-gray-300 flex items-center p-1 cursor-pointer transition-all duration-300"
-                :class="emailNotifications ? 'bg-green-500' : 'bg-gray-200'"
-                @click="toggleEmailNotifications"
-              >
-                <div 
-                  class="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-white shadow-md transform transition-transform duration-300"
-                  :class="emailNotifications ? 'translate-x-6 sm:translate-x-7' : 'translate-x-0'"
-                ></div>
-              </div>
-            </div>
-            
-            <!-- Divider -->
-            <div class="self-stretch border-t border-gray-200"></div>
-            
-            <!-- Push Notifications Toggle -->
-            <div class="self-stretch flex items-start gap-4 sm:gap-6">
-              <div class="flex-1 flex flex-col items-start gap-2">
-                <div class="self-stretch text-sm font-medium text-gray-700 capitalize">Push Notifications</div>
-                <div class="self-stretch text-sm text-gray-500">Receive push notifications for important updates</div>
-              </div>
-              <div 
-                class="w-12 sm:w-14 h-6 sm:h-7 rounded-full bg-gray-200 border border-gray-300 flex items-center p-1 cursor-pointer transition-all duration-300"
-                :class="pushNotifications ? 'bg-green-500' : 'bg-gray-200'"
-                @click="togglePushNotifications"
-              >
-                <div 
-                  class="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-white shadow-md transform transition-transform duration-300"
-                  :class="pushNotifications ? 'translate-x-6 sm:translate-x-7' : 'translate-x-0'"
-                ></div>
-              </div>
-            </div>
-            
-            <!-- Divider -->
-            <div class="self-stretch border-t border-gray-200"></div>
-            
-            <!-- SMS Notifications Toggle -->
-            <div class="self-stretch flex items-start gap-4 sm:gap-6">
-              <div class="flex-1 flex flex-col items-start gap-2">
-                <div class="self-stretch text-sm font-medium text-gray-700 capitalize">SMS Notifications</div>
-                <div class="self-stretch text-sm text-gray-500">Receive SMS alerts for critical updates</div>
-              </div>
-              <div 
-                class="w-12 sm:w-14 h-6 sm:h-7 rounded-full bg-gray-200 border border-gray-300 flex items-center p-1 cursor-pointer transition-all duration-300"
-                :class="smsNotifications ? 'bg-green-500' : 'bg-gray-200'"
-                @click="toggleSmsNotifications"
-              >
-                <div 
-                  class="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-white shadow-md transform transition-transform duration-300"
-                  :class="smsNotifications ? 'translate-x-6 sm:translate-x-7' : 'translate-x-0'"
-                ></div>
-              </div>
-            </div>
-            
-            <!-- Divider -->
-            <div class="self-stretch border-t border-gray-200"></div>
-            
-            <!-- Marketing Emails Toggle -->
-            <div class="self-stretch flex items-start gap-4 sm:gap-6">
-              <div class="flex-1 flex flex-col items-start gap-2">
-                <div class="self-stretch text-sm font-medium text-gray-700 capitalize">Marketing Emails</div>
-                <div class="self-stretch text-sm text-gray-500">Receive promotional emails and special offers</div>
-              </div>
-              <div 
-                class="w-12 sm:w-14 h-6 sm:h-7 rounded-full bg-gray-200 border border-gray-300 flex items-center p-1 cursor-pointer transition-all duration-300"
-                :class="marketingEmails ? 'bg-green-500' : 'bg-gray-200'"
-                @click="toggleMarketingEmails"
-              >
-                <div 
-                  class="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-white shadow-md transform transition-transform duration-300"
-                  :class="marketingEmails ? 'translate-x-6 sm:translate-x-7' : 'translate-x-0'"
-                ></div>
-              </div>
+          
+          <!-- Update Password Button - No Border Radius, No Border -->
+          <button 
+            class="w-full sm:w-[223px] h-12 sm:h-[52px] rounded bg-forestgreen flex items-center justify-center py-3 sm:py-4 md:py-5 px-4 sm:px-6 md:px-8 box-border gap-2 sm:gap-2.5 text-center text-white cursor-pointer hover:bg-green-700 transition-colors whitespace-nowrap"
+            @click="updatePassword"
+          >
+            <Save class="h-5 w-5 sm:h-6 sm:w-6 relative text-white flex-shrink-0" />
+            <div class="relative leading-[130%] capitalize font-semibold text-sm sm:text-base whitespace-nowrap">Update Password</div>
+          </button>
+
+          <!-- Validation Messages -->
+          <div v-if="validationMessage" class="w-full text-center">
+            <div :class="validationMessage.type === 'success' ? 'text-green-600' : 'text-red-600'" class="text-sm">
+              {{ validationMessage.text }}
             </div>
           </div>
         </div>
-  
-        <!-- Save All Changes Button -->
-        <div class="flex justify-end pt-4 border-t border-gray-100">
-          <button
-            class="w-full sm:w-[200px] rounded-xl bg-indigo-600 text-white py-2.5 sm:py-3 font-medium flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/30 hover:bg-indigo-700 transition-colors"
-            @click="saveAllChanges"
+      </div>
+
+      <!-- Right Column - Notification Preferences -->
+      <div class="w-full lg:flex-1 shadow-[0px_4px_38px_rgba(0,_0,_0,_0.1)] rounded-xl bg-white flex flex-col items-start justify-end p-4 sm:p-5 md:p-6 gap-4 sm:gap-5 md:gap-6 text-sm sm:text-base mt-4 sm:mt-6 lg:mt-0">
+        <b class="relative leading-[130%] capitalize text-xl sm:text-2xl text-black">Notification Preferences</b>
+        
+        <!-- Email Notifications Toggle -->
+        <div class="self-stretch flex items-start gap-4 sm:gap-5 md:gap-6">
+          <div class="flex-1 flex flex-col items-start gap-2 sm:gap-2.5">
+            <div class="self-stretch relative leading-[130%] capitalize font-medium text-black">Email Notifications</div>
+            <div class="self-stretch relative leading-[130%] capitalize text-gray-600">Receive email notifications for new reviews and updates</div>
+          </div>
+          <div 
+            class="w-14 sm:w-[57px] h-7 sm:h-[28px] rounded-[21px] bg-gray-100 border-lavender border-solid border-[1px] box-border flex items-center p-1 gap-1 text-xs cursor-pointer transition-all duration-300"
+            :class="emailNotifications ? 'bg-royalblue justify-between' : 'bg-gray-100 justify-start'"
+            @click="toggleEmailNotifications"
           >
-            <Save class="w-4 h-4" />
-            Save All Changes
-          </button>
+            <div 
+              class="h-5 w-5 sm:h-[23px] sm:w-[23px] relative shadow-[0px_1px_3px_rgba(0,_0,_0,_0.1),_0px_1px_3px_rgba(0,_0,_0,_0.1)] rounded-[50%] bg-white border-gray-100 border-solid border-[1px] box-border transition-all duration-300"
+              :class="emailNotifications ? 'order-2' : 'order-1'"
+            ></div>
+            <div 
+              class="relative leading-[130%] capitalize font-medium transition-all duration-300"
+              :class="emailNotifications ? 'text-white order-1' : 'text-gray-600 order-2'"
+            >
+              {{ emailNotifications ? 'on' : 'off' }}
+            </div>
+          </div>
+        </div>
+        
+        <!-- Divider -->
+        <div class="self-stretch h-px relative border-gainsboro border-solid border-t-[1px] box-border"></div>
+        
+        <!-- Push Notifications Toggle -->
+        <div class="self-stretch flex items-start gap-4 sm:gap-5 md:gap-6">
+          <div class="flex-1 flex flex-col items-start gap-2 sm:gap-2.5">
+            <div class="self-stretch relative leading-[130%] capitalize font-medium text-black">Push Notifications</div>
+            <div class="self-stretch relative leading-[130%] capitalize text-gray-600">Receive push notifications for important updates</div>
+          </div>
+          <div 
+            class="w-14 sm:w-[57px] h-7 sm:h-[28px] rounded-[21px] border-lavender border-solid border-[1px] box-border flex items-center p-1 gap-1 text-xs cursor-pointer transition-all duration-300"
+            :class="pushNotifications ? 'bg-royalblue justify-between' : 'bg-gray-100 justify-start'"
+            @click="togglePushNotifications"
+          >
+            <div 
+              class="h-5 w-5 sm:h-[23px] sm:w-[23px] relative shadow-[0px_1px_3px_rgba(0,_0,_0,_0.1),_0px_1px_3px_rgba(0,_0,_0,_0.1)] rounded-[50%] bg-white border-gray-100 border-solid border-[1px] box-border transition-all duration-300"
+              :class="pushNotifications ? 'order-2' : 'order-1'"
+            ></div>
+            <div 
+              class="relative leading-[130%] capitalize font-medium transition-all duration-300"
+              :class="pushNotifications ? 'text-white order-1' : 'text-gray-600 order-2'"
+            >
+              {{ pushNotifications ? 'on' : 'off' }}
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  </template>
-  
-  <script setup>
-  import { Pencil, Save, Lock, Eye } from 'lucide-vue-next';
-  import { ref, reactive } from 'vue';
-  
-  // Password data
-  const passwordData = reactive({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: ''
-  });
-  
-  // Notification preferences
-  const emailNotifications = ref(true);
-  const pushNotifications = ref(false);
-  const smsNotifications = ref(true);
-  const marketingEmails = ref(false);
-  
-  // Methods
-  const toggleEmailNotifications = () => {
-    emailNotifications.value = !emailNotifications.value;
-  };
-  
-  const togglePushNotifications = () => {
-    pushNotifications.value = !pushNotifications.value;
-  };
-  
-  const toggleSmsNotifications = () => {
-    smsNotifications.value = !smsNotifications.value;
-  };
-  
-  const toggleMarketingEmails = () => {
-    marketingEmails.value = !marketingEmails.value;
-  };
-  
-  const updatePassword = () => {
-    // Handle password update logic here
-    // You can add API call or validation here
-  };
-  
-  const saveAllChanges = () => {
-    // Handle save all changes logic here
-    const notificationPreferences = {
-      email: emailNotifications.value,
-      push: pushNotifications.value,
-      sms: smsNotifications.value,
-      marketing: marketingEmails.value
+  </div>
+</template>
+
+<script setup>
+import { Lock, Eye, Save } from 'lucide-vue-next';
+import { ref, reactive, computed } from 'vue';
+
+// Password data with reactive form fields
+const passwordData = reactive({
+  currentPassword: '',
+  newPassword: '',
+  confirmPassword: ''
+});
+
+// Password visibility states
+const passwordVisibility = reactive({
+  currentPassword: false,
+  newPassword: false,
+  confirmPassword: false
+});
+
+// Notification preferences
+const emailNotifications = ref(false);
+const pushNotifications = ref(true);
+
+// Validation message
+const validationMessage = ref(null);
+
+// Computed property to check if form is valid
+const isFormValid = computed(() => {
+  return (
+    passwordData.currentPassword.trim() !== '' &&
+    passwordData.newPassword.trim() !== '' &&
+    passwordData.confirmPassword.trim() !== '' &&
+    passwordData.newPassword === passwordData.confirmPassword
+  );
+});
+
+// Methods
+const togglePasswordVisibility = (field) => {
+  passwordVisibility[field] = !passwordVisibility[field];
+};
+
+const toggleEmailNotifications = () => {
+  emailNotifications.value = !emailNotifications.value;
+};
+
+const togglePushNotifications = () => {
+  pushNotifications.value = !pushNotifications.value;
+};
+
+const updatePassword = () => {
+  // Clear previous messages
+  validationMessage.value = null;
+
+  // Validation
+  if (!passwordData.currentPassword) {
+    validationMessage.value = {
+      type: 'error',
+      text: 'Please enter your current password'
     };
-    // You can add API call here
-  };
-  </script>
-  
-  <style scoped>
-  .shadow-2xl {
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05), 0 20px 50px rgba(0, 0, 0, 0.03);
+    return;
   }
-  </style>
+
+  if (!passwordData.newPassword) {
+    validationMessage.value = {
+      type: 'error',
+      text: 'Please enter a new password'
+    };
+    return;
+  }
+
+  if (passwordData.newPassword.length < 6) {
+    validationMessage.value = {
+      type: 'error',
+      text: 'Password must be at least 6 characters long'
+    };
+    return;
+  }
+
+  if (passwordData.newPassword !== passwordData.confirmPassword) {
+    validationMessage.value = {
+      type: 'error',
+      text: 'New passwords do not match'
+    };
+    return;
+  }
+
+  // Simulate API call
+  validationMessage.value = {
+    type: 'success',
+    text: 'Password updated successfully!'
+  };
+
+  // Reset form after successful update
+  setTimeout(() => {
+    passwordData.currentPassword = '';
+    passwordData.newPassword = '';
+    passwordData.confirmPassword = '';
+    validationMessage.value = null;
+  }, 3000);
+};
+</script>
+
+<style scoped>
+/* Custom colors matching the design */
+.border-gainsboro {
+  border-color: #DCDCDC;
+}
+.bg-forestgreen {
+  background-color: #228B22;
+}
+.bg-royalblue {
+  background-color: #4169E1;
+}
+.border-lavender {
+  border-color: #E6E6FA;
+}
+.text-black {
+  color: #000000;
+}
+.font-plus-jakarta-sans {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Remove border radius and border from update button */
+button {
+  border-radius: 0 !important;
+  border: none !important;
+}
+
+/* Input field styling */
+input {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Responsive design */
+@media (max-width: 640px) {
+  .shadow-\[0px_4px_38px_rgba\(0\,_0\_0\_0\.1\)\] {
+    box-shadow: 0px 2px 20px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* Disabled button styling */
+button:disabled {
+  background-color: #9CA3AF !important;
+  cursor: not-allowed !important;
+}
+</style>

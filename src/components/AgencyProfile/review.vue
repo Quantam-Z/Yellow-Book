@@ -1,14 +1,13 @@
 <template>
   <div class="w-full min-h-screen bg-white p-4 sm:p-6 space-y-6">
     <!-- Header -->
-    <div class="w-full rounded-xl bg-gradient-to-br from-indigo-500/10 to-pink-500/10 p-4 sm:p-6 border border-gray-200 shadow-lg">
+    <div class="w-full rounded-xl bg-gradient-to-br from-indigo-500/10 to-pink-500/10 p-4 sm:p-6 border border-gray-200 shadow-lg mb-4 sm:mb-6">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900">Welcome John</h1>
-          <p class="text-sm text-gray-600">Review and manage agency feedback.</p>
         </div>
         <button
-          class="bg-white/90 hover:bg-white text-gray-800 font-semibold px-4 py-2.5 rounded-lg transition shadow-md whitespace-nowrap text-sm w-full sm:w-auto text-center border border-gray-200"
+          class="bg-white/90 hover:bg-white text-gray-800 font-semibold px-4 py-2.5 transition shadow-md whitespace-nowrap text-sm w-full sm:w-auto text-center rounded-none border-none"
           aria-label="List Company"
         >
           List Company
@@ -86,7 +85,9 @@
         class="w-full md:w-[132px] rounded bg-forestgreen flex items-center justify-center py-3 px-8 box-border text-white cursor-pointer hover:bg-green-700 transition-colors min-h-[52px] border-0 outline-none focus:outline-none focus:ring-2 focus:ring-green-300"
         @click="applyFilters"
       >
-        <div class="relative leading-[130%] capitalize font-semibold">Apply filter</div>
+      <div class="relative leading-[130%] capitalize font-semibold text-black whitespace-nowrap">
+  Apply filter
+</div>
       </button>
 
       <!-- Clear Filters Button -->
@@ -108,56 +109,55 @@
     <div v-else>
       <div class="w-full relative flex flex-col items-start gap-5 text-left text-[18px] text-gray-900 font-plus-jakarta-sans">
         <b class="self-stretch relative leading-[130%] capitalize">Latest Reviews ({{ filteredReviewsCount }})</b>
-        <div class="self-stretch flex flex-col items-start text-base text-gray-600 border-0 border-gray-300 rounded-lg overflow-hidden w-full">
+        <div class="self-stretch flex flex-col items-start text-base text-gray-600 w-full">
             
             <!-- Desktop Table (visible >= lg) -->
-            <div class="hidden lg:block w-full">
-                <!-- Table Header - Keep the same styling -->
-                <div class="w-full relative bg-ghostwhite flex items-center justify-between p-num-10 box-border gap-5 text-left text-num-16 text-dimgray font-plus-jakarta-sans border-b border-gray-300">
-                  <div class="w-[230px] flex items-center p-num-10 box-border">
+            <div class="hidden lg:block w-full border border-table-border rounded-lg overflow-hidden">
+                <!-- Table Header - Using exact spacing and colors from reference -->
+                <div class="self-stretch bg-table-header flex items-center justify-between p-num-10 gap-5 text-left text-num-16 text-table-header-text font-plus-jakarta-sans border-b border-table-border">
+                  <div class="w-num-230 flex items-center p-num-10 box-border">
                     <div class="relative leading-[160%] uppercase font-medium">Reviewer</div>
                   </div>
-                  <div class="w-[200px] flex items-center justify-center p-num-10 box-border">
+                  <div class="w-num-200 flex items-center justify-center p-num-10 box-border">
                     <div class="relative leading-[160%] uppercase font-medium">Rating</div>
                   </div>
-                  <div class="w-[200px] flex items-center justify-center p-num-10 box-border">
+                  <div class="w-num-200 flex items-center justify-center p-num-10 box-border">
                     <div class="relative leading-[160%] uppercase font-medium">Date & Time</div>
                   </div>
-                  <div class="w-[379px] flex items-center justify-center p-num-10 box-border opacity-[0.79]">
+                  <div class="w-[379px] flex items-center justify-center p-num-10 box-border">
                     <div class="relative leading-[160%] uppercase font-medium">Review</div>
                   </div>
-                  <div class="w-[100px] flex items-center justify-center p-num-10 box-border">
+                  <div class="w-num-100 flex items-center justify-center p-num-10 box-border">
                     <div class="relative leading-[160%] uppercase font-medium">Actions</div>
                   </div>
                 </div>
 
-                <!-- Table Body with empty state border styling -->
-                <div v-if="filteredReviewsCount > 0" class="self-stretch border-0 border-solid flex flex-col items-start">
+                <!-- Table Body with minimal border styling -->
+                <div v-if="filteredReviewsCount > 0" class="self-stretch flex flex-col items-start bg-white">
                   <div 
                     v-for="review in paginatedReviews" 
                     :key="review.id"
-                    class="self-stretch border-gray-300 border-solid border-b flex items-center justify-between p-4 gap-5 hover:bg-gray-50 transition-colors last:border-b-0"
+                    class="self-stretch border-b border-table-border flex items-center justify-between p-num-10 gap-5 hover:bg-gray-50 transition-colors last:border-b-0"
                   >
                     <!-- Reviewer Column -->
-                    <div class="w-[230px] flex items-center gap-2.5">
+                    <div class="w-num-230 flex items-center gap-2.5">
                       <div class="h-11 w-11 relative rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0">
                         <span class="text-white font-bold text-sm">{{ getInitials(review.reviewerName) }}</span>
                       </div>
-                      <div class="flex flex-col">
-                        <div class="leading-[160%] capitalize text-gray-900 font-medium">{{ review.reviewerName }}</div>
-                        <div class="text-xs text-gray-500 leading-[160%] capitalize">{{ review.agency }}</div>
+                      <div class="w-num-250 flex items-center py-num-10 px-num-0 box-border shrink-0">
+                        <div class="h-3 w-num-187 relative leading-[160%] capitalize inline-block shrink-0 text-gray-900 font-medium">{{ review.reviewerName }}</div>
                       </div>
                     </div>
 
                     <!-- Rating Column -->
-                    <div class="w-[200px] flex items-center justify-center p-2 box-border">
+                    <div class="w-num-200 flex items-center justify-center p-num-10 box-border">
                       <div class="flex flex-col items-center gap-1">
-                        <div class="flex items-center gap-1">
+                        <div class="flex items-center gap-px">
                           <Star
                             v-for="i in 5"
                             :key="i"
                             :class="i <= review.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'"
-                            class="w-5 h-5"
+                            class="w-6 h-6"
                           />
                         </div>
                         <div class="text-xs text-gray-500">{{ review.rating }} Star{{ review.rating > 1 ? 's' : '' }}</div>
@@ -165,7 +165,7 @@
                     </div>
 
                     <!-- Date & Time Column -->
-                    <div class="w-[200px] flex items-center justify-center p-2 box-border">
+                    <div class="w-num-200 flex items-center justify-center p-num-10 box-border">
                       <div class="relative leading-[160%] capitalize text-center">
                         <p class="m-0 text-gray-900">{{ formatDate(review.date) }}</p>
                         <p class="m-0 text-gray-500 text-sm">{{ review.time }}</p>
@@ -173,18 +173,19 @@
                     </div>
 
                     <!-- Review Column -->
-                    <div class="w-[379px] flex items-center justify-center p-2 gap-1 text-gray-700">
-                      <div class="relative leading-[160%] capitalize truncate max-w-[320px]">"{{ review.content }}"</div>
-                      <button 
-                        @click="viewFullReview(review)"
-                        class="relative leading-[160%] capitalize font-semibold text-blue-500 hover:text-blue-600 transition-colors whitespace-nowrap"
-                      >
-                        Full view
-                      </button>
+                    <div class="flex items-center justify-center p-num-10 gap-1 text-darkslategray">
+                      <div class="relative leading-[160%] capitalize">"{{ truncateReview(review.content) }}"</div>
+                      <span 
+  @click="viewFullReview(review)" 
+  class="text-deepskyblue hover:text-blue-600 cursor-pointer"
+>
+  Full view
+</span>
+
                     </div>
 
                     <!-- Actions Column -->
-                    <div class="w-[100px] flex items-center justify-center p-2 box-border">
+                    <div class="w-num-100 flex items-center justify-center p-num-10 box-border">
                       <div class="flex items-center gap-2">
                         <button 
                           @click="approveReview(review.id)"
@@ -205,30 +206,34 @@
                   </div>
                 </div>
 
-                <!-- Empty State within table - using the same border styling -->
-                <div v-else class="w-full bg-white rounded-lg border-0 p-8 text-center">
-                  <div class="max-w-md mx-auto">
-                    <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <Star class="w-8 h-8 text-gray-400" />
+                <!-- Empty State within table -->
+                <div v-else class="self-stretch flex flex-col items-start bg-white">
+                  <div class="self-stretch flex items-center justify-between p-num-10 gap-5">
+                    <div class="w-full bg-white p-8 text-center">
+                      <div class="max-w-md mx-auto">
+                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                          <Star class="w-8 h-8 text-gray-400" />
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">No reviews match your filters</h3>
+                        <p class="text-gray-600 mb-4">Try adjusting your search criteria or clear filters.</p>
+                        <button
+                          @click="resetFilters"
+                          class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition min-h-[44px] touch-manipulation border-0 outline-none"
+                        >
+                          Clear Filters
+                        </button>
+                      </div>
                     </div>
-                    <h3 class="text-lg font-semibold text-gray-900 mb-2">No reviews match your filters</h3>
-                    <p class="text-gray-600 mb-4">Try adjusting your search criteria or clear filters.</p>
-                    <button
-                      @click="resetFilters"
-                      class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition min-h-[44px] touch-manipulation border-0 outline-none"
-                    >
-                      Clear Filters
-                    </button>
                   </div>
                 </div>
             </div>
 
             <!-- Mobile Cards (visible < lg) -->
-            <div class="lg:hidden space-y-4 p-4">
+            <div class="lg:hidden space-y-4">
               <div
                 v-for="review in paginatedReviews"
                 :key="review.id"
-                class="bg-white border border-gray-300 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow"
+                class="bg-white border border-table-border rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow"
               >
                 <!-- Header -->
                 <div class="flex items-start justify-between mb-3">
@@ -257,16 +262,17 @@
                 <!-- Review Content -->
                 <div class="mb-4">
                   <p class="text-gray-700 text-sm leading-relaxed italic line-clamp-3">"{{ review.content }}"</p>
-                  <button 
-                    @click="viewFullReview(review)"
-                    class="text-blue-500 hover:text-blue-600 font-semibold text-sm mt-2"
-                  >
-                    Full view
-                  </button>
+                  <span 
+  @click="viewFullReview(review)" 
+  class="text-deepskyblue hover:text-blue-600 cursor-pointer"
+>
+  Full view
+</span>
+
                 </div>
 
                 <!-- Actions -->
-                <div class="flex justify-end gap-2 pt-2 border-t border-gray-300">
+                <div class="flex justify-end gap-2 pt-2 border-t border-table-border">
                   <button 
                     class="flex items-center justify-center gap-1 px-3 py-1.5 text-green-600 bg-green-50 rounded-lg text-sm hover:bg-green-100 transition w-1/2 min-h-[44px] touch-manipulation border-0 outline-none"
                     @click="approveReview(review.id)"
@@ -287,7 +293,7 @@
               </div>
 
               <!-- Mobile Empty State -->
-              <div v-if="filteredReviewsCount === 0" class="w-full bg-white rounded-lg border border-gray-300 border-solid p-8 text-center">
+              <div v-if="filteredReviewsCount === 0" class="w-full bg-white rounded-lg border border-table-border border-solid p-8 text-center">
                 <div class="max-w-md mx-auto">
                   <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <Star class="w-8 h-8 text-gray-400" />
@@ -305,10 +311,10 @@
             </div>
 
             <!-- Load more button -->
-            <div v-if="filteredReviewsCount > 0" class="flex justify-center py-4 border-t border-gray-300 w-full">
+            <div v-if="filteredReviewsCount > 0" class="flex justify-center py-4 border-t border-table-border w-full">
               <button
                 v-if="hasMoreReviews"
-                class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition flex items-center gap-2 min-h-[44px] touch-manipulation border-0 outline-none"
+                class="px-6 py-2 border border-table-border rounded-lg text-gray-700 hover:bg-gray-100 transition flex items-center gap-2 min-h-[44px] touch-manipulation outline-none"
                 @click="loadMoreReviews"
                 aria-label="Load more reviews"
               >
@@ -365,7 +371,7 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
-import { CheckCircle, Trash2, Plus, Star, ChevronDown, Loader2, Calendar } from 'lucide-vue-next'
+import { CheckCircle, Trash2, Plus, Star, ChevronDown, Loader2, Calendar, X } from 'lucide-vue-next'
 
 const reviews = ref([])
 const selectedRating = ref('')
@@ -374,6 +380,7 @@ const reviewsPerPage = 10
 const dateFrom = ref('')
 const dateTo = ref('')
 const isLoading = ref(false)
+const selectedReview = ref(null)
 
 // Load reviews from stub json
 const { data: reviewsData } = await useFetch('/stubs/agencyReviews.json')
@@ -394,6 +401,15 @@ const formatDateForComparison = (date) => {
 const getInitials = (name) => {
   if (!name) return '??'
   return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+}
+
+// Truncate review content like in reference
+const truncateReview = (content) => {
+  if (!content) return ''
+  if (content.length > 30) {
+    return content.substring(0, 30) + '...'
+  }
+  return content
 }
 
 // Computed properties
@@ -499,6 +515,10 @@ const deleteReview = (id) => {
   }
 }
 
+const viewFullReview = (review) => {
+  selectedReview.value = review
+}
+
 const loadMoreReviews = () => { 
   currentPage.value++ 
 }
@@ -517,8 +537,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-
-
 /* Ensure buttons/inputs are easily tappable on touch devices */
 .touch-manipulation {
   touch-action: manipulation;
@@ -529,11 +547,23 @@ onMounted(() => {
 .border-darkgray {
   border-color: #A9A9A9;
 }
+.border-table-border {
+  border-color: #E5E7EB; /* Clean light gray border like in reference */
+}
+.bg-table-header {
+  background-color: #F9FAFB; /* Very light gray header background */
+}
+.text-table-header-text {
+  color: #6B7280; /* Medium gray for header text */
+}
 .text-darkgray {
   color: #A9A9A9;
 }
 .text-darkslategray {
   color: #2F4F4F;
+}
+.text-deepskyblue {
+  color: #00BFFF; /* deepskyblue color */
 }
 .bg-forestgreen {
   background-color: #228B22;
@@ -560,5 +590,33 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 select {
   font-family: 'Plus Jakarta Sans', sans-serif;
   color: #2F4F4F;
+}
+
+/* Custom number values for spacing consistency */
+.p-num-10 {
+  padding: 10px;
+}
+.w-num-230 {
+  width: 230px;
+}
+.w-num-200 {
+  width: 200px;
+}
+.w-num-250 {
+  width: 250px;
+}
+.w-num-187 {
+  width: 187px;
+}
+.w-num-100 {
+  width: 100px;
+}
+.rounded-num-22 {
+  border-radius: 22px;
+}
+
+/* Text size utility */
+.text-num-16 {
+  font-size: 16px;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full rounded-lg border border-gray-200 box-border flex flex-col items-start p-4 lg:p-6 gap-4 text-left text-xl text-gray-900 font-plus-jakarta-sans">
+  <div class="w-full rounded-lg  bg-white border-whitesmoke border-solid border-[1px]r flex flex-col items-start p-4 lg:p-6 gap-4 text-left text-xl text-gray-900 font-plus-jakarta-sans">
     <!-- Header -->
     <div class="w-full flex items-center justify-between">
       <h2 class="relative leading-[130%] capitalize font-bold text-lg lg:text-xl">Recent Company</h2>

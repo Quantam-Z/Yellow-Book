@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full min-h-screen bg-gray-50 p-3 sm:p-4 md:p-6">
+  <div class="w-full min-h-screen bg-white p-3 sm:p-4 md:p-6">
     <div
       class="w-full rounded-lg bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 p-3 sm:p-4 md:p-6 mb-4 sm:mb-6"
     >

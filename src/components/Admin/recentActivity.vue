@@ -1,6 +1,6 @@
 <template>
-  <div class="w-full rounded-lg bg-white border border-gray-200 box-border flex flex-col items-start p-4 lg:p-6 gap-4 text-left text-lg text-gray-900 font-plus-jakarta-sans">
-      <h2 class="w-full relative leading-[130%] capitalize font-bold">Recent Activity</h2>
+<div class="w-full rounded-lg bg-blue-100 border border-gray-200 box-border flex flex-col items-start p-4 lg:p-6 gap-4 text-left text-lg text-gray-900 font-plus-jakarta-sans">
+  <h2 class="w-full relative leading-[130%] capitalize font-bold">Recent Activity</h2>
       
       <div class="w-full flex flex-col items-start gap-3 text-sm">
         <!-- Activity Items -->

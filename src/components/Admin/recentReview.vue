@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full rounded-lg bg-white border border-gray-200 box-border flex flex-col items-start p-4 lg:p-6 gap-4 text-left text-xl text-gray-900 font-plus-jakarta-sans">
+  <div class="w-full rounded-lg bg-white border-whitesmoke border-solid border-[1px] flex flex-col items-start p-4 lg:p-6 gap-4 text-left text-xl text-gray-900 font-plus-jakarta-sans">
     <!-- Header -->
     <div class="w-full flex items-center justify-between">
       <h2 class="relative leading-[130%] capitalize font-bold text-lg lg:text-xl">Recent Reviews</h2>
@@ -31,7 +31,9 @@
               </div>
             </td>
             <td class="px-4 py-3 text-gray-700 text-sm whitespace-nowrap">{{ review.date }}</td>
-            <td class="px-4 py-3 text-gray-700 text-sm truncate">{{ review.review }}</td>
+            <td class="px-4 py-3 text-gray-700 text-sm truncate">
+  {{ review.review.split(' ').slice(0, 1).join(' ') }}
+</td>
             <td class="px-4 py-3 whitespace-nowrap">
               <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-md font-medium text-sm" :class="getStatusClass(review.status, 'soft')">
                 {{ review.status }}

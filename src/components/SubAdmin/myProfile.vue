@@ -1,8 +1,10 @@
 <template>
-  <div class="min-h-screen bg-gray-50 p-4">
-    <div class="w-full rounded-lg bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 p-4 mb-6">
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-        <h1 class="text-xl md:text-2xl font-bold text-gray-900">My Profile</h1>
+  <div class="min-h-screen bg-white-50 p-4">
+    <div class="w-full rounded-xl bg-gradient-to-br from-indigo-500/10 to-pink-500/10 p-4 sm:p-6 border border-gray-200 shadow-lg mb-4 sm:mb-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-2xl sm:text-2xl font-extrabold text-gray-900">My Profile</h1>
+        </div>
       </div>
     </div>
 
