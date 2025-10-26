@@ -1,199 +1,363 @@
 <template>
-  <div class="w-full min-h-screen bg-gray-50 p-4 sm:p-6 space-y-4 sm:space-y-6">
+  <div class="w-full min-h-screen bg-white p-4 sm:p-6 space-y-6">
     <!-- Header -->
-    <div class="w-full rounded-xl bg-gradient-to-tr from-indigo-500/10 to-pink-500/10 p-4 sm:p-6 border-[0.5px] border-gray-200 shadow-sm">
+    <div class="w-full rounded-xl bg-gradient-to-br from-indigo-500/10 to-pink-500/10 p-4 sm:p-6 border border-gray-200 shadow-lg">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900">Reviews</h1>
-          <p class="text-gray-600 mt-1 text-sm sm:text-base">Manage and monitor customer feedback</p>
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900">Welcome John</h1>
+          <p class="text-sm text-gray-600">Review and manage agency feedback.</p>
         </div>
         <button
-          class="flex items-center justify-center gap-2 rounded-full px-4 py-1.5 text-sm font-semibold bg-white border border-indigo-400 text-indigo-600 shadow-md hover:bg-indigo-50 transition-colors w-full sm:w-auto"
+          class="bg-white/90 hover:bg-white text-gray-800 font-semibold px-4 py-2.5 rounded-lg transition shadow-md whitespace-nowrap text-sm w-full sm:w-auto text-center border border-gray-200"
+          aria-label="List Company"
         >
-          <Pencil class="w-4 h-4" />
-          Manage Reviews
+          List Company
         </button>
       </div>
     </div>
 
-    <!-- Overall Rating -->
-    <div class="w-full bg-white rounded-xl shadow-lg p-4 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-      <div class="font-semibold text-lg sm:text-xl text-gray-800">Overall Rating</div>
+    <!-- Overall Rating Card -->
+    <div class="w-full bg-white rounded-lg border border-darkgray border-solid box-border p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="font-semibold text-xl text-gray-800">Overall Rating</div>
       <div class="text-center sm:text-right">
-        <div class="text-2xl sm:text-3xl font-bold text-gray-900">{{ overallRating }}</div>
-        <div class="flex justify-center sm:justify-end gap-1 mt-1">
-          <RatingStars :value="Number(overallRating)" :size-class="'w-4 h-4 sm:w-5 sm:h-5'" />
+        <div v-if="isLoading" class="text-3xl font-bold text-gray-900 animate-pulse bg-gray-200 w-16 h-8 rounded"></div>
+        <div v-else class="text-3xl font-bold text-gray-900">{{ overallRating }}</div>
+        <div class="flex justify-center sm:justify-end gap-0.5 mt-1">
+          <Star
+            v-for="i in 5"
+            :key="i"
+            :class="i <= Math.round(Number(overallRating)) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'"
+            class="w-5 h-5"
+          />
         </div>
-        <div class="text-sm text-gray-500">Based on {{ totalReviews }} reviews</div>
+        <div class="text-sm text-gray-500 mt-1">Based on {{ totalReviews }} reviews</div>
       </div>
     </div>
 
-    <!-- Filters -->
-    <div class="w-full bg-white rounded-xl shadow-lg p-4 sm:p-6">
-      <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-        <select v-model="selectedRating" class="border rounded-lg px-3 py-2 text-gray-700 flex-1">
-          <option value="">All ratings</option>
-          <option v-for="opt in [5,4,3,2,1]" :key="opt" :value="opt">{{ opt }} Stars</option>
-        </select>
-
-        <div class="flex gap-2">
-          <input type="date" v-model="dateFrom" class="border rounded-lg px-3 py-2 text-gray-700 flex-1 text-sm" />
-          <input type="date" v-model="dateTo" class="border rounded-lg px-3 py-2 text-gray-700 flex-1 text-sm" />
-        </div>
-
-        <button
-          class="bg-green-600 text-white px-4 sm:px-6 py-2 rounded-lg shadow hover:bg-green-700 transition flex items-center justify-center gap-2 w-full sm:w-auto"
-          @click="applyFilters"
+    <!-- FILTER CONTROLS -->
+    <div class="w-full relative border border-darkgray border-solid box-border flex flex-col md:flex-row items-center p-5 gap-4 text-center text-base text-darkgray font-plus-jakarta-sans bg-white rounded-lg">
+      
+      <!-- Rating Select Dropdown -->
+      <div class="relative w-full md:w-[173px]">
+        <select 
+          v-model="selectedRating"
+          class="h-[52px] w-full rounded border-darkgray border-solid border-[1px] box-border py-3 px-4 text-darkslategray cursor-pointer bg-white appearance-none focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
         >
-          <Filter class="w-4 h-4" />
-          Apply Filters
-        </button>
+          <option value="">All ratings</option>
+          <option value="5">5 Stars</option>
+          <option value="4">4 Stars</option>
+          <option value="3">3 Stars</option>
+          <option value="2">2 Stars</option>
+          <option value="1">1 Star</option>
+        </select>
+        <ChevronDown class="absolute right-3 top-1/2 transform -translate-y-1/2 h-6 w-6 text-darkslategray pointer-events-none" />
       </div>
+
+      <!-- Date From -->
+      <div class="relative w-full md:w-auto">
+        <div class="flex items-center h-[52px] rounded border-darkgray border-solid border-[1px] box-border bg-white overflow-hidden">
+          <span class="px-3 text-darkslategray whitespace-nowrap">From</span>
+          <input
+            type="date"
+            v-model="dateFrom"
+            class="flex-1 h-full px-2 border-none outline-none text-darkslategray bg-transparent cursor-pointer"
+            @change="applyFilters"
+          >
+          <Calendar class="h-6 w-6 text-darkslategray mx-3 flex-shrink-0" />
+        </div>
+      </div>
+
+      <!-- Date To -->
+      <div class="relative w-full md:w-auto">
+        <div class="flex items-center h-[52px] rounded border-darkgray border-solid border-[1px] box-border bg-white overflow-hidden">
+          <span class="px-3 text-darkslategray whitespace-nowrap">To</span>
+          <input
+            type="date"
+            v-model="dateTo"
+            class="flex-1 h-full px-2 border-none outline-none text-darkslategray bg-transparent cursor-pointer"
+            @change="applyFilters"
+          >
+          <Calendar class="h-6 w-6 text-darkslategray mx-3 flex-shrink-0" />
+        </div>
+      </div>
+
+      <!-- Apply Filter Button -->
+      <button 
+        class="w-full md:w-[132px] rounded bg-forestgreen flex items-center justify-center py-3 px-8 box-border text-white cursor-pointer hover:bg-green-700 transition-colors min-h-[52px] border-0 outline-none focus:outline-none focus:ring-2 focus:ring-green-300"
+        @click="applyFilters"
+      >
+        <div class="relative leading-[130%] capitalize font-semibold">Apply filter</div>
+      </button>
+
+      <!-- Clear Filters Button -->
+      <button 
+        v-if="hasActiveFilters"
+        class="w-full md:w-auto rounded bg-gray-500 flex items-center justify-center py-3 px-4 box-border text-white cursor-pointer hover:bg-gray-600 transition-colors min-h-[52px] border-0 outline-none focus:outline-none focus:ring-2 focus:ring-gray-300 text-sm"
+        @click="resetFilters"
+      >
+        Clear Filters
+      </button>
+    </div>
+    <!-- END FILTER CONTROLS -->
+    
+    <div v-if="isLoading" class="p-8 text-center text-gray-500">
+      <Loader2 class="w-6 h-6 animate-spin mx-auto mb-2 text-green-500" />
+      Loading reviews...
     </div>
 
-    <!-- Table -->
-    <div class="w-full bg-white rounded-xl shadow-lg overflow-hidden">
-      <!-- Desktop Table -->
-      <div class="hidden lg:block">
-        <div class="overflow-x-auto">
-          <table class="w-full min-w-[760px] text-left border-separate border-spacing-0">
-            <thead class="bg-gray-100 text-gray-600 text-sm uppercase tracking-wide border-b border-b-[0.5px] border-gray-200">
-            <tr>
-              <th class="px-4 py-3">Reviewer</th>
-              <th class="px-4 py-3 text-center">Rating</th>
-              <th class="px-4 py-3 text-center">Date & Time</th>
-              <th class="px-4 py-3">Review</th>
-              <th class="px-4 py-3 text-center">Actions</th>
-            </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-200">
-              <tr
-                v-for="review in filteredReviews"
+    <div v-else>
+      <div class="w-full relative flex flex-col items-start gap-5 text-left text-[18px] text-gray-900 font-plus-jakarta-sans">
+        <b class="self-stretch relative leading-[130%] capitalize">Latest Reviews ({{ filteredReviewsCount }})</b>
+        <div class="self-stretch flex flex-col items-start text-base text-gray-600 border-0 border-gray-300 rounded-lg overflow-hidden w-full">
+            
+            <!-- Desktop Table (visible >= lg) -->
+            <div class="hidden lg:block w-full">
+                <!-- Table Header - Keep the same styling -->
+                <div class="w-full relative bg-ghostwhite flex items-center justify-between p-num-10 box-border gap-5 text-left text-num-16 text-dimgray font-plus-jakarta-sans border-b border-gray-300">
+                  <div class="w-[230px] flex items-center p-num-10 box-border">
+                    <div class="relative leading-[160%] uppercase font-medium">Reviewer</div>
+                  </div>
+                  <div class="w-[200px] flex items-center justify-center p-num-10 box-border">
+                    <div class="relative leading-[160%] uppercase font-medium">Rating</div>
+                  </div>
+                  <div class="w-[200px] flex items-center justify-center p-num-10 box-border">
+                    <div class="relative leading-[160%] uppercase font-medium">Date & Time</div>
+                  </div>
+                  <div class="w-[379px] flex items-center justify-center p-num-10 box-border opacity-[0.79]">
+                    <div class="relative leading-[160%] uppercase font-medium">Review</div>
+                  </div>
+                  <div class="w-[100px] flex items-center justify-center p-num-10 box-border">
+                    <div class="relative leading-[160%] uppercase font-medium">Actions</div>
+                  </div>
+                </div>
+
+                <!-- Table Body with empty state border styling -->
+                <div v-if="filteredReviewsCount > 0" class="self-stretch border-0 border-solid flex flex-col items-start">
+                  <div 
+                    v-for="review in paginatedReviews" 
+                    :key="review.id"
+                    class="self-stretch border-gray-300 border-solid border-b flex items-center justify-between p-4 gap-5 hover:bg-gray-50 transition-colors last:border-b-0"
+                  >
+                    <!-- Reviewer Column -->
+                    <div class="w-[230px] flex items-center gap-2.5">
+                      <div class="h-11 w-11 relative rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0">
+                        <span class="text-white font-bold text-sm">{{ getInitials(review.reviewerName) }}</span>
+                      </div>
+                      <div class="flex flex-col">
+                        <div class="leading-[160%] capitalize text-gray-900 font-medium">{{ review.reviewerName }}</div>
+                        <div class="text-xs text-gray-500 leading-[160%] capitalize">{{ review.agency }}</div>
+                      </div>
+                    </div>
+
+                    <!-- Rating Column -->
+                    <div class="w-[200px] flex items-center justify-center p-2 box-border">
+                      <div class="flex flex-col items-center gap-1">
+                        <div class="flex items-center gap-1">
+                          <Star
+                            v-for="i in 5"
+                            :key="i"
+                            :class="i <= review.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'"
+                            class="w-5 h-5"
+                          />
+                        </div>
+                        <div class="text-xs text-gray-500">{{ review.rating }} Star{{ review.rating > 1 ? 's' : '' }}</div>
+                      </div>
+                    </div>
+
+                    <!-- Date & Time Column -->
+                    <div class="w-[200px] flex items-center justify-center p-2 box-border">
+                      <div class="relative leading-[160%] capitalize text-center">
+                        <p class="m-0 text-gray-900">{{ formatDate(review.date) }}</p>
+                        <p class="m-0 text-gray-500 text-sm">{{ review.time }}</p>
+                      </div>
+                    </div>
+
+                    <!-- Review Column -->
+                    <div class="w-[379px] flex items-center justify-center p-2 gap-1 text-gray-700">
+                      <div class="relative leading-[160%] capitalize truncate max-w-[320px]">"{{ review.content }}"</div>
+                      <button 
+                        @click="viewFullReview(review)"
+                        class="relative leading-[160%] capitalize font-semibold text-blue-500 hover:text-blue-600 transition-colors whitespace-nowrap"
+                      >
+                        Full view
+                      </button>
+                    </div>
+
+                    <!-- Actions Column -->
+                    <div class="w-[100px] flex items-center justify-center p-2 box-border">
+                      <div class="flex items-center gap-2">
+                        <button 
+                          @click="approveReview(review.id)"
+                          class="p-2 text-green-600 hover:bg-green-50 rounded transition touch-manipulation border-0 outline-none"
+                          title="Approve review"
+                        >
+                          <CheckCircle class="w-5 h-5" />
+                        </button>
+                        <button 
+                          @click="deleteReview(review.id)"
+                          class="p-2 text-red-600 hover:bg-red-50 rounded transition touch-manipulation border-0 outline-none"
+                          title="Delete review"
+                        >
+                          <Trash2 class="w-5 h-5" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Empty State within table - using the same border styling -->
+                <div v-else class="w-full bg-white rounded-lg border-0 p-8 text-center">
+                  <div class="max-w-md mx-auto">
+                    <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Star class="w-8 h-8 text-gray-400" />
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">No reviews match your filters</h3>
+                    <p class="text-gray-600 mb-4">Try adjusting your search criteria or clear filters.</p>
+                    <button
+                      @click="resetFilters"
+                      class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition min-h-[44px] touch-manipulation border-0 outline-none"
+                    >
+                      Clear Filters
+                    </button>
+                  </div>
+                </div>
+            </div>
+
+            <!-- Mobile Cards (visible < lg) -->
+            <div class="lg:hidden space-y-4 p-4">
+              <div
+                v-for="review in paginatedReviews"
                 :key="review.id"
-                class="hover:bg-gray-50 transition-colors"
+                class="bg-white border border-gray-300 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow"
               >
-                <td class="px-4 py-3">
-                  <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center font-bold text-indigo-700">
+                <!-- Header -->
+                <div class="flex items-start justify-between mb-3">
+                  <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center font-bold text-green-700 text-sm flex-shrink-0">
                       {{ getInitials(review.reviewerName) }}
                     </div>
-                    <span class="font-medium text-gray-800">{{ review.reviewerName }}</span>
+                    <div class="min-w-0">
+                      <div class="font-medium text-gray-800 text-base truncate">{{ review.reviewerName }}</div>
+                      <div class="text-sm text-gray-500 font-medium">{{ review.agency }}</div>
+                    </div>
                   </div>
-                </td>
-                <td class="px-4 py-3 text-center">
-                  <div class="flex justify-center gap-1">
-                    <RatingStars :value="review.rating" />
+                  <div class="flex flex-col items-end flex-shrink-0 ml-2">
+                    <div class="flex gap-0.5 mb-1">
+                      <Star
+                        v-for="i in 5"
+                        :key="i"
+                        :class="i <= review.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'"
+                        class="w-4 h-4"
+                      />
+                    </div>
+                    <div class="text-xs text-gray-500 whitespace-nowrap">{{ formatDate(review.date) }}</div>
                   </div>
-                </td>
-                <td class="px-4 py-3 text-center text-sm text-gray-600 whitespace-nowrap">
-                  <div>{{ formatDate(review.date) }}</div>
-                  <div class="text-xs">{{ review.time }}</div>
-                </td>
-                <td class="px-4 py-3 text-gray-700">
-                  <p class="line-clamp-2">"{{ review.content }}"</p>
-                </td>
-                <td class="px-4 py-3">
-                  <div class="flex justify-center gap-2">
-                    <button 
-                      class="p-2 text-green-500 hover:bg-green-50 rounded transition-colors"
-                      @click="approveReview(review.id)"
-                      title="Approve review"
-                    >
-                      <CheckCircle class="w-5 h-5" />
-                    </button>
-                    <button 
-                      class="p-2 text-red-500 hover:bg-red-50 rounded transition-colors"
-                      @click="deleteReview(review.id)"
-                      title="Delete review"
-                    >
-                      <Trash2 class="w-5 h-5" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+                </div>
 
-      <!-- Mobile Cards -->
-      <div class="lg:hidden space-y-4 p-4">
-        <div
-          v-for="review in filteredReviews"
-          :key="review.id"
-          class="bg-white border-[0.5px] border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow"
-        >
-          <!-- Header -->
-          <div class="flex items-center justify-between mb-3">
-            <div class="flex items-center gap-3">
-              <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center font-bold text-indigo-700 text-sm">
-                {{ getInitials(review.reviewerName) }}
+                <!-- Review Content -->
+                <div class="mb-4">
+                  <p class="text-gray-700 text-sm leading-relaxed italic line-clamp-3">"{{ review.content }}"</p>
+                  <button 
+                    @click="viewFullReview(review)"
+                    class="text-blue-500 hover:text-blue-600 font-semibold text-sm mt-2"
+                  >
+                    Full view
+                  </button>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex justify-end gap-2 pt-2 border-t border-gray-300">
+                  <button 
+                    class="flex items-center justify-center gap-1 px-3 py-1.5 text-green-600 bg-green-50 rounded-lg text-sm hover:bg-green-100 transition w-1/2 min-h-[44px] touch-manipulation border-0 outline-none"
+                    @click="approveReview(review.id)"
+                    aria-label="Approve review"
+                  >
+                    <CheckCircle class="w-4 h-4" />
+                    Approve
+                  </button>
+                  <button 
+                    class="flex items-center justify-center gap-1 px-3 py-1.5 text-red-600 bg-red-50 rounded-lg text-sm hover:bg-red-100 transition w-1/2 min-h-[44px] touch-manipulation border-0 outline-none"
+                    @click="deleteReview(review.id)"
+                    aria-label="Delete review"
+                  >
+                    <Trash2 class="w-4 h-4" />
+                    Delete
+                  </button>
+                </div>
               </div>
-              <div>
-                <div class="font-medium text-gray-800 text-sm">{{ review.reviewerName }}</div>
-                <div class="text-xs text-gray-500">{{ formatDate(review.date) }} at {{ review.time }}</div>
+
+              <!-- Mobile Empty State -->
+              <div v-if="filteredReviewsCount === 0" class="w-full bg-white rounded-lg border border-gray-300 border-solid p-8 text-center">
+                <div class="max-w-md mx-auto">
+                  <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Star class="w-8 h-8 text-gray-400" />
+                  </div>
+                  <h3 class="text-lg font-semibold text-gray-900 mb-2">No reviews match your filters</h3>
+                  <p class="text-gray-600 mb-4">Try adjusting your search criteria or clear filters.</p>
+                  <button
+                    @click="resetFilters"
+                    class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition min-h-[44px] touch-manipulation border-0 outline-none"
+                  >
+                    Clear Filters
+                  </button>
+                </div>
               </div>
             </div>
-            <div class="flex gap-1">
-              <RatingStars :value="review.rating" :size-class="'w-3 h-3'" />
+
+            <!-- Load more button -->
+            <div v-if="filteredReviewsCount > 0" class="flex justify-center py-4 border-t border-gray-300 w-full">
+              <button
+                v-if="hasMoreReviews"
+                class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition flex items-center gap-2 min-h-[44px] touch-manipulation border-0 outline-none"
+                @click="loadMoreReviews"
+                aria-label="Load more reviews"
+              >
+                <Plus class="w-4 h-4" />
+                Load More Reviews
+              </button>
+              <div v-else class="text-gray-500 text-sm py-2">
+                Showing all {{ filteredReviewsCount }} reviews.
+              </div>
             </div>
-          </div>
-
-          <!-- Review Content -->
-          <div class="mb-3">
-            <p class="text-gray-700 text-sm leading-relaxed">"{{ review.content }}"</p>
-          </div>
-
-          <!-- Actions -->
-          <div class="flex justify-end gap-2 pt-2 border-t-[0.5px] border-gray-200/60">
-            <button 
-              class="flex items-center gap-1 px-3 py-1.5 text-green-600 bg-green-50 rounded-lg text-sm hover:bg-green-100 transition"
-              @click="approveReview(review.id)"
-            >
-              <CheckCircle class="w-4 h-4" />
-              Approve
-            </button>
-            <button 
-              class="flex items-center gap-1 px-3 py-1.5 text-red-600 bg-red-50 rounded-lg text-sm hover:bg-red-100 transition"
-              @click="deleteReview(review.id)"
-            >
-              <Trash2 class="w-4 h-4" />
-              Delete
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Load more -->
-      <div class="flex justify-center py-4 border-t-[0.5px] border-gray-200/60">
-        <button
-          v-if="hasMoreReviews"
-          class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition flex items-center gap-2"
-          @click="loadMoreReviews"
-        >
-          <Plus class="w-4 h-4" />
-          Load More Reviews
-        </button>
-        <div v-else class="text-gray-500 text-sm py-2">
-          No more reviews to load
         </div>
       </div>
     </div>
 
-    <!-- Empty State -->
-    <div v-if="filteredReviews.length === 0" class="w-full bg-white rounded-xl shadow-lg p-8 text-center">
-      <div class="max-w-md mx-auto">
-        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <Star class="w-8 h-8 text-gray-400" />
+    <!-- Full Review Modal -->
+    <div v-if="selectedReview" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-lg p-6 max-w-2xl w-full mx-4">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-lg font-semibold">Review Details</h3>
+          <button @click="selectedReview = null" class="text-gray-500 hover:text-gray-700">
+            <X class="w-6 h-6" />
+          </button>
         </div>
-        <h3 class="text-lg font-semibold text-gray-900 mb-2">No reviews found</h3>
-        <p class="text-gray-600 mb-4">Try adjusting your filters or check back later for new reviews.</p>
-        <button
-          @click="resetFilters"
-          class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
-        >
-          Reset Filters
-        </button>
+        <div class="space-y-4">
+          <div class="flex items-center gap-3">
+            <div class="h-12 w-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+              <span class="text-white font-bold">{{ getInitials(selectedReview.reviewerName) }}</span>
+            </div>
+            <div>
+              <div class="font-semibold text-gray-900">{{ selectedReview.reviewerName }}</div>
+              <div class="text-sm text-gray-500">{{ selectedReview.agency }}</div>
+              <div class="text-sm text-gray-500">{{ formatDate(selectedReview.date) }} at {{ selectedReview.time }}</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="flex gap-1">
+              <Star
+                v-for="i in 5"
+                :key="i"
+                :class="i <= selectedReview.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'"
+                class="w-5 h-5"
+              />
+            </div>
+            <span class="text-gray-600">{{ selectedReview.rating }} Star{{ selectedReview.rating > 1 ? 's' : '' }}</span>
+          </div>
+          <div class="border-t pt-4">
+            <p class="text-gray-700 leading-relaxed italic">"{{ selectedReview.content }}"</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -201,8 +365,7 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
-import { Pencil, CheckCircle, Trash2, Filter, Plus } from 'lucide-vue-next'
-import RatingStars from '~/components/common/RatingStars.vue'
+import { CheckCircle, Trash2, Plus, Star, ChevronDown, Loader2, Calendar } from 'lucide-vue-next'
 
 const reviews = ref([])
 const selectedRating = ref('')
@@ -210,72 +373,110 @@ const currentPage = ref(1)
 const reviewsPerPage = 10
 const dateFrom = ref('')
 const dateTo = ref('')
+const isLoading = ref(false)
 
 // Load reviews from stub json
 const { data: reviewsData } = await useFetch('/stubs/agencyReviews.json')
 
-// Format date
+// Format date for display
 const formatDate = (date) => {
   if (!date) return ''
   return new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
 }
 
-// Get initials
-const getInitials = (name) => {
-  return name.split(' ').map(n => n[0]).join('').toUpperCase()
+// Format date for comparison (YYYY-MM-DD)
+const formatDateForComparison = (date) => {
+  if (!date) return ''
+  return new Date(date).toISOString().split('T')[0]
 }
 
-// Computed
-// Normalize date range and apply all filters in one place
-const normalizedDateRange = computed(() => {
-  const from = dateFrom.value ? new Date(dateFrom.value) : null
-  const to = dateTo.value ? new Date(dateTo.value) : null
+// Get initials
+const getInitials = (name) => {
+  if (!name) return '??'
+  return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+}
 
-  // Make "to" inclusive end-of-day
-  if (to) {
-    to.setHours(23, 59, 59, 999)
-  }
-
-  // Swap if range is inverted
-  if (from && to && from > to) {
-    return { from: to, to: from }
-  }
-  return { from, to }
+// Computed properties
+const overallRating = computed(() => {
+  if (!reviews.value.length) return '0.0'
+  const sum = reviews.value.reduce((acc, r) => acc + r.rating, 0)
+  return (sum / reviews.value.length).toFixed(1)
 })
 
-const allFilteredReviews = computed(() => {
-  const { from, to } = normalizedDateRange.value
-  const rating = selectedRating.value ? parseInt(selectedRating.value) : null
+const totalReviews = computed(() => reviews.value.length)
 
-  return reviews.value.filter(r => {
-    const matchesRating = rating ? r.rating === rating : true
-    const reviewDate = r.date ? new Date(r.date) : null
-    const matchesFrom = from ? (reviewDate && reviewDate >= from) : true
-    const matchesTo = to ? (reviewDate && reviewDate <= to) : true
-    return matchesRating && matchesFrom && matchesTo
-  })
+const hasActiveFilters = computed(() => {
+  return selectedRating.value !== '' || dateFrom.value !== '' || dateTo.value !== ''
 })
 
 const filteredReviews = computed(() => {
-  return allFilteredReviews.value.slice(0, currentPage.value * reviewsPerPage)
+  let filtered = [...reviews.value]
+
+  // Filter by rating
+  if (selectedRating.value) {
+    filtered = filtered.filter(r => r.rating === parseInt(selectedRating.value))
+  }
+
+  // Filter by date range
+  if (dateFrom.value) {
+    const fromDate = formatDateForComparison(dateFrom.value)
+    filtered = filtered.filter(r => formatDateForComparison(r.date) >= fromDate)
+  }
+  if (dateTo.value) {
+    const toDate = formatDateForComparison(dateTo.value)
+    filtered = filtered.filter(r => formatDateForComparison(r.date) <= toDate)
+  }
+
+  return filtered.slice(0, currentPage.value * reviewsPerPage)
 })
+
+const filteredReviewsCount = computed(() => {
+  let filtered = [...reviews.value]
+  
+  if (selectedRating.value) {
+    filtered = filtered.filter(r => r.rating === parseInt(selectedRating.value))
+  }
+  if (dateFrom.value) {
+    const fromDate = formatDateForComparison(dateFrom.value)
+    filtered = filtered.filter(r => formatDateForComparison(r.date) >= fromDate)
+  }
+  if (dateTo.value) {
+    const toDate = formatDateForComparison(dateTo.value)
+    filtered = filtered.filter(r => formatDateForComparison(r.date) <= toDate)
+  }
+  
+  return filtered.length
+})
+
+const paginatedReviews = computed(() => filteredReviews.value)
 
 const hasMoreReviews = computed(() => {
-  return filteredReviews.value.length < allFilteredReviews.value.length
+  let filtered = [...reviews.value]
+  
+  if (selectedRating.value) {
+    filtered = filtered.filter(r => r.rating === parseInt(selectedRating.value))
+  }
+  if (dateFrom.value) {
+    const fromDate = formatDateForComparison(dateFrom.value)
+    filtered = filtered.filter(r => formatDateForComparison(r.date) >= fromDate)
+  }
+  if (dateTo.value) {
+    const toDate = formatDateForComparison(dateTo.value)
+    filtered = filtered.filter(r => formatDateForComparison(r.date) <= toDate)
+  }
+  
+  return filteredReviews.value.length < filtered.length
 })
-
-// Stats reflect current filter
-const overallRating = computed(() => {
-  if (!allFilteredReviews.value.length) return 0
-  const sum = allFilteredReviews.value.reduce((acc, r) => acc + r.rating, 0)
-  return (sum / allFilteredReviews.value.length).toFixed(1)
-})
-
-const totalReviews = computed(() => allFilteredReviews.value.length)
 
 // Methods
 const applyFilters = () => { 
   currentPage.value = 1 
+  console.log('Filters applied:', { 
+    rating: selectedRating.value, 
+    dateFrom: dateFrom.value, 
+    dateTo: dateTo.value,
+    filteredCount: filteredReviewsCount.value
+  })
 }
 
 const resetFilters = () => {
@@ -283,43 +484,81 @@ const resetFilters = () => {
   dateFrom.value = ''
   dateTo.value = ''
   currentPage.value = 1
+  console.log('Filters reset')
 }
 
 const approveReview = (id) => { 
-  // In a real app, you'd update the review status
+  console.log('Approving review:', id)
+  alert(`Review ${id} approved!`)
 }
 
 const deleteReview = (id) => { 
-  reviews.value = reviews.value.filter(r => r.id !== id) 
+  if (confirm('Are you sure you want to delete this review?')) {
+    reviews.value = reviews.value.filter(r => r.id !== id)
+    console.log('Review deleted:', id)
+  }
 }
 
 const loadMoreReviews = () => { 
   currentPage.value++ 
 }
 
-// Init
-onMounted(() => { 
-  reviews.value = reviewsData.value || [] 
-})
-
-// Auto-apply when filter inputs change
+// Watch for filter changes to reset pagination
 watch([selectedRating, dateFrom, dateTo], () => {
   currentPage.value = 1
+})
+
+// Init
+onMounted(() => { 
+  reviews.value = reviewsData.value || []
+  console.log('Reviews loaded:', reviews.value.length)
+  console.log('Sample reviews:', reviews.value.slice(0, 3))
 })
 </script>
 
 <style scoped>
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+
+
+/* Ensure buttons/inputs are easily tappable on touch devices */
+.touch-manipulation {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* Improve mobile touch targets */
-@media (max-width: 640px) {
-  button, select, input {
-    min-height: 44px;
-  }
+/* Custom colors to match the design */
+.border-darkgray {
+  border-color: #A9A9A9;
+}
+.text-darkgray {
+  color: #A9A9A9;
+}
+.text-darkslategray {
+  color: #2F4F4F;
+}
+.bg-forestgreen {
+  background-color: #228B22;
+}
+.font-plus-jakarta-sans {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Custom styles for date inputs */
+input[type="date"] {
+  color: #2F4F4F;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+/* Custom select styles */
+select {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  color: #2F4F4F;
 }
 </style>
