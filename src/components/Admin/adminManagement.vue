@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full font-plus-jakarta-sans max-w-full overflow-hidden">
+  <div class="w-full font-plus-jakarta-sans max-w-full overflow-x-hidden">
     <!-- Header Section with Gradient Background -->
     <div class="w-full rounded-lg bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 p-3 sm:p-4 md:p-6 mb-4">
       <!-- Header -->
@@ -29,7 +29,7 @@
     </div>
 
     <!-- Stats Cards - Responsive Grid - SECOND ROW -->
-    <div class="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
       <div class="rounded-lg bg-white border-whitesmoke border-solid border-[1px] flex items-center p-3 sm:p-4 gap-3">
         <div class="h-8 w-8 sm:h-10 sm:w-10 md:h-11 md:w-11 rounded bg-blue-100 flex items-center justify-center flex-shrink-0">
           <UsersIcon class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-blue-600" />
@@ -85,7 +85,7 @@
     <!-- Filters Section - THIRD ROW -->
     <div class="mb-6">
       <!-- Desktop Filters -->
-      <div class="hidden lg:flex items-center flex-wrap gap-3 min-w-full">
+      <div class="hidden lg:flex items-center flex-wrap gap-3 w-full overflow-x-auto scrollbar-thin">
         <h2 class="text-lg font-bold text-gray-900 whitespace-nowrap">
           All Admin List
         </h2>
@@ -252,7 +252,7 @@
     </div>
 
     <!-- Admins Table / Cards - FOURTH ROW -->
-    <div class="w-full bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200">
+    <div class="w-full bg-white rounded-xl shadow-sm border border-gray-200">
       <!-- Loading State -->
       <div v-if="isLoading" class="text-center py-16 text-gray-500 text-lg font-medium animate-pulse">
         <svg class="animate-spin h-8 w-8 text-yellow-500 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -336,7 +336,7 @@
         </div>
 
         <!-- Desktop Table View -->
-        <div class="hidden lg:block overflow-x-auto">
+        <div class="hidden lg:block overflow-x-auto scrollbar-thin">
           <table class="w-full table-auto min-w-[800px]">
             <thead class="bg-gray-50 border-b border-gray-200">
               <tr>
