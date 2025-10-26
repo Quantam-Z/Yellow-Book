@@ -22,7 +22,7 @@
     </div>
 
     <!-- Stats Cards - Responsive Grid - SECOND ROW -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 sm:gap-4 mb-6">
+    <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-6 gap-3 sm:gap-4 mb-6">
       <div class="rounded-lg bg-white border-whitesmoke border-solid border-[1px] flex items-center p-3 sm:p-4 gap-3">
         <div class="h-8 w-8 sm:h-10 sm:w-10 md:h-11 md:w-11 rounded bg-blue-100 flex items-center justify-center flex-shrink-0">
           <UsersIcon class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-blue-600" />
@@ -84,7 +84,7 @@
       <h2 class="text-base font-bold text-gray-900">All Review List</h2>
       <button 
         @click="showMobileFilters = !showMobileFilters"
-        class="h-12 bg-white rounded-xl px-4 py-2 border border-gray-300 text-gray-700 text-sm outline-none cursor-pointer whitespace-nowrap touch-manipulation flex items-center gap-2 hover:bg-gray-50 active:bg-gray-100 transition"
+        class="h-12 bg-white rounded-xl px-4 py-2 border border-transparent sm:border-gray-300 text-gray-700 text-sm outline-none cursor-pointer whitespace-nowrap touch-manipulation flex items-center gap-2 hover:bg-gray-50 active:bg-gray-100 transition"
         aria-controls="mobile-filters"
         :aria-expanded="showMobileFilters ? 'true' : 'false'"
       >
@@ -252,7 +252,7 @@
         </div>
 
         <div class="mt-6 flex items-center justify-end gap-3">
-          <button @click="resetFilters" class="px-4 py-3 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 active:bg-gray-100 touch-manipulation transition">Reset</button>
+          <button @click="resetFilters" class="px-4 py-3 text-sm text-gray-600 bg-white border border-transparent sm:border-gray-200 rounded-lg hover:bg-gray-50 active:bg-gray-100 touch-manipulation transition">Reset</button>
           <button @click="applyMobileFilters" class="px-4 py-3 text-sm text-gray-900 bg-yellow-400 hover:bg-yellow-500 active:bg-yellow-600 rounded-lg touch-manipulation transition">Apply</button>
         </div>
       </div>
@@ -436,7 +436,7 @@
         <button 
           @click="prevPage"
           :disabled="currentPage === 1"
-          class="px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 active:bg-gray-100 transition touch-manipulation flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          class="px-4 py-2.5 bg-white border border-transparent sm:border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 active:bg-gray-100 transition touch-manipulation flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <ChevronLeftIcon class="w-4 h-4" aria-hidden="true" />
           <span>Previous</span>
@@ -450,7 +450,7 @@
               'px-4 py-2.5 rounded-lg text-sm font-medium transition touch-manipulation min-w-[44px]',
               page === currentPage 
                 ? 'bg-yellow-400 text-gray-900 hover:bg-yellow-500 active:bg-yellow-600' 
-                : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 active:bg-gray-100'
+                : 'bg-white border border-transparent sm:border-gray-200 text-gray-600 hover:bg-gray-50 active:bg-gray-100'
             ]"
           >
             {{ page }}
@@ -460,7 +460,7 @@
         <button 
           @click="nextPage"
           :disabled="currentPage === totalPages"
-          class="px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 active:bg-gray-100 transition touch-manipulation flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          class="px-4 py-2.5 bg-white border border-transparent sm:border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 active:bg-gray-100 transition touch-manipulation flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <span>Next</span>
           <ChevronRightIcon class="w-4 h-4" aria-hidden="true" />
