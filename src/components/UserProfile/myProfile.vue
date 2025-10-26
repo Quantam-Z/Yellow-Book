@@ -22,7 +22,7 @@
             id="name"
             type="text"
             v-model="form.name"
-            class="w-full h-11 rounded border border-gray-300 bg-gray-50 px-3 text-gray-900 focus:outline-none focus:border-gray-400"
+            class="w-full h-11 rounded-md bg-white px-3 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-0 focus:border-transparent border-none shadow-none"
             placeholder="Wade Warren"
           />
         </div>
@@ -34,7 +34,7 @@
             id="email"
             type="email"
             v-model="form.email"
-            class="w-full h-11 rounded border border-gray-300 bg-gray-50 px-3 text-gray-900 focus:outline-none focus:border-gray-400"
+            class="w-full h-11 rounded-md bg-white px-3 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-0 focus:border-transparent border-none shadow-none"
             placeholder="Curtis.Weaver@Example.Com"
           />
         </div>
@@ -46,7 +46,7 @@
             id="mobile"
             type="tel"
             v-model="form.mobile"
-            class="w-full h-11 rounded border border-gray-300 bg-gray-50 px-3 text-gray-900 focus:outline-none focus:border-gray-400"
+            class="w-full h-11 rounded-md bg-white px-3 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-0 focus:border-transparent border-none shadow-none"
             placeholder="+521464532"
           />
         </div>
