@@ -56,7 +56,7 @@
       <!-- Desktop Table -->
       <div class="hidden lg:block">
         <div class="overflow-x-auto">
-          <table class="w-full min-w-[760px] text-left border-collapse">
+          <table class="w-full min-w-[760px] text-left border-separate border-spacing-0">
             <thead class="bg-gray-100 text-gray-600 text-sm uppercase tracking-wide border-b border-b-[0.5px] border-gray-200">
             <tr>
               <th class="px-4 py-3">Reviewer</th>
@@ -66,11 +66,11 @@
               <th class="px-4 py-3 text-center">Actions</th>
             </tr>
             </thead>
-            <tbody>
+            <tbody class="divide-y divide-gray-200">
               <tr
                 v-for="review in filteredReviews"
                 :key="review.id"
-                class="border-t-[0.5px] border-gray-200 hover:bg-gray-50 transition-colors"
+                class="hover:bg-gray-50 transition-colors"
               >
                 <td class="px-4 py-3">
                   <div class="flex items-center gap-3">
