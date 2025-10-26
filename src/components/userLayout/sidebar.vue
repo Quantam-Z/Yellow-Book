@@ -79,13 +79,13 @@
   const isScrolled = ref(false); 
   
   const mainMenu = [
-    { label: "my reviews", icon: ClipboardList, to: "/dashboard/userprofile" },
-    { label: "favourite companies", icon: Briefcase, to: "/dashboard/userprofile/favourite-companies" },
-    { label: "my profile", icon: User, to: "/dashboard/userprofile/myprofile" },
+    { label: "my reviews", icon: ClipboardList, to: "/dashboard/userProfile/my-reviews" },
+    { label: "favourite companies", icon: Briefcase, to: "/dashboard/userProfile/favourite-companies" },
+    { label: "my profile", icon: User, to: "/dashboard/userProfile/my-profile" },
   ];
   
   const bottomMenu = [
-    { label: "Settings", icon: Settings, to: "/dashboard/admin/settings" },
+    { label: "Settings", icon: Settings, to: "/dashboard/userProfile/settings" },
     { label: "Logout", icon: LogOut, to: "/logout" },
   ];
   
