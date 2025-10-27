@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full min-h-screen bg-white">
+  <div class="w-full min-h-screen bg-white p-4 sm:p-6">
     <div class="rounded-xl border border-gray-200 shadow-sm bg-gradient-to-r from-indigo-500/15 via-pink-500/15 to-amber-400/15 px-4 sm:px-6 py-3 sm:py-4 mb-6 flex items-center justify-between">
       <h1 class="text-lg sm:text-xl font-semibold text-gray-900">My Reviews</h1>
       <button
@@ -10,32 +10,57 @@
       </button>
     </div>
 
-    <div class="space-y-3">
+    <div class="space-y-4 sm:space-y-6">
       <h2 class="text-sm font-semibold text-gray-700">All Review List</h2>
 
       <div
         v-for="(review, index) in reviews"
         :key="index"
-        class="w-full relative rounded-lg border-whitesmoke border-solid border-[1px] box-border flex flex-col items-end justify-end pt-6 px-4 pb-4 gap-6 text-left text-lg text-gray font-plus-jakarta-sans"
+        class="w-full relative rounded-lg border-whitesmoke border-solid border-[1px] box-border text-left text-lg text-gray font-plus-jakarta-sans
+               hover:bg-gray-50 transition-colors"
+        
+        :class="[
+          // **MOBILE VIEW (Default):** Optimized layout
+          'flex flex-col items-start justify-start pt-6 px-4 pb-4 gap-4', 
+          // **DESKTOP VIEW (sm:):** Reverting to original layout classes
+          'sm:flex sm:items-end sm:justify-end sm:pt-6 sm:px-4 sm:pb-4 sm:gap-6',
+        ]"
+        tabindex="0"
       >
-        <div class="self-stretch flex flex-col items-start gap-8">
-          <div class="self-stretch flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
+        
+        <div class="sm:hidden absolute top-3 right-3 flex items-center gap-3 z-10">
+          <div @click.stop.prevent="editReview(review.id)" class="p-1 rounded-full hover:bg-gainsboro transition-colors cursor-pointer" aria-label="Edit review">
+            <Edit3 class="h-6 w-6 text-green-600" />
+          </div>
+          <div @click.stop.prevent="deleteReview(review.id)" class="p-1 rounded-full hover:bg-gainsboro transition-colors cursor-pointer" aria-label="Delete review">
+            <Trash2 class="h-6 w-6 text-red-500" />
+          </div>
+        </div>
+        
+        <div class="self-stretch flex flex-col items-start gap-3 sm:gap-6">
+          <div class="self-stretch flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-5">
             
             <div class="flex items-center gap-4">
               <div class="h-12 w-12 relative rounded bg-gainsboro shrink-0" />
-              <div class="flex flex-col items-start justify-center gap-2">
-                <b class="relative leading-[160%] capitalize">{{ review.company }}</b>
-                <div class="relative text-base leading-[130%] capitalize text-darkslategray whitespace-nowrap">
+              <div class="flex flex-col items-start justify-center gap-1">
+                <b class="relative leading-[160%] capitalize text-base sm:text-lg">{{ review.company }}</b>
+                <div class="hidden sm:block relative text-base leading-[130%] capitalize text-darkslategray whitespace-nowrap">
                   Reviewed on {{ review.date }}
                 </div>
               </div>
             </div>
             
-            <div class="flex items-center gap-2 text-base text-dimgray mt-2 sm:mt-0">
-              <div class="relative leading-[130%] capitalize">Rating:</div>
-              <div class="flex items-center gap-2">
-                <Star class="h-6 w-6 text-yellow-500" />
-                <div class="relative leading-[130%] capitalize">{{ review.rating }} Star</div>
+            <div class="flex flex-col-reverse sm:flex-row items-start sm:items-center gap-2 sm:gap-4 text-base text-dimgray w-full sm:w-auto">
+              
+              <div class="flex items-center gap-2 mt-1 sm:mt-0 justify-between w-full sm:w-auto">
+                <div class="flex items-center gap-2">
+                   <div class="relative leading-[130%] capitalize hidden sm:block">Rating:</div>
+                   <Star class="h-6 w-6 text-yellow-500" />
+                   <div class="relative leading-[130%] capitalize text-gray-900 font-medium">{{ review.rating }} Star</div>
+                </div>
+                 <div class="block sm:hidden relative text-sm leading-[130%] capitalize text-darkslategray whitespace-nowrap">
+                  on {{ review.date }}
+                </div>
               </div>
             </div>
           </div>
@@ -45,9 +70,13 @@
           </div>
         </div>
         
-        <div class="flex items-center gap-3">
-          <Edit3 class="h-6 w-6 text-green-600 cursor-pointer" />
-          <Trash2 class="h-6 w-6 text-red-500 cursor-pointer" />
+        <div class="hidden sm:flex items-center gap-3">
+          <div @click.stop.prevent="editReview(review.id)" class="p-2 rounded-lg hover:bg-gainsboro transition-colors cursor-pointer" aria-label="Edit review">
+            <Edit3 class="h-6 w-6 text-green-600 cursor-pointer" />
+          </div>
+          <div @click.stop.prevent="deleteReview(review.id)" class="p-2 rounded-lg hover:bg-gainsboro transition-colors cursor-pointer" aria-label="Delete review">
+            <Trash2 class="h-6 w-6 text-red-500 cursor-pointer" />
+          </div>
         </div>
       </div>
     </div>
@@ -59,18 +88,63 @@ import { Star, Edit3, Trash2 } from 'lucide-vue-next'
 import { computed } from 'vue'
 
 // Load reviews from public stubs and map to UI shape
-// NOTE: I'm assuming 'useFetch' and the stub path are correctly configured in your environment.
 const { data: reviewsData } = await useFetch('/stubs/recentReviews.json')
 
 const reviews = computed(() => {
   const raw = (reviewsData.value || []) as Array<any>
-  return raw.slice(0, 10).map((r) => ({
-    company: r.company || r.reviewer || 'Company',
+  return raw.slice(0, 10).map((r, index) => ({
+    id: r.id || index, 
+    company: r.company || r.reviewer || 'Company Name',
     date: r.date,
     rating: Number(r.rating) || r.rating || 0,
-    comment: r.review || r.content || r.text || '',
+    comment: r.review || r.content || r.text || 'No review comment provided.',
   }))
 })
+
+// Action handlers (placeholders)
+const editReview = (id: number) => {
+  console.log(`Editing review with ID: ${id}`)
+}
+
+const deleteReview = (id: number) => {
+  console.log(`Deleting review with ID: ${id}`)
+  if (confirm('Are you sure you want to delete this review?')) {
+    // API call here
+  }
+}
 </script>
 
-<style scoped></style>
+<style scoped>
+/* Custom styles */
+.font-plus-jakarta-sans {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.border-whitesmoke {
+  border-color: #f5f5f5;
+}
+
+.bg-gainsboro {
+  background-color: #DCDCDC;
+}
+
+.text-darkslategray {
+  color: #2f4f4f;
+}
+
+.text-dimgray {
+  color: #696969;
+}
+
+/* Custom hover/focus state to match the requirement */
+.hover\:bg-gray-50:hover {
+  background-color: #f9fafb; /* Tailwind's gray-50 */
+}
+
+/* Specific button/icon hover is Gainsboro */
+.hover\:bg-gainsboro:hover,
+.hover\:bg-gainsboro:focus {
+  background-color: #DCDCDC; /* Gainsboro */
+  outline: none;
+}
+</style>

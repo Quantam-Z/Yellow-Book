@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full min-h-screen bg-white p-4 sm:p-6 space-y-6">
+  <div class="w-full min-h-screen bg-white p-4 sm:p-4 space-y-6">
     <!-- Header -->
     <div class="w-full rounded-xl bg-gradient-to-br from-indigo-500/10 to-pink-500/10 p-4 sm:p-6 border border-gray-200 shadow-lg mb-4 sm:mb-6">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -233,7 +233,7 @@
               <div
                 v-for="review in paginatedReviews"
                 :key="review.id"
-                class="bg-white border border-table-border rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow"
+                class="bg-white border border-table-border rounded-lg p-4 shadow-sm  hover:bg-gray-50 transition-shadow"
               >
                 <!-- Header -->
                 <div class="flex items-start justify-between mb-3">

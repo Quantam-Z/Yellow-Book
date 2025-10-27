@@ -11,19 +11,19 @@
     <div class="flex gap-2 sm:gap-4 mb-6">
   <button 
     @click="activeSection = 'profile'"
-    class="px-3 py-2 sm:px-6 sm:py-3 rounded-lg text-xs sm:text-sm font-medium transition-all duration-300 whitespace-nowrap"
+    class="px-3 py-2 sm:px-6 sm:py-3 rounded-lg text-xs sm:text-sm font-medium transition-all duration-300 whitespace-nowrap border-none outline-none"
     :class="activeSection === 'profile' 
-      ? 'bg-gold text-black' // Removed shadow-md here for mobile
-      : 'bg-white text-gray-600 hover:bg-gray-50 border border-transparent'"
+      ? 'bg-gold text-black shadow-md' 
+      : 'bg-white text-gray-600 hover:bg-gray-50 shadow-sm hover:shadow-md'"
   >
     Profile Info
   </button>
   <button 
     @click="activeSection = 'password'"
-    class="px-3 py-2 sm:px-6 sm:py-3 rounded-lg text-xs sm:text-sm font-medium transition-all duration-300 whitespace-nowrap"
+    class="px-3 py-2 sm:px-6 sm:py-3 rounded-lg text-xs sm:text-sm font-medium transition-all duration-300 whitespace-nowrap border-none outline-none"
     :class="activeSection === 'password' 
-      ? 'bg-gold text-black' // Removed shadow-md here for mobile
-      : 'bg-white text-gray-600 hover:bg-gray-50 border border-transparent'"
+      ? 'bg-gold text-black shadow-md' 
+      : 'bg-white text-gray-600 hover:bg-gray-50 shadow-sm hover:shadow-md'"
   >
     Change Password
   </button>
@@ -68,7 +68,10 @@
           </div>
         </div>
         
-        <div class="self-stretch h-12 rounded bg-gold hover:bg-yellow-600 flex items-center justify-center py-[18px] px-9 box-border text-center text-gray cursor-pointer transition-colors">
+        <div 
+          @click="updateProfile"
+          class="self-stretch h-12 rounded bg-gold hover:bg-yellow-600 flex items-center justify-center py-[18px] px-9 box-border text-center text-gray cursor-pointer transition-colors"
+        >
           <div class="relative leading-[130%] capitalize font-semibold">Update Profile</div>
         </div>
       </div>
@@ -113,7 +116,10 @@
           </div>
         </div>
         
-        <div class="self-stretch h-12 rounded bg-gold hover:bg-yellow-600 flex items-center justify-center py-[18px] px-9 box-border text-center text-gray cursor-pointer transition-colors">
+        <div 
+          @click="updatePassword"
+          class="self-stretch h-12 rounded bg-gold hover:bg-yellow-600 flex items-center justify-center py-[18px] px-9 box-border text-center text-gray cursor-pointer transition-colors"
+        >
           <div class="relative leading-[130%] capitalize font-semibold">Update Password</div>
         </div>
       </div>
@@ -146,6 +152,7 @@ const messageText = ref('');
 
 // Methods
 const updateProfile = () => {
+  // Simulate API call/form submission
   showMessage.value = true;
   messageType.value = 'success';
   messageText.value = 'Profile updated successfully!';
@@ -156,6 +163,7 @@ const updateProfile = () => {
 };
 
 const updatePassword = () => {
+  // Simulate API call/form submission
   showMessage.value = true;
   messageType.value = 'success';
   messageText.value = 'Password updated successfully!';

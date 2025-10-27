@@ -1,10 +1,7 @@
 <template>
-  <!-- Modal Background -->
   <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[100] p-4" @click.self="$emit('close')">
-    <!-- Modal Container -->
-    <div class="w-full max-w-2xl relative rounded-2xl bg-white flex flex-col items-center p-6 box-border gap-6 text-center text-[16px] text-black font-plus-jakarta-sans">
+    <div class="w-full max-w-2xl relative rounded-2xl bg-white flex flex-col items-center p-6 box-border gap-6 text-center text-[16px] text-black font-plus-jakarta-sans max-h-[85vh] overflow-y-auto">
       
-      <!-- Close Button -->
       <button 
         @click="$emit('close')"
         class="absolute top-6 right-6 p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors z-[110]"
@@ -13,49 +10,42 @@
         <X class="w-5 h-5 text-gray-600" />
       </button>
 
-      <!-- Modal Title -->
       <b class="self-stretch relative text-[18px] leading-[160%] capitalize text-center">Review Details</b>
       
-      <!-- Content Container - No border -->
       <div class="w-full flex flex-col items-center p-4 gap-4 text-left text-gray">
         
-        <!-- Review Details Card - No border -->
         <div class="self-stretch flex flex-col items-start justify-center p-4 gap-4">
           
-          <!-- Reviewer Name -->
-          <div class="self-stretch flex items-center gap-4">
-            <div class="w-[140px] flex items-center gap-2">
+          <div class="self-stretch flex items-start gap-4">
+            <div class="w-[140px] flex items-center gap-2 flex-shrink-0">
               <div class="flex-1 relative leading-[130%] capitalize font-semibold text-xs text-gray-900">Reviewer Name</div>
               <b class="relative text-[14px] leading-[160%] capitalize text-center text-gray-600">:</b>
             </div>
-            <div class="flex-1 relative leading-[160%] text-gray-700 text-sm">{{ review.reviewerName }}</div>
+            <div class="flex-1 relative leading-[160%] text-gray-700 text-sm text-left">{{ review.reviewerName }}</div>
           </div>
           
-          <!-- Email -->
-          <div class="self-stretch flex items-center gap-4">
-            <div class="w-[140px] flex items-center gap-2">
+          <div class="self-stretch flex items-start gap-4">
+            <div class="w-[140px] flex items-center gap-2 flex-shrink-0">
               <div class="flex-1 relative leading-[130%] capitalize font-semibold text-xs text-gray-900">Email</div>
               <b class="relative text-[14px] leading-[160%] capitalize text-center text-gray-600">:</b>
             </div>
-            <div class="flex-1 relative leading-[160%] text-gray-700 text-sm">{{ review.email }}</div>
+            <div class="flex-1 relative leading-[160%] text-gray-700 text-sm text-left break-all">{{ review.email }}</div>
           </div>
           
-          <!-- Company -->
-          <div class="self-stretch flex items-center gap-4">
-            <div class="w-[140px] flex items-center gap-2">
+          <div class="self-stretch flex items-start gap-4">
+            <div class="w-[140px] flex items-center gap-2 flex-shrink-0">
               <div class="flex-1 relative leading-[130%] capitalize font-semibold text-xs text-gray-900">Company</div>
               <b class="relative text-[14px] leading-[160%] capitalize text-center text-gray-600">:</b>
             </div>
-            <div class="flex-1 relative leading-[160%] text-gray-700 text-sm">{{ review.companyName }}</div>
+            <div class="flex-1 relative leading-[160%] text-gray-700 text-sm text-left">{{ review.companyName }}</div>
           </div>
           
-          <!-- Rating -->
-          <div class="self-stretch flex items-center gap-4">
-            <div class="w-[140px] flex items-center gap-2">
+          <div class="self-stretch flex items-start gap-4">
+            <div class="w-[140px] flex items-center gap-2 flex-shrink-0">
               <div class="flex-1 relative leading-[130%] capitalize font-semibold text-xs text-gray-900">Rating</div>
               <b class="relative text-[14px] leading-[160%] capitalize text-center text-gray-600">:</b>
             </div>
-            <div class="flex-1 relative leading-[160%] text-gray-700 text-sm">
+            <div class="flex-1 relative leading-[160%] text-gray-700 text-sm text-left">
               <div class="flex items-center gap-1">
                 <Star 
                   v-for="star in 5" 
@@ -68,52 +58,48 @@
             </div>
           </div>
           
-          <!-- Review Text -->
           <div class="self-stretch flex items-start gap-4">
-            <div class="w-[140px] flex items-center gap-2">
-              <div class="flex-1 relative leading-[130%] capitalize font-semibold text-xs text-gray-900">Review</div>
-              <b class="relative text-[14px] leading-[160%] capitalize text-center text-gray-600">:</b>
+            <div class="w-[140px] flex items-start gap-2 flex-shrink-0">
+              <div class="flex-1 relative leading-[130%] capitalize font-semibold text-xs text-gray-900 pt-1">Review</div>
+              <b class="relative text-[14px] leading-[160%] capitalize text-center text-gray-600 pt-1">:</b>
             </div>
-            <div class="flex-1 relative leading-[160%] text-gray-700 text-sm max-h-20 overflow-y-auto">
+            <div class="flex-1 relative leading-[160%] text-gray-700 text-sm max-h-20 overflow-y-auto text-left">
               "{{ review.reviewText }}"
             </div>
           </div>
         </div>
       </div>
       
-      <!-- Action Buttons - Green, Red, Yellow, White in one line -->
-      <div class="self-stretch flex items-center gap-3">
-        <!-- Green - Approve -->
+      <div class="self-stretch flex flex-wrap sm:flex-nowrap items-center gap-3">
+        
         <button 
           @click="updateStatus('Approved')"
-          class="flex-1 rounded bg-forestgreen hover:bg-green-700 flex items-center justify-center py-3 px-2 transition-colors font-semibold text-sm min-h-[44px] text-white"
-          :class="{ 'bg-green-700': review.status === 'Approved' }"
+          class="w-full sm:flex-1 rounded bg-forestgreen hover:bg-green-700 flex items-center justify-center py-3 px-2 transition-colors font-semibold text-sm min-h-[44px] text-white border-none"
+          :class="[{ 'bg-green-700': review.status === 'Approved' }, 'basis-[calc(50%-0.375rem)] sm:basis-auto']"
         >
           <div class="relative leading-[130%] capitalize text-xs">Approve</div>
         </button>
         
-        <!-- Red - Reject -->
         <button 
           @click="updateStatus('Rejected')"
-          class="flex-1 rounded bg-firebrick hover:bg-red-700 flex items-center justify-center py-3 px-2 transition-colors font-semibold text-sm min-h-[44px] text-white"
-          :class="{ 'bg-red-700': review.status === 'Rejected' }"
+          class="w-full sm:flex-1 rounded bg-firebrick hover:bg-red-700 flex items-center justify-center py-3 px-2 transition-colors font-semibold text-sm min-h-[44px] text-white border-none"
+          :class="[{ 'bg-red-700': review.status === 'Rejected' }, 'basis-[calc(50%-0.375rem)] sm:basis-auto']"
         >
           <div class="relative leading-[130%] capitalize text-xs">Reject</div>
         </button>
         
-        <!-- Yellow - On Hold -->
         <button 
           @click="updateStatus('On Hold')"
-          class="flex-1 rounded bg-gold hover:bg-yellow-600 flex items-center justify-center py-3 px-2 transition-colors font-semibold text-sm min-h-[44px] text-white"
-          :class="{ 'bg-yellow-600': review.status === 'On Hold' }"
+          class="w-full sm:flex-1 rounded bg-gold hover:bg-yellow-600 flex items-center justify-center py-3 px-2 transition-colors font-semibold text-sm min-h-[44px] text-gray-900 border-none"
+          :class="[{ 'bg-yellow-600': review.status === 'On Hold' }, 'basis-[calc(50%-0.375rem)] sm:basis-auto']"
         >
           <div class="relative leading-[130%] capitalize text-xs">On Hold</div>
         </button>
         
-        <!-- White - Ban Reviewer -->
         <button 
           @click="banReviewer"
-          class="flex-1 rounded bg-white hover:bg-gray-50 flex items-center justify-center py-3 px-2 transition-colors font-semibold text-sm min-h-[44px] text-gray-700 border border-gray-300"
+          class="w-full sm:flex-1 rounded bg-gray-100 hover:bg-gray-200 flex items-center justify-center py-3 px-2 transition-colors font-semibold text-sm min-h-[44px] text-gray-700 border-none"
+          :class="['basis-[calc(50%-0.375rem)] sm:basis-auto']"
         >
           <div class="relative leading-[130%] capitalize text-xs">Ban Reviewer</div>
         </button>

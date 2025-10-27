@@ -39,7 +39,7 @@
         </NuxtLink>
       </nav>
 
-      <div class="h-px w-full border-t border-dashed border-[#e0e0e0] my-4" />
+      <div class="h-px w-full border-t border-solid border-white my-4" />
 
       <nav class="flex flex-col gap-2">
         <NuxtLink

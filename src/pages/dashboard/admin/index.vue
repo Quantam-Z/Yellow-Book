@@ -2,16 +2,13 @@
   <div class="w-full space-y-6">
     <WelcomeComponent />
     <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 items-stretch">
+      
       <div class="xl:col-span-4">
-        <div class="w-full h-full">
-          <RecentActivity />
-        </div>
+        <RecentActivity class="h-full w-full" />
       </div>
 
       <div class="xl:col-span-8">
-        <div class="w-full h-full">
-          <RecentReview />
-        </div>
+        <RecentReview class="h-full w-full" />
       </div>
     </div>
 

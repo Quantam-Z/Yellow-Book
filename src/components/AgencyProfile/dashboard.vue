@@ -1,6 +1,5 @@
 <template>
   <div class="w-full min-h-screen bg-white p-3 sm:p-4 md:p-6">
-    <!-- Header Section -->
     <div class="w-full rounded-lg bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 p-3 sm:p-4 md:p-6 mb-4 sm:mb-6">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <h1 class="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">My Assigned Tasks</h1>
@@ -13,9 +12,7 @@
       </div>
     </div>
 
-    <!-- Stats Section -->
     <div class="w-full grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
-      <!-- Total Reviews -->
       <div class="rounded border-gainsboro border-solid border-[1px] bg-white flex items-center p-3 sm:p-4 gap-3">
         <div class="flex-1 flex flex-col items-start gap-2">
           <div class="text-xs sm:text-sm font-medium text-gray-700 capitalize leading-[130%]">Total Reviews</div>
@@ -24,7 +21,6 @@
         <MessageSquare class="h-8 w-8 sm:h-10 sm:w-10 text-purple-500 flex-shrink-0" />
       </div>
 
-      <!-- Average Rating -->
       <div class="rounded border-gainsboro border-solid border-[1px] bg-white flex items-center p-3 sm:p-4 gap-3">
         <div class="flex-1 flex flex-col items-start gap-2">
           <div class="text-xs sm:text-sm font-medium text-gray-700 capitalize leading-[130%]">Average Rating</div>
@@ -33,7 +29,6 @@
         <Star class="h-8 w-8 sm:h-10 sm:w-10 text-yellow-500 flex-shrink-0" />
       </div>
 
-      <!-- Verification -->
       <div class="rounded border-gainsboro border-solid border-[1px] bg-white flex items-center p-3 sm:p-4 gap-3">
         <div class="flex-1 flex flex-col items-start gap-2">
           <div class="text-xs sm:text-sm font-medium text-gray-700 capitalize leading-[130%]">Verification</div>
@@ -42,7 +37,6 @@
         <ShieldCheck class="h-8 w-8 sm:h-10 sm:w-10 text-green-500 flex-shrink-0" />
       </div>
 
-      <!-- Profile Complete -->
       <div class="rounded border-gainsboro border-solid border-[1px] bg-white flex items-center p-3 sm:p-4 gap-3">
         <div class="flex-1 flex flex-col items-start gap-2">
           <div class="text-xs sm:text-sm font-medium text-gray-700 capitalize leading-[130%]">Profile Complete</div>
@@ -52,65 +46,59 @@
       </div>
     </div>
 
-    <!-- Review Trend Graph -->
     <div class="w-full rounded border-gainsboro border-solid border-[1px] bg-white p-4 sm:p-5 mb-6 sm:mb-8">
       <div class="text-lg sm:text-xl font-bold text-gray-900 capitalize mb-4">Review Trends</div>
       <div class="w-full h-48 sm:h-56 md:h-64">
-        <Line :data="chartData" :options="chartOptions" class="w-full h-full" />
+        <ClientOnly>
+          <Line :data="chartData" :options="chartOptions" class="w-full h-full" />
+        </ClientOnly>
       </div>
     </div>
 
-    <!-- Latest Reviews Section - No outer border, same width as others -->
-    <div class="w-full bg-white p-4 sm:p-5">
+    <div class="w-full bg-white">
       <div class="text-lg sm:text-xl font-bold text-gray-900 capitalize mb-4">Latest Reviews</div>
       
-      <!-- Desktop Table -->
-      <div class="hidden lg:block w-full">
-        <!-- Table Header -->
+      <div class="hidden lg:block w-full border border-gainsboro border-solid rounded-lg overflow-hidden">
         <div class="w-full bg-ghostwhite flex items-center p-3 gap-4 text-sm">
           <div class="w-20 flex items-center justify-center p-2">
             <div class="font-medium text-gray-700 capitalize">Profile</div>
           </div>
-          <div class="w-48 flex items-center justify-center p-2">
+          <div class="w-48 flex items-center justify-start p-2">
             <div class="font-medium text-gray-700 capitalize">Name</div>
           </div>
           <div class="w-20 flex items-center justify-center p-2">
             <div class="font-medium text-gray-700 capitalize">Rating</div>
           </div>
           <div class="w-24 flex items-center justify-center p-2">
-            <div class="font-medium text-gray-700 capitalize">Review Liked</div>
+            <div class="font-medium text-gray-700 capitalize whitespace-nowrap">Review Liked</div>
           </div>
           <div class="w-28 flex items-center justify-center p-2">
-            <div class="font-medium text-gray-700 capitalize">Review Shared</div>
+            <div class="font-medium text-gray-700 capitalize whitespace-nowrap">Review Shared</div>
           </div>
-          <div class="w-24 flex items-center justify-center p-2">
+          <div class="w-24 flex items-center justify-start p-2">
             <div class="font-medium text-gray-700 capitalize">Date</div>
           </div>
-          <div class="flex-1 flex items-center justify-center p-2">
+          <div class="flex-1 flex items-center justify-start p-2">
             <div class="font-medium text-gray-700 capitalize">User Review</div>
           </div>
         </div>
 
-        <!-- Table Body - No border color -->
         <div class="w-full">
           <div 
             v-for="(review, index) in reviews" 
             :key="index"
-            class="w-full border-b border-gray-200 flex items-center p-3 gap-4 hover:bg-gray-50 transition-colors last:border-b-0"
+            class="w-full border-b border-gainsboro border-solid border-[1px] flex items-center p-3 gap-4 hover:bg-gray-50 transition-colors last:border-b-0"
           >
-            <!-- Profile -->
             <div class="w-20 flex items-center justify-center p-2">
               <div class="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
                 <span class="text-white font-bold text-xs">{{ getInitials(review.reviewer) }}</span>
               </div>
             </div>
             
-            <!-- Name -->
-            <div class="w-48 flex items-center justify-center p-2">
-              <div class="text-gray-800 text-sm capitalize truncate">{{ review.reviewer }}</div>
+            <div class="w-48 flex items-center justify-start p-2">
+              <div class="text-gray-800 text-sm capitalize truncate text-left">{{ review.reviewer }}</div>
             </div>
             
-            <!-- Rating -->
             <div class="w-20 flex items-center justify-center p-2">
               <div class="flex items-center gap-1">
                 <Star
@@ -122,26 +110,22 @@
               </div>
             </div>
             
-            <!-- Review Liked -->
             <div class="w-24 flex items-center justify-center p-2">
               <div class="text-gray-600 text-sm">{{ review.likes || '0' }}</div>
             </div>
             
-            <!-- Review Shared -->
             <div class="w-28 flex items-center justify-center p-2">
               <div class="text-gray-600 text-sm">{{ review.shares || '0' }}</div>
             </div>
             
-            <!-- Date -->
-            <div class="w-24 flex items-center justify-center p-2">
-              <div class="text-gray-500 text-sm">{{ formatDate(review.date) }}</div>
+            <div class="w-24 flex items-center justify-start p-2">
+              <div class="text-gray-500 text-sm text-left">{{ formatDate(review.date) }}</div>
             </div>
             
-            <!-- User Review - Show 3 words -->
             <div class="flex-1 flex items-center justify-between p-2 gap-2">
-              <div class="text-gray-600 text-sm truncate max-w-[150px]">"{{ truncateReview(review.comment) }}"</div>
+              <div class="text-gray-600 text-sm text-left line-clamp-2 pr-2">"{{ review.comment }}"</div> 
               <span
-                class="text-deepskyblue font-semibold text-sm hover:text-blue-600 transition-colors cursor-pointer whitespace-nowrap"
+                class="text-deepskyblue font-semibold text-sm hover:text-blue-600 transition-colors cursor-pointer whitespace-nowrap flex-shrink-0"
                 @click="viewFullReview(review)"
               >
                 Full view
@@ -151,13 +135,12 @@
         </div>
       </div>
 
-      <!-- Tablet View -->
       <div class="hidden md:block lg:hidden w-full">
         <div class="space-y-3">
           <div 
             v-for="(review, index) in reviews" 
             :key="index"
-            class="rounded border-gainsboro border-solid border-[1px] p-3 bg-white"
+            class="rounded border-gainsboro border-solid border-[1px] p-3 bg-white hover:bg-gray-50 transition-colors"
           >
             <div class="flex items-center justify-between mb-3">
               <div class="flex items-center gap-3">
@@ -165,8 +148,8 @@
                   <span class="text-white font-bold text-xs">{{ getInitials(review.reviewer) }}</span>
                 </div>
                 <div>
-                  <div class="font-medium text-gray-800 text-sm">{{ review.reviewer }}</div>
-                  <div class="text-gray-500 text-xs">{{ formatDate(review.date) }}</div>
+                  <div class="font-medium text-gray-800 text-sm text-left">{{ review.reviewer }}</div>
+                  <div class="text-gray-500 text-xs text-left">{{ formatDate(review.date) }}</div>
                 </div>
               </div>
               <div class="flex items-center gap-1">
@@ -178,15 +161,15 @@
                 />
               </div>
             </div>
-            <div class="flex justify-between items-center mb-2">
-              <div class="text-gray-600 text-xs">
-                <span class="mr-3">{{ review.likes || '0' }} likes</span>
+            <div class="flex justify-start items-center mb-2">
+              <div class="text-gray-600 text-xs text-left">
+                <span class="mr-2">{{ review.likes || '0' }} likes</span> 
                 <span>{{ review.shares || '0' }} shares</span>
               </div>
             </div>
-            <p class="text-gray-600 text-sm line-clamp-2 mb-2">"{{ review.comment }}"</p>
+            <p class="text-gray-600 text-sm line-clamp-2 mb-2 text-left">"{{ review.comment }}"</p>
             <span
-              class="text-deepskyblue font-semibold text-sm hover:text-blue-600 transition-colors cursor-pointer whitespace-nowrap"
+              class="text-deepskyblue font-semibold text-sm hover:text-blue-600 transition-colors cursor-pointer whitespace-nowrap text-left block w-full"
               @click="viewFullReview(review)"
             >
               Full view
@@ -195,13 +178,12 @@
         </div>
       </div>
 
-      <!-- Mobile View -->
       <div class="block md:hidden w-full">
         <div class="space-y-3">
           <div 
             v-for="(review, index) in reviews" 
             :key="index"
-            class="rounded border-gainsboro border-solid border-[1px] p-3 bg-white"
+            class="rounded border-gainsboro border-solid border-[1px] p-3 bg-white hover:bg-gray-50 transition-colors"
           >
             <div class="flex items-start justify-between mb-2">
               <div class="flex items-center gap-2">
@@ -209,8 +191,8 @@
                   <span class="text-white font-bold text-xs">{{ getInitials(review.reviewer) }}</span>
                 </div>
                 <div>
-                  <div class="font-medium text-gray-800 text-sm">{{ review.reviewer }}</div>
-                  <div class="text-gray-500 text-xs">{{ formatDate(review.date) }}</div>
+                  <div class="font-medium text-gray-800 text-sm text-left">{{ review.reviewer }}</div>
+                  <div class="text-gray-500 text-xs text-left">{{ formatDate(review.date) }}</div>
                 </div>
               </div>
               <div class="flex items-center gap-1">
@@ -222,12 +204,12 @@
                 />
               </div>
             </div>
-            <p class="text-gray-600 text-xs line-clamp-2 mb-2">"{{ review.comment }}"</p>
-            <div class="flex justify-between items-center text-xs text-gray-500">
+            <p class="text-gray-600 text-xs line-clamp-2 mb-2 text-left">"{{ review.comment }}"</p>
+            <div class="flex justify-start items-center text-xs text-gray-500 gap-3">
               <span>{{ review.likes || '0' }} likes</span>
               <span>{{ review.shares || '0' }} shares</span>
               <span
-                class="text-deepskyblue font-semibold cursor-pointer"
+                class="text-deepskyblue font-semibold cursor-pointer text-right ml-auto"
                 @click="viewFullReview(review)"
               >
                 Full view
@@ -253,11 +235,48 @@ import {
   CategoryScale,
 } from "chart.js";
 import { Line } from "vue-chartjs";
+import { computed } from 'vue';
 
 // Register Chart.js modules
 ChartJS.register(Title, Tooltip, Legend, LineElement, PointElement, LinearScale, CategoryScale);
 
-// Helper functions
+// ====================================================================
+// 1. DATA FETCHING (from stubs/mock data)
+// ====================================================================
+
+// Use useFetch to load data from stubs (Nuxt environment assumed)
+const { data: latestReviewsData } = await useFetch('/stubs/agencyReviews.json');
+const { data: dashboardData } = await useFetch('/stubs/agencyDashboard.json');
+
+
+const reviews = computed(() => {
+    const data = latestReviewsData.value || []; // Use this line in Nuxt environment
+    
+    return data.slice(0, 4).map(r => ({
+        reviewer: r.reviewerName,
+        rating: r.rating,
+        comment: r.content,
+        date: r.date,
+        // Generate random engagement stats since they aren't in the stub
+        likes: Math.floor(Math.random() * 100),
+        shares: Math.floor(Math.random() * 50)
+    }));
+});
+
+const dashboard = computed(() => {
+  return dashboardData.value ?? {
+    totalReviews: 0,
+    averageRating: 0.0,
+    verificationStatus: 'Pending',
+    profileComplete: 0,
+  }; 
+});
+
+
+// ====================================================================
+// 2. UTILITIES & HANDLERS
+// ====================================================================
+
 const getInitials = (name) => {
   if (!name) return '??'
   return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
@@ -265,22 +284,17 @@ const getInitials = (name) => {
 
 const formatDate = (date) => {
   if (!date) return ''
-  return new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-}
-
-const truncateReview = (comment) => {
-  if (!comment) return ''
-  const words = comment.split(' ')
-  // Show 3 words + ellipsis
-  return words.length > 3 ? words.slice(0, 3).join(' ') + '...' : comment
+  // Use a shorter format for better fitting in the dashboard view
+  return new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) 
 }
 
 const viewFullReview = (review) => {
-  // Handle full view logic here
+  // Logic to show a modal or navigate to a detail page
   console.log('View full review:', review)
 }
 
-// Chart data
+
+
 const chartData = {
   labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
   datasets: [
@@ -318,26 +332,6 @@ const chartOptions = {
     }
   }
 };
-
-// Reviews data
-const { data: latestReviewsData } = await useFetch('/stubs/agencyReviews.json')
-const reviews = computed(() => (latestReviewsData.value || []).slice(0, 4).map(r => ({
-  reviewer: r.reviewerName,
-  rating: r.rating,
-  comment: r.content,
-  date: r.date,
-  likes: Math.floor(Math.random() * 100),
-  shares: Math.floor(Math.random() * 50)
-})))
-
-// Dashboard stats
-const { data: dashboardData } = await useFetch('/stubs/agencyDashboard.json')
-const dashboard = computed(() => dashboardData.value ?? {
-  totalReviews: 0,
-  averageRating: 0,
-  verificationStatus: 'Verified',
-  profileComplete: 0,
-})
 </script>
 
 <style scoped>
