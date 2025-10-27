@@ -264,73 +264,51 @@
 
       <!-- Content -->
       <template v-else>
-        <!-- Mobile Card View -->
-        <div class="block lg:hidden">
+        <!-- Mobile Card View (Pattern-aligned) -->
+        <div class="lg:hidden w-full flex flex-col gap-4">
           <div 
             v-for="(admin, index) in paginatedAdmins" 
             :key="admin.id"
-            class="p-4 border-b border-gray-200 hover:bg-gray-50 active:bg-gray-100 transition"
+            class="w-full rounded-lg border border-gray-200 p-4 bg-white hover:bg-gray-50 transition-colors"
           >
-            <div class="flex items-center justify-between mb-3">
-              <div class="flex items-center gap-3">
-                <input 
-                  type="checkbox" 
-                  :checked="admin.selected"
-                  @change="toggleSelection(admin)"
-                  class="w-4 h-4 rounded border-gray-300 cursor-pointer touch-manipulation" 
-                />
-                <span class="text-sm text-gray-500 font-medium">{{ getDisplayIndex(index) }}</span>
+            <!-- Header -->
+            <div class="flex justify-between items-start mb-3">
+              <div class="flex flex-col flex-1 min-w-0">
+                <h3 class="font-semibold text-gray-900 text-base truncate">{{ admin.name }}</h3>
+                <span class="text-sm text-gray-600 mt-1 truncate">{{ admin.email }}</span>
               </div>
               <div class="flex items-center gap-2">
-                <div 
-                  class="inline-flex items-center gap-1 px-2 py-1 rounded-md font-medium text-xs cursor-pointer touch-manipulation"
-                  :class="getStatusClass(admin.status)"
-                  @click="changeStatus(admin)"
-                >
-                  <span>{{ admin.status }}</span>
-                  <ChevronDownIcon class="w-3 h-3 flex-shrink-0" aria-hidden="true" />
+                <span class="text-xs font-medium px-2 py-1 rounded-full" :class="getStatusClass(admin.status, 'soft') + ' bg-opacity-10'">
+                  {{ admin.status }}
+                </span>
+                <MoreHorizontal class="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer" />
+              </div>
+            </div>
+
+            <!-- Details + View Details -->
+            <div class="flex justify-between items-end">
+              <div class="grid grid-cols-2 gap-3 text-sm flex-1">
+                <div class="flex flex-col">
+                  <span class="text-gray-500 text-xs">Role</span>
+                  <span class="text-gray-700">{{ admin.role }}</span>
                 </div>
-                <EyeIcon 
+                <div class="flex flex-col">
+                  <span class="text-gray-500 text-xs">Last Login</span>
+                  <span class="text-gray-700">{{ formatDate(admin.lastLogin) }}</span>
+                </div>
+                <div class="flex flex-col col-span-2">
+                  <span class="text-gray-500 text-xs">Created</span>
+                  <span class="text-gray-700">{{ formatDate(admin.createdOn) }}</span>
+                </div>
+              </div>
+              <div class="ml-4 flex-shrink-0">
+                <span
                   @click="viewAdmin(admin)"
-                  class="w-5 h-5 text-yellow-500 cursor-pointer hover:text-yellow-600 transition touch-manipulation" 
-                />
+                  class="text-amber-500 hover:text-amber-600 font-medium text-sm cursor-pointer whitespace-nowrap"
+                >
+                  View Details
+                </span>
               </div>
-            </div>
-            
-            <!-- Admin Info -->
-            <div class="space-y-2">
-              <div class="flex items-center gap-2">
-                <span class="text-base font-semibold text-gray-900 truncate flex-1">{{ admin.name }}</span>
-                <CheckCircleIcon v-if="admin.verified" class="w-4 h-4 text-green-500 flex-shrink-0" />
-              </div>
-              
-              <div class="text-sm text-gray-600 truncate">
-                {{ admin.email }}
-              </div>
-              
-              <div class="flex items-center justify-between text-sm">
-                <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md font-medium"
-                  :class="getRoleClass(admin.role)">
-                  {{ admin.role }}
-                </div>
-                <span class="text-gray-500">{{ formatDate(admin.lastLogin) }}</span>
-              </div>
-
-              <div class="flex items-center justify-between text-xs text-gray-500">
-                <span>Created: {{ formatDate(admin.createdOn) }}</span>
-              </div>
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="flex items-center justify-end gap-2 mt-3">
-              <EditIcon 
-                @click="editAdmin(admin)"
-                class="w-5 h-5 text-blue-500 cursor-pointer hover:text-blue-600 transition touch-manipulation" 
-              />
-              <Trash2Icon 
-                @click="deleteAdmin(admin)"
-                class="w-5 h-5 text-red-500 cursor-pointer hover:text-red-600 transition touch-manipulation" 
-              />
             </div>
           </div>
         </div>
@@ -496,7 +474,8 @@ import {
   UserX as UserXIcon,
   Shield as ShieldIcon,
   Edit as EditIcon,
-  Trash2 as Trash2Icon
+  Trash2 as Trash2Icon,
+  MoreHorizontal
 } from 'lucide-vue-next';
 import { getStatusClass, getRoleClass } from '~/composables/useStatusClass'
 import { useSelection } from '~/composables/useSelection'

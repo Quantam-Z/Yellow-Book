@@ -217,56 +217,46 @@
 
       <!-- Content -->
       <template v-else>
-        <!-- Mobile Cards -->
-        <div class="block lg:hidden">
+        <!-- Mobile Cards (Pattern-aligned) -->
+        <div class="lg:hidden w-full flex flex-col gap-4">
           <div 
             v-for="(company, index) in paginatedCompanies" 
             :key="company.id"
-            class="p-4 border-b border-gray-200 hover:bg-gray-50 active:bg-gray-100 transition"
+            class="w-full rounded-lg border border-gray-200 p-4 bg-white hover:bg-gray-50 transition-colors"
           >
-            <div class="flex items-center justify-between mb-3">
-              <div class="flex items-center gap-3">
-                <input 
-                  type="checkbox" 
-                  :checked="company.selected"
-                  @change="toggleSelection(company)"
-                  class="w-5 h-5 rounded border-gray-300 cursor-pointer touch-manipulation" 
-                />
-                <span class="text-sm text-gray-500 font-medium">{{ getDisplayIndex(index) }}</span>
+            <!-- Header -->
+            <div class="flex justify-between items-start mb-3">
+              <div class="flex flex-col flex-1 min-w-0">
+                <h3 class="font-semibold text-gray-900 text-base truncate">{{ company.name }}</h3>
+                <span class="text-sm text-gray-600 mt-1 truncate">{{ company.category }}</span>
               </div>
               <div class="flex items-center gap-2">
-                <div 
-                  class="inline-flex items-center gap-1 px-3 py-1.5 rounded-md font-medium text-xs cursor-pointer touch-manipulation"
-                  :class="getStatusClass(company.status)"
-                  @click="changeStatus(company)"
-                >
-                  <span>{{ getStatusShort(company.status) }}</span>
-                  <ChevronDownIcon class="w-3 h-3 flex-shrink-0" aria-hidden="true" />
-                </div>
-                <EyeIcon 
-                  @click="viewCompany(company)"
-                  class="w-5 h-5 text-yellow-500 cursor-pointer hover:text-yellow-600 transition touch-manipulation" 
-                />
+                <span class="text-xs font-medium px-2 py-1 rounded-full" :class="getStatusClass(company.status, 'soft') + ' bg-opacity-10'">
+                  {{ company.status }}
+                </span>
+                <MoreHorizontal class="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer" />
               </div>
             </div>
-            
-            <div class="space-y-3">
-              <div class="flex items-center gap-2">
-                <span class="text-base font-semibold text-gray-900 truncate flex-1">{{ company.name }}</span>
-                <CheckCircleIcon v-if="company.verified" class="w-4 h-4 text-green-500 flex-shrink-0" title="Verified" />
+
+            <!-- Details + View Details -->
+            <div class="flex justify-between items-end">
+              <div class="grid grid-cols-2 gap-3 text-sm flex-1">
+                <div class="flex flex-col">
+                  <span class="text-gray-500 text-xs">Phone</span>
+                  <span class="text-gray-700">{{ company.mobile }}</span>
+                </div>
+                <div class="flex flex-col">
+                  <span class="text-gray-500 text-xs">Website</span>
+                  <span class="text-amber-500 truncate">{{ company.website }}</span>
+                </div>
               </div>
-              
-              <div class="flex items-center justify-between text-sm text-gray-600">
-                <span class="bg-gray-100 px-3 py-1.5 rounded-md">{{ company.category }}</span>
-                <span class="flex items-center gap-1">
-                  <PhoneIcon class="w-4 h-4" aria-hidden="true" />
-                  {{ company.mobile }}
+              <div class="ml-4 flex-shrink-0">
+                <span
+                  @click="viewCompany(company)"
+                  class="text-amber-500 hover:text-amber-600 font-medium text-sm cursor-pointer whitespace-nowrap"
+                >
+                  View Details
                 </span>
-              </div>
-              
-              <div class="text-sm text-yellow-500 truncate flex items-center gap-2">
-                <GlobeIcon class="w-4 h-4" aria-hidden="true" />
-                {{ company.website }}
               </div>
             </div>
           </div>
@@ -403,7 +393,7 @@
 
 <script setup>
 import { ref, computed, defineAsyncComponent, watchEffect } from 'vue';
-import { Search as SearchIcon, Eye as EyeIcon, CheckCircle as CheckCircleIcon, ChevronDown as ChevronDownIcon, ChevronLeft as ChevronLeftIcon, ChevronRight as ChevronRightIcon, Filter as FilterIcon, Phone as PhoneIcon, Globe as GlobeIcon } from "lucide-vue-next";
+import { Search as SearchIcon, Eye as EyeIcon, CheckCircle as CheckCircleIcon, ChevronDown as ChevronDownIcon, ChevronLeft as ChevronLeftIcon, ChevronRight as ChevronRightIcon, Filter as FilterIcon, Phone as PhoneIcon, Globe as GlobeIcon, MoreHorizontal } from "lucide-vue-next";
 import { getStatusClass, getStatusShort } from '~/composables/useStatusClass'
 import { useSelection } from '~/composables/useSelection'
 

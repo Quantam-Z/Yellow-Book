@@ -253,56 +253,46 @@
 
       <!-- Content -->
       <template v-else>
-        <!-- Mobile Card View -->
-        <div class="block lg:hidden">
+        <!-- Mobile Card View (Pattern-aligned) -->
+        <div class="lg:hidden w-full flex flex-col gap-4">
           <div 
             v-for="(user, index) in paginatedUsers" 
             :key="user.id"
-            class="p-4 border-b border-gray-200 hover:bg-gray-50 active:bg-gray-100 transition"
+            class="w-full rounded-lg border border-gray-200 p-4 bg-white hover:bg-gray-50 transition-colors"
           >
-            <div class="flex items-center justify-between mb-3">
-              <div class="flex items-center gap-3">
-                <input 
-                  type="checkbox" 
-                  :checked="user.selected"
-                  @change="toggleSelection(user)"
-                  class="w-4 h-4 rounded border-gray-300 cursor-pointer touch-manipulation" 
-                />
-                <span class="text-sm text-gray-500 font-medium">{{ getDisplayIndex(index) }}</span>
+            <!-- Header -->
+            <div class="flex justify-between items-start mb-3">
+              <div class="flex flex-col flex-1 min-w-0">
+                <h3 class="font-semibold text-gray-900 text-base truncate">{{ user.name }}</h3>
+                <span class="text-sm text-gray-600 mt-1 truncate">{{ user.email }}</span>
               </div>
               <div class="flex items-center gap-2">
-                <div 
-                  class="inline-flex items-center gap-1 px-2 py-1 rounded-md font-medium text-xs cursor-pointer touch-manipulation"
-                  :class="getStatusClass(user.status)"
-                  @click="changeStatus(user)"
-                >
-                  <span>{{ getStatusShort(user.status) }}</span>
-                  <ChevronDownIcon class="w-3 h-3 flex-shrink-0" aria-hidden="true" />
-                </div>
-                <EyeIcon 
-                  @click="viewUser(user)"
-                  class="w-5 h-5 text-yellow-500 cursor-pointer hover:text-yellow-600 transition touch-manipulation" 
-                />
+                <span class="text-xs font-medium px-2 py-1 rounded-full" :class="getStatusClass(user.status, 'soft') + ' bg-opacity-10'">
+                  {{ user.status }}
+                </span>
+                <MoreHorizontal class="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer" />
               </div>
             </div>
-            
-            <!-- User Info -->
-            <div class="space-y-2">
-              <div class="flex items-center gap-2">
-                <span class="text-base font-semibold text-gray-900 truncate flex-1">{{ user.name }}</span>
-                <CheckCircleIcon v-if="user.verified" class="w-4 h-4 text-green-500 flex-shrink-0" />
-              </div>
-              
-              <div class="text-sm text-gray-600 truncate">
-                {{ user.email }}
-              </div>
-              
-              <div class="flex items-center justify-between text-sm">
-                <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md font-medium"
-                  :class="getSignupMethodClass(user.signupMethod)">
-                  {{ user.signupMethod }}
+
+            <!-- Details + View Details -->
+            <div class="flex justify-between items-end">
+              <div class="grid grid-cols-2 gap-3 text-sm flex-1">
+                <div class="flex flex-col">
+                  <span class="text-gray-500 text-xs">Signup</span>
+                  <span class="text-gray-700">{{ formatDate(user.signupDate) }}</span>
                 </div>
-                <span class="text-gray-500">{{ formatDate(user.signupDate) }}</span>
+                <div class="flex flex-col">
+                  <span class="text-gray-500 text-xs">Method</span>
+                  <span class="text-gray-700">{{ user.signupMethod }}</span>
+                </div>
+              </div>
+              <div class="ml-4 flex-shrink-0">
+                <span
+                  @click="viewUser(user)"
+                  class="text-amber-500 hover:text-amber-600 font-medium text-sm cursor-pointer whitespace-nowrap"
+                >
+                  View Details
+                </span>
               </div>
             </div>
           </div>
@@ -453,6 +443,7 @@ import {
   Share2 as Share2Icon,
   Mail as MailIcon,
   UserPlus as UserPlusIcon,
+  MoreHorizontal,
 } from 'lucide-vue-next';
 import { getStatusClass, getStatusShort, getSignupMethodClass } from '~/composables/useStatusClass'
 import { useSelection } from '~/composables/useSelection'
