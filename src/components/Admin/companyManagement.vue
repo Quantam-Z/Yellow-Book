@@ -27,7 +27,7 @@
     </div>
 
     <!-- Mobile Filters Toggle -->
-    <div class="mb-4 flex lg:hidden items-center justify-between px-3 lg:px-0 relative z-50">
+    <div class="mb-4 flex lg:hidden items-center justify-between px-3 lg:px-0">
       <h2 class="text-base font-bold text-gray-900">All Company List</h2>
       <button 
         @click="showMobileFilters = !showMobileFilters"
@@ -573,7 +573,7 @@ input:focus, select:focus, button:focus {
 @media (max-width: 1024px) {
   #mobile-filters {
     position: relative;
-    z-index: 40;
+    z-index: 10; /* below sidebar overlay (z-30) and sidebar (z-40) */
     max-height: 80vh;
     overflow-y: auto;
   }
