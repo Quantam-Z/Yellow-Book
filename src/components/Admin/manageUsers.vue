@@ -650,7 +650,7 @@ input:focus, select:focus, button:focus {
 @media (max-width: 1024px) {
   #mobile-filters {
     position: relative;
-    z-index: 40;
+    z-index: 10; /* below sidebar overlay (z-30) and sidebar (z-40) */
     max-height: 80vh;
     overflow-y: auto;
   }

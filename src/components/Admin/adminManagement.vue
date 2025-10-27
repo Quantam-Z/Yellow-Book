@@ -69,7 +69,7 @@
     </div>
 
     <!-- Mobile Filters Toggle -->
-    <div class="mb-4 flex lg:hidden items-center justify-between px-3 lg:px-0 relative z-50">
+    <div class="mb-4 flex lg:hidden items-center justify-between px-3 lg:px-0">
       <h2 class="text-base font-bold text-gray-900">All Admin List</h2>
       <button 
         @click="showMobileFilters = !showMobileFilters"
@@ -160,7 +160,7 @@
       </div>
 
       <!-- Mobile Filters -->
-      <div v-if="showMobileFilters" id="mobile-filters" class="mt-3 p-3 sm:p-4 bg-white rounded-lg shadow-sm border border-gray-200 lg:hidden relative z-50">
+      <div v-if="showMobileFilters" id="mobile-filters" class="mt-3 p-3 sm:p-4 bg-white rounded-lg shadow-sm border border-gray-200 lg:hidden relative">
         <div class="space-y-4">
           <!-- Date Range -->
           <div class="grid grid-cols-2 gap-3">
@@ -691,7 +691,7 @@ input:focus, select:focus, button:focus {
 @media (max-width: 1024px) {
   #mobile-filters {
     position: relative;
-    z-index: 50; /* above sidebar z-40 */
+    z-index: 10; /* below sidebar overlay (z-30) and sidebar (z-40) */
     max-height: 80vh;
     overflow-y: auto;
   }
