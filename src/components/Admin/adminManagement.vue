@@ -72,14 +72,20 @@
     <div class="mb-4 flex lg:hidden items-center justify-between px-3 lg:px-0">
       <h2 class="text-base font-bold text-gray-900">All Admin List</h2>
       <button 
-        @click="showMobileFilters = !showMobileFilters"
-        class="h-12 bg-white rounded-xl px-4 py-2 border border-transparent sm:border-gray-300 text-gray-700 text-sm outline-none cursor-pointer whitespace-nowrap touch-manipulation flex items-center gap-2 hover:bg-gray-50 active:bg-gray-100 transition"
-        aria-controls="mobile-filters"
-        :aria-expanded="showMobileFilters ? 'true' : 'false'"
-      >
-        <FilterIcon class="w-4 h-4" aria-hidden="true" />
-        <span>Filters</span>
-      </button>
+  @click="showMobileFilters = !showMobileFilters"
+  class="h-12 
+         bg-gray-100 rounded-xl px-4 py-2 border-0
+         text-gray-700 text-sm outline-none cursor-pointer whitespace-nowrap 
+         touch-manipulation flex items-center gap-2 
+         hover:bg-gray-50 active:bg-gray-100 transition
+         shadow-none hover:shadow-none active:shadow-none     
+         "
+  aria-controls="mobile-filters"
+  :aria-expanded="showMobileFilters ? 'true' : 'false'"
+>
+  <FilterIcon class="w-4 h-4" aria-hidden="true" />
+  <span>Filters</span>
+</button>
     </div>
 
     <!-- Filters Section - THIRD ROW -->
@@ -245,9 +251,24 @@
         </div>
 
         <div class="mt-6 flex items-center justify-end gap-3">
-          <button @click="resetFilters" class="px-4 py-3 text-sm text-gray-600 bg-white border border-transparent sm:border-gray-200 rounded-lg hover:bg-gray-50 active:bg-gray-100 touch-manipulation transition">Reset</button>
-          <button @click="applyMobileFilters" class="px-4 py-3 text-sm text-gray-900 bg-yellow-400 hover:bg-yellow-500 active:bg-yellow-600 rounded-lg touch-manipulation transition">Apply</button>
-        </div>
+  <!-- Reset Button -->
+  <button 
+    @click="resetFilters" 
+    class="px-4 py-3 text-sm text-gray-600 bg-gray-100 rounded-lg border-0 
+           hover:bg-gray-50 active:bg-gray-100 touch-manipulation transition"
+  >
+    Reset
+  </button>
+
+  <!-- Apply Button -->
+  <button 
+    @click="applyMobileFilters" 
+    class="px-4 py-3 text-sm text-gray-900 bg-yellow-400 rounded-lg border-0 
+           hover:bg-yellow-500 active:bg-yellow-600 touch-manipulation transition"
+  >
+    Apply
+  </button>
+</div>
       </div>
     </div>
 

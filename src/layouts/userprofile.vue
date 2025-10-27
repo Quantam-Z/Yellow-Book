@@ -6,7 +6,7 @@
     <!-- Below header: sidebar + main content -->
     <div class="flex flex-1">
       <Sidebar />
-      <main class="flex-1 p-8">
+      <main class="flex-1 p-6">
         <slot />
       </main>
     </div>

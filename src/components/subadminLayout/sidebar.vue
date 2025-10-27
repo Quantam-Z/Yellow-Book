@@ -2,15 +2,18 @@
   <div class="flex">
     <!-- Hamburger/Close Button -->
     <button
-      @click="isOpen = !isOpen"
-      class="md:hidden fixed top-3 left-4 z-50 p-1 rounded-lg bg-white border shadow-md transition-opacity duration-300 ease-in-out"
-      aria-label="Toggle navigation menu"
-      
-      :class="{ 'opacity-0 pointer-events-none': isScrolled && !isOpen }"
-    >
-      <!-- ICON SIZE REDUCED HERE: w-5 h-5 -->
-      <component :is="isOpen ? X : Menu" class="w-5 h-5 text-gray-700" />
-    </button>
+  v-if="!isOpen && !isScrolled" 
+  @click="isOpen = true"
+  class="md:hidden fixed top-2 left-4 z-50 p-2 rounded-lg bg-white 
+         border border-transparent       
+         shadow-md hover:shadow-xl        
+         duration-200 
+         outline-none ring-0 focus:outline-none focus:ring-0
+         "
+  aria-label="Open navigation menu"
+>
+  <Menu class="w-5 h-5 text-gray-700" />
+</button>
 
     <!-- Overlay (only visible when sidebar is open on mobile) -->
     <div

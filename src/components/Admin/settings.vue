@@ -60,7 +60,7 @@
                 id="current-password"
                 type="password"
                 placeholder="Enter current password"
-                class="h-[46px] rounded bg-gray-100 border border-gray-300 box-border p-3 text-gray-700 w-full focus:outline-none focus:border-yellow-400"
+                class="h-[46px] rounded bg-gray-50 border-gray-300 border-solid border box-border p-3 text-gray-700 w-full focus:outline-none focus:border-yellow-400"
               />
             </div>
             
@@ -70,7 +70,7 @@
                 id="new-password"
                 type="password"
                 placeholder="Enter new password"
-                class="h-[46px] rounded bg-gray-100 border border-gray-300 box-border p-3 text-gray-700 w-full focus:outline-none focus:border-yellow-400"
+                class="h-[46px] rounded bg-gray-50 border-gray-300 border-solid border box-border p-3 text-gray-700 w-full focus:outline-none focus:border-yellow-400"
               />
             </div>
             
@@ -80,7 +80,7 @@
                 id="confirm-password"
                 type="password"
                 placeholder="Confirm new password"
-                class="h-[46px] rounded bg-gray-100 border border-gray-300 box-border p-3 text-gray-700 w-full focus:outline-none focus:border-yellow-400"
+                class="h-[46px] rounded bg-gray-50 border-gray-300 border-solid border box-border p-3 text-gray-700 w-full focus:outline-none focus:border-yellow-400"
               />
             </div>
 

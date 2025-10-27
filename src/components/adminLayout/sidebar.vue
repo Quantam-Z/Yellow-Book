@@ -1,9 +1,14 @@
 <template>
   <div class="flex">
- <button
+    <button
   v-if="!isOpen && !isScrolled" 
   @click="isOpen = true"
-  class="md:hidden fixed top-2 left-4 z-50 p-2 rounded-lg bg-white border border-gainsboro hover:shadow-xl duration-200"
+  class="md:hidden fixed top-2 left-4 z-50 p-2 rounded-lg bg-white 
+         border border-transparent       
+         shadow-md hover:shadow-xl        
+         duration-200 
+         outline-none ring-0 focus:outline-none focus:ring-0
+         "
   aria-label="Open navigation menu"
 >
   <Menu class="w-5 h-5 text-gray-700" />
