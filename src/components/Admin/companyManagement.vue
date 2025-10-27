@@ -242,18 +242,18 @@
             </div>
 
             <!-- Card body -->
-            <div class="flex justify-between items-end">
-              <div class="flex flex-col gap-2 text-sm flex-1">
+            <div class="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-end">
+              <div class="flex flex-col gap-2 text-sm flex-1 min-w-0">
                 <div class="flex items-center gap-1 text-gray-700">
                   <PhoneIcon class="w-4 h-4" aria-hidden="true" />
                   <span class="whitespace-nowrap truncate">{{ company.mobile }}</span>
                 </div>
-                <a :href="'https://' + company.website" class="text-amber-500 hover:text-amber-600 truncate flex items-center gap-2" target="_blank" rel="noopener">
+                <a :href="'https://' + company.website" class="text-amber-500 hover:text-amber-600 truncate flex items-center gap-2 break-all" target="_blank" rel="noopener">
                   <GlobeIcon class="w-4 h-4" aria-hidden="true" />
                   {{ company.website }}
                 </a>
               </div>
-              <div class="ml-4 flex-shrink-0">
+              <div class="sm:ml-4 flex-shrink-0">
                 <span @click="viewCompany(company)" class="text-amber-500 hover:text-amber-600 font-medium text-sm cursor-pointer whitespace-nowrap">
                   View Details
                 </span>
