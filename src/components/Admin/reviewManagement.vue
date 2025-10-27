@@ -272,72 +272,43 @@
       <!-- Content -->
       <template v-else>
         <!-- Mobile Card View -->
-        <div class="block lg:hidden">
+        <div class="lg:hidden w-full flex flex-col gap-4">
           <div 
-            v-for="(review, index) in paginatedReviews" 
+            v-for="review in paginatedReviews" 
             :key="review.id"
-            class="p-4 border-b border-gray-200 hover:bg-gray-50 active:bg-gray-100 transition"
+            class="w-full rounded-xl border border-gray-200 p-4 bg-white shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.01] hover:bg-indigo-50"
           >
-            <div class="flex items-center justify-between mb-3">
-              <div class="flex items-center gap-3">
-                <span class="text-sm text-gray-500 font-medium">{{ getDisplayIndex(index) }}</span>
-                <div class="w-9 h-9 rounded-full bg-indigo-100 flex items-center justify-center font-bold text-indigo-700 text-xs">
+            <!-- Card header -->
+            <div class="flex justify-between items-start mb-3">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="w-9 h-9 rounded-full bg-indigo-100 flex items-center justify-center font-semibold text-indigo-700 text-xs flex-shrink-0">
                   {{ getInitials(review.reviewerName) }}
                 </div>
+                <div class="flex flex-col min-w-0">
+                  <h3 class="font-semibold text-gray-900 text-base truncate">{{ review.reviewerName }}</h3>
+                  <div class="flex items-center gap-1 mt-1">
+                    <RatingStars :value="Number(review.rating)" :size-class="'w-4 h-4'" />
+                    <span class="text-sm text-gray-600">{{ review.rating }}</span>
+                  </div>
+                </div>
               </div>
-              <div class="flex items-center gap-2">
-                <span 
-                  class="inline-flex items-center gap-1 px-2 py-1 rounded-md font-medium text-xs cursor-pointer touch-manipulation"
-                  :class="getStatusClass(review.status)"
-                  @click="changeStatus(review)"
-                >
-                  <span>{{ review.status || 'Pending' }}</span>
-                  <ChevronDownIcon class="w-3 h-3 flex-shrink-0" aria-hidden="true" />
+              <div class="flex items-center gap-2 shrink-0 ml-4">
+                <span class="text-xs font-medium px-2 py-1 rounded-full whitespace-nowrap" :class="getStatusClass(review.status, 'soft') + ' bg-opacity-10'" @click="changeStatus(review)">
+                  {{ review.status || 'Pending' }}
                 </span>
-                <EyeIcon 
-                  @click="openViewReview(review)"
-                  class="w-5 h-5 text-yellow-500 cursor-pointer hover:text-yellow-600 transition touch-manipulation" 
-                />
-              </div>
-            </div>
-            
-            <!-- Review Info -->
-            <div class="space-y-2">
-              <div class="flex items-center gap-2">
-                <span class="text-base font-semibold text-gray-900 truncate flex-1">{{ review.reviewerName }}</span>
-              </div>
-              
-              <div class="flex items-center gap-2 text-sm text-gray-700">
-                <RatingStars :value="Number(review.rating)" :size-class="'w-4 h-4'" />
-                <span class="text-gray-600">{{ review.rating }}</span>
-              </div>
-
-              <div class="text-sm text-gray-600 line-clamp-2">
-                "{{ review.content }}"
-              </div>
-              
-              <div class="flex items-center justify-between text-sm">
-                <span class="text-gray-500">{{ formatDate(review.date) }} • {{ review.time }}</span>
+                <MoreHorizontal class="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer" />
               </div>
             </div>
 
-            <!-- Action Buttons -->
-            <div class="flex items-center justify-end gap-2 mt-3">
-  <button 
-    @click="approveReview(review)"
-    class="px-3 py-1.5 text-green-600 bg-green-50 hover:bg-green-100 active:bg-green-200 rounded-lg text-xs font-medium touch-manipulation transition border-0"
-  >
-    Approve
-  </button>
+            <!-- Card body -->
+            <div class="mb-3">
+              <p class="text-sm text-gray-700 line-clamp-2">{{ review.content }}</p>
+            </div>
 
-  <button 
-    @click="deleteReview(review)"
-    class="px-3 py-1.5 text-red-600 bg-red-50 hover:bg-red-100 active:bg-red-200 rounded-lg text-xs font-medium touch-manipulation transition border-0"
-  >
-    Delete
-  </button>
-</div>
-
+            <div class="flex justify-between items-center text-xs text-gray-500">
+              <span>{{ formatDate(review.date) }} • {{ review.time }}</span>
+              <span @click="openViewReview(review)" class="text-amber-500 hover:text-amber-600 font-medium cursor-pointer">View Details</span>
+            </div>
           </div>
         </div>
 
@@ -491,7 +462,8 @@ import {
   XCircle as XCircleIcon,
   AlertCircle as AlertCircleIcon,
   UserX as UserXIcon,
-  Eye as EyeIcon
+  Eye as EyeIcon,
+  MoreHorizontal
 } from 'lucide-vue-next'
 import RatingStars from '~/components/common/RatingStars.vue'
 import { getStatusClass } from '~/composables/useStatusClass'
