@@ -1,13 +1,18 @@
 <template>
 <div class="w-full rounded-lg bg-blue-100 border border-gray-200 box-border flex flex-col items-start p-4 lg:p-6 gap-4 text-left text-lg text-gray-900 font-plus-jakarta-sans">
-  <h2 class="w-full relative leading-[130%] capitalize font-bold">Recent Activity</h2>
+  <div class="w-full flex items-center justify-between">
+    <h2 class="relative leading-[130%] capitalize font-bold text-lg">Recent Activity</h2>
+    <div class="relative text-sm leading-[130%] capitalize font-semibold text-amber-500 cursor-pointer hover:text-amber-600 transition-colors">
+      See All
+    </div>
+  </div>
       
       <div class="w-full flex flex-col items-start gap-3 text-sm">
         <!-- Activity Items -->
         <div 
           v-for="(activity, index) in activities" 
           :key="index"
-          class="w-full"
+          class="w-full rounded-xl border border-gray-200 p-3 bg-white shadow-sm hover:shadow-md transition-all duration-200 lg:border-0 lg:shadow-none"
         >
           <div class="w-full flex items-start gap-3">
             <component 
@@ -23,12 +28,6 @@
               </div>
             </div>
           </div>
-          
-          <div 
-            v-if="index < activities.length - 1" 
-            class="w-full relative border-t border-dashed border-gray-100 h-px mt-3" 
-          />
-
         </div>
       </div>
     </div>

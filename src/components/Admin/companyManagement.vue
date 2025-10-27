@@ -220,54 +220,43 @@
         <!-- Mobile Cards -->
         <div class="lg:hidden w-full flex flex-col gap-4">
           <div 
-            v-for="(company, index) in paginatedCompanies" 
+            v-for="company in paginatedCompanies" 
             :key="company.id"
-            class="w-full rounded-xl border border-gray-200 p-4 bg-white shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.01] cursor-pointer hover:bg-indigo-50"
+            class="w-full rounded-xl border border-gray-200 p-4 bg-white shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.01] hover:bg-indigo-50"
           >
-            <div class="flex items-center justify-between mb-3">
-              <div class="flex items-center gap-3">
-                <input 
-                  type="checkbox" 
-                  :checked="company.selected"
-                  @change="toggleSelection(company)"
-                  class="w-5 h-5 rounded border-gray-300 cursor-pointer touch-manipulation" 
-                />
-                <span class="text-sm text-gray-500 font-medium">{{ getDisplayIndex(index) }}</span>
-              </div>
-              <div class="flex items-center gap-2">
-                <div 
-                  class="inline-flex items-center gap-1 px-3 py-1.5 rounded-md font-medium text-xs cursor-pointer touch-manipulation"
-                  :class="getStatusClass(company.status, 'soft') + ' bg-opacity-10'"
-                  @click="changeStatus(company)"
-                >
-                  <span>{{ getStatusShort(company.status) }}</span>
-                  <ChevronDownIcon class="w-3 h-3 flex-shrink-0" aria-hidden="true" />
+            <!-- Card header -->
+            <div class="flex justify-between items-start mb-3">
+              <div class="flex flex-col min-w-0">
+                <div class="flex items-center gap-2 min-w-0">
+                  <h3 class="font-semibold text-gray-900 text-base truncate">{{ company.name }}</h3>
+                  <CheckCircleIcon v-if="company.verified" class="w-4 h-4 text-green-500 flex-shrink-0" title="Verified" />
                 </div>
-                <EyeIcon 
-                  @click="viewCompany(company)"
-                  class="w-5 h-5 text-yellow-500 cursor-pointer hover:text-yellow-600 transition touch-manipulation" 
-                />
+                <span class="text-sm text-gray-600 mt-1 truncate">{{ company.category }}</span>
+              </div>
+              <div class="flex items-center gap-2 shrink-0 ml-4">
+                <span class="text-xs font-medium px-2 py-1 rounded-full whitespace-nowrap" :class="getStatusClass(company.status, 'soft') + ' bg-opacity-10'">
+                  {{ company.status }}
+                </span>
+                <MoreHorizontal class="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer" />
               </div>
             </div>
-            
-            <div class="space-y-3">
-              <div class="flex items-center gap-2">
-                <span class="text-base font-semibold text-gray-900 truncate flex-1">{{ company.name }}</span>
-                <CheckCircleIcon v-if="company.verified" class="w-4 h-4 text-green-500 flex-shrink-0" title="Verified" />
-              </div>
-              
-              <div class="grid grid-cols-1 gap-2 text-sm text-gray-600">
-                <div class="flex items-center justify-between">
-                  <span class="bg-gray-100 px-3 py-1.5 rounded-md">{{ company.category }}</span>
-                  <span class="flex items-center gap-1">
-                    <PhoneIcon class="w-4 h-4" aria-hidden="true" />
-                    {{ company.mobile }}
-                  </span>
+
+            <!-- Card body -->
+            <div class="flex justify-between items-end">
+              <div class="flex flex-col gap-2 text-sm flex-1">
+                <div class="flex items-center gap-1 text-gray-700">
+                  <PhoneIcon class="w-4 h-4" aria-hidden="true" />
+                  <span class="whitespace-nowrap truncate">{{ company.mobile }}</span>
                 </div>
                 <a :href="'https://' + company.website" class="text-amber-500 hover:text-amber-600 truncate flex items-center gap-2" target="_blank" rel="noopener">
                   <GlobeIcon class="w-4 h-4" aria-hidden="true" />
                   {{ company.website }}
                 </a>
+              </div>
+              <div class="ml-4 flex-shrink-0">
+                <span @click="viewCompany(company)" class="text-amber-500 hover:text-amber-600 font-medium text-sm cursor-pointer whitespace-nowrap">
+                  View Details
+                </span>
               </div>
             </div>
           </div>
@@ -404,7 +393,7 @@
 
 <script setup>
 import { ref, computed, defineAsyncComponent, watchEffect } from 'vue';
-import { Search as SearchIcon, Eye as EyeIcon, CheckCircle as CheckCircleIcon, ChevronDown as ChevronDownIcon, ChevronLeft as ChevronLeftIcon, ChevronRight as ChevronRightIcon, Filter as FilterIcon, Phone as PhoneIcon, Globe as GlobeIcon } from "lucide-vue-next";
+import { Search as SearchIcon, Eye as EyeIcon, CheckCircle as CheckCircleIcon, ChevronDown as ChevronDownIcon, ChevronLeft as ChevronLeftIcon, ChevronRight as ChevronRightIcon, Filter as FilterIcon, Phone as PhoneIcon, Globe as GlobeIcon, MoreHorizontal } from "lucide-vue-next";
 import { getStatusClass, getStatusShort } from '~/composables/useStatusClass'
 import { useSelection } from '~/composables/useSelection'
 
