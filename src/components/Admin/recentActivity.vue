@@ -1,5 +1,5 @@
 <template>
-<div class="w-full rounded-lg bg-blue-100 border border-gray-200 box-border flex flex-col items-start p-4 lg:p-6 gap-4 text-left text-lg text-gray-900 font-plus-jakarta-sans">
+<div class="w-full rounded-lg bg-blue-100 border border-gray-200 box-border flex flex-col items-start p-3 sm:p-4 lg:p-6 gap-4 text-left text-lg text-gray-900 font-plus-jakarta-sans">
   <div class="w-full flex items-center justify-between">
     <h2 class="relative leading-[130%] capitalize font-bold text-lg">Recent Activity</h2>
     <div class="relative text-sm leading-[130%] capitalize font-semibold text-amber-500 cursor-pointer hover:text-amber-600 transition-colors">

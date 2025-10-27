@@ -1,5 +1,5 @@
 <template>
-   <div class="w-full rounded-lg bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 p-4 sm:p-6 mb-4">
+   <div class="w-full rounded-lg bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 p-3 sm:p-6 mb-4">
       <h2 class="text-3xl font-bold text-black">Welcome back, {{ adminStats?.welcomeName || 'User' }}</h2>
 
     <div class="w-full relative rounded-lg bg-white/80 backdrop-blur-sm flex items-center px-4 py-3 gap-3 mb-4">

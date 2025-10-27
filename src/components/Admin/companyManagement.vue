@@ -1,7 +1,7 @@
 <template>
   <div class="w-full font-plus-jakarta-sans max-w-full overflow-hidden">
     <!-- Header Section -->
-    <div class="w-full rounded-lg bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 p-3 sm:p-4 md:p-6 mb-4">
+    <div class="w-full rounded-lg bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 p-2 sm:p-4 md:p-6 mb-4">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
         <h1 class="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">Company Management</h1>
         <button 
@@ -13,7 +13,7 @@
       </div>
 
       <!-- Search Bar -->
-      <div class="w-full relative rounded-lg bg-white/80 backdrop-blur-sm flex items-center px-4 py-3 gap-3">
+      <div class="w-full relative rounded-lg bg-white/80 backdrop-blur-sm flex items-center px-3 py-2 sm:px-4 sm:py-3 gap-3">
         <SearchIcon class="w-5 h-5 text-gray-400 flex-shrink-0" aria-hidden="true" />
         <input
           type="text"
@@ -27,7 +27,7 @@
     </div>
 
     <!-- Mobile Filters Toggle -->
-    <div class="mb-4 flex lg:hidden items-center justify-between">
+    <div class="mb-4 flex lg:hidden items-center justify-between px-3 lg:px-0 relative z-50">
       <h2 class="text-base font-bold text-gray-900">All Company List</h2>
       <button 
         @click="showMobileFilters = !showMobileFilters"
@@ -41,9 +41,9 @@
     </div>
 
     <!-- Filters Section -->
-    <div class="mb-6">
+    <div class="mb-6 px-3 lg:px-0">
       <!-- Desktop Filters -->
-      <div class="hidden lg:flex items-center flex-wrap gap-3 min-w-full">
+      <div class="hidden lg:flex items-center flex-wrap gap-3 w-full overflow-x-auto scrollbar-thin">
         <h2 class="text-lg font-bold text-gray-900 whitespace-nowrap">
           All Company List
         </h2>
@@ -115,7 +115,7 @@
       </div>
 
       <!-- Mobile Filters - Same design as desktop -->
-      <div v-if="showMobileFilters" id="mobile-filters" class="mt-3 p-4 bg-white rounded-lg shadow-sm border border-gray-200 lg:hidden">
+      <div v-if="showMobileFilters" id="mobile-filters" class="mt-3 p-3 sm:p-4 bg-white rounded-lg shadow-sm border border-gray-200 lg:hidden">
         <div class="space-y-4">
           <!-- Date Range - Same as desktop -->
           <div class="grid grid-cols-2 gap-3">
@@ -222,7 +222,7 @@
           <div 
             v-for="company in paginatedCompanies" 
             :key="company.id"
-            class="w-full rounded-xl border border-gray-200 p-4 bg-white shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.01] hover:bg-indigo-50"
+            class="w-full rounded-xl border border-gray-200 p-3 sm:p-4 bg-white shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.01] hover:bg-indigo-50"
           >
             <!-- Card header -->
             <div class="flex justify-between items-start mb-3">
@@ -345,7 +345,7 @@
     </div>
 
     <!-- Pagination -->
-    <div class="flex flex-col sm:flex-row justify-between items-center mt-6 gap-4">
+    <div class="flex flex-col sm:flex-row justify-between items-center mt-6 gap-4 px-3 lg:px-0">
       <p class="text-sm text-gray-600 text-center sm:text-left">
         Showing <span class="font-semibold">{{ paginatedCompanies.length }}</span> of 
         <span class="font-semibold">{{ filteredCompanies.length }}</span> companies (Page {{ currentPage }} of {{ totalPages }})
