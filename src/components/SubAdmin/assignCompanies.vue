@@ -21,14 +21,20 @@
     <div class="mb-4 flex sm:hidden items-center justify-between px-1">
       <h2 class="text-base font-bold text-gray-900">All Company List</h2>
       <button 
-        @click="showMobileFilters = !showMobileFilters"
-        class="h-10 bg-white rounded-xl px-4 py-2 border border-gray-200 text-gray-700 text-sm outline-none cursor-pointer whitespace-nowrap touch-manipulation flex items-center gap-2 hover:bg-gray-50 active:bg-gray-100 transition"
-        aria-controls="mobile-filters"
-        :aria-expanded="showMobileFilters ? 'true' : 'false'"
-      >
-        <FilterIcon class="w-4 h-4" aria-hidden="true" />
-        <span>Filters</span>
-      </button>
+  @click="showMobileFilters = !showMobileFilters"
+  class="h-12 
+         bg-gray-100 rounded-xl px-4 py-2 border-0
+         text-gray-700 text-sm outline-none cursor-pointer whitespace-nowrap 
+         touch-manipulation flex items-center gap-2 
+         hover:bg-gray-50 active:bg-gray-100 transition
+         shadow-none hover:shadow-none active:shadow-none     
+         "
+  aria-controls="mobile-filters"
+  :aria-expanded="showMobileFilters ? 'true' : 'false'"
+>
+  <FilterIcon class="w-4 h-4" aria-hidden="true" />
+  <span>Filters</span>
+</button>
     </div>
 
     <!-- Desktop inline filters (unchanged, hidden on mobile) -->
@@ -52,16 +58,20 @@
     </div>
 
     <!-- Mobile Filters Panel -->
-    <div v-if="showMobileFilters" id="mobile-filters" class="mt-3 p-3 sm:p-4 bg-white rounded-lg shadow-sm border border-gray-200 sm:hidden">
+    <div 
+    v-if="showMobileFilters" 
+    id="mobile-filters" 
+    class="mt-3 p-3 sm:p-4 bg-white rounded-lg shadow-sm border border-gray-200 sm:hidden 
+           relative z-50 max-h-[80vh] overflow-y-auto" 
+  >
       <div class="space-y-4">
-        <!-- Status Filter -->
         <div class="flex flex-col gap-2">
           <label class="text-sm text-gray-700 font-medium">Status</label>
           <div class="relative">
             <select
               v-model="filters.status"
               @change="handleFilterChange"
-              class="h-12 w-full rounded-xl bg-gray-100 border border-gray-200 appearance-none py-0 pl-4 pr-10 text-left text-sm text-gray-600 cursor-pointer focus:outline-none focus:ring-0"
+              class="h-12 w-full rounded-xl bg-gray-100 border border-gray-300 appearance-none py-0 pl-4 pr-10 text-left text-sm text-gray-600 cursor-pointer focus:outline-none focus:ring-0"
             >
               <option value="">All Statuses</option>
               <option value="pending">Pending</option>
@@ -72,14 +82,13 @@
           </div>
         </div>
 
-        <!-- Category Filter -->
         <div class="flex flex-col gap-2">
           <label class="text-sm text-gray-700 font-medium">Category</label>
           <div class="relative">
             <select 
               v-model="filters.category"
               @change="handleFilterChange"
-              class="h-12 w-full rounded-xl bg-gray-100 border border-gray-200 appearance-none py-0 pl-4 pr-10 text-left text-sm text-gray-600 cursor-pointer focus:outline-none focus:ring-0"
+              class="h-12 w-full rounded-xl bg-gray-100 border border-gray-300 appearance-none py-0 pl-4 pr-10 text-left text-sm text-gray-600 cursor-pointer focus:outline-none focus:ring-0"
             >
               <option value="">All Categories</option>
               <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
@@ -88,10 +97,22 @@
           </div>
         </div>
       </div>
-
       <div class="mt-6 flex items-center justify-end gap-3">
-        <button @click="resetFilters" class="px-4 py-3 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 active:bg-gray-100 touch-manipulation transition">Reset</button>
-        <button @click="applyMobileFilters" class="px-4 py-3 text-sm text-gray-900 bg-yellow-400 hover:bg-yellow-500 active:bg-yellow-600 rounded-lg touch-manipulation transition">Apply</button>
+        <button 
+          @click="resetFilters" 
+          class="px-4 py-3 text-sm text-gray-600 bg-gray-100 rounded-lg border-0 
+                 hover:bg-gray-50 active:bg-gray-100 touch-manipulation transition"
+        >
+          Reset
+        </button>
+
+        <button 
+          @click="applyMobileFilters" 
+          class="px-4 py-3 text-sm text-gray-900 bg-yellow-400 rounded-lg border-0 
+                 hover:bg-yellow-500 active:bg-yellow-600 touch-manipulation transition"
+        >
+          Apply
+        </button>
       </div>
     </div>
 
