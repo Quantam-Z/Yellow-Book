@@ -2,7 +2,7 @@
   <!-- Modal Background -->
   <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[100] p-4" @click.self="$emit('close')">
     <!-- Modal Container -->
-    <div class="w-[577px] h-[408px] relative bg-white rounded-2xl flex flex-col items-center p-6 box-border gap-6 text-center text-[16px] text-black font-plus-jakarta-sans">
+    <div class="w-full max-w-xl relative bg-white rounded-2xl flex flex-col items-center p-6 box-border gap-6 text-center text-[16px] text-black font-plus-jakarta-sans max-h-[85vh] overflow-y-auto">
       
       <!-- Close Button -->
       <button 
@@ -82,7 +82,7 @@
       </div>
       
       <!-- Action Buttons -->
-      <div class="self-stretch grid grid-cols-2 gap-4 text-white">
+      <div class="self-stretch grid grid-cols-1 sm:grid-cols-2 gap-4 text-white">
         <button 
           @click="approveReview"
           class="rounded bg-forestgreen hover:bg-green-700 flex items-center justify-center py-3 px-4 transition-colors font-semibold text-sm min-h-[44px]"
