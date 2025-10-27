@@ -11,7 +11,7 @@
     <!-- Desktop Table -->
     <div class="hidden lg:block w-full overflow-x-auto">
       <table class="w-full table-auto min-w-[800px]">
-        <thead class="bg-gray-50 border-b border-gray-200">
+        <thead class="bg-gray-50 border-y border-gray-200">
           <tr>
             <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 whitespace-nowrap min-w-[160px]">Company Name</th>
             <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 whitespace-nowrap min-w-[120px]">Date</th>

@@ -22,7 +22,7 @@
     </div>
 
     <!-- Stats Cards - Responsive Grid - SECOND ROW -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 sm:gap-4 mb-6">
+    <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-6 gap-3 sm:gap-4 mb-6">
       <div class="rounded-lg bg-white border-whitesmoke border-solid border-[1px] flex items-center p-3 sm:p-4 gap-3">
         <div class="h-8 w-8 sm:h-10 sm:w-10 md:h-11 md:w-11 rounded bg-blue-100 flex items-center justify-center flex-shrink-0">
           <UsersIcon class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-blue-600" />
@@ -84,7 +84,7 @@
       <h2 class="text-base font-bold text-gray-900">All Review List</h2>
       <button 
         @click="showMobileFilters = !showMobileFilters"
-        class="h-12 bg-white rounded-xl px-4 py-2 border border-transparent sm:border-gray-300 text-gray-700 text-sm outline-none cursor-pointer whitespace-nowrap touch-manipulation flex items-center gap-2 hover:bg-gray-50 active:bg-gray-100 transition"
+        class="h-10 bg-white rounded-lg px-3 py-2 border-none shadow-none text-gray-700 text-sm outline-none cursor-pointer whitespace-nowrap touch-manipulation flex items-center gap-2 hover:bg-gray-50 active:bg-gray-100 transition"
         aria-controls="mobile-filters"
         :aria-expanded="showMobileFilters ? 'true' : 'false'"
       >
@@ -168,93 +168,103 @@
         </div>
       </div>
 
-      <!-- Mobile Filters -->
-      <div v-if="showMobileFilters" id="mobile-filters" class="mt-3 p-4 bg-white rounded-lg shadow-sm border border-gray-200 lg:hidden">
-        <div class="space-y-4">
-          <!-- Date Range -->
-          <div class="grid grid-cols-2 gap-3">
-            <div class="flex flex-col gap-2">
-              <label class="text-sm text-gray-700 font-medium">From</label>
-              <div class="h-12 relative rounded-xl bg-gray-100 border border-gray-200 flex items-center px-4 gap-2">
-                <input
-                  type="date"
-                  v-model="filters.dateFrom"
-                  @change="handleFilterChange"
-                  class="text-gray-600 text-sm outline-none bg-transparent cursor-pointer border-none touch-manipulation ring-0 focus:ring-0 w-full"
-                />
+      <!-- Mobile Filters Drawer -->
+      <div v-if="showMobileFilters" class="fixed inset-0 z-[60] lg:hidden" aria-modal="true" role="dialog">
+        <div class="absolute inset-0 bg-black/30" @click="showMobileFilters = false"></div>
+        <aside class="absolute left-0 top-0 h-full w-[88%] max-w-[20rem] bg-white shadow-xl border-r border-gray-200 transform transition-transform duration-300 ease-in-out translate-x-0" id="mobile-filters">
+          <div class="flex items-center justify-between p-4 border-b border-gray-200">
+            <h3 class="text-base font-semibold text-gray-900">Filters</h3>
+            <button @click="showMobileFilters = false" class="p-2 rounded-md text-gray-500 hover:text-gray-700 focus:outline-none">
+              <XIcon class="w-5 h-5" aria-hidden="true" />
+              <span class="sr-only">Close</span>
+            </button>
+          </div>
+          <div class="p-4 overflow-y-auto h-[calc(100%-64px-64px)] space-y-4">
+            <!-- Date Range -->
+            <div class="grid grid-cols-2 gap-3">
+              <div class="flex flex-col gap-2">
+                <label class="text-sm text-gray-700 font-medium">From</label>
+                <div class="h-12 relative rounded-xl bg-gray-100 border border-gray-200 flex items-center px-4 gap-2">
+                  <input
+                    type="date"
+                    v-model="filters.dateFrom"
+                    @change="handleFilterChange"
+                    class="text-gray-600 text-sm outline-none bg-transparent cursor-pointer border-none touch-manipulation ring-0 focus:ring-0 w-full"
+                  />
+                </div>
+              </div>
+              <div class="flex flex-col gap-2">
+                <label class="text-sm text-gray-700 font-medium">To</label>
+                <div class="h-12 relative rounded-xl bg-gray-100 border border-gray-200 flex items-center px-4 gap-2">
+                  <input
+                    type="date"
+                    v-model="filters.dateTo"
+                    @change="handleFilterChange"
+                    class="text-gray-600 text-sm outline-none bg-transparent cursor-pointer border-none touch-manipulation ring-0 focus:ring-0 w-full"
+                  />
+                </div>
               </div>
             </div>
+
+            <!-- Time Range -->
             <div class="flex flex-col gap-2">
-              <label class="text-sm text-gray-700 font-medium">To</label>
-              <div class="h-12 relative rounded-xl bg-gray-100 border border-gray-200 flex items-center px-4 gap-2">
-                <input
-                  type="date"
-                  v-model="filters.dateTo"
+              <label class="text-sm text-gray-700 font-medium">Time Range</label>
+              <div class="relative">
+                <select 
+                  v-model="filters.timeRange"
                   @change="handleFilterChange"
-                  class="text-gray-600 text-sm outline-none bg-transparent cursor-pointer border-none touch-manipulation ring-0 focus:ring-0 w-full"
-                />
+                  class="h-12 w-full rounded-xl bg-gray-100 border border-gray-200 appearance-none py-0 pl-4 pr-10 text-left text-sm text-gray-600 cursor-pointer focus:outline-none focus:ring-0" 
+                >
+                  <option value="">Today</option>
+                  <option value="yesterday">Yesterday</option>
+                  <option value="last7days">Last 7 Days</option>
+                  <option value="last30days">Last 30 Days</option>
+                </select>
+                <ChevronDownIcon class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" aria-hidden="true" />
+              </div>
+            </div>
+
+            <!-- Rating Filter -->
+            <div class="flex flex-col gap-2">
+              <label class="text-sm text-gray-700 font-medium">Rating</label>
+              <div class="relative">
+                <select 
+                  v-model="filters.rating"
+                  @change="handleFilterChange"
+                  class="h-12 w-full rounded-xl bg-gray-100 border border-gray-200 appearance-none py-0 pl-4 pr-10 text-left text-sm text-gray-600 cursor-pointer focus:outline-none focus:ring-0"
+                >
+                  <option value="">Select Rating</option>
+                  <option v-for="opt in [5,4,3,2,1]" :key="opt" :value="opt">{{ opt }} Star</option>
+                </select>
+                <ChevronDownIcon class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" aria-hidden="true" />
+              </div>
+            </div>
+
+            <!-- Status Filter -->
+            <div class="flex flex-col gap-2">
+              <label class="text-sm text-gray-700 font-medium">Status</label>
+              <div class="relative">
+                <select
+                  v-model="filters.status"
+                  @change="handleFilterChange"
+                  class="h-12 w-full rounded-xl bg-gray-100 border border-gray-200 appearance-none py-0 pl-4 pr-10 text-left text-sm text-gray-600 cursor-pointer focus:outline-none focus:ring-0"
+                >
+                  <option value="">Select Status</option>
+                  <option value="Approved">Approved</option>
+                  <option value="Pending">Pending</option>
+                  <option value="Rejected">Rejected</option>
+                  <option value="On Hold">On Hold</option>
+                </select>
+                <ChevronDownIcon class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" aria-hidden="true" />
               </div>
             </div>
           </div>
 
-          <!-- Time Range -->
-          <div class="flex flex-col gap-2">
-            <label class="text-sm text-gray-700 font-medium">Time Range</label>
-            <div class="relative">
-              <select 
-                v-model="filters.timeRange"
-                @change="handleFilterChange"
-                class="h-12 w-full rounded-xl bg-gray-100 border border-gray-200 appearance-none py-0 pl-4 pr-10 text-left text-sm text-gray-600 cursor-pointer focus:outline-none focus:ring-0" 
-              >
-                <option value="">Today</option>
-                <option value="yesterday">Yesterday</option>
-                <option value="last7days">Last 7 Days</option>
-                <option value="last30days">Last 30 Days</option>
-              </select>
-              <ChevronDownIcon class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" aria-hidden="true" />
-            </div>
+          <div class="p-4 border-t border-gray-200 flex items-center justify-end gap-3">
+            <button @click="resetFilters" class="px-4 py-3 text-sm text-gray-700 bg-white rounded-lg hover:bg-gray-50 active:bg-gray-100 touch-manipulation transition border-none shadow-none">Reset</button>
+            <button @click="applyMobileFilters" class="px-4 py-3 text-sm text-gray-900 bg-yellow-400 hover:bg-yellow-500 active:bg-yellow-600 rounded-lg touch-manipulation transition border-none shadow-none">Apply</button>
           </div>
-
-          <!-- Rating Filter -->
-          <div class="flex flex-col gap-2">
-            <label class="text-sm text-gray-700 font-medium">Rating</label>
-            <div class="relative">
-              <select 
-                v-model="filters.rating"
-                @change="handleFilterChange"
-                class="h-12 w-full rounded-xl bg-gray-100 border border-gray-200 appearance-none py-0 pl-4 pr-10 text-left text-sm text-gray-600 cursor-pointer focus:outline-none focus:ring-0"
-              >
-                <option value="">Select Rating</option>
-                <option v-for="opt in [5,4,3,2,1]" :key="opt" :value="opt">{{ opt }} Star</option>
-              </select>
-              <ChevronDownIcon class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" aria-hidden="true" />
-            </div>
-          </div>
-
-          <!-- Status Filter -->
-          <div class="flex flex-col gap-2">
-            <label class="text-sm text-gray-700 font-medium">Status</label>
-            <div class="relative">
-              <select
-                v-model="filters.status"
-                @change="handleFilterChange"
-                class="h-12 w-full rounded-xl bg-gray-100 border border-gray-200 appearance-none py-0 pl-4 pr-10 text-left text-sm text-gray-600 cursor-pointer focus:outline-none focus:ring-0"
-              >
-                <option value="">Select Status</option>
-                <option value="Approved">Approved</option>
-                <option value="Pending">Pending</option>
-                <option value="Rejected">Rejected</option>
-                <option value="On Hold">On Hold</option>
-              </select>
-              <ChevronDownIcon class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" aria-hidden="true" />
-            </div>
-          </div>
-        </div>
-
-        <div class="mt-6 flex items-center justify-end gap-3">
-          <button @click="resetFilters" class="px-4 py-3 text-sm text-gray-600 bg-white border border-transparent sm:border-gray-200 rounded-lg hover:bg-gray-50 active:bg-gray-100 touch-manipulation transition">Reset</button>
-          <button @click="applyMobileFilters" class="px-4 py-3 text-sm text-gray-900 bg-yellow-400 hover:bg-yellow-500 active:bg-yellow-600 rounded-lg touch-manipulation transition">Apply</button>
-        </div>
+        </aside>
       </div>
     </div>
 
@@ -276,7 +286,7 @@
           <div 
             v-for="review in paginatedReviews" 
             :key="review.id"
-            class="w-full rounded-xl border border-gray-200 p-4 bg-white shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.01] hover:bg-indigo-50"
+            class="w-full rounded-xl border border-gray-200 p-4 bg-white shadow-sm transition-all duration-300"
           >
             <!-- Card header -->
             <div class="flex justify-between items-start mb-3">
@@ -315,7 +325,7 @@
         <!-- Desktop Table View -->
         <div class="hidden lg:block overflow-x-auto scrollbar-thin">
           <table class="w-full table-auto min-w-[800px]">
-            <thead class="bg-gray-50 border-b border-gray-200">
+            <thead class="bg-gray-50 border-y border-gray-200">
               <tr>
                 <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 whitespace-nowrap" style="width: 60px;">No</th>
                 <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 whitespace-nowrap min-w-[160px]">Reviewer</th>
@@ -409,7 +419,7 @@
         <button 
           @click="prevPage"
           :disabled="currentPage === 1"
-          class="px-4 py-2.5 bg-white border border-transparent sm:border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 active:bg-gray-100 transition touch-manipulation flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          class="px-4 py-2.5 bg-white border-none sm:border sm:border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 active:bg-gray-100 transition touch-manipulation flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <ChevronLeftIcon class="w-4 h-4" aria-hidden="true" />
           <span>Previous</span>
@@ -423,7 +433,7 @@
               'px-4 py-2.5 rounded-lg text-sm font-medium transition touch-manipulation min-w-[44px]',
               page === currentPage 
                 ? 'bg-yellow-400 text-gray-900 hover:bg-yellow-500 active:bg-yellow-600' 
-                : 'bg-white border border-transparent sm:border-gray-200 text-gray-600 hover:bg-gray-50 active:bg-gray-100'
+                : 'bg-white border-none sm:border sm:border-gray-200 text-gray-600 hover:bg-gray-50 active:bg-gray-100'
             ]"
           >
             {{ page }}
@@ -433,7 +443,7 @@
         <button 
           @click="nextPage"
           :disabled="currentPage === totalPages"
-          class="px-4 py-2.5 bg-white border border-transparent sm:border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 active:bg-gray-100 transition touch-manipulation flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          class="px-4 py-2.5 bg-white border-none sm:border sm:border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 active:bg-gray-100 transition touch-manipulation flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <span>Next</span>
           <ChevronRightIcon class="w-4 h-4" aria-hidden="true" />
@@ -463,7 +473,8 @@ import {
   AlertCircle as AlertCircleIcon,
   UserX as UserXIcon,
   Eye as EyeIcon,
-  MoreHorizontal
+  MoreHorizontal,
+  X as XIcon
 } from 'lucide-vue-next'
 import RatingStars from '~/components/common/RatingStars.vue'
 import { getStatusClass } from '~/composables/useStatusClass'

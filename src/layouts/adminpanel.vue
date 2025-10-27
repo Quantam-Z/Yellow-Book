@@ -3,7 +3,7 @@
       <Header />
         <div class="flex flex-1">
         <Sidebar />
-        <main class="flex-1 p-8">
+        <main class="flex-1 p-3 sm:p-6 lg:p-8">
           <slot />
         </main>
       </div>
