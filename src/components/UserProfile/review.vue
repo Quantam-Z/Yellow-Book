@@ -53,39 +53,20 @@
 
 <script setup lang="ts">
 import { Star, Edit3, Trash2 } from 'lucide-vue-next'
+import { computed } from 'vue'
 
-const reviews = [
-  {
-    company: 'Innovate Solutions',
-    date: 'October 15, 2023',
-    rating: 5,
-    comment: 'Absolutely fantastic service from start to finish. Highly recommend!',
-  },
-  {
-    company: 'Digital Dynamics Ltd.',
-    date: 'September 8, 2023',
-    rating: 4,
-    comment: 'Good communication and timely delivery.',
-  },
-  {
-    company: 'TechHive Bangladesh',
-    date: 'August 22, 2023',
-    rating: 5,
-    comment: 'Excellent quality and quick response from support team!',
-  },
-  {
-    company: 'BizNest IT Solutions',
-    date: 'July 19, 2023',
-    rating: 3,
-    comment: 'Decent service, but delivery could have been faster.',
-  },
-  {
-    company: 'NextGen Software House',
-    date: 'June 12, 2023',
-    rating: 5,
-    comment: 'Super smooth experience, on-time delivery, great communication.',
-  },
-]
+// Load reviews from public stubs and map to UI shape
+const { data: reviewsData } = await useFetch('/stubs/recentReviews.json')
+
+const reviews = computed(() => {
+  const raw = (reviewsData.value || []) as Array<any>
+  return raw.slice(0, 10).map((r) => ({
+    company: r.company || r.reviewer || 'Company',
+    date: r.date,
+    rating: Number(r.rating) || r.rating || 0,
+    comment: r.review || r.content || r.text || '',
+  }))
+})
 </script>
 
 <style scoped></style>

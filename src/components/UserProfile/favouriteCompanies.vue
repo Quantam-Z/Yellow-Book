@@ -65,33 +65,21 @@
 
 <script setup lang="ts">
 import { Building2, Star, Heart } from 'lucide-vue-next'
+import { computed } from 'vue'
 
-const items = [
-  {
-    name: 'Innovate Solutions',
-    category: 'Tech',
+// Load favourite companies from public stubs
+const { data: companiesData } = await useFetch('/stubs/companies.json')
+
+// Map to the view model used by the design
+const items = computed(() => {
+  const raw = (companiesData.value || []) as Array<any>
+  return raw.slice(0, 8).map((c) => ({
+    name: c.name,
+    category: c.category || 'Technology',
     assigned: '2024-10-22',
-    rating: 5,
-  },
-  {
-    name: 'Digital Dynamics Ltd.',
-    category: 'Software',
-    assigned: '2024-09-15',
-    rating: 4,
-  },
-  {
-    name: 'NextGen IT Solutions',
-    category: 'Web Development',
-    assigned: '2024-08-03',
-    rating: 5,
-  },
-  {
-    name: 'TechHive Bangladesh',
-    category: 'Technology',
-    assigned: '2024-07-11',
-    rating: 5,
-  },
-]
+    rating: 4 + ((c.id || 1) % 2),
+  }))
+})
 </script>
 
 <style scoped></style>
