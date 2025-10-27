@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full font-plus-jakarta-sans min-h-screen bg-white p-3 sm:p-4 md:p-6">
+  <div class="w-full font-plus-jakarta-sans min-h-screen bg-white p-3 sm:p-4 md:p-6 overflow-x-hidden">
     <div class="w-full rounded-lg bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 p-3 sm:p-4 md:p-6 mb-4">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
         <h1 class="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">My Assign Companies</h1>
@@ -18,7 +18,7 @@
     </div>
 
     <!-- Mobile Filters Toggle -->
-    <div class="mb-4 flex sm:hidden items-center justify-between px-1">
+    <div class="mb-4 flex lg:hidden items-center justify-between px-1">
       <h2 class="text-base font-bold text-gray-900">All Company List</h2>
       <button 
   @click="showMobileFilters = !showMobileFilters"
@@ -38,7 +38,7 @@
     </div>
 
     <!-- Desktop inline filters (unchanged, hidden on mobile) -->
-    <div class="hidden sm:flex items-center justify-between gap-3 sm:gap-4 mb-4">
+    <div class="hidden lg:flex items-center justify-between gap-3 sm:gap-4 mb-4">
       <h2 class="text-base sm:text-lg font-semibold text-gray-900 whitespace-nowrap flex-shrink-0">All List</h2>
       <div class="flex flex-wrap gap-2 sm:gap-3 items-center justify-end w-full sm:w-auto">
         <div class="relative w-full xs:w-auto min-w-[120px] sm:min-w-[140px]">
@@ -61,8 +61,8 @@
     <div 
     v-if="showMobileFilters" 
     id="mobile-filters" 
-    class="mt-3 p-3 sm:p-4 bg-white rounded-lg shadow-sm border border-gray-200 sm:hidden 
-           relative z-50 max-h-[80vh] overflow-y-auto" 
+    class="mt-3 p-3 sm:p-4 bg-white rounded-lg shadow-sm border border-gray-200 lg:hidden 
+           relative z-10 max-h-[80vh] overflow-y-auto overscroll-contain" 
   >
       <div class="space-y-4">
         <div class="flex flex-col gap-2">
@@ -118,7 +118,7 @@
 
     <div class="w-full bg-white rounded-xl shadow-md overflow-hidden">
       <!-- Mobile Cards (match admin spacing and padding) -->
-      <div class="sm:hidden w-full flex flex-col gap-4">
+      <div class="lg:hidden w-full flex flex-col gap-4">
         <div
           v-for="(company, index) in paginatedCompanies"
           :key="company.id"
@@ -171,7 +171,7 @@
         </div>
       </div>
 
-      <div class="hidden sm:block overflow-x-auto scrollbar-thin">
+      <div class="hidden lg:block overflow-x-auto scrollbar-thin">
         <table class="w-full table-auto" style="min-width: 700px;">
           <thead class="bg-gray-50 border-b border-gray-200">
             <tr>
@@ -302,7 +302,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted, onUnmounted, watchEffect } from 'vue';
 import { Search, CheckCircle, ChevronDown, ChevronLeft, ChevronRight, Filter as FilterIcon } from "lucide-vue-next";
 
 // --- UTILITIES ---
@@ -456,6 +456,20 @@ const resetFilters = () => {
   filters.value = { status: '', category: '' };
   handleFilterChange();
 };
+
+// Prevent body scroll when mobile filters are open
+onMounted(() => {
+  watchEffect(() => {
+    if (typeof window === 'undefined') return;
+    document.body.style.overflow = showMobileFilters.value ? 'hidden' : '';
+  });
+});
+
+onUnmounted(() => {
+  if (typeof window !== 'undefined') {
+    document.body.style.overflow = '';
+  }
+});
 </script>
 
 <style scoped>

@@ -2,7 +2,7 @@
   <!-- Modal Background -->
   <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[100] p-4" @click.self="$emit('close')">
       <!-- Modal Container -->
-      <div class="w-full max-w-2xl relative bg-white rounded-2xl flex flex-col items-center p-6 box-border gap-6 text-center text-[16px] text-black font-plus-jakarta-sans">
+      <div class="w-full max-w-2xl relative bg-white rounded-2xl flex flex-col items-center p-6 box-border gap-6 text-center text-[16px] text-black font-plus-jakarta-sans max-h-[85vh] overflow-y-auto">
           
           <!-- Close Button -->
           <button 
@@ -23,58 +23,58 @@
               <div class="self-stretch rounded-lg border-whitesmoke border-solid border-[1px] flex flex-col items-start justify-center p-4 gap-4">
                   
                   <!-- Company Name -->
-                  <div class="self-stretch flex items-start gap-4">
-                      <div class="w-[212px] flex items-center gap-4">
-                          <div class="flex-1 relative leading-[130%] capitalize font-semibold text-xs">Company Name</div>
-                          <b class="relative text-[18px] leading-[160%] capitalize text-center">:</b>
+                  <div class="self-stretch grid grid-cols-1 sm:grid-cols-[212px_1fr] items-start gap-2 sm:gap-4">
+                      <div class="flex items-center gap-4">
+                          <div class="relative leading-[130%] capitalize font-semibold text-xs sm:flex-1">Company Name</div>
+                          <b class="hidden sm:block relative text-[18px] leading-[160%] capitalize text-center">:</b>
                       </div>
-                      <div class="flex-1 relative leading-[160%] capitalize text-darkslategray text-sm">{{ company.name }}</div>
+                      <div class="relative leading-[160%] capitalize text-darkslategray text-sm">{{ company.name }}</div>
                   </div>
                   
                   <!-- Category -->
-                  <div class="self-stretch flex items-start gap-4">
-                      <div class="w-[211px] flex items-center gap-4">
-                          <div class="flex-1 relative leading-[130%] capitalize font-semibold text-xs">Category</div>
-                          <b class="relative text-[18px] leading-[160%] capitalize text-center">:</b>
+                  <div class="self-stretch grid grid-cols-1 sm:grid-cols-[212px_1fr] items-start gap-2 sm:gap-4">
+                      <div class="flex items-center gap-4">
+                          <div class="relative leading-[130%] capitalize font-semibold text-xs sm:flex-1">Category</div>
+                          <b class="hidden sm:block relative text-[18px] leading-[160%] capitalize text-center">:</b>
                       </div>
-                      <div class="flex-1 relative leading-[160%] text-darkslategray text-sm">{{ company.category }}</div>
+                      <div class="relative leading-[160%] text-darkslategray text-sm">{{ company.category }}</div>
                   </div>
                   
                   <!-- Industry -->
-                  <div class="self-stretch flex items-start gap-4">
-                      <div class="w-[211px] flex items-center gap-4">
-                          <div class="flex-1 relative leading-[130%] capitalize font-semibold text-xs">Industry</div>
-                          <b class="relative text-[18px] leading-[160%] capitalize text-center">:</b>
+                  <div class="self-stretch grid grid-cols-1 sm:grid-cols-[212px_1fr] items-start gap-2 sm:gap-4">
+                      <div class="flex items-center gap-4">
+                          <div class="relative leading-[130%] capitalize font-semibold text-xs sm:flex-1">Industry</div>
+                          <b class="hidden sm:block relative text-[18px] leading-[160%] capitalize text-center">:</b>
                       </div>
-                      <div class="flex-1 relative leading-[160%] capitalize text-darkslategray text-sm">{{ company.industry }}</div>
+                      <div class="relative leading-[160%] capitalize text-darkslategray text-sm">{{ company.industry }}</div>
                   </div>
                   
                   <!-- Contact Email -->
-                  <div class="self-stretch flex items-start gap-4">
-                      <div class="w-[211px] flex items-center gap-4">
-                          <div class="flex-1 relative leading-[130%] capitalize font-semibold text-xs">Contact Email</div>
-                          <b class="relative text-[18px] leading-[160%] capitalize text-center">:</b>
+                  <div class="self-stretch grid grid-cols-1 sm:grid-cols-[212px_1fr] items-start gap-2 sm:gap-4">
+                      <div class="flex items-center gap-4">
+                          <div class="relative leading-[130%] capitalize font-semibold text-xs sm:flex-1">Contact Email</div>
+                          <b class="hidden sm:block relative text-[18px] leading-[160%] capitalize text-center">:</b>
                       </div>
-                      <div class="flex-1 relative leading-[160%] text-darkslategray text-sm">{{ company.email }}</div>
+                      <div class="relative leading-[160%] text-darkslategray text-sm break-all">{{ company.email }}</div>
                   </div>
                   
                   <!-- Phone Number -->
-                  <div class="self-stretch flex items-start gap-4">
-                      <div class="w-[211px] flex items-center gap-4">
-                          <div class="flex-1 relative leading-[130%] capitalize font-semibold text-xs">Phone Number</div>
-                          <b class="relative text-[18px] leading-[160%] capitalize text-center">:</b>
+                  <div class="self-stretch grid grid-cols-1 sm:grid-cols-[212px_1fr] items-start gap-2 sm:gap-4">
+                      <div class="flex items-center gap-4">
+                          <div class="relative leading-[130%] capitalize font-semibold text-xs sm:flex-1">Phone Number</div>
+                          <b class="hidden sm:block relative text-[18px] leading-[160%] capitalize text-center">:</b>
                       </div>
-                      <div class="flex-1 relative leading-[160%] capitalize text-darkslategray text-sm">{{ company.phone }}</div>
+                      <div class="relative leading-[160%] capitalize text-darkslategray text-sm">{{ company.phone }}</div>
                   </div>
                   
                   <!-- Website -->
-                  <div class="self-stretch flex items-start gap-4">
-                      <div class="w-[211px] flex items-center gap-4">
-                          <div class="flex-1 relative leading-[130%] capitalize font-semibold text-xs">Website</div>
-                          <b class="relative text-[18px] leading-[160%] capitalize text-center">:</b>
+                  <div class="self-stretch grid grid-cols-1 sm:grid-cols-[212px_1fr] items-start gap-2 sm:gap-4">
+                      <div class="flex items-center gap-4">
+                          <div class="relative leading-[130%] capitalize font-semibold text-xs sm:flex-1">Website</div>
+                          <b class="hidden sm:block relative text-[18px] leading-[160%] capitalize text-center">:</b>
                       </div>
-                      <div class="flex-1 relative leading-[160%] text-gold text-sm">
-                          <a :href="`https://${company.website}`" target="_blank" class="no-underline hover:underline">{{ company.website }}</a>
+                      <div class="relative leading-[160%] text-gold text-sm break-all">
+                          <a :href="`https://${company.website}`" target="_blank" rel="noopener" class="no-underline hover:underline">{{ company.website }}</a>
                       </div>
                   </div>
               </div>
