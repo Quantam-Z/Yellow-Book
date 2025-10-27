@@ -241,7 +241,7 @@
     </div>
 
     <!-- Users Table / Cards - FOURTH ROW -->
-    <div class="w-full bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200">
+    <div class="w-full bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200 px-3 pt-3 lg:px-0 lg:pt-0">
       <!-- Loading State -->
       <div v-if="isLoading" class="text-center py-16 text-gray-500 text-lg font-medium animate-pulse">
         <svg class="animate-spin h-8 w-8 text-yellow-500 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
