@@ -254,11 +254,11 @@
       <!-- Content -->
       <template v-else>
         <!-- Mobile Card View -->
-        <div class="block lg:hidden">
+        <div class="lg:hidden w-full flex flex-col gap-4">
           <div 
             v-for="(user, index) in paginatedUsers" 
             :key="user.id"
-            class="p-4 border-b border-gray-200 hover:bg-gray-50 active:bg-gray-100 transition"
+            class="w-full rounded-xl border border-gray-200 p-4 bg-white shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.01] cursor-pointer hover:bg-indigo-50"
           >
             <div class="flex items-center justify-between mb-3">
               <div class="flex items-center gap-3">
@@ -273,10 +273,10 @@
               <div class="flex items-center gap-2">
                 <div 
                   class="inline-flex items-center gap-1 px-2 py-1 rounded-md font-medium text-xs cursor-pointer touch-manipulation"
-                  :class="getStatusClass(user.status)"
+                  :class="getStatusClass(user.status, 'soft') + ' bg-opacity-10'"
                   @click="changeStatus(user)"
                 >
-                  <span>{{ getStatusShort(user.status) }}</span>
+                  <span>{{ getStatusShort(user.status) || user.status }}</span>
                   <ChevronDownIcon class="w-3 h-3 flex-shrink-0" aria-hidden="true" />
                 </div>
                 <EyeIcon 
@@ -299,7 +299,7 @@
               
               <div class="flex items-center justify-between text-sm">
                 <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md font-medium"
-                  :class="getSignupMethodClass(user.signupMethod)">
+                  :class="getSignupMethodClass(user.signupMethod, 'soft') + ' bg-opacity-10'">
                   {{ user.signupMethod }}
                 </div>
                 <span class="text-gray-500">{{ formatDate(user.signupDate) }}</span>
