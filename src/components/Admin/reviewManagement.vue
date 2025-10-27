@@ -1,7 +1,7 @@
 <template>
   <div class="w-full font-plus-jakarta-sans max-w-full overflow-x-hidden">
     <!-- Header Section with Gradient Background -->
-    <div class="w-full rounded-lg bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 p-3 sm:p-4 md:p-6 mb-4">
+    <div class="w-full rounded-lg bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 p-2 sm:p-4 md:p-6 mb-4">
       <!-- Header -->
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
         <h1 class="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">Review Management</h1>
@@ -22,7 +22,7 @@
     </div>
 
     <!-- Stats Cards - Responsive Grid - SECOND ROW -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 sm:gap-4 mb-6">
+    <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-6 gap-3 sm:gap-4 mb-6 px-3 lg:px-0">
       <div class="rounded-lg bg-white border-whitesmoke border-solid border-[1px] flex items-center p-3 sm:p-4 gap-3">
         <div class="h-8 w-8 sm:h-10 sm:w-10 md:h-11 md:w-11 rounded bg-blue-100 flex items-center justify-center flex-shrink-0">
           <UsersIcon class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-blue-600" />
@@ -80,7 +80,7 @@
     </div>
 
     <!-- Mobile Filters Toggle -->
-    <div class="mb-4 flex lg:hidden items-center justify-between">
+    <div class="mb-4 flex lg:hidden items-center justify-between px-3 lg:px-0 relative z-50">
       <h2 class="text-base font-bold text-gray-900">All Review List</h2>
       <button 
         @click="showMobileFilters = !showMobileFilters"
@@ -94,7 +94,7 @@
     </div>
 
     <!-- Filters Section - THIRD ROW -->
-    <div class="mb-6">
+    <div class="mb-6 px-3 lg:px-0">
       <!-- Desktop Filters -->
       <div class="hidden lg:flex items-center flex-wrap gap-3 w-full overflow-x-auto scrollbar-thin">
         <h2 class="text-lg font-bold text-gray-900 whitespace-nowrap">
@@ -169,7 +169,7 @@
       </div>
 
       <!-- Mobile Filters -->
-      <div v-if="showMobileFilters" id="mobile-filters" class="mt-3 p-4 bg-white rounded-lg shadow-sm border border-gray-200 lg:hidden">
+      <div v-if="showMobileFilters" id="mobile-filters" class="mt-3 p-3 sm:p-4 bg-white rounded-lg shadow-sm border border-gray-200 lg:hidden">
         <div class="space-y-4">
           <!-- Date Range -->
           <div class="grid grid-cols-2 gap-3">
@@ -400,7 +400,7 @@
     </div>
 
     <!-- Pagination - FIFTH ROW -->
-    <div class="flex flex-col sm:flex-row justify-between items-center mt-6 gap-4">
+    <div class="flex flex-col sm:flex-row justify-between items-center mt-6 gap-4 px-3 lg:px-0">
       <p class="text-sm text-gray-600 text-center sm:text-left">
         Showing <span class="font-semibold">{{ paginatedReviews.length }}</span> of 
         <span class="font-semibold">{{ filteredReviews.length }}</span> reviews (Page {{ currentPage }} of {{ totalPages }})
