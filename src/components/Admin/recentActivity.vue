@@ -1,5 +1,5 @@
 <template>
-<div class="w-full rounded-lg bg-blue-100 border border-gray-200 box-border flex flex-col items-start p-4 lg:p-6 gap-4 text-left text-lg text-gray-900 font-plus-jakarta-sans">
+<div class="w-full rounded-lg bg-white border-whitesmoke border-solid border-[1px] flex flex-col items-start p-4 lg:p-6 gap-4 text-left text-lg text-gray-900 font-plus-jakarta-sans">
   <div class="w-full flex items-center justify-between">
     <h2 class="relative leading-[130%] capitalize font-bold text-lg">Recent Activity</h2>
     <div class="relative text-sm leading-[130%] capitalize font-semibold text-amber-500 cursor-pointer hover:text-amber-600 transition-colors">
@@ -12,7 +12,7 @@
         <div 
           v-for="(activity, index) in activities" 
           :key="index"
-          class="w-full rounded-xl border border-gray-200 p-3 bg-white shadow-sm hover:shadow-md transition-all duration-200 lg:border-0 lg:shadow-none"
+          class="w-full rounded-xl border border-gray-200 p-4 bg-white shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.01] cursor-pointer hover:bg-indigo-50 lg:border-0 lg:shadow-none lg:hover:bg-white lg:transform-none"
         >
           <div class="w-full flex items-start gap-3">
             <component 
