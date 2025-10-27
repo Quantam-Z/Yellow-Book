@@ -204,7 +204,7 @@
     </div>
 
     <!-- Companies Table -->
-    <div class="w-full bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200">
+    <div class="w-full bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200 px-3 pt-3 lg:px-0 lg:pt-0">
       
       <!-- Loading State -->
       <div v-if="isLoading" class="text-center py-16 text-gray-500 text-lg font-medium animate-pulse">
