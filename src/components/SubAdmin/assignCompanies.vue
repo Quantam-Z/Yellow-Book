@@ -4,25 +4,41 @@
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
         <h1 class="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">My Assign Companies</h1>
       </div>
-
-      <div class="w-full relative rounded-lg bg-white border border-gray-200 box-border flex items-center p-2.5 sm:p-3 md:p-4 gap-2 sm:gap-3 shadow-sm">
+      <!-- Search Bar (match admin style) -->
+      <div class="w-full relative rounded-lg bg-white/80 backdrop-blur-sm flex items-center px-3 py-2 sm:px-4 sm:py-3 gap-3">
         <Search class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-gray-400 flex-shrink-0" />
         <input
           type="text"
           v-model="searchQuery"
+          @input="handleFilterChange"
           placeholder="Search companies by name or category"
-          class="flex-1 outline-none border-none bg-transparent text-gray-600 placeholder-gray-400 text-xs sm:text-sm md:text-base leading-[130%] capitalize"
+          class="flex-1 outline-none border-none bg-transparent text-gray-700 placeholder-gray-400 text-base min-w-0 focus:ring-0 focus:outline-none"
         />
       </div>
     </div>
 
-    <div class="w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mb-4">
+    <!-- Mobile Filters Toggle -->
+    <div class="mb-4 flex sm:hidden items-center justify-between px-1">
+      <h2 class="text-base font-bold text-gray-900">All Company List</h2>
+      <button 
+        @click="showMobileFilters = !showMobileFilters"
+        class="h-10 bg-white rounded-xl px-4 py-2 border border-gray-200 text-gray-700 text-sm outline-none cursor-pointer whitespace-nowrap touch-manipulation flex items-center gap-2 hover:bg-gray-50 active:bg-gray-100 transition"
+        aria-controls="mobile-filters"
+        :aria-expanded="showMobileFilters ? 'true' : 'false'"
+      >
+        <FilterIcon class="w-4 h-4" aria-hidden="true" />
+        <span>Filters</span>
+      </button>
+    </div>
+
+    <!-- Desktop inline filters (unchanged, hidden on mobile) -->
+    <div class="hidden sm:flex items-center justify-between gap-3 sm:gap-4 mb-4">
       <h2 class="text-base sm:text-lg font-semibold text-gray-900 whitespace-nowrap flex-shrink-0">All List</h2>
-      
       <div class="flex flex-wrap gap-2 sm:gap-3 items-center justify-end w-full sm:w-auto">
         <div class="relative w-full xs:w-auto min-w-[120px] sm:min-w-[140px]">
           <select 
             v-model="filters.status"
+            @change="handleFilterChange"
             class="h-9 sm:h-10 w-full rounded-lg bg-white border border-gray-200 box-border flex items-center py-0 pl-3 pr-8 text-xs sm:text-sm text-gray-700 leading-[130%] font-medium appearance-none cursor-pointer focus:ring-1 focus:ring-yellow-400 focus:border-yellow-400 transition"
           >
             <option value="">All Statuses</option>
@@ -32,17 +48,60 @@
           </select>
           <ChevronDown class="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none"/>
         </div>
-      
+      </div>
+    </div>
+
+    <!-- Mobile Filters Panel -->
+    <div v-if="showMobileFilters" id="mobile-filters" class="mt-3 p-3 sm:p-4 bg-white rounded-lg shadow-sm border border-gray-200 sm:hidden">
+      <div class="space-y-4">
+        <!-- Status Filter -->
+        <div class="flex flex-col gap-2">
+          <label class="text-sm text-gray-700 font-medium">Status</label>
+          <div class="relative">
+            <select
+              v-model="filters.status"
+              @change="handleFilterChange"
+              class="h-12 w-full rounded-xl bg-gray-100 border border-gray-200 appearance-none py-0 pl-4 pr-10 text-left text-sm text-gray-600 cursor-pointer focus:outline-none focus:ring-0"
+            >
+              <option value="">All Statuses</option>
+              <option value="pending">Pending</option>
+              <option value="verified">Verified</option>
+              <option value="rejected">Rejected</option>
+            </select>
+            <ChevronDown class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" aria-hidden="true" />
+          </div>
+        </div>
+
+        <!-- Category Filter -->
+        <div class="flex flex-col gap-2">
+          <label class="text-sm text-gray-700 font-medium">Category</label>
+          <div class="relative">
+            <select 
+              v-model="filters.category"
+              @change="handleFilterChange"
+              class="h-12 w-full rounded-xl bg-gray-100 border border-gray-200 appearance-none py-0 pl-4 pr-10 text-left text-sm text-gray-600 cursor-pointer focus:outline-none focus:ring-0"
+            >
+              <option value="">All Categories</option>
+              <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
+            </select>
+            <ChevronDown class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" aria-hidden="true" />
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 flex items-center justify-end gap-3">
+        <button @click="resetFilters" class="px-4 py-3 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 active:bg-gray-100 touch-manipulation transition">Reset</button>
+        <button @click="applyMobileFilters" class="px-4 py-3 text-sm text-gray-900 bg-yellow-400 hover:bg-yellow-500 active:bg-yellow-600 rounded-lg touch-manipulation transition">Apply</button>
       </div>
     </div>
 
     <div class="w-full bg-white rounded-xl shadow-md overflow-hidden">
-      
-      <div class="block sm:hidden">
-        <div 
-          v-for="(company, index) in paginatedCompanies" 
+      <!-- Mobile Cards (match admin spacing and padding) -->
+      <div class="sm:hidden w-full flex flex-col gap-4">
+        <div
+          v-for="(company, index) in paginatedCompanies"
           :key="company.id"
-          class="p-4 border-b border-gray-200 hover:bg-gray-50 active:bg-gray-100 transition"
+          class="w-full rounded-xl border border-gray-200 p-3 sm:p-4 bg-white shadow-sm hover:shadow-md transition-all duration-200"
         >
           <div class="flex items-start justify-between mb-3">
             <div class="flex items-center gap-3 flex-shrink-0">
@@ -55,34 +114,34 @@
                 #{{ String((currentPage - 1) * itemsPerPage + index + 1).padStart(2, '0') }}
               </span>
             </div>
-            
-            <div class="flex flex-col items-end gap-2 min-w-[70px]">
-                <div 
-                    class="inline-flex items-center gap-1 px-2 py-1 rounded-md font-medium text-[9px] cursor-pointer touch-manipulation whitespace-nowrap"
-                    :class="getStatusClass(company.status)"
-                    @click="changeStatus(company)"
-                >
-                    <span>{{ getStatusShort(company.status) }}</span>
-                </div>
-                 <span
-                    role="button"
-                    tabindex="0"
-                    @click="viewDetails(company)"
-                    @keydown.enter="viewDetails(company)"
-                    @keydown.space.prevent="viewDetails(company)"
-                    class="inline-flex items-center justify-center px-3 py-1 rounded-md bg-yellow-50 text-yellow-700 text-xs font-medium hover:bg-yellow-100 active:bg-yellow-200 transition cursor-pointer select-none"
-                >
-                    Details
-                </span>
+            <div class="flex items-center gap-2">
+              <div 
+                class="inline-flex items-center gap-1 px-2 py-1 rounded-md font-medium text-[10px] cursor-pointer touch-manipulation whitespace-nowrap"
+                :class="getStatusClass(company.status)"
+                @click="changeStatus(company)"
+                title="Tap to change status"
+              >
+                <span>{{ getStatusShort(company.status) }}</span>
+                <ChevronDown class="w-3 h-3" />
+              </div>
+              <span
+                role="button"
+                tabindex="0"
+                @click="viewDetails(company)"
+                @keydown.enter="viewDetails(company)"
+                @keydown.space.prevent="viewDetails(company)"
+                class="inline-flex items-center justify-center px-3 py-1 rounded-md bg-yellow-50 text-yellow-700 text-xs font-medium hover:bg-yellow-100 active:bg-yellow-200 transition cursor-pointer select-none"
+              >
+                Details
+              </span>
             </div>
           </div>
-          
+
           <div class="space-y-2">
             <div class="flex items-center gap-2">
               <span class="text-sm font-semibold text-gray-900 truncate flex-1">{{ company.name }}</span>
               <CheckCircle v-if="company.verified" class="w-3.5 h-3.5 text-green-500 flex-shrink-0" />
             </div>
-            
             <div class="flex items-center justify-start text-[11px] flex-wrap gap-2">
               <span class="bg-gray-100 px-2 py-1 rounded text-gray-700 whitespace-nowrap">{{ company.category }}</span>
               <span class="text-gray-600 whitespace-nowrap">{{ company.mobile }}</span>
@@ -223,7 +282,7 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue';
-import { Search, CheckCircle, ChevronDown, ChevronLeft, ChevronRight } from "lucide-vue-next";
+import { Search, CheckCircle, ChevronDown, ChevronLeft, ChevronRight, Filter as FilterIcon } from "lucide-vue-next";
 
 // --- UTILITIES ---
 
@@ -256,6 +315,7 @@ const searchQuery = ref('');
 const selectAll = ref(false);
 const currentPage = ref(1);
 const itemsPerPage = 8; 
+const showMobileFilters = ref(false);
 
 const filters = ref({
   status: '',
@@ -347,6 +407,10 @@ const goToPage = (page) => {
   }
 };
 
+const handleFilterChange = () => {
+  currentPage.value = 1;
+};
+
 const changeStatus = (company) => {
   console.log('Change status for:', company.name);
 };
@@ -358,9 +422,19 @@ const viewDetails = (company) => {
 // --- WATCHERS ---
 
 // Watch for filter/search changes to reset pagination to page 1
-watch([searchQuery, filters.value], () => {
+watch([searchQuery, filters], () => {
   currentPage.value = 1;
 }, { deep: true });
+
+const applyMobileFilters = () => {
+  handleFilterChange();
+  showMobileFilters.value = false;
+};
+
+const resetFilters = () => {
+  filters.value = { status: '', category: '' };
+  handleFilterChange();
+};
 </script>
 
 <style scoped>
