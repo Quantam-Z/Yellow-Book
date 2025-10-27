@@ -1,6 +1,5 @@
 <template>
   <div class="w-full min-h-screen bg-white">
-    <!-- Page header -->
     <div
       class="rounded-xl border border-gray-200 shadow-sm bg-gradient-to-r from-indigo-500/15 via-pink-500/15 to-amber-400/15 px-4 sm:px-6 py-3 sm:py-4 mb-6 flex items-center justify-between"
     >
@@ -23,22 +22,26 @@
         :key="index"
         class="w-full relative rounded-lg border-whitesmoke border-solid border-[1px] box-border flex flex-col items-end justify-end pt-6 px-4 pb-4 gap-4 text-left text-num-16 text-gray font-plus-jakarta-sans"
       >
-        <div class="self-stretch flex items-center justify-between gap-5">
-          <div class="flex items-center gap-4">
-            <div class="h-10 w-10 relative rounded bg-gainsboro-200 flex items-center justify-center">
+        <div class="self-stretch flex items-start justify-between gap-5">
+          <div class="flex items-start gap-4 flex-grow">
+            <div class="h-10 w-10 relative rounded bg-gainsboro-200 flex items-center justify-center shrink-0">
               <Building2 class="h-5 w-5 text-gray-500" />
             </div>
-            <div class="w-[260px] flex flex-col items-start gap-4">
-              <b class="self-stretch relative leading-[130%] capitalize">
+
+            <div class="flex flex-col items-start gap-2 flex-grow min-w-0">
+              <b class="relative leading-[130%] capitalize text-base sm:text-lg truncate">
                 {{ item.name }}
               </b>
-              <div class="self-stretch flex items-center gap-2 text-dimgray">
-                <div class="relative leading-[130%] capitalize">
+              
+              <div class="flex items-center gap-2 text-dimgray text-sm sm:text-base min-w-0">
+                
+                <div class="relative leading-[130%] capitalize whitespace-nowrap">
                   {{ item.category }}
                 </div>
-                <div class="flex items-center gap-2">
-                  <div class="h-1.5 w-1.5 relative rounded-[50%] bg-gainsboro-100" />
-                  <div class="relative leading-[130%] capitalize">
+
+                <div class="flex items-center gap-2 whitespace-nowrap">
+                  <div class="h-1.5 w-1.5 relative rounded-[50%] bg-gainsboro-100 shrink-0" />
+                  <div class="relative leading-[130%] capitalize whitespace-nowrap">
                     Assigned: {{ item.assigned }}
                   </div>
                 </div>
@@ -46,11 +49,11 @@
             </div>
           </div>
 
-          <div class="flex items-center gap-2 text-dimgray">
-            <div class="relative leading-[130%] capitalize">Rating:</div>
+          <div class="flex flex-col sm:flex-row items-end sm:items-center gap-2 text-dimgray text-sm sm:text-base shrink-0">
             <div class="flex items-center gap-2">
-              <Star class="h-6 w-6 text-yellow-500" />
-              <div class="relative leading-[130%] capitalize">
+              <div class="relative leading-[130%] capitalize whitespace-nowrap hidden sm:block">Rating:</div>
+              <Star class="h-5 w-5 sm:h-6 sm:w-6 text-yellow-500" />
+              <div class="relative leading-[130%] capitalize whitespace-nowrap">
                 {{ item.rating }} Star
               </div>
             </div>

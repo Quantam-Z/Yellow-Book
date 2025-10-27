@@ -51,18 +51,16 @@
       <div 
         v-for="(review, index) in reviews" 
         :key="index"
-        class="w-full rounded-lg border border-gray-200 p-4 bg-white hover:bg-gray-50 transition-colors"
+        class="w-full rounded-xl border border-gray-200 p-4 bg-white shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.01] cursor-pointer hover:bg-indigo-50"
       >
-        <!-- Mobile Card Header -->
         <div class="flex justify-between items-start mb-3">
           <div class="flex flex-col">
             <h3 class="font-semibold text-gray-900 text-base">{{ review.reviewer }}</h3>
             <div class="flex items-center gap-1 mt-1">
               <RatingStars :value="Number(review.rating)" :size-class="'w-4 h-4'" />
-              <span class="text-sm text-gray-600">{{ review.rating }}</span>
             </div>
           </div>
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2 shrink-0">
             <span class="text-xs font-medium px-2 py-1 rounded-full" :class="getStatusClass(review.status, 'soft') + ' bg-opacity-10'">
               {{ review.status }}
             </span>
@@ -70,21 +68,18 @@
           </div>
         </div>
 
-        <!-- Review Content -->
         <div class="mb-3">
           <p class="text-sm text-gray-700 line-clamp-2">{{ review.review }}</p>
         </div>
 
-        <!-- Footer -->
         <div class="flex justify-between items-center text-xs text-gray-500">
           <span>{{ review.date }}</span>
           <span
-  @click="viewDetails(company)"
-  class="text-amber-500 hover:text-amber-600 font-medium cursor-pointer"
->
-  View Details
-</span>
-
+            @click="viewDetails(company)"
+            class="text-amber-500 hover:text-amber-600 font-medium cursor-pointer"
+          >
+            View Details
+          </span>
         </div>
       </div>
     </div>

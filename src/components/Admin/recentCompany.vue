@@ -48,56 +48,52 @@
 
     <!-- Mobile Cards -->
     <div class="lg:hidden w-full flex flex-col gap-4">
-      <div 
-        v-for="(row, index) in rows" 
-        :key="index"
-        class="w-full rounded-lg border border-gray-200 p-4 bg-white hover:bg-gray-50 transition-colors"
-      >
-        <!-- Card Header - Now includes View Details in the same row -->
-        <div class="flex justify-between items-start mb-3">
-          <div class="flex flex-col flex-1">
-            <h3 class="font-semibold text-gray-900 text-base">{{ row.name }}</h3>
-            <span class="text-sm text-gray-600 mt-1">{{ row.category }}</span>
+    <div
+      v-for="(row, index) in rows"
+      :key="index"
+      class="w-full rounded-xl border border-gray-200 p-4 bg-white shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.01] cursor-pointer hover:bg-indigo-50"
+    >
+      <div class="flex justify-between items-start mb-3">
+        <div class="flex flex-col flex-1 min-w-0">
+          <h3 class="font-semibold text-gray-900 text-base truncate">{{ row.name }}</h3>
+          <span class="text-sm text-gray-600 mt-1 truncate">{{ row.category }}</span>
+        </div>
+        <div class="flex items-center gap-2 shrink-0 ml-4">
+          <span class="text-xs font-medium px-2 py-1 rounded-full whitespace-nowrap" :class="getStatusClass(row.status) + ' bg-opacity-10'">
+            {{ row.status }}
+          </span>
+          <MoreHorizontal class="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer" />
+        </div>
+      </div>
+
+      <div class="flex justify-between items-end">
+        <div class="flex flex-col gap-3 text-sm flex-1">
+          
+          <div class="flex flex-col">
+            <span class="text-gray-700 whitespace-nowrap truncate">{{ row.date }}</span>
           </div>
-          <div class="flex items-center gap-2">
-            <span class="text-xs font-medium px-2 py-1 rounded-full" :class="getStatusClass(row.status) + ' bg-opacity-10'">
-              {{ row.status }}
-            </span>
-            <MoreHorizontal class="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer" />
+          
+          <div class="flex flex-col">
+            <span class="text-gray-700 whitespace-nowrap truncate">{{ row.phone }}</span>
+          </div>
+          
+          <div class="flex flex-col">
+            <a :href="'https://' + row.website" class="text-amber-500 hover:text-amber-600 truncate" target="_blank">
+              {{ row.website }}
+            </a>
           </div>
         </div>
 
-        <!-- Company Details and View Details in same row -->
-        <div class="flex justify-between items-end">
-          <!-- Company Details -->
-          <div class="grid grid-cols-2 gap-3 text-sm flex-1">
-            <div class="flex flex-col">
-              <span class="text-gray-500 text-xs">Date</span>
-              <span class="text-gray-700">{{ row.date }}</span>
-            </div>
-            <div class="flex flex-col">
-              <span class="text-gray-500 text-xs">Phone</span>
-              <span class="text-gray-700">{{ row.phone }}</span>
-            </div>
-            <div class="flex flex-col col-span-2">
-              <span class="text-gray-500 text-xs">Website</span>
-              <a :href="'https://' + row.website" class="text-amber-500 hover:text-amber-600 truncate" target="_blank">
-                {{ row.website }}
-              </a>
-            </div>
-          </div>
-
-          <!-- View Details Button - Now aligned with the content -->
-          <div class="ml-4 flex-shrink-0">
-            <span
-              class="text-amber-500 hover:text-amber-600 font-medium text-sm cursor-pointer whitespace-nowrap"
-            >
-              View Details
-            </span>
-          </div>
+        <div class="ml-4 flex-shrink-0">
+          <span
+            class="text-amber-500 hover:text-amber-600 font-medium text-sm cursor-pointer whitespace-nowrap"
+          >
+            View Details
+          </span>
         </div>
       </div>
     </div>
+  </div>
   </div>
 </template>
 
