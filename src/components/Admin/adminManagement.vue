@@ -265,11 +265,11 @@
       <!-- Content -->
       <template v-else>
         <!-- Mobile Card View -->
-        <div class="block lg:hidden">
+        <div class="lg:hidden w-full flex flex-col gap-4">
           <div 
             v-for="(admin, index) in paginatedAdmins" 
             :key="admin.id"
-            class="p-4 border-b border-gray-200 hover:bg-gray-50 active:bg-gray-100 transition"
+            class="w-full rounded-xl border border-gray-200 p-4 bg-white shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.01] cursor-pointer hover:bg-indigo-50"
           >
             <div class="flex items-center justify-between mb-3">
               <div class="flex items-center gap-3">
@@ -284,7 +284,7 @@
               <div class="flex items-center gap-2">
                 <div 
                   class="inline-flex items-center gap-1 px-2 py-1 rounded-md font-medium text-xs cursor-pointer touch-manipulation"
-                  :class="getStatusClass(admin.status)"
+                  :class="getStatusClass(admin.status, 'soft') + ' bg-opacity-10'"
                   @click="changeStatus(admin)"
                 >
                   <span>{{ admin.status }}</span>

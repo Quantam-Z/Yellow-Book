@@ -218,11 +218,11 @@
       <!-- Content -->
       <template v-else>
         <!-- Mobile Cards -->
-        <div class="block lg:hidden">
+        <div class="lg:hidden w-full flex flex-col gap-4">
           <div 
             v-for="(company, index) in paginatedCompanies" 
             :key="company.id"
-            class="p-4 border-b border-gray-200 hover:bg-gray-50 active:bg-gray-100 transition"
+            class="w-full rounded-xl border border-gray-200 p-4 bg-white shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.01] cursor-pointer hover:bg-indigo-50"
           >
             <div class="flex items-center justify-between mb-3">
               <div class="flex items-center gap-3">
@@ -237,7 +237,7 @@
               <div class="flex items-center gap-2">
                 <div 
                   class="inline-flex items-center gap-1 px-3 py-1.5 rounded-md font-medium text-xs cursor-pointer touch-manipulation"
-                  :class="getStatusClass(company.status)"
+                  :class="getStatusClass(company.status, 'soft') + ' bg-opacity-10'"
                   @click="changeStatus(company)"
                 >
                   <span>{{ getStatusShort(company.status) }}</span>
@@ -256,17 +256,18 @@
                 <CheckCircleIcon v-if="company.verified" class="w-4 h-4 text-green-500 flex-shrink-0" title="Verified" />
               </div>
               
-              <div class="flex items-center justify-between text-sm text-gray-600">
-                <span class="bg-gray-100 px-3 py-1.5 rounded-md">{{ company.category }}</span>
-                <span class="flex items-center gap-1">
-                  <PhoneIcon class="w-4 h-4" aria-hidden="true" />
-                  {{ company.mobile }}
-                </span>
-              </div>
-              
-              <div class="text-sm text-yellow-500 truncate flex items-center gap-2">
-                <GlobeIcon class="w-4 h-4" aria-hidden="true" />
-                {{ company.website }}
+              <div class="grid grid-cols-1 gap-2 text-sm text-gray-600">
+                <div class="flex items-center justify-between">
+                  <span class="bg-gray-100 px-3 py-1.5 rounded-md">{{ company.category }}</span>
+                  <span class="flex items-center gap-1">
+                    <PhoneIcon class="w-4 h-4" aria-hidden="true" />
+                    {{ company.mobile }}
+                  </span>
+                </div>
+                <a :href="'https://' + company.website" class="text-amber-500 hover:text-amber-600 truncate flex items-center gap-2" target="_blank" rel="noopener">
+                  <GlobeIcon class="w-4 h-4" aria-hidden="true" />
+                  {{ company.website }}
+                </a>
               </div>
             </div>
           </div>
