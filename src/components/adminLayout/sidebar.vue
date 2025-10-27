@@ -1,15 +1,6 @@
 <template>
   <div class="flex">
- <button
-  v-if="!isOpen && !isScrolled" 
-  @click="isOpen = true"
-  class="md:hidden fixed top-2 left-4 z-50 p-2 rounded-lg bg-white border border-gainsboro hover:shadow-xl duration-200"
-  aria-label="Open navigation menu"
->
-  <Menu class="w-5 h-5 text-gray-700" />
-</button>
-
-
+    <!-- Mobile overlay -->
     <div
       v-if="isOpen"
       class="fixed inset-0 bg-black bg-opacity-30 z-30 md:hidden"
@@ -66,8 +57,7 @@ import {
   Star,
   Shield,
   Settings,
-  LogOut,
-  Menu 
+  LogOut
 } from "lucide-vue-next";
 import { ref, onMounted, onUnmounted } from "vue";
 
@@ -119,6 +109,12 @@ onMounted(() => {
   window.addEventListener('resize', handleResize);
   // Add scroll listener
   window.addEventListener('scroll', handleScroll); 
+
+  // Listen for header hamburger event
+  const handler = () => { isOpen.value = true };
+  window.addEventListener('open-admin-sidebar', handler as EventListener);
+  // Store for cleanup
+  (window as any).__adminSidebarOpenHandler = handler;
 });
 
 // Remove event listeners
@@ -127,6 +123,9 @@ onUnmounted(() => {
   window.removeEventListener('resize', handleResize);
   // Remove scroll listener
   window.removeEventListener('scroll', handleScroll); 
+  // Remove header hamburger listener
+  const handler = (window as any).__adminSidebarOpenHandler;
+  if (handler) window.removeEventListener('open-admin-sidebar', handler as EventListener);
 });
 </script>
 
