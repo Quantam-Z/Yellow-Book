@@ -189,71 +189,72 @@
   </div>
 </div>
 
-      <div v-if="currentCategory?.filters?.serviceTypes" class="self-stretch rounded-[4px] border border-gainsboro border-solid flex flex-col items-start p-3 lg:p-[10px] gap-2">
-        <div class="w-full flex items-center justify-between gap-0">
-          <div class="relative leading-[160%] capitalize font-medium text-sm lg:text-base">{{ currentCategory.filters.serviceTypes.label }}</div>
-          <div class="w-5 h-5 lg:w-6 lg:h-6 relative text-gray-500">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="3" width="7" height="7"></rect>
-              <rect x="14" y="3" width="7" height="7"></rect>
-              <rect x="14" y="14" width="7" height="7"></rect>
-              <rect x="3" y="14" width="7" height="7"></rect>
-            </svg>
-          </div>
-        </div>
-        <div class="self-stretch bg-ghostwhite flex flex-col items-start p-3 lg:p-[10px] relative text-left text-[14px] lg:text-[16px] text-darkslategray max-h-64 overflow-y-auto">
-  <div class="self-stretch flex flex-col items-start gap-0.5 z-[0]">
-    <div 
-      v-for="service in currentCategory.filters.serviceTypes.options" 
-      :key="service" 
-      class="self-stretch border-b border-whitesmoke border-solid box-border h-10 flex items-center gap-2 cursor-pointer transition-colors hover:bg-gray-100 pl-3 lg:pl-4"
-      @click="toggleService(service)"
-    >
-      <div class="w-5 h-5 lg:w-6 lg:h-6 relative overflow-hidden shrink-0">
-        <div class="w-full h-full border border-gainsboro rounded-none bg-white flex items-center justify-center transition-colors">
-          <div class="w-3.5 h-3.5 lg:w-4.5 lg:h-4.5 border border-gainsboro rounded-none bg-white flex items-center justify-center transition-colors">
-            <div v-if="filters.services.has(service)" class="w-3 h-3 flex items-center justify-center transition-all duration-200">
-              <svg viewBox="0 0 24 24" class="w-3 h-3 text-black" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M20 6L9 17l-5-5"></path>
-              </svg>
+<div v-if="currentCategory?.filters?.serviceTypes" style="align-self: stretch; border-radius: 4px; border: 1px solid gainsboro; display: flex; flex-direction: column; align-items: flex-start; padding: 12px; gap: 8px;">
+    <div style="width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 0;">
+      <div style="position: relative; line-height: 160%; text-transform: capitalize; font-weight: 500; font-size: 14px;">{{ currentCategory.filters.serviceTypes.label }}</div>
+      <div style="width: 20px; height: 20px; position: relative; color: rgb(107 114 128);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="7" height="7"></rect>
+          <rect x="14" y="3" width="7" height="7"></rect>
+          <rect x="14" y="14" width="7" height="7"></rect>
+          <rect x="3" y="14" width="7" height="7"></rect>
+        </svg>
+      </div>
+    </div>
+    <div style="align-self: stretch; background-color: #f8f8ff; display: flex; flex-direction: column; align-items: flex-start; padding: 10px; position: relative; text-align: left; font-size: 14px; color: #424242; max-height: 256px; overflow-y: auto;">
+      <div style="align-self: stretch; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; z-index: 0;">
+        <div 
+          v-for="service in currentCategory.filters.serviceTypes.options" 
+          :key="service" 
+          style="align-self: stretch; border-bottom: 1px solid #f0f0f0; box-sizing: border-box; height: 40px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: background-color 0.15s; padding-left: 12px;"
+          @click="toggleService(service)"
+          :style="{ 'hover:bg-gray-100': true }"
+        >
+          <div style="width: 20px; height: 20px; position: relative; overflow: hidden; flex-shrink: 0;">
+            <div 
+              style="width: 18px; height: 18px; border: 1px solid black; border-radius: 0; background-color: white; display: flex; align-items: center; justify-content: center; transition: background-color 0.15s; margin-top: 1px; margin-left: 1px;"
+            >
+              <div v-if="filters.services.has(service)" style="width: 12px; height: 12px; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">
+                <svg viewBox="0 0 24 24" style="width: 12px; height: 12px; color: black;" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 6L9 17l-5-5"></path>
+                </svg>
+              </div>
             </div>
           </div>
+          <div style="position: relative; line-height: 130%; text-transform: capitalize; font-weight: 500; font-size: 14px;">{{ service }}</div>
         </div>
       </div>
-      <div class="relative leading-[130%] capitalize font-medium text-sm lg:text-base">{{ service }}</div>
     </div>
   </div>
-</div>
-      </div>
-
       <!-- Specializations Filter -->
-      <div v-if="currentCategory?.filters?.specializations" class="self-stretch rounded-[4px] border border-gainsboro border-solid flex flex-col items-start p-3 lg:p-[10px] gap-2">
-        <div class="w-full flex items-center justify-between gap-0">
-          <div class="relative leading-[160%] capitalize font-medium text-sm lg:text-base">{{ currentCategory.filters.specializations.label }}</div>
-          <svg class="w-5 h-5 lg:w-6 lg:h-6 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <div v-if="currentCategory?.filters?.specializations" style="align-self: stretch; border-radius: 4px; border: 1px solid gainsboro; display: flex; flex-direction: column; align-items: flex-start; padding: 12px; gap: 8px;">
+        <div style="width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 0;">
+          <div style="position: relative; line-height: 160%; text-transform: capitalize; font-weight: 500; font-size: 14px;">{{ currentCategory.filters.specializations.label }}</div>
+          <svg style="width: 20px; height: 20px; color: rgb(107 114 128);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="6,9 12,15 18,9"></polyline>
           </svg>
         </div>
-        <div class="self-stretch bg-ghostwhite flex flex-col items-start p-3 lg:p-[10px] relative text-left text-[14px] lg:text-[16px] text-darkslategray max-h-64 overflow-y-auto">
-          <div class="self-stretch flex flex-col items-start gap-0.5 z-[0]">
+        <div style="align-self: stretch; background-color: #f8f8ff; display: flex; flex-direction: column; align-items: flex-start; padding: 10px; position: relative; text-align: left; font-size: 14px; color: #424242; max-height: 256px; overflow-y: auto;">
+          <div style="align-self: stretch; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; z-index: 0;">
             <div 
               v-for="specialization in currentCategory.filters.specializations.options" 
               :key="specialization" 
-              class="self-stretch border-b border-whitesmoke border-solid box-border h-10 flex items-center gap-2 cursor-pointer transition-colors hover:bg-gray-100"
+              style="align-self: stretch; border-bottom: 1px solid #f0f0f0; box-sizing: border-box; height: 40px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: background-color 0.15s; padding-left: 12px;"
               @click="toggleSpecialization(specialization)"
+              :style="{ 'hover:bg-gray-100': true }"
             >
-              <div class="w-5 h-5 lg:w-6 lg:h-6 relative overflow-hidden shrink-0">
-                <div class="w-full h-full border-2 border-gray-300 rounded-sm bg-white flex items-center justify-center transition-colors">
-                  <div class="w-3.5 h-3.5 lg:w-4.5 lg:h-4.5 border border-gray-400 rounded-xs bg-white flex items-center justify-center transition-colors">
-                    <div v-if="filters.specializations.has(specialization)" class="w-3 h-3 flex items-center justify-center transition-all duration-200">
-                      <svg viewBox="0 0 24 24" class="w-3 h-3 text-black" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M20 6L9 17l-5-5"></path>
-                      </svg>
-                    </div>
+              <div style="width: 20px; height: 20px; position: relative; overflow: hidden; flex-shrink: 0;">
+                <div 
+                  style="width: 18px; height: 18px; border: 1px solid black; border-radius: 0; background-color: white; display: flex; align-items: center; justify-content: center; transition: background-color 0.15s; margin-top: 1px; margin-left: 1px;"
+                >
+                  <div v-if="filters.specializations.has(specialization)" style="width: 12px; height: 12px; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">
+                    <svg viewBox="0 0 24 24" style="width: 12px; height: 12px; color: black;" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M20 6L9 17l-5-5"></path>
+                    </svg>
                   </div>
                 </div>
               </div>
-              <div class="relative leading-[130%] capitalize font-medium text-sm lg:text-base">{{ specialization }}</div>
+              <div style="position: relative; line-height: 130%; text-transform: capitalize; font-weight: 500; font-size: 14px;">{{ specialization }}</div>
             </div>
           </div>
         </div>
@@ -261,19 +262,19 @@
 
       <!-- Mobile Apply Filters Button -->
       <div v-if="showMobileFilters" class="lg:hidden w-full flex gap-3 mt-4">
-        <button 
-          @click="applyMobileFilters"
-          class="flex-1 bg-blue-500 text-white rounded-[4px] py-3 font-medium hover:bg-blue-600 transition-colors"
-        >
-          Apply Filters
-        </button>
-        <button 
-          @click="clearAllFilters"
-          class="flex-1 bg-gray-500 text-white rounded-[4px] py-3 font-medium hover:bg-gray-600 transition-colors"
-        >
-          Clear All
-        </button>
-      </div>
+    <button 
+      @click="applyMobileFilters"
+      class="flex-1 bg-blue-500 text-white rounded-[4px] py-3 font-medium hover:bg-blue-600 transition-colors border-none focus:ring-0"
+    >
+      Apply Filters
+    </button>
+    <button 
+      @click="clearAllFilters"
+      class="flex-1 bg-gray-500 text-white rounded-[4px] py-3 font-medium hover:bg-gray-600 transition-colors border-none focus:ring-0"
+    >
+      Clear All
+    </button>
+</div>
     </div>
 
     <!-- Main Content Area -->
