@@ -194,58 +194,45 @@
       
       <div class="w-full lg:flex-[1] space-y-4 sm:space-y-5 md:space-y-6 min-w-0">
         <div class="bg-white rounded-lg shadow-lg p-4 sm:p-5 md:p-6">
-          <div class="flex flex-col sm:flex-row items-center gap-4 sm:gap-5 md:gap-6">
+          <div class="flex flex-col items-center sm:items-stretch sm:flex-row gap-4 sm:gap-5 md:gap-6">
 
             <div class="text-center space-y-2 sm:space-y-3 shrink-0">
               <h2 class="text-3xl sm:text-4xl md:text-5xl font-semibold text-black capitalize">
-                {{ overallRating.toFixed(1) }}
+                {{ imageOverallRating.toFixed(1) }}
               </h2>
               <p class="text-sm sm:text-base font-medium text-green-600 capitalize">
-                {{ ratingLabelText }}
+                Excellent
               </p>
-              <div class="space-y-1.5 sm:space-y-2">
-                <RatingStars
-                  :rating="overallRating"
-                  :max="5"
-                  size="sm"
-                  color="#FFC107"
-                  empty-color="#E0E0E0"
-                  stroke-color="#FFC107"
-                  :gap="2"
-                  :show-value="false"
-                  :show-count="true"
-                  :count="totalReviews"
-                  align="center"
-                />
+              <div class="flex justify-center items-center gap-0.5 sm:gap-1">
+                <Star v-for="i in 5" :key="i" class="w-4 h-4 sm:w-5 sm:h-5 fill-[#FFC107] text-[#FFC107]" />
               </div>
+              <p class="text-sm font-medium text-gray-500">({{ imageTotalReviews }} Reviews)</p>
             </div>
 
-            <div class="flex-1 w-full space-y-1.5 sm:space-y-2">
+            <div class="flex-1 w-full space-y-1 sm:space-y-2">
               <div
                 v-for="stars in [5, 4, 3, 2, 1]"
                 :key="stars"
                 class="flex items-center gap-2 sm:gap-3"
               >
-                <div class="flex items-center gap-1 w-8 sm:w-10 md:w-12 justify-end">
-                  <span class="text-sm sm:text-base md:text-lg bg-white/40">{{ stars }}</span>
-
-                  <Star class="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 fill-gray-700 text-gray-700 drop-shadow-sm" />
+                <div class="flex items-center gap-1 w-8 sm:w-10 justify-end flex-shrink-0">
+                  <span class="text-sm sm:text-base md:text-lg text-gray-800">{{ stars }}</span>
+                  <Star class="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-[#424242] text-[#424242]" />
                 </div>
-                <div class="flex-1 h-1.5 sm:h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div class="flex-1 h-1.5 sm:h-2 bg-gray-300 rounded-full overflow-hidden">
                   <div
-                    class="h-full bg-gray-700 transition-all"
-                    :style="{ width: `${totalReviews > 0 ? (ratingBreakdown[stars] / totalReviews) * 100 : 0}%` }"
+                    class="h-full bg-gray-300 transition-all"
+                    :style="{ width: `${(imageRatingBreakdown[stars] / imageRatingBreakdown[5]) * 100}%` }"
                   ></div>
                 </div>
-                <span class="text-xs sm:text-sm font-medium text-gray-600 w-8 sm:w-10 md:w-12 text-right">
-                  {{ ratingBreakdown[stars] }}
+                <span class="text-xs sm:text-sm font-medium text-gray-800 w-8 sm:w-10 text-right flex-shrink-0">
+                  {{ imageRatingBreakdown[stars] }}
                 </span>
               </div>
             </div>
           </div>
         </div>
       </div> 
-      
       <div
         v-if="showFilter"
         class="fixed inset-0 bg-black bg-opacity-50 z-50 lg:hidden"
@@ -327,7 +314,7 @@
 
 <script setup lang="ts">
   import { ref, computed, onMounted, onUnmounted } from 'vue';
-  import { MessageSquare, ChevronDown, ExternalLink, X } from 'lucide-vue-next';
+  import { MessageSquare, ChevronDown, ExternalLink, X, Star } from 'lucide-vue-next';
   import { Teleport } from 'vue';
   
   import StarRatingBox from '@/components/common/starRatingBox.vue';
@@ -352,6 +339,17 @@
     dislikes: number;
     companyResponse?: CompanyResponse
   }
+
+  // Static data matching the provided image (Screenshot 2025-10-31 at 3.15.27 PM.png)
+  const imageRatingBreakdown: Record<number, number> = {
+    5: 120,
+    4: 100,
+    3: 80,
+    2: 38,
+    1: 20,
+  };
+  const imageTotalReviews = Object.values(imageRatingBreakdown).reduce((sum, count) => sum + count, 0); // 358
+  const imageOverallRating = 4.8; 
 
   // Configuration constants
   const TEXT_CONTENT = {
