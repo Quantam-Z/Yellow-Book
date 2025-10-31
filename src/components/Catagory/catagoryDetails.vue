@@ -378,11 +378,20 @@
             
             <div class="flex-1 flex flex-col items-start gap-4 lg:gap-[18px] w-full">
               <div class="self-stretch flex flex-col items-start gap-3 lg:gap-[15px]">
-                <div class="self-stretch flex flex-col lg:flex-row items-start gap-3 lg:gap-[15px]">
+                    <div class="self-stretch flex flex-col lg:flex-row items-start gap-3 lg:gap-[15px]">
                   <div class="flex-1 flex flex-col items-start gap-3 lg:gap-[15px]">
                     <div class="self-stretch relative leading-[130%] capitalize font-medium text-lg lg:text-xl">{{ listing.name }}</div>
-                    <div class="self-stretch flex items-center gap-0.5">
-                      <starRatingBox :rating="Number(listing.rating)" :max="5" size="sm" color="#FFC107" empty-color="#E0E0E0" stroke-color="#FFC107" :gap="2" :show-value="false" />
+                    <div class="self-stretch flex items-center gap-2">
+                      <starRatingBox
+                        :model-value="clampRating(listing.rating)"
+                        :readonly="true"
+                        :box-size="32"
+                        :icon-size="24"
+                        filled-color="#FFC107"
+                        empty-color="#E0E0E0"
+                        border-color="#FFC107"
+                      />
+                      <span class="text-sm text-darkslategray font-medium">{{ formatRating(listing.rating) }}</span>
                     </div>
                   </div>
                   <svg class="h-5 w-5 lg:h-6 lg:w-6 text-red-500 cursor-pointer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -572,6 +581,18 @@ export default {
       return displayedListings.value.slice(start, start + pageSize.value);
     });
 
+    const clampRating = (value) => {
+      const num = Number(value);
+      if (!Number.isFinite(num)) return 0;
+      return Math.min(5, Math.max(0, num));
+    };
+
+    const formatRating = (value) => {
+      const num = Number(value);
+      if (!Number.isFinite(num)) return '--';
+      return num.toFixed(1);
+    };
+
     const syncFromRoute = () => {
       const q = typeof route.query.q === 'string' ? route.query.q : '';
       if (q !== filters.value.query) toggleFilter('query', q);
@@ -720,7 +741,9 @@ export default {
       clearAllFilters,
       toggleSortDropdown,
       applyMobileFilters,
-      getStatusClass
+      getStatusClass,
+      clampRating,
+      formatRating
     };
   }
 };
