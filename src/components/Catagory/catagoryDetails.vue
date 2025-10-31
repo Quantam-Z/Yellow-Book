@@ -382,7 +382,7 @@
                   <div class="flex-1 flex flex-col items-start gap-3 lg:gap-[15px]">
                     <div class="self-stretch relative leading-[130%] capitalize font-medium text-lg lg:text-xl">{{ listing.name }}</div>
                     <div class="self-stretch flex items-center gap-0.5">
-                      <RatingStars :rating="Number(listing.rating)" :max="5" size="sm" color="#FFC107" empty-color="#E0E0E0" stroke-color="#FFC107" :gap="2" :show-value="false" />
+                      <starRatingBox :rating="Number(listing.rating)" :max="5" size="sm" color="#FFC107" empty-color="#E0E0E0" stroke-color="#FFC107" :gap="2" :show-value="false" />
                     </div>
                   </div>
                   <svg class="h-5 w-5 lg:h-6 lg:w-6 text-red-500 cursor-pointer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -484,11 +484,11 @@ import Pagination from '~/components/common/pagination.vue';
 import { categoryService } from '@/services/categoryService';
 import { useListingsFilter } from '@/composables/useListingsFilter';
 import { getStatusClass } from '@/utils/filterUtils';
-import RatingStars from '@/components/common/RatingStars.vue';
+import starRatingBox from '@/components/common/starRatingBox.vue';
 
 export default {
   name: 'CategoryPage',
-  components: { Pagination, RatingStars },
+  components: { Pagination, starRatingBox },
   
   setup() {
     const route = useRoute();
@@ -503,11 +503,7 @@ export default {
     const showMobileFilters = ref(false);
     
     const ratings = ['1', '2', '3', '4', '5'];
-
-    // Use optimized filtering composable
     const { filters, filteredListings, toggleFilter, removeFilter, clearFilters } = useListingsFilter(allListings);
-
-    // All computed properties in component - NO external utils that cause errors
     const hasActiveFilters = computed(() => {
       const f = filters.value;
       return f.services.size > 0 ||

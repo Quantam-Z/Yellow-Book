@@ -340,7 +340,6 @@
     companyResponse?: CompanyResponse
   }
 
-  // Static data matching the provided image (Screenshot 2025-10-31 at 3.15.27 PM.png)
   const imageRatingBreakdown: Record<number, number> = {
     5: 120,
     4: 100,
