@@ -271,27 +271,27 @@ export default {
   }
 }
 
-/* * Boat Bottom Shape MODIFIED: 
- * Curve reduced by an additional 10% from the previous reduction.
+/* * Boat Bottom Shape MODIFIED:
+ * Curve flattened by an additional 10%.
  */
 .boat-bottom-radius {
-  /* New vertical radius: 43.2px * 0.9 = 38.88px */
-  border-bottom-left-radius: 50% 38.88px;
-  border-bottom-right-radius: 50% 38.88px;
+  /* Previous vertical radius 38.88px -> 34.99px (approx) */
+  border-bottom-left-radius: 50% 34.99px;
+  border-bottom-right-radius: 50% 34.99px;
 }
 
 @media (min-width: 640px) {
   .boat-bottom-radius {
-    /* New vertical radius: 64.8px * 0.9 = 58.32px */
-    border-bottom-left-radius: 50% 58.32px;
-    border-bottom-right-radius: 50% 58.32px;
+    /* Previous vertical radius 58.32px -> 52.49px (approx) */
+    border-bottom-left-radius: 50% 52.49px;
+    border-bottom-right-radius: 50% 52.49px;
   }
 }
 @media (min-width: 1024px) {
   .boat-bottom-radius {
-    /* New vertical radius: 90px * 0.9 = 81px */
-    border-bottom-left-radius: 50% 81px;
-    border-bottom-right-radius: 50% 81px;
+    /* Previous vertical radius 81px -> 72.9px */
+    border-bottom-left-radius: 50% 72.9px;
+    border-bottom-right-radius: 50% 72.9px;
   }
 }
 
