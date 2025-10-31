@@ -1,9 +1,7 @@
 <template>
   <div class="w-full relative flex-shrink-0 text-left text-base text-[#616161] bg-[#fff9e6] rounded-sm font-['Plus_Jakarta_Sans'] pb-7 boat-bottom-radius">
     <div class="relative z-10 w-full px-4 sm:px-6 md:px-12 lg:px-[120px] py-4 sm:py-6 flex flex-col">
-      <!-- Top Navigation -->
       <div class="flex items-center justify-between mb-6 sm:mb-12 md:mb-16">
-        <!-- Logo -->
         <nuxt-link
           to="/"
           class="w-[120px] sm:w-[118px] md:w-[118px] rounded-[4px] flex flex-col items-start p-2 box-border"
@@ -15,7 +13,6 @@
           />
         </nuxt-link>
 
-        <!-- Desktop Links -->
         <div class="hidden lg:flex items-center gap-8">
           <nuxt-link
             to="/catagory"
@@ -40,7 +37,6 @@
           </nuxt-link>
         </div>
 
-        <!-- Desktop Actions -->
         <div class="hidden lg:flex items-center gap-6 text-[#212121]">
           <div class="flex items-center justify-center cursor-pointer" @click="openLoginModal">
             <div class="relative leading-[160%] font-normal text-base">Login</div>
@@ -53,7 +49,6 @@
           </nuxt-link>
         </div>
 
-        <!-- Mobile Menu Button -->
         <button
           @click="toggleMobileMenu"
           class="lg:hidden p-2 rounded-full border-2 border-[#fcc207] bg-white shadow-md z-50 relative transform hover:scale-110 transition-transform"
@@ -63,7 +58,6 @@
         </button>
       </div>
 
-      <!-- Overlay -->
       <transition name="overlay">
         <div
           v-if="isMobileMenuOpen"
@@ -72,7 +66,6 @@
         ></div>
       </transition>
 
-      <!-- Mobile Menu -->
       <transition name="slide">
         <div
           v-if="isMobileMenuOpen"
@@ -87,7 +80,6 @@
               </button>
             </div>
 
-            <!-- Mobile Nav Links -->
             <nav class="flex-1 flex flex-col space-y-2 text-lg">
               <nuxt-link
                 to="/catagory"
@@ -114,7 +106,6 @@
               </nuxt-link>
             </nav>
 
-            <!-- Mobile Footer Buttons -->
             <div class="space-y-3 mt-auto pt-6 border-t border-gray-200">
               <button
                 @click="openLoginModal"
@@ -134,7 +125,6 @@
         </div>
       </transition>
 
-      <!-- Hero Section -->
       <div class="flex-1 flex justify-center items-start">
         <div class="max-w-[676px] w-full mx-auto flex flex-col items-center gap-6 sm:gap-8 text-center text-[#212121]">
           <div class="w-full flex flex-col items-center justify-center gap-3 sm:gap-4 md:gap-[26px]">
@@ -146,7 +136,6 @@
             </p>
           </div>
 
-          <!-- Search Box -->
           <div ref="searchContainer" class="w-full relative px-4">
             <div
               class="backdrop-blur-[16px] rounded-[12px] sm:rounded-[16px] bg-[#feecb2] flex flex-row items-center p-2 sm:p-3 md:p-3 gap-2 sm:gap-3 md:gap-[20px] text-[14px] sm:text-[16px] md:text-[16px]"
@@ -175,7 +164,6 @@
               </div>
             </div>
 
-            <!-- Dropdown -->
             <transition name="dropdown">
               <div
                 v-if="showDropdown"
@@ -187,7 +175,7 @@
                   @click="selectSearch(item)"
                   :class="[
                     'w-full h-[40px] sm:h-[44px] flex items-center px-3 sm:px-4 cursor-pointer transition-all text-xs sm:text-sm md:text-[14px] active:scale-[0.98]',
-                    index === 0 ? 'bg-[#f6fafd] hover:bg-[#e3f2fd]' : 'bg-[#fafafa] hover:bg-[#f0f0f0]',
+                    'bg-white hover:bg-[#f0f0f0]', 
                     index !== searchData.length - 1 ? 'border-b border-[#e0e0e0]' : ''
                   ]"
                 >
@@ -200,18 +188,19 @@
       </div>
     </div>
 
-    <!-- Login Modal -->
     <LoginModal :isOpen="showLoginModal" @close="closeLoginModal" />
   </div>
 </template>
 
 <script>
+// IMPORTANT: Ensure this path is correct for your project structure
 import LoginModal from '~/components/common/loginModal.vue'
 import { Menu, X } from 'lucide-vue-next'
 
 export default {
   name: 'ResponsiveLandingPage',
-  components: { LoginModal, Menu, X },
+  // LoginModal component registered here
+  components: { LoginModal, Menu, X }, 
   data() {
     return {
       showDropdown: false,
@@ -252,34 +241,25 @@ export default {
     },
     closeMobileMenu() {
       this.isMobileMenuOpen = false
+    },
+    handleClickOutside(e) {
+      const searchContainer = this.$refs.searchContainer
+      if (searchContainer && !searchContainer.contains(e.target)) {
+        this.showDropdown = false
+      }
     }
   },
   mounted() {
-    document.addEventListener('click', e => {
-      const searchContainer = this.$refs.searchContainer
-      if (searchContainer && !searchContainer.contains(e.target)) this.showDropdown = false
-    })
+    document.addEventListener('click', this.handleClickOutside)
   },
   beforeUnmount() {
-    document.removeEventListener('click', () => {})
+    document.removeEventListener('click', this.handleClickOutside)
   }
 }
 </script>
 
 <style scoped>
-.navbar-links :deep(a),
-.navbar-mobile :deep(a) {
-  text-decoration: none !important;
-}
-
-button,
-a,
-nuxt-link {
-  touch-action: manipulation;
-  cursor: pointer;
-}
-
-/* Height Control for Mobile */
+/* Height Control for Mobile (Unchanged) */
 .mobile-height {
   height: 100vh;
   min-height: 100vh;
@@ -291,26 +271,28 @@ nuxt-link {
   }
 }
 
-/* Boat Bottom Shape */
+/* * Boat Bottom Shape: 
+ * Using the values derived from 10% reduction (Original roundness was reduced by 50% + 20% + 10%)
+ */
 .boat-bottom-radius {
-  border-bottom-left-radius: 100px 25px;
-  border-bottom-right-radius: 100px 25px;
+  border-bottom-left-radius: 50% 43.2px;
+  border-bottom-right-radius: 50% 43.2px;
 }
 
 @media (min-width: 640px) {
   .boat-bottom-radius {
-    border-bottom-left-radius: 180px 40px;
-    border-bottom-right-radius: 180px 40px;
+    border-bottom-left-radius: 50% 64.8px;
+    border-bottom-right-radius: 50% 64.8px;
   }
 }
 @media (min-width: 1024px) {
   .boat-bottom-radius {
-    border-bottom-left-radius: 280px 60px;
-    border-bottom-right-radius: 280px 60px;
+    border-bottom-left-radius: 50% 90px;
+    border-bottom-right-radius: 50% 90px;
   }
 }
 
-/* Overlay Transition */
+/* Transition Styles (Unchanged) */
 .overlay-enter-active,
 .overlay-leave-active {
   transition: opacity 0.3s ease;
@@ -320,7 +302,6 @@ nuxt-link {
   opacity: 0;
 }
 
-/* Slide Transition */
 .slide-enter-active {
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -334,7 +315,6 @@ nuxt-link {
   transform: translateX(100%);
 }
 
-/* Dropdown Transition */
 .dropdown-enter-active {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -350,7 +330,7 @@ nuxt-link {
   opacity: 0;
 }
 
-/* Scrollbar Styling */
+/* Scrollbar Styling (Unchanged) */
 .overflow-y-auto::-webkit-scrollbar {
   width: 6px;
 }
