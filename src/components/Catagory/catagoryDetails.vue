@@ -391,7 +391,7 @@
                         empty-color="#E0E0E0"
                         border-color="#FFC107"
                       />
-                      <span class="text-sm text-darkslategray font-medium">{{ formatRating(listing.rating) }}</span>
+                      <span class="text-sm text-darkslategray font-medium"></span>
                     </div>
                   </div>
                   <svg class="h-5 w-5 lg:h-6 lg:w-6 text-red-500 cursor-pointer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
