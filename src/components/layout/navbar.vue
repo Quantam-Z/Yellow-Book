@@ -271,24 +271,27 @@ export default {
   }
 }
 
-/* * Boat Bottom Shape: 
- * Using the values derived from 10% reduction (Original roundness was reduced by 50% + 20% + 10%)
+/* * Boat Bottom Shape MODIFIED: 
+ * Curve reduced by an additional 10% from the previous reduction.
  */
 .boat-bottom-radius {
-  border-bottom-left-radius: 50% 43.2px;
-  border-bottom-right-radius: 50% 43.2px;
+  /* New vertical radius: 43.2px * 0.9 = 38.88px */
+  border-bottom-left-radius: 50% 38.88px;
+  border-bottom-right-radius: 50% 38.88px;
 }
 
 @media (min-width: 640px) {
   .boat-bottom-radius {
-    border-bottom-left-radius: 50% 64.8px;
-    border-bottom-right-radius: 50% 64.8px;
+    /* New vertical radius: 64.8px * 0.9 = 58.32px */
+    border-bottom-left-radius: 50% 58.32px;
+    border-bottom-right-radius: 50% 58.32px;
   }
 }
 @media (min-width: 1024px) {
   .boat-bottom-radius {
-    border-bottom-left-radius: 50% 90px;
-    border-bottom-right-radius: 50% 90px;
+    /* New vertical radius: 90px * 0.9 = 81px */
+    border-bottom-left-radius: 50% 81px;
+    border-bottom-right-radius: 50% 81px;
   }
 }
 
