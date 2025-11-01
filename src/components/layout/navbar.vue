@@ -140,17 +140,25 @@
             <div
               class="backdrop-blur-[16px] rounded-[12px] sm:rounded-[16px] bg-[#feecb2] flex flex-row items-center p-2 sm:p-3 md:p-3 gap-2 sm:gap-3 md:gap-[20px] text-[14px] sm:text-[16px] md:text-[16px]"
             >
-              <div class="flex-1 rounded-[8px] bg-[#fff9e6] flex flex-col items-start justify-center p-[10px] min-h-[44px] sm:min-h-[48px]">
-                <div class="w-full flex items-center">
-                  <div class="relative leading-[160%] capitalize truncate text-sm sm:text-base md:text-base">
-                    {{ selectedSearch }}
-                  </div>
-                </div>
+              <div class="flex-1 rounded-[8px] bg-[#fff9e6] flex flex-col items-start justify-center px-[10px] py-[6px] min-h-[44px] sm:min-h-[48px]">
+                <label class="w-full flex items-center">
+                  <input
+                    ref="searchInput"
+                    v-model="searchQuery"
+                    type="text"
+                    class="w-full bg-transparent outline-none leading-[160%] capitalize truncate text-sm sm:text-base md:text-base placeholder:text-[#9e9e9e]"
+                    :placeholder="selectedSearch"
+                    aria-label="Search agencies"
+                    @focus="openDropdown"
+                    @input="handleInput"
+                    @keydown.enter.prevent="performSearch"
+                  />
+                </label>
               </div>
 
               <div
                 class="relative rounded-lg bg-gold border-goldenrod border-solid border-b-[2px] box-border flex items-center p-2.5 gap-2 text-center text-lg text-gray font-plus-jakarta-sans cursor-pointer"
-                @click="toggleDropdown"
+                @click="handleSearchClick"
               >
                 <div class="relative leading-[160%] capitalize font-medium">Search</div>
                 <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -170,16 +178,22 @@
                 class="absolute top-full mt-2 left-4 right-4 rounded-[8px] border border-[#fee38d] overflow-hidden bg-white shadow-xl z-20 max-h-[200px] sm:max-h-[250px] md:max-h-[300px] overflow-y-auto"
               >
                 <div
-                  v-for="(item, index) in searchData"
+                  v-for="(item, index) in filteredSearchData"
                   :key="index"
                   @click="selectSearch(item)"
                   :class="[
                     'w-full h-[40px] sm:h-[44px] flex items-center px-3 sm:px-4 cursor-pointer transition-all text-xs sm:text-sm md:text-[14px] active:scale-[0.98]',
                     'bg-white hover:bg-[#f0f0f0]', 
-                    index !== searchData.length - 1 ? 'border-b border-[#e0e0e0]' : ''
+                    index !== filteredSearchData.length - 1 ? 'border-b border-[#e0e0e0]' : ''
                   ]"
                 >
                   <div class="leading-[170%] capitalize">{{ item }}</div>
+                </div>
+                <div
+                  v-if="!filteredSearchData.length"
+                  class="w-full py-4 px-4 text-center text-xs sm:text-sm text-[#9e9e9e] bg-white"
+                >
+                  No matches found
                 </div>
               </div>
             </transition>
@@ -200,11 +214,14 @@ import { Menu, X } from 'lucide-vue-next'
 export default {
   name: 'ResponsiveLandingPage',
   // LoginModal component registered here
-  components: { LoginModal, Menu, X }, 
+  components: { LoginModal, Menu, X },
+  emits: ['search'],
   data() {
     return {
       showDropdown: false,
       selectedSearch: 'Nomadic Travel',
+      searchQuery: 'Nomadic Travel',
+      cachedSearchQuery: '',
       showLoginModal: false,
       isMobileMenuOpen: false,
       searchData: [
@@ -221,12 +238,61 @@ export default {
       ]
     }
   },
+  computed: {
+    filteredSearchData() {
+      const query = this.searchQuery.trim().toLowerCase()
+
+      if (!query) {
+        return this.searchData
+      }
+
+      return this.searchData.filter(item => item.toLowerCase().includes(query))
+    }
+  },
   methods: {
-    toggleDropdown() {
-      this.showDropdown = !this.showDropdown
+    openDropdown() {
+      if (!this.showDropdown) {
+        this.cachedSearchQuery = this.searchQuery
+        if (this.searchQuery.trim() === this.selectedSearch.trim()) {
+          this.searchQuery = ''
+        }
+        this.showDropdown = true
+      }
+    },
+    handleInput() {
+      if (!this.showDropdown) {
+        this.showDropdown = true
+      }
+    },
+    handleSearchClick() {
+      const trimmedQuery = this.searchQuery.trim()
+
+      if (!this.showDropdown && (!trimmedQuery || trimmedQuery === this.selectedSearch)) {
+        this.openDropdown()
+        return
+      }
+
+      this.performSearch()
+    },
+    performSearch() {
+      const value = (this.searchQuery || this.selectedSearch).trim()
+
+      if (!value) {
+        return
+      }
+
+      this.selectedSearch = value
+      this.searchQuery = value
+      this.cachedSearchQuery = value
+      this.showDropdown = false
+      if (this.$emit) {
+        this.$emit('search', value)
+      }
     },
     selectSearch(item) {
       this.selectedSearch = item
+      this.searchQuery = item
+      this.cachedSearchQuery = item
       this.showDropdown = false
     },
     openLoginModal() {
@@ -245,7 +311,12 @@ export default {
     handleClickOutside(e) {
       const searchContainer = this.$refs.searchContainer
       if (searchContainer && !searchContainer.contains(e.target)) {
-        this.showDropdown = false
+        if (this.showDropdown) {
+          this.showDropdown = false
+          if (!this.searchQuery.trim()) {
+            this.searchQuery = this.cachedSearchQuery || this.selectedSearch
+          }
+        }
       }
     }
   },
