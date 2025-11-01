@@ -140,21 +140,22 @@
             <div
               class="backdrop-blur-[16px] rounded-[12px] sm:rounded-[16px] bg-[#feecb2] flex flex-row items-center p-2 sm:p-3 md:p-3 gap-2 sm:gap-3 md:gap-[20px] text-[14px] sm:text-[16px] md:text-[16px]"
             >
-              <div class="flex-1 rounded-[8px] bg-[#fff9e6] flex flex-col items-start justify-center px-[10px] py-[6px] min-h-[44px] sm:min-h-[48px]">
-                <label class="w-full flex items-center">
-                  <input
-                    ref="searchInput"
-                    v-model="searchQuery"
-                    type="text"
-                    class="w-full bg-transparent outline-none leading-[160%] capitalize truncate text-sm sm:text-base md:text-base placeholder:text-[#9e9e9e]"
-                    :placeholder="selectedSearch"
-                    aria-label="Search agencies"
-                    @focus="openDropdown"
-                    @input="handleInput"
-                    @keydown.enter.prevent="performSearch"
-                  />
-                </label>
-              </div>
+            <div class="flex-1 rounded-[8px] bg-[#fff9e6] flex flex-col items-start justify-center px-[10px] py-[6px] min-h-[44px] sm:min-h-[48px]">
+  <label class="w-full flex items-center">
+    <input
+      ref="searchInput"
+      v-model="searchQuery"
+      type="text"
+      class="w-full bg-transparent outline-none border-none focus:ring-0 leading-[160%] capitalize truncate text-sm sm:text-base md:text-base placeholder:text-[#9e9e9e]"
+      :placeholder="selectedSearch"
+      aria-label="Search agencies"
+      @focus="openDropdown"
+      @input="handleInput"
+      @keydown.enter.prevent="performSearch"
+    />
+  </label>
+</div>
+
 
               <div
                 class="relative rounded-lg bg-gold border-goldenrod border-solid border-b-[2px] box-border flex items-center p-2.5 gap-2 text-center text-lg text-gray font-plus-jakarta-sans cursor-pointer"
