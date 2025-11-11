@@ -142,10 +142,7 @@
               </div>
 
               <div v-if="expandedCompanyId === company.id" class="mt-3 pt-3 border-t border-gray-100 space-y-2 text-xs text-gray-700 transition-all duration-300">
-                  <div class="flex justify-between">
-                      <strong class="text-gray-900 font-semibold">ID:</strong> 
-                      <span class="font-medium text-right">{{ company.id }}</span>
-                  </div>
+                  
                   <div class="flex justify-between">
                       <strong class="text-gray-900 font-semibold">Email:</strong> 
                       <span class="text-right truncate max-w-[70%]">{{ company.email || 'Not Provided' }}</span>
