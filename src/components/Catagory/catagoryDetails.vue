@@ -88,22 +88,27 @@
         </div>
         <div class="self-stretch flex flex-col items-start gap-4 z-[1] text-left text-[14px] lg:text-[16px] text-gray-500">
           <div class="self-stretch flex items-center justify-between gap-0">
-            <div class="w-[34px] relative leading-[160%] capitalize font-medium inline-block shrink-0">{{ minPrice }}$</div>
-            <div class="relative leading-[160%] capitalize font-medium text-right">{{ maxPrice }}$</div>
+          <div class="relative leading-[160%] capitalize font-medium inline-block">
+            {{ formatCurrency(minPrice) }}
+          </div>
+          <div class="relative leading-[160%] capitalize font-medium text-right">
+            {{ formatCurrency(maxPrice) }}
+          </div>
           </div>
           <div class="self-stretch relative px-2">
             <input 
               type="range" 
               :min="minPrice" 
               :max="maxPrice" 
-              v-model="currentPrice"
+            :step="priceStep"
+            v-model.number="currentPrice"
               @input="handlePriceChange"
               class="w-full relative max-w-full overflow-hidden h-[18px] shrink-0 custom-slider"
-              :style="{'--progress': `${((currentPrice - minPrice) / (maxPrice - minPrice)) * 100}%`}"
+            :style="{'--progress': `${priceProgress}%`}"
             />
-            <div class="w-8 absolute top-[-25px] left-1/2 transform -translate-x-1/2 shadow-[0px_2px_4px_rgba(0,_0,_0,_0.1)] flex flex-col items-center z-[2] text-[12px] text-yellow-500">
-              <div class="self-stretch rounded-[4px] bg-white flex items-center justify-center p-1">
-                <b class="relative leading-[170%] capitalize">{{ currentPrice }}</b>
+          <div class="w-20 absolute top-[-28px] left-1/2 transform -translate-x-1/2 shadow-[0px_2px_4px_rgba(0,_0,_0,_0.1)] flex flex-col items-center z-[2] text-[12px] text-yellow-500">
+            <div class="self-stretch rounded-[4px] bg-white flex items-center justify-center px-2 py-1">
+              <b class="relative leading-[170%] capitalize">{{ formatCurrency(currentPrice) }}</b>
               </div>
               <div class="w-0 h-0 border-l-2 border-r-2 border-t-2 border-l-transparent border-r-transparent border-t-yellow-500 -mt-0.5"></div>
             </div>
@@ -279,6 +284,61 @@
 
     <!-- Main Content Area -->
     <div class="w-full xl:w-[792px] flex flex-col items-center relative gap-4 lg:gap-5 text-left text-darkslategray">
+      <div
+        v-if="currentCategory"
+        class="w-full rounded-[4px] bg-white border border-gainsboro border-solid flex flex-col gap-4 p-4 lg:p-5 shadow-sm"
+      >
+        <div class="flex flex-col lg:flex-row lg:items-start gap-4 lg:gap-6">
+          <div class="flex-1 flex flex-col gap-2">
+            <div class="text-xs font-semibold uppercase tracking-wide text-sky-500">
+              {{ currentCategory.slug?.replace(/-/g, ' ') || 'category overview' }}
+            </div>
+            <div class="text-xl lg:text-2xl font-semibold text-darkslategray capitalize">
+              {{ currentCategory.name }}
+            </div>
+            <p v-if="currentCategory.tagline" class="text-sm lg:text-base text-gray-600 leading-relaxed">
+              {{ currentCategory.tagline }}
+            </p>
+            <p v-if="currentCategory.description" class="text-sm text-gray-500 leading-relaxed">
+              {{ currentCategory.description }}
+            </p>
+          </div>
+          <img
+            v-if="currentCategory.heroImage"
+            :src="currentCategory.heroImage"
+            :alt="`${currentCategory.name} hero`"
+            class="w-full max-w-[220px] h-[140px] lg:h-[160px] object-cover rounded-md shadow-sm border border-whitesmoke self-center lg:self-start"
+          />
+        </div>
+
+        <div v-if="quickStats.length" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div
+            v-for="stat in quickStats"
+            :key="stat.label"
+            class="rounded-md border border-whitesmoke bg-ghostwhite px-3 py-3 text-center"
+          >
+            <div class="text-lg font-semibold text-darkslategray">{{ stat.value }}</div>
+            <div class="text-xs uppercase tracking-wide text-gray-500">{{ stat.label }}</div>
+          </div>
+        </div>
+
+        <div v-if="featuredServices.length" class="flex flex-wrap items-center gap-2 text-sm text-gray-700">
+          <span class="font-medium text-darkslategray">Top services:</span>
+          <span
+            v-for="service in featuredServices"
+            :key="service.value"
+            class="px-3 py-1 rounded-full bg-ghostwhite border border-whitesmoke text-gray-600 capitalize"
+          >
+            {{ service.label }}
+          </span>
+        </div>
+
+        <ul v-if="insights.length" class="list-disc list-inside text-sm text-gray-600 space-y-1">
+          <li v-for="(tip, index) in insights" :key="index">
+            {{ tip }}
+          </li>
+        </ul>
+      </div>
       
       <!-- Desktop Header -->
       <div class="hidden lg:flex w-full justify-between items-center mb-4 lg:mb-5">
@@ -505,68 +565,188 @@ export default {
     const allListings = ref([]);
     const loading = ref(true);
     
-    const minPrice = ref(10);
-    const maxPrice = ref(500);
-    const currentPrice = ref(240);
-    const showSortOptions = ref(false);
-    const showMobileFilters = ref(false);
-    
-    const ratings = ['1', '2', '3', '4', '5'];
-    const { filters, filteredListings, toggleFilter, removeFilter, clearFilters } = useListingsFilter(allListings);
-    const hasActiveFilters = computed(() => {
-      const f = filters.value;
-      return f.services.size > 0 ||
-             f.specializations.size > 0 ||
-             f.ratings.size > 0 ||
-             f.emergencyService !== null ||
-             f.maxPrice < Infinity;
-    });
+      const minPrice = ref(10);
+      const maxPrice = ref(500);
+      const currentPrice = ref(240);
+      const priceCurrency = ref('USD');
+      const priceStep = ref(5);
+      const showSortOptions = ref(false);
+      const showMobileFilters = ref(false);
 
-    const activeFiltersDisplay = computed(() => {
-      const f = filters.value;
-      const activeFilters = [];
-      
-      f.services.forEach(service => {
-        activeFilters.push({ type: 'service', value: service, label: service });
+      const ratings = ['1', '2', '3', '4', '5'];
+      const { filters, filteredListings, toggleFilter, removeFilter, clearFilters } = useListingsFilter(allListings);
+      const hasActiveFilters = computed(() => {
+        const f = filters.value;
+        return (
+          f.services.size > 0 ||
+          f.specializations.size > 0 ||
+          f.ratings.size > 0 ||
+          f.emergencyService !== null ||
+          f.maxPrice < Infinity
+        );
       });
-      
-      f.specializations.forEach(spec => {
-        activeFilters.push({ type: 'specialization', value: spec, label: spec });
-      });
-      
-      f.ratings.forEach(rating => {
-        activeFilters.push({ type: 'rating', value: rating, label: `${rating} star` });
-      });
-      
-      if (f.emergencyService !== null) {
-        activeFilters.push({ 
-          type: 'emergency', 
-          value: f.emergencyService, 
-          label: `Emergency: ${f.emergencyService ? 'Yes' : 'No'}` 
-        });
-      }
-      
-      if (f.maxPrice < Infinity) {
-        activeFilters.push({ 
-          type: 'price', 
-          value: f.maxPrice, 
-          label: `Max: $${f.maxPrice}` 
-        });
-      }
-      if (f.query) {
-        activeFilters.push({
-          type: 'query',
-          value: f.query,
-          label: `Search: ${f.query}`
-        });
-      }
-      
-      return activeFilters;
-    });
 
-    const displayedListings = computed(() => 
-      hasActiveFilters.value ? filteredListings.value : allListings.value
-    );
+      const activeFiltersDisplay = computed(() => {
+        const f = filters.value;
+        const activeFilters = [];
+
+        f.services.forEach((service) => {
+          activeFilters.push({ type: 'service', value: service, label: service });
+        });
+
+        f.specializations.forEach((spec) => {
+          activeFilters.push({ type: 'specialization', value: spec, label: spec });
+        });
+
+        f.ratings.forEach((rating) => {
+          activeFilters.push({ type: 'rating', value: rating, label: `${rating} star` });
+        });
+
+        if (f.emergencyService !== null) {
+          activeFilters.push({
+            type: 'emergency',
+            value: f.emergencyService,
+            label: `Emergency: ${f.emergencyService ? 'Yes' : 'No'}`,
+          });
+        }
+
+        if (f.maxPrice < Infinity) {
+          activeFilters.push({
+            type: 'price',
+            value: f.maxPrice,
+            label: `Max: $${f.maxPrice}`,
+          });
+        }
+
+        if (f.query) {
+          activeFilters.push({
+            type: 'query',
+            value: f.query,
+            label: `Search: ${f.query}`,
+          });
+        }
+
+        return activeFilters;
+      });
+
+      const currencySymbols = {
+        USD: '$',
+        EUR: '€',
+        GBP: '£',
+        JPY: '¥',
+        CNY: '¥',
+        AUD: '$',
+        CAD: '$',
+        MNT: '₮',
+        INR: '₹',
+      };
+
+      const toNumber = (value, fallback) => {
+        const num = Number(value);
+        return Number.isFinite(num) ? num : fallback;
+      };
+
+      const clampNumber = (value, min, max) => {
+        if (!Number.isFinite(value)) return min;
+        return Math.min(max, Math.max(min, value));
+      };
+
+      const getCurrencySymbol = (code) => currencySymbols[String(code || '').toUpperCase()] || '$';
+
+      const formatCurrency = (value) => {
+        const amount = Number(value);
+        const symbol = getCurrencySymbol(priceCurrency.value);
+        if (!Number.isFinite(amount)) {
+          return `${symbol}0`;
+        }
+        return `${symbol}${amount.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+      };
+
+      const applyPriceRange = (category) => {
+        const defaults = { min: 10, max: 500, step: 5, default: 240, currency: 'USD' };
+        const range = category?.filters?.priceRange;
+
+        const min = toNumber(range?.min, defaults.min);
+        const max = Math.max(min + 1, toNumber(range?.max, defaults.max));
+        const step = Math.max(1, toNumber(range?.step, defaults.step));
+        const defaultValue = toNumber(range?.default, max);
+        const currency = String(range?.currency || defaults.currency).toUpperCase();
+
+        minPrice.value = min;
+        maxPrice.value = max;
+        priceStep.value = step;
+        priceCurrency.value = currency;
+        currentPrice.value = clampNumber(defaultValue, min, max);
+      };
+
+      const displayedListings = computed(() =>
+        hasActiveFilters.value ? filteredListings.value : allListings.value
+      );
+
+      const priceProgress = computed(() => {
+        const range = maxPrice.value - minPrice.value;
+        if (range <= 0) return 100;
+        return clampNumber(((currentPrice.value - minPrice.value) / range) * 100, 0, 100);
+      });
+
+      const quickStats = computed(() => {
+        const stats = currentCategory.value?.quickStats;
+        if (!stats || typeof stats !== 'object') return [];
+
+        const items = [];
+
+        if (stats.totalListings != null) {
+          items.push({
+            label: 'Listings',
+            value: Number(stats.totalListings).toLocaleString(),
+          });
+        }
+
+        if (stats.averageRating != null) {
+          const rating = Number(stats.averageRating);
+          items.push({
+            label: 'Avg. Rating',
+            value: Number.isFinite(rating) ? rating.toFixed(1) : String(stats.averageRating),
+          });
+        }
+
+        if (stats.verifiedPercent != null) {
+          const percent = Number(stats.verifiedPercent);
+          const value = Number.isFinite(percent) ? `${Math.round(percent)}%` : String(stats.verifiedPercent);
+          items.push({
+            label: 'Verified',
+            value,
+          });
+        }
+
+        return items;
+      });
+
+      const featuredServices = computed(() => {
+        const services = currentCategory.value?.topServices;
+        if (!Array.isArray(services)) return [];
+
+        return services
+          .map((service) => {
+            if (typeof service === 'string') {
+              return { label: service, value: service };
+            }
+            if (service && typeof service === 'object') {
+              const label = service.label || service.value;
+              const value = service.value || service.label || label;
+              if (!label) return null;
+              return { label, value };
+            }
+            return null;
+          })
+          .filter((service) => service && service.label);
+      });
+
+      const insights = computed(() => {
+        const tips = currentCategory.value?.insights;
+        if (!Array.isArray(tips)) return [];
+        return tips.filter((tip) => typeof tip === 'string' && tip.trim().length > 0);
+      });
 
     // Pagination state driven by route
     const pageSize = ref(5);
@@ -601,28 +781,36 @@ export default {
     };
     syncFromRoute();
 
-    // Load category data
-    const setCategoryFromURL = () => {
-      loading.value = true;
-      try {
-        const urlParams = new URLSearchParams(window.location.search);
-        const categoryName = urlParams.get('name');
-        
-        currentCategory.value = categoryService.getCategoryByName(categoryName);
-        allListings.value = categoryService.getListingsByCategory(categoryName);
-      } catch (error) {
-        console.error('Error loading category data:', error);
-        currentCategory.value = categoryService.getDefaultCategory();
-        allListings.value = [];
-      } finally {
-        loading.value = false;
-      }
-    };
+      // Load category data
+      const setCategoryFromURL = () => {
+        loading.value = true;
+        try {
+          const urlParams = new URLSearchParams(window.location.search);
+          const categoryName = urlParams.get('name');
+          const categorySlug = urlParams.get('slug');
+          const identifier = categorySlug || categoryName;
 
-    // Methods
-    const handlePriceChange = () => {
-      toggleFilter('maxPrice', currentPrice.value);
-      currentPage.value = 1;
+          clearFilters();
+
+          currentCategory.value = categoryService.getCategoryByName(identifier);
+          allListings.value = categoryService.getListingsByCategory(identifier);
+          applyPriceRange(currentCategory.value);
+        } catch (error) {
+          console.error('Error loading category data:', error);
+          clearFilters();
+          currentCategory.value = categoryService.getDefaultCategory();
+          allListings.value = [];
+          applyPriceRange(currentCategory.value);
+        } finally {
+          loading.value = false;
+        }
+      };
+
+      // Methods
+      const handlePriceChange = () => {
+        currentPrice.value = clampNumber(currentPrice.value, minPrice.value, maxPrice.value);
+        toggleFilter('maxPrice', currentPrice.value);
+        currentPage.value = 1;
     };
 
     const setEmergencyService = (value) => {
@@ -700,6 +888,10 @@ export default {
       document.removeEventListener('click', handleClickOutside);
     });
 
+      watch(currentCategory, (category) => {
+        applyPriceRange(category);
+      });
+
     // Watch for route changes
     watch(
       () => route.query,
@@ -722,16 +914,22 @@ export default {
       minPrice,
       maxPrice,
       currentPrice,
+        priceStep,
       showSortOptions,
       showMobileFilters,
       ratings,
       hasActiveFilters,
       activeFiltersDisplay,
       displayedListings,
+        priceProgress,
+        quickStats,
+        featuredServices,
+        insights,
       paginatedListings,
       currentPage,
       totalPages,
       filters,
+        formatCurrency,
       handlePriceChange,
       setEmergencyService,
       toggleService,
