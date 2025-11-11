@@ -76,10 +76,10 @@ import {
   Shield,
   Settings,
   LogOut,
-  Menu,
-  X
+  Menu
 } from "lucide-vue-next";
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref } from "vue";
+import { useClientEventListener } from '@/composables/useClientEventListener';
 import { useAuthStore } from '~/stores/auth';
 
 const isOpen = ref(false);
@@ -107,12 +107,14 @@ const bottomMenu = [
 
 // NEW: Function to handle scroll event
 const handleScroll = () => {
+  if (!import.meta.client) return;
   // Check if the user has scrolled more than 50 pixels down
   isScrolled.value = window.scrollY > 50; 
 };
 
 // Close sidebar on mobile when clicking menu
 const closeOnMobile = () => {
+  if (!import.meta.client) return;
   if (window.innerWidth < 768) {
     isOpen.value = false;
   }
@@ -130,14 +132,7 @@ const handleBottomMenuAction = async (item) => {
   }
 };
 
-// NEW: Lifecycle hooks to manage scroll listener
-onMounted(() => {
-  window.addEventListener('scroll', handleScroll);
-});
-
-onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll);
-});
+useClientEventListener<Event>(() => window, 'scroll', handleScroll, { passive: true, immediate: true });
 </script>
 
 <style scoped>

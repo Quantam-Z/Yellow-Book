@@ -82,10 +82,10 @@ import {
   ClipboardList,
   Briefcase,
   User,
-  Menu,
-  X
+  Menu
 } from "lucide-vue-next";
-import { ref, onMounted, onUnmounted } from "vue"; // Import lifecycle hooks
+import { ref } from "vue";
+import { useClientEventListener } from '@/composables/useClientEventListener';
 import { useAuthStore } from '~/stores/auth';
 
 const isOpen = ref(false);
@@ -111,6 +111,7 @@ const bottomMenu = [
 
 // NEW: Function to handle scroll event
 const handleScroll = () => {
+  if (!import.meta.client) return;
   // Set isScrolled to true if the user scrolls more than 50 pixels down
   // Note: We use !isOpen in the class binding to prevent the button from disappearing when the menu is open, 
   // even if scrolled, allowing the user to close it.
@@ -119,6 +120,7 @@ const handleScroll = () => {
 
 // Function to close the sidebar only on small screens
 const closeOnMobile = () => {
+  if (!import.meta.client) return;
   // Note: Tailwind's 'md' breakpoint is 768px, so we use this value for consistency.
   if (window.innerWidth < 768) {
     isOpen.value = false;
@@ -137,14 +139,7 @@ const handleBottomMenuAction = async (item) => {
   }
 };
 
-// NEW: Add scroll listener when component is mounted
-onMounted(() => {
-  window.addEventListener('scroll', handleScroll);
-});
-
-onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll);
-});
+useClientEventListener<Event>(() => window, 'scroll', handleScroll, { passive: true, immediate: true });
 </script>
 
 <style scoped>

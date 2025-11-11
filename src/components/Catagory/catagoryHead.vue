@@ -41,6 +41,10 @@ const categoryName = computed(() => {
 });
 
 const goBack = () => {
+  if (!import.meta.client) {
+    router.push('/');
+    return;
+  }
   if (window.history.length > 1) {
     router.go(-1);
   } else {

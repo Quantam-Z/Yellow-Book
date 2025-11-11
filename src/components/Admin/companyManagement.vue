@@ -473,12 +473,13 @@
 </template>
 
 <script setup>
-import { ref, computed, defineAsyncComponent, watchEffect, watch, onMounted, onBeforeUnmount } from 'vue';
+import { ref, computed, defineAsyncComponent, watchEffect, watch } from 'vue';
 import { Search as SearchIcon, Eye as EyeIcon, CheckCircle as CheckCircleIcon, ChevronDown as ChevronDownIcon, ChevronLeft as ChevronLeftIcon, ChevronRight as ChevronRightIcon, Filter as FilterIcon, Phone as PhoneIcon, Globe as GlobeIcon, MoreHorizontal } from "lucide-vue-next";
 import { getStatusClass, getStatusShort } from '~/composables/useStatusClass'
 import { useSelection } from '~/composables/useSelection'
 import { useStubClient, useStubResource } from '~/services/stubClient'
 import DetailModal from '~/components/common/DetailModal.vue'
+import { useClientEventListener } from '@/composables/useClientEventListener';
 
 const AddCompany = defineAsyncComponent(() => import('~/components/modal/addCompany.vue'))
 
@@ -684,16 +685,7 @@ const updateViewport = () => {
   isMobileView.value = window.innerWidth < 1024;
 };
 
-onMounted(() => {
-  if (!import.meta.client) return;
-  updateViewport();
-  window.addEventListener('resize', updateViewport);
-});
-
-onBeforeUnmount(() => {
-  if (!import.meta.client) return;
-  window.removeEventListener('resize', updateViewport);
-});
+useClientEventListener<Event>(() => window, 'resize', updateViewport, { passive: true, immediate: true });
 
 watch(isMobileView, (isMobile) => {
   if (!isMobile) {

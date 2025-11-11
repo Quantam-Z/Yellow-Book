@@ -84,7 +84,8 @@ import {
   LogOut,
   Menu 
 } from "lucide-vue-next";
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref } from "vue";
+import { useClientEventListener } from '@/composables/useClientEventListener';
 import { useAuthStore } from '~/stores/auth';
 
 const isOpen = ref(false);
@@ -111,11 +112,13 @@ const bottomMenu = [
 
 // Function to handle scroll event
 const handleScroll = () => {
+  if (!import.meta.client) return;
   isScrolled.value = window.scrollY > 100; 
 };
 
 // Close sidebar function
 const closeSidebar = () => {
+  if (!import.meta.client) return;
   if (window.innerWidth < 768) {
     isOpen.value = false;
   }
@@ -142,26 +145,15 @@ const handleEscapeKey = (event) => {
 
 // Handle resize
 const handleResize = () => {
+  if (!import.meta.client) return;
   if (window.innerWidth >= 768) {
     isOpen.value = false;
   }
 };
 
-// Add event listeners
-onMounted(() => {
-  document.addEventListener('keydown', handleEscapeKey);
-  window.addEventListener('resize', handleResize);
-  // Add scroll listener
-  window.addEventListener('scroll', handleScroll); 
-});
-
-// Remove event listeners
-onUnmounted(() => {
-  document.removeEventListener('keydown', handleEscapeKey);
-  window.removeEventListener('resize', handleResize);
-  // Remove scroll listener
-  window.removeEventListener('scroll', handleScroll); 
-});
+useClientEventListener<KeyboardEvent>(() => document, 'keydown', handleEscapeKey);
+useClientEventListener<Event>(() => window, 'resize', handleResize, { passive: true, immediate: true });
+useClientEventListener<Event>(() => window, 'scroll', handleScroll, { passive: true, immediate: true }); 
 </script>
 
 <style scoped>

@@ -536,7 +536,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watchEffect, watch, onMounted, onBeforeUnmount } from 'vue';
+import { ref, computed, watchEffect, watch } from 'vue';
 import { 
   Search as SearchIcon,
   Eye as EyeIcon,
@@ -557,6 +557,7 @@ import { getStatusClass, getRoleClass } from '~/composables/useStatusClass'
 import { useSelection } from '~/composables/useSelection'
 import { useStubClient, useStubResource } from '~/services/stubClient'
 import DetailModal from '~/components/common/DetailModal.vue'
+import { useClientEventListener } from '@/composables/useClientEventListener';
 
 // --- State ---
 const showMobileFilters = ref(false);
@@ -811,16 +812,7 @@ const updateViewport = () => {
   isMobileView.value = window.innerWidth < 1024;
 };
 
-onMounted(() => {
-  if (!import.meta.client) return;
-  updateViewport();
-  window.addEventListener('resize', updateViewport);
-});
-
-onBeforeUnmount(() => {
-  if (!import.meta.client) return;
-  window.removeEventListener('resize', updateViewport);
-});
+useClientEventListener<Event>(() => window, 'resize', updateViewport, { passive: true, immediate: true });
 
 watch(isMobileView, (isMobile) => {
   if (!isMobile) {
