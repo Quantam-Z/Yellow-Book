@@ -576,11 +576,18 @@
     border-bottom-left-radius: 12px;
   }
 
-  @media (max-width: 640px) {
-    .reply-connector::before {
-      display: none;
-    }
+@media (max-width: 639px) {
+  .reply-connector {
+    padding-left: 1.25rem;
   }
+
+  .reply-connector::before {
+    left: -18px;
+    top: -16px;
+    width: 26px;
+    height: calc(100% + 24px);
+  }
+}
 
   @media (min-width: 640px) and (max-width: 767px) {
     .reply-connector::before {
