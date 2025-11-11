@@ -185,20 +185,20 @@
                     Loading search options...
                   </div>
                   <template v-else>
+                      <div
+                        v-for="(entry, index) in filteredSearchEntries"
+                        :key="entry.slug || entry.title || index"
+                        @click="selectSearch(entry)"
+                        :class="[
+                          'w-full h-[40px] sm:h-[44px] flex items-center px-3 sm:px-4 cursor-pointer transition-all text-xs sm:text-sm md:text-[14px] active:scale-[0.98]',
+                          'bg-white hover:bg-[#f0f0f0]',
+                          index !== filteredSearchEntries.length - 1 ? 'border-b border-[#e0e0e0]' : ''
+                        ]"
+                      >
+                        <div class="leading-[170%] capitalize">{{ entry.title }}</div>
+                      </div>
                     <div
-                      v-for="(item, index) in filteredSearchData"
-                      :key="index"
-                      @click="selectSearch(item)"
-                      :class="[
-                        'w-full h-[40px] sm:h-[44px] flex items-center px-3 sm:px-4 cursor-pointer transition-all text-xs sm:text-sm md:text-[14px] active:scale-[0.98]',
-                        'bg-white hover:bg-[#f0f0f0]',
-                        index !== filteredSearchData.length - 1 ? 'border-b border-[#e0e0e0]' : ''
-                      ]"
-                    >
-                      <div class="leading-[170%] capitalize">{{ item }}</div>
-                    </div>
-                    <div
-                      v-if="!filteredSearchData.length"
+                      v-if="!filteredSearchEntries.length"
                       class="w-full py-4 px-4 text-center text-xs sm:text-sm text-[#9e9e9e] bg-white"
                     >
                       No matches found
@@ -219,12 +219,36 @@
 // IMPORTANT: Ensure this path is correct for your project structure
 import LoginModal from '~/components/common/loginModal.vue'
 import { Menu, X } from 'lucide-vue-next'
+import { useDirectoryListings } from '@/composables/useDirectoryListings'
 
 export default {
   name: 'ResponsiveLandingPage',
   // LoginModal component registered here
   components: { LoginModal, Menu, X },
   emits: ['search'],
+  setup() {
+    const {
+      ensureLoaded,
+      pending,
+      ready,
+      matchSearch,
+      getBySlug,
+      getById,
+      getByTitle,
+      listings,
+    } = useDirectoryListings()
+
+    return {
+      directoryEnsureLoaded: ensureLoaded,
+      directoryPending: pending,
+      directoryReady: ready,
+      directoryMatchSearch: matchSearch,
+      directoryGetBySlug: getBySlug,
+      directoryGetById: getById,
+      directoryGetByTitle: getByTitle,
+      directoryListings: listings,
+    }
+  },
   data() {
     const defaultSearchPlaceholder = 'Search agencies'
     return {
@@ -234,25 +258,35 @@ export default {
       cachedSearchQuery: '',
       showLoginModal: false,
       isMobileMenuOpen: false,
-      searchData: [],
-      agencyRecords: [],
-      isLoadingSearchData: false,
-      defaultSearchPlaceholder
+      defaultSearchPlaceholder,
+      dropdownResultLimit: 12,
+      directoryInitialized: false,
     }
   },
   computed: {
-    filteredSearchData() {
-      const query = this.searchQuery.trim().toLowerCase()
-
-      if (!query) {
-        return this.searchData
+    isLoadingSearchData() {
+      return this.directoryPending && !this.directoryReady
+    },
+    filteredSearchEntries() {
+      if (!this.directoryReady) {
+        return []
       }
-
-      return this.searchData.filter(item => item.toLowerCase().includes(query))
+      const query = this.searchQuery.trim()
+      return this.directoryMatchSearch(query, this.dropdownResultLimit)
     }
   },
   methods: {
-    openDropdown() {
+    async initializeSearchDirectory() {
+      if (this.directoryInitialized) return
+      this.directoryInitialized = true
+      try {
+        await this.directoryEnsureLoaded()
+      } catch (error) {
+        console.error('Failed to load directory listings for search:', error)
+      }
+    },
+    async openDropdown() {
+      await this.initializeSearchDirectory()
       if (!this.showDropdown) {
         this.cachedSearchQuery = this.searchQuery
         if (this.searchQuery.trim() === this.selectedSearch.trim()) {
@@ -261,29 +295,27 @@ export default {
         this.showDropdown = true
       }
     },
-    handleInput() {
+    async handleInput() {
+      await this.initializeSearchDirectory()
       if (!this.showDropdown) {
         this.showDropdown = true
       }
     },
     handleSearchClick() {
       const trimmedQuery = this.searchQuery.trim()
-
       if (!trimmedQuery) {
         if (!this.showDropdown) {
           this.openDropdown()
         }
         return
       }
-
       this.performSearch()
     },
-    performSearch() {
+    async performSearch() {
       const value = (this.searchQuery || this.selectedSearch).trim()
+      if (!value) return
 
-      if (!value) {
-        return
-      }
+      await this.initializeSearchDirectory()
 
       this.selectedSearch = value
       this.searchQuery = value
@@ -298,10 +330,11 @@ export default {
         this.navigateToPopularListing(matchedRecord)
       }
     },
-    selectSearch(item) {
-      this.selectedSearch = item
-      this.searchQuery = item
-      this.cachedSearchQuery = item
+    selectSearch(entry) {
+      if (!entry) return
+      this.selectedSearch = entry.title
+      this.searchQuery = entry.title
+      this.cachedSearchQuery = entry.title
       this.showDropdown = false
     },
     openLoginModal() {
@@ -328,66 +361,19 @@ export default {
         }
       }
     },
-    async loadSearchData() {
-      if (this.isLoadingSearchData) {
-        return
-      }
-      this.isLoadingSearchData = true
-      try {
-        const response = await fetch('/stubs/agencies.json', { cache: 'no-store' })
-        if (!response.ok) {
-          throw new Error(`Failed to load agencies stub (${response.status})`)
-        }
-        const payload = await response.json()
-        if (!Array.isArray(payload)) {
-          throw new Error('Agencies stub did not return an array')
-        }
-
-        const normalizedRecords = payload
-          .map(item => {
-            const rawTitle = typeof item?.title === 'string' ? item.title.trim() : ''
-            if (!rawTitle) return null
-            const normalizedTitle = this.normalizeTitle(rawTitle)
-            if (!normalizedTitle) return null
-            return {
-              title: rawTitle,
-              normalizedTitle,
-              slug: this.slugify(rawTitle)
-            }
-          })
-          .filter(Boolean)
-
-        this.agencyRecords = normalizedRecords
-        this.searchData = normalizedRecords.map(record => record.title)
-
-        const initialTitle = normalizedRecords[0]?.title
-        if (initialTitle) {
-          if (!this.searchQuery) {
-            this.searchQuery = initialTitle
-          }
-          if (!this.selectedSearch || this.selectedSearch === this.defaultSearchPlaceholder) {
-            this.selectedSearch = initialTitle
-          }
-          if (!this.cachedSearchQuery) {
-            this.cachedSearchQuery = initialTitle
-          }
-        }
-      } catch (error) {
-        console.error('Failed to load agencies search data:', error)
-      } finally {
-        this.isLoadingSearchData = false
-      }
-    },
     findAgencyRecord(value) {
       const normalized = this.normalizeTitle(value)
-      if (!normalized) {
-        return null
+      if (!normalized) return null
+
+      const exactByTitle = this.directoryGetByTitle(value)
+      if (exactByTitle) return exactByTitle
+
+      const suggestions = this.directoryMatchSearch(value, 1)
+      if (suggestions.length) {
+        const bySlug = this.directoryGetBySlug(suggestions[0].slug)
+        if (bySlug) return bySlug
       }
-      const exactMatch = this.agencyRecords.find(record => record.normalizedTitle === normalized)
-      if (exactMatch) {
-        return exactMatch
-      }
-      return this.agencyRecords.find(record => record.normalizedTitle.includes(normalized)) || null
+      return null
     },
     normalizeTitle(value) {
       return String(value || '')
@@ -395,25 +381,23 @@ export default {
         .replace(/\s+/g, ' ')
         .trim()
     },
-    slugify(value) {
-      return String(value || '')
-        .toLowerCase()
-        .trim()
-        .replace(/&/g, 'and')
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-+|-+$/g, '')
-    },
     navigateToPopularListing(record) {
-      if (!this.$router || !record) {
-        return
+      if (!this.$router || !record) return
+      const query = {}
+      if (record.slug) {
+        query.slug = record.slug
       }
-      const query = record.slug ? { slug: record.slug } : { title: record.title }
+      if (record.id != null) {
+        query.id = String(record.id)
+      } else if (!record.slug) {
+        query.title = record.title
+      }
       this.$router.push({ path: '/agency', query })
     }
   },
   mounted() {
     document.addEventListener('click', this.handleClickOutside)
-    this.loadSearchData()
+    this.initializeSearchDirectory()
   },
   beforeUnmount() {
     document.removeEventListener('click', this.handleClickOutside)
