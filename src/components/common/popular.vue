@@ -3,16 +3,7 @@ import { ref, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { MapPin } from 'lucide-vue-next';
 import StarRatingBox from '@/components/common/starRatingBox.vue';
-import { useStubResource } from '~/services/stubClient';
-
-// --- Types ---
-type StubAgency = {
-  title: string;
-  description: string;
-  image: string;
-  rating: number;
-  location: string;
-};
+import { useDirectoryListings } from '@/composables/useDirectoryListings';
 
 type SortKey = 'rating' | 'title' | 'location';
 type SortOrder = 'asc' | 'desc';
@@ -36,9 +27,17 @@ const props = withDefaults(
 // --- Router ---
 const router = useRouter();
 
-// --- Reactive States ---
-const { data: agenciesDataRef, pending, error: agenciesError } = await useStubResource('agencies');
-const loading = computed(() => pending.value);
+// --- Directory Listings ---
+const {
+  ensureLoaded,
+  pending: directoryPending,
+  error: directoryError,
+  listings: directoryListings,
+} = useDirectoryListings();
+
+await ensureLoaded();
+
+const loading = computed(() => directoryPending.value);
 const error = ref<string | null>(null);
 
 // --- Utility Functions ---
@@ -61,7 +60,7 @@ const goToAgency = (title: string, slug?: string, id?: number | string) => {
   router.push({ path: '/agency', query });
 };
 
-watch(agenciesError, (err) => {
+watch(directoryError, (err) => {
   if (err) {
     console.error(err);
     error.value = err.message || 'Failed to load agencies';
@@ -72,14 +71,14 @@ watch(agenciesError, (err) => {
 
 // --- Computed: Map & Sort ---
 const mappedAgencies = computed(() =>
-  (agenciesDataRef.value || []).map((a: StubAgency) => ({
-    id: slugify(a.title),
-    title: a.title,
-    description: a.description,
-    image: a.image,
-    rating: Math.max(0, Math.min(5, Number(a.rating) || 0)),
-    location: a.location,
-    slug: slugify(a.title),
+  (directoryListings.value || []).map((listing: any) => ({
+    id: listing.slug || String(listing.id ?? slugify(listing.title)),
+    title: listing.title,
+    description: listing.description,
+    image: listing.image,
+    rating: Math.max(0, Math.min(5, Number(listing.rating) || 0)),
+    location: listing.location,
+    slug: listing.slug,
   }))
 );
 

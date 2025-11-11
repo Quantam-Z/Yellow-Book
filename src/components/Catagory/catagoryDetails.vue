@@ -494,33 +494,61 @@ import { categoryService } from '@/services/categoryService';
 import { useListingsFilter } from '@/composables/useListingsFilter';
 import { getStatusClass } from '@/utils/filterUtils';
 import starRatingBox from '@/components/common/starRatingBox.vue';
+import { useDirectoryListings } from '@/composables/useDirectoryListings';
 
 export default {
   name: 'CategoryPage',
   components: { Pagination, starRatingBox },
   
-  setup() {
-    const route = useRoute();
-    const currentCategory = ref(null);
-    const allListings = ref([]);
-    const loading = ref(true);
-    
-    const minPrice = ref(10);
-    const maxPrice = ref(500);
-    const currentPrice = ref(240);
-    const showSortOptions = ref(false);
-    const showMobileFilters = ref(false);
-    
-    const ratings = ['1', '2', '3', '4', '5'];
-    const { filters, filteredListings, toggleFilter, removeFilter, clearFilters } = useListingsFilter(allListings);
-    const hasActiveFilters = computed(() => {
-      const f = filters.value;
-      return f.services.size > 0 ||
-             f.specializations.size > 0 ||
-             f.ratings.size > 0 ||
-             f.emergencyService !== null ||
-             f.maxPrice < Infinity;
-    });
+    setup() {
+      const route = useRoute();
+      const showSortOptions = ref(false);
+      const showMobileFilters = ref(false);
+      const currentPrice = ref(0);
+      
+      const ratings = ['1', '2', '3', '4', '5'];
+      const pageSize = ref(5);
+      const currentPage = ref(1);
+
+      const {
+        ensureLoaded,
+        pending: directoryPending,
+        listings: directoryListings,
+      } = useDirectoryListings();
+
+      ensureLoaded();
+
+      const categoryNameParam = computed(() => {
+        const raw = route.query.name;
+        return typeof raw === 'string' ? decodeURIComponent(raw) : '';
+      });
+
+      const normalizedCategoryName = computed(() =>
+        categoryService.normalizeCategoryName(categoryNameParam.value)
+      );
+
+      const currentCategory = computed(() =>
+        categoryService.getCategoryByName(categoryNameParam.value)
+      );
+
+      const categoryListings = computed(() => {
+        const normalized = normalizedCategoryName.value;
+        if (!normalized) return [];
+        return directoryListings.value.filter(
+          (listing) => listing.normalizedCategory === normalized
+        );
+      });
+
+      const { filters, filteredListings, toggleFilter, removeFilter, clearFilters } = useListingsFilter(categoryListings);
+      const hasActiveFilters = computed(() => {
+        const f = filters.value;
+        return f.services.size > 0 ||
+               f.specializations.size > 0 ||
+               f.ratings.size > 0 ||
+               f.emergencyService !== null ||
+               f.maxPrice < Infinity ||
+               !!f.query;
+      });
 
     const activeFiltersDisplay = computed(() => {
       const f = filters.value;
@@ -564,66 +592,68 @@ export default {
       return activeFilters;
     });
 
-    const displayedListings = computed(() => 
-      hasActiveFilters.value ? filteredListings.value : allListings.value
-    );
+      const displayedListings = computed(() => 
+        hasActiveFilters.value ? filteredListings.value : categoryListings.value
+      );
 
-    // Pagination state driven by route
-    const pageSize = ref(5);
-    const currentPage = ref(1);
-    const totalItems = computed(() => displayedListings.value.length);
-    const totalPages = computed(() => Math.max(1, Math.ceil(totalItems.value / pageSize.value)));
-    const paginatedListings = computed(() => {
-      // Clamp current page when totalPages decreases
-      if (currentPage.value > totalPages.value) currentPage.value = totalPages.value;
-      if (currentPage.value < 1) currentPage.value = 1;
-      const start = (currentPage.value - 1) * pageSize.value;
-      return displayedListings.value.slice(start, start + pageSize.value);
-    });
+      const totalItems = computed(() => displayedListings.value.length);
+      const totalPages = computed(() => Math.max(1, Math.ceil(totalItems.value / pageSize.value)));
+      const paginatedListings = computed(() => {
+        const start = (currentPage.value - 1) * pageSize.value;
+        return displayedListings.value.slice(start, start + pageSize.value);
+      });
+      const loading = computed(() => directoryPending.value);
 
-    const clampRating = (value) => {
+      const priceBounds = computed(() => {
+        const values = categoryListings.value
+          .map((listing) => Number(listing.price))
+          .filter((value) => Number.isFinite(value));
+
+        if (!values.length) {
+          return { min: 0, max: 0 };
+        }
+
+        return {
+          min: Math.min(...values),
+          max: Math.max(...values),
+        };
+      });
+
+      const minPrice = computed(() => priceBounds.value.min || 0);
+      const maxPrice = computed(() => priceBounds.value.max || 0);
+
+      watch(
+        priceBounds,
+        (bounds) => {
+          const nextMax = bounds.max || 0;
+          currentPrice.value = nextMax;
+          toggleFilter('maxPrice', Infinity);
+        },
+        { immediate: true }
+      );
+
+      const clampRating = (value) => {
       const num = Number(value);
       if (!Number.isFinite(num)) return 0;
       return Math.min(5, Math.max(0, num));
     };
 
-    const formatRating = (value) => {
-      const num = Number(value);
-      if (!Number.isFinite(num)) return '--';
-      return num.toFixed(1);
-    };
-
-    const syncFromRoute = () => {
-      const q = typeof route.query.q === 'string' ? route.query.q : '';
-      if (q !== filters.value.query) toggleFilter('query', q);
-      const page = parseInt(String(route.query.page || '1'));
-      currentPage.value = Number.isFinite(page) && page > 0 ? page : 1;
-    };
-    syncFromRoute();
-
-    // Load category data
-    const setCategoryFromURL = () => {
-      loading.value = true;
-      try {
-        const urlParams = new URLSearchParams(window.location.search);
-        const categoryName = urlParams.get('name');
-        
-        currentCategory.value = categoryService.getCategoryByName(categoryName);
-        allListings.value = categoryService.getListingsByCategory(categoryName);
-      } catch (error) {
-        console.error('Error loading category data:', error);
-        currentCategory.value = categoryService.getDefaultCategory();
-        allListings.value = [];
-      } finally {
-        loading.value = false;
-      }
-    };
+      const formatRating = (value) => {
+        const num = Number(value);
+        if (!Number.isFinite(num)) return '--';
+        return num.toFixed(1);
+      };
 
     // Methods
-    const handlePriceChange = () => {
-      toggleFilter('maxPrice', currentPrice.value);
-      currentPage.value = 1;
-    };
+      const handlePriceChange = () => {
+        const bounds = priceBounds.value;
+        if (!bounds.max || currentPrice.value >= bounds.max) {
+          toggleFilter('maxPrice', Infinity);
+        } else {
+          toggleFilter('maxPrice', currentPrice.value);
+        }
+        currentPage.value = 1;
+      };
 
     const setEmergencyService = (value) => {
       toggleFilter('emergencyService', value);
@@ -662,16 +692,25 @@ export default {
       }
     };
 
-    const clearAllFilters = () => {
-      clearFilters();
-      currentPrice.value = maxPrice.value;
-      showMobileFilters.value = false;
-      // also clear query and reset pagination in route
-      const next = { ...route.query };
-      delete next.q;
-      delete next.page;
-      navigateTo({ query: next }, { replace: true });
-    };
+      const clearAllFilters = () => {
+        clearFilters();
+        currentPrice.value = maxPrice.value;
+        showMobileFilters.value = false;
+
+        const next = { ...route.query };
+        let changed = false;
+        if (next.q) {
+          delete next.q;
+          changed = true;
+        }
+        if (next.page) {
+          delete next.page;
+          changed = true;
+        }
+        if (changed) {
+          navigateTo({ query: next }, { replace: true });
+        }
+      };
 
     const toggleSortDropdown = (event) => {
       if (event) event.stopPropagation();
@@ -689,32 +728,70 @@ export default {
       }
     };
 
-    // Lifecycle
-    onMounted(() => {
-      setCategoryFromURL();
-      document.addEventListener('click', handleClickOutside);
-      syncFromRoute();
-    });
+      // Lifecycle
+      onMounted(() => {
+        document.addEventListener('click', handleClickOutside);
+      });
 
-    onUnmounted(() => {
-      document.removeEventListener('click', handleClickOutside);
-    });
+      onUnmounted(() => {
+        document.removeEventListener('click', handleClickOutside);
+      });
 
-    // Watch for route changes
-    watch(
-      () => route.query,
-      () => {
-        setCategoryFromURL();
-        syncFromRoute();
-      },
-      { deep: true }
-    );
+      // Watch for route changes
+      watch(
+        () => route.query.q,
+        (q) => {
+          const queryValue = typeof q === 'string' ? q : '';
+          if (filters.value.query !== queryValue) {
+            toggleFilter('query', queryValue);
+          }
+        },
+        { immediate: true }
+      );
 
-    // keep route query.page in sync with currentPage changes
-    watch(currentPage, (val) => {
-      const next = { ...route.query, page: String(val) };
-      navigateTo({ query: next }, { replace: true });
-    });
+      watch(
+        () => route.query.page,
+        (page) => {
+          const parsed = parseInt(String(page || '1'), 10);
+          const nextPage = Number.isFinite(parsed) && parsed > 0 ? parsed : 1;
+          if (currentPage.value !== nextPage) {
+            currentPage.value = nextPage;
+          }
+        },
+        { immediate: true }
+      );
+
+      watch(normalizedCategoryName, () => {
+        clearFilters();
+        currentPrice.value = maxPrice.value;
+        currentPage.value = 1;
+      });
+
+      watch(totalPages, (total) => {
+        if (currentPage.value > total) {
+          currentPage.value = total;
+        }
+        if (currentPage.value < 1) {
+          currentPage.value = 1;
+        }
+      });
+
+      // keep route query.page in sync with currentPage changes
+      watch(currentPage, (val) => {
+        const nextPage = String(val);
+        const nextQuery = { ...route.query };
+        if (val === 1) {
+          if (nextQuery.page) {
+            delete nextQuery.page;
+            navigateTo({ query: nextQuery }, { replace: true });
+          }
+          return;
+        }
+        if (nextQuery.page !== nextPage) {
+          nextQuery.page = nextPage;
+          navigateTo({ query: nextQuery }, { replace: true });
+        }
+      });
 
     return {
       currentCategory,

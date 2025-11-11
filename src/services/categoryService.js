@@ -10,6 +10,26 @@ export const categoryService = {
     return listingsData.listings || [];
   },
 
+  getEnrichedListings() {
+    return this.getListings().map((listing) => {
+      const name = listing.name || '';
+      return {
+        ...listing,
+        slug: this.slugifyName(name),
+        title: name,
+        description: listing.description || this.buildListingDescription(listing),
+        image: listing.image || this.getDefaultListingImage(listing.category),
+      };
+    });
+  },
+
+  getListingSearchOptions() {
+    return this.getEnrichedListings().map((entry) => ({
+      title: entry.title,
+      slug: entry.slug,
+    }));
+  },
+
   getListingByName(name) {
     if (!name) return null;
     const normalizedTarget = this.normalizeName(name);
@@ -65,6 +85,24 @@ export const categoryService = {
   normalizeCategoryName(name) {
     if (!name) return '';
     return name.toLowerCase().replace(/[&\s+]/g, '').trim();
+  },
+
+  getDefaultListingImage(category) {
+    const key = this.normalizeCategoryName(category);
+    const imageMap = {
+      animalsandpets: '/logo/p1.png',
+      beautywellbeings: '/logo/p2.png',
+      foodbeverage: '/logo/p3.png',
+      tourismhospitality: '/logo/image6.png',
+      itsoftware: '/logo/image7.png',
+    };
+    return imageMap[key] || '/logo/logo.png';
+  },
+
+  buildListingDescription(listing) {
+    const service = listing.serviceType || 'services';
+    const location = listing.location || 'your area';
+    return `Leading ${service.toLowerCase()} specialist serving ${location}.`;
   },
 
   getDefaultCategory() {

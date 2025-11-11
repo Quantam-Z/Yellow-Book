@@ -39,9 +39,10 @@ import { computed, watch } from 'vue';
  import AgencyDetails from '~/components/Agency/agencyDetails.vue';
  import AgencyContact from '~/components/Agency/agencyContact.vue';
  import AgencyReview from '~/components/Agency/agencyReview.vue';
- import { categoryService } from '@/services/categoryService';
+import { categoryService } from '@/services/categoryService';
  import Footer from '~/components/layout/footer.vue';
 import { useStubResource } from '~/services/stubClient';
+import { useDirectoryListings } from '@/composables/useDirectoryListings';
 
  definePageMeta({
    layout: 'catagory',
@@ -52,6 +53,16 @@ import { useStubResource } from '~/services/stubClient';
  const titleQuery = computed(() => (route.query.title ? decodeURIComponent(String(route.query.title)) : ''));
  const slugQuery = computed(() => (route.query.slug ? String(route.query.slug) : ''));
  const idQuery = computed(() => (route.query.id ? String(route.query.id) : ''));
+
+// Unified directory listings (homepage + detail)
+const {
+  ensureLoaded: ensureDirectoryLoaded,
+  getBySlug: getDirectoryBySlug,
+  getById: getDirectoryById,
+  getByTitle: getDirectoryByTitle,
+} = useDirectoryListings();
+
+await ensureDirectoryLoaded();
 
 // Load stub companies from public folder (available at runtime)
 const { data: companiesData, error: companiesError } = await useStubResource('companies');
@@ -117,6 +128,31 @@ const listingFromService = computed(() => {
   return null;
 });
 
+const directoryAgency = computed<Agency | null>(() => {
+  let match: any = null;
+  if (slugQuery.value) {
+    match = getDirectoryBySlug(slugQuery.value);
+  } else if (idQuery.value) {
+    match = getDirectoryById(idQuery.value);
+  } else if (titleQuery.value) {
+    match = getDirectoryByTitle(titleQuery.value);
+  }
+
+  if (!match) return null;
+
+  return {
+    id: match.id,
+    name: match.name || match.title,
+    category: match.category,
+    website: match.website,
+    location: match.location,
+    revenue: match.revenue,
+    rating: typeof match.rating === 'number' ? match.rating : Number(match.rating) || 0,
+    ratingCount: typeof match.ratingCount === 'number' ? match.ratingCount : Number(match.ratingCount) || 0,
+    serviceType: match.serviceType || match.specialization,
+  };
+});
+
 type Agency = {
   id?: number | string;
   name: string;
@@ -130,6 +166,10 @@ type Agency = {
 };
 
 const agency = computed<Agency | null>(() => {
+  if (directoryAgency.value) {
+    return directoryAgency.value;
+  }
+
   const stub = stubCompany.value;
   const listing = listingFromService.value as Partial<Agency> | null;
 
