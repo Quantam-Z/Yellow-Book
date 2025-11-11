@@ -1,3 +1,4 @@
+import { useAsyncData } from "#app";
 import { STUB_REGISTRY, DEFAULT_STUB_DELAY } from "~/services/stubRegistry";
 
 const HTTP_STATUS_TEXT = {
@@ -424,9 +425,8 @@ const stubClient = {
 
 export const useStubClient = () => stubClient;
 
-export const useStubResource = async (resource, options = {}) => {
+export const useStubResource = (resource, options = {}) => {
   const { key, params, transform, default: defaultValue } = options;
-  const { useAsyncData } = await import("#app");
 
   const dataKey = key || `stub:${resource}${params?.id ? `:${params.id}` : ""}`;
 
@@ -440,7 +440,7 @@ export const useStubResource = async (resource, options = {}) => {
     return typeof transform === "function" ? transform(data, response) : data;
   };
 
-  return await useAsyncData(dataKey, handler, {
+  return useAsyncData(dataKey, handler, {
     default: () => structuredCloneSafe(defaultValue ?? null),
   });
 };
