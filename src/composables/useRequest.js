@@ -1,14 +1,12 @@
 import useToken from "~/composables/useToken";
 
+const API_CLIENT_KEY = "__nuxt_api_client";
+
 /**
- * Reusable API client built on top of $fetch with
- * - Automatic baseURL from runtime config
- * - Auth token injection (Bearer)
- * - Safe JSON/FormData handling
- * - Optional success/error toasts
+ * Build an API client bound to a specific Nuxt app instance.
  */
-const createClient = () => {
-  const { public: publicConfig } = useRuntimeConfig();
+export const createApiClient = (nuxtApp) => {
+  const { public: publicConfig } = nuxtApp.$config;
 
   const withAuthHeaders = (headers = {}) => {
     const token = useToken();
@@ -17,16 +15,24 @@ const createClient = () => {
     return { Accept: "application/json", ...authHeaders, ...headers };
   };
 
-  const showSuccess = (message) => {
-    if (process.server) return;
+  const getNotifier = () => {
+    if (process.server) return null;
     try {
-      const { $awn } = useNuxtApp();
-      $awn?.success(message || "Success");
-    } catch (_) {}
+      return nuxtApp.$awn || null;
+    } catch (_) {
+      return null;
+    }
+  };
+
+  const showSuccess = (message) => {
+    const notifier = getNotifier();
+    notifier?.success(message || "Success");
   };
 
   const showError = (err, fallbackMessage) => {
-    if (process.server) return;
+    const notifier = getNotifier();
+    if (!notifier) return;
+
     const response = err?.response || {};
     const status = response.status || err?.status;
     const data = response._data || err?.data || err;
@@ -38,10 +44,7 @@ const createClient = () => {
         ? `${statusText || "Error"} (${status})${detail ? ": " + detail : ""}`
         : detail || "Something went wrong");
 
-    try {
-      const { $awn } = useNuxtApp();
-      $awn?.alert(message);
-    } catch (_) {}
+    notifier.alert(message);
   };
 
   const request = async (method, url, payload, options = {}) => {
@@ -93,7 +96,17 @@ const createClient = () => {
   };
 };
 
-// Singleton instance per runtime for convenience
-const $api = createClient();
+/**
+ * Access (and lazily instantiate) the shared API client.
+ */
+const useRequest = () => {
+  const nuxtApp = useNuxtApp();
 
-export default $api;
+  if (!nuxtApp[API_CLIENT_KEY]) {
+    nuxtApp[API_CLIENT_KEY] = createApiClient(nuxtApp);
+  }
+
+  return nuxtApp[API_CLIENT_KEY];
+};
+
+export default useRequest;
