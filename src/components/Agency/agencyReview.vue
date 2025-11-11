@@ -150,25 +150,46 @@
               </div>
             </div>
 
-            <div v-if="review.companyResponse" class="ml-2 sm:ml-3 md:ml-6 lg:ml-10 pl-2 sm:pl-3 md:pl-6 lg:pl-10 py-4 sm:py-5 relative reply-connector space-y-2 sm:space-y-3">
-              <div class="flex items-start gap-2 sm:gap-3">
-                <img
-                  :src="review.companyResponse.avatar || 'https://i.pravatar.cc/150?img=10'"
-                  :alt="review.companyResponse.name"
-                  class="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover flex-shrink-0"
-                />
-                <div class="flex-1 min-w-0">
-                  <h4 class="font-semibold text-gray-800 capitalize mb-1 sm:mb-2 text-sm sm:text-base break-words">
-                    {{ review.companyResponse.name }}
-                  </h4>
-                  <p class="text-xs sm:text-sm font-medium text-gray-400 capitalize">
-                    Date: {{ review.companyResponse.date }}
-                  </p>
+            <div
+              v-if="review.companyResponse"
+              class="ml-2 sm:ml-4 md:ml-8 lg:ml-12 pl-4 sm:pl-6 md:pl-8 lg:pl-10 py-4 sm:py-5 relative reply-connector"
+            >
+              <div
+                class="reply-card bg-white/90 border border-[#D6E7FF] shadow-sm rounded-2xl p-3 sm:p-4 md:p-5 space-y-3 sm:space-y-4"
+              >
+                <div class="flex items-start gap-3 sm:gap-4">
+                  <div class="relative flex-shrink-0">
+                    <img
+                      :src="review.companyResponse.avatar || 'https://i.pravatar.cc/150?img=10'"
+                      :alt="review.companyResponse.name"
+                      class="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover"
+                    />
+                    <span
+                      class="hidden sm:block absolute -left-2 top-1 w-3 h-3 rounded-full bg-[#1B82B3] border-2 border-white shadow-md"
+                    ></span>
+                  </div>
+                  <div class="flex-1 min-w-0 space-y-1 sm:space-y-1.5">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-3">
+                      <h4
+                        class="font-semibold text-gray-800 capitalize text-sm sm:text-base md:text-lg leading-snug break-words"
+                      >
+                        {{ review.companyResponse.name }}
+                      </h4>
+                      <span
+                        class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-[#E6F4FF] text-[#1B82B3] text-[10px] sm:text-xs font-semibold tracking-wide uppercase shadow-sm shrink-0"
+                      >
+                        Company Reply
+                      </span>
+                    </div>
+                    <p class="text-xs sm:text-sm font-medium text-gray-400 capitalize">
+                      Date: {{ review.companyResponse.date }}
+                    </p>
+                  </div>
                 </div>
+                <p class="text-gray-600 leading-relaxed text-xs sm:text-sm md:text-base break-words">
+                  {{ review.companyResponse.text }}
+                </p>
               </div>
-              <p class="text-gray-600 leading-relaxed italic text-xs sm:text-sm md:text-base break-words">
-                "{{ review.companyResponse.text }}"
-              </p>
             </div>
           </div>
 
@@ -316,10 +337,8 @@
   import { ref, computed, onMounted, onUnmounted, watch, watchEffect } from 'vue';
   import { MessageSquare, ChevronDown, ExternalLink, X, Star } from 'lucide-vue-next';
   import { Teleport } from 'vue';
-  
   import StarRatingBox from '@/components/common/starRatingBox.vue';
-  import CompanyReview from '@/components/modal/companyReview.vue'; 
-  import RatingStars from '@/components/common/RatingStars.vue';
+  import CompanyReview from '@/components/modal/companyReview.vue';
   import { useStubClient, useStubResource } from '~/services/stubClient';
 
   interface CompanyResponse {
@@ -564,28 +583,65 @@
 </script>
 
 <style scoped>
-  .reply-connector::before {
-    content: '';
-    position: absolute;
-    left: 1px;
-    top: -12px;
-    width: 33px;
-    height: 57px;
-    border-left: 1px solid #c0c0c0;
-    border-bottom: 1px solid #c0c0c0;
-    border-bottom-left-radius: 12px;
-  }
-
-  @media (max-width: 640px) {
-    .reply-connector::before {
-      display: none;
+    .reply-connector {
+      --connector-padding: 1rem;
+      --connector-color: #b6dbff;
+      --connector-accent: #1b82b3;
     }
-  }
 
-  @media (min-width: 640px) and (max-width: 767px) {
     .reply-connector::before {
-      width: 28px;
-      height: 52px;
+      content: '';
+      position: absolute;
+      left: calc(-1 * var(--connector-padding) + 0.35rem);
+      top: -24px;
+      width: calc(var(--connector-padding) + 1.25rem);
+      height: calc(100% + 36px);
+      border-left: 2px solid var(--connector-color);
+      border-bottom: 2px solid var(--connector-color);
+      border-bottom-left-radius: 18px;
+      pointer-events: none;
     }
-  }
+
+    .reply-connector::after {
+      content: '';
+      position: absolute;
+      left: calc(-1 * var(--connector-padding) - 0.45rem);
+      top: -12px;
+      width: 14px;
+      height: 14px;
+      border-radius: 9999px;
+      background-color: #ffffff;
+      border: 3px solid var(--connector-accent);
+      box-shadow: 0 8px 16px rgba(27, 130, 179, 0.18);
+      pointer-events: none;
+    }
+
+    .reply-card {
+      backdrop-filter: blur(2px);
+    }
+
+    @media (max-width: 639px) {
+      .reply-connector::before,
+      .reply-connector::after {
+        display: none;
+      }
+    }
+
+    @media (min-width: 640px) {
+      .reply-connector {
+        --connector-padding: 1.5rem;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .reply-connector {
+        --connector-padding: 2rem;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .reply-connector {
+        --connector-padding: 2.5rem;
+      }
+    }
 </style>
