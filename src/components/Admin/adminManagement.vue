@@ -309,21 +309,57 @@
                 </span>
                 <MoreHorizontal class="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer" />
               </div>
-            </div>
+              </div>
 
-            <!-- Card body -->
-            <div class="flex justify-between items-end">
-              <div class="flex flex-col gap-2 text-sm flex-1 min-w-0">
-                <div class="text-gray-600 truncate">{{ admin.email }}</div>
-                <div class="text-gray-500">Last login: {{ formatDate(admin.lastLogin) }}</div>
-                <div class="text-gray-500">Created: {{ formatDate(admin.createdOn) }}</div>
+              <!-- Card body -->
+              <div class="flex flex-col gap-3">
+                <div class="flex justify-end">
+                  <button
+                    type="button"
+                    @click="viewAdmin(admin)"
+                    class="text-amber-500 hover:text-amber-600 font-medium text-sm cursor-pointer whitespace-nowrap bg-transparent border-0 p-0 focus:outline-none"
+                    :aria-expanded="expandedAdminId === admin.id ? 'true' : 'false'"
+                  >
+                    {{ expandedAdminId === admin.id ? 'Hide Details' : 'View Details' }}
+                  </button>
+                </div>
+
+                <Transition name="collapse">
+                  <div
+                    v-if="expandedAdminId === admin.id"
+                    class="pt-3 border-t border-dashed border-gray-200 text-sm text-gray-600 space-y-2"
+                  >
+                    <div class="text-gray-700 break-all">{{ admin.email }}</div>
+                    <div class="flex items-start justify-between gap-4">
+                      <span class="text-gray-500 font-medium">Role</span>
+                      <span class="text-gray-900 text-right">{{ admin.role }}</span>
+                    </div>
+                    <div class="flex items-start justify-between gap-4">
+                      <span class="text-gray-500 font-medium">Status</span>
+                      <span class="text-right">
+                        <span
+                          class="inline-flex items-center gap-2 px-2.5 py-1 rounded-md text-xs font-semibold"
+                          :class="getStatusClass(admin.status, 'soft')"
+                        >
+                          {{ admin.status }}
+                        </span>
+                      </span>
+                    </div>
+                    <div class="flex items-start justify-between gap-4">
+                      <span class="text-gray-500 font-medium">Created</span>
+                      <span class="text-gray-900 text-right">{{ formatDate(admin.createdOn) }}</span>
+                    </div>
+                    <div class="flex items-start justify-between gap-4">
+                      <span class="text-gray-500 font-medium">Last Login</span>
+                      <span class="text-gray-900 text-right">{{ formatDate(admin.lastLogin) }}</span>
+                    </div>
+                    <div class="flex items-start justify-between gap-4">
+                      <span class="text-gray-500 font-medium">Verified</span>
+                      <span class="text-gray-900 text-right">{{ admin.verified ? 'Yes' : 'No' }}</span>
+                    </div>
+                  </div>
+                </Transition>
               </div>
-              <div class="ml-4 flex-shrink-0">
-                <span @click="viewAdmin(admin)" class="text-amber-500 hover:text-amber-600 font-medium text-sm cursor-pointer whitespace-nowrap">
-                  View Details
-                </span>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -470,11 +506,18 @@
         </button>
       </div>
     </div>
+
+    <DetailModal
+      :open="isDetailModalOpen"
+      title="Admin Details"
+      :items="adminDetailItems"
+      @close="closeAdminDetails"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, computed, watchEffect, watch } from 'vue';
+import { ref, computed, watchEffect, watch, onMounted, onBeforeUnmount } from 'vue';
 import { 
   Search as SearchIcon,
   Eye as EyeIcon,
@@ -494,11 +537,16 @@ import {
 import { getStatusClass, getRoleClass } from '~/composables/useStatusClass'
 import { useSelection } from '~/composables/useSelection'
 import { useStubClient, useStubResource } from '~/services/stubClient'
+import DetailModal from '~/components/common/DetailModal.vue'
 
 // --- State ---
 const showMobileFilters = ref(false);
 const searchQuery = ref('');
 const admins = ref([]);
+const expandedAdminId = ref(null);
+const isDetailModalOpen = ref(false);
+const selectedAdmin = ref(null);
+const isMobileView = ref(false);
 
 // Pagination State
 const currentPage = ref(1);
@@ -580,6 +628,20 @@ const paginatedAdmins = computed(() => {
   return filteredAdmins.value.slice(start, end);
 });
 
+const adminDetailItems = computed(() => {
+  if (!selectedAdmin.value) return [];
+  const admin = selectedAdmin.value;
+  return [
+    { label: 'Name', value: admin.name },
+    { label: 'Email', value: admin.email },
+    { label: 'Role', value: admin.role },
+    { label: 'Status', value: admin.status },
+    { label: 'Verified', value: admin.verified ? 'Yes' : 'No' },
+    { label: 'Created On', value: admin.createdOn ? formatDate(admin.createdOn) : '—' },
+    { label: 'Last Login', value: admin.lastLogin ? formatDate(admin.lastLogin) : '—' }
+  ];
+});
+
 // --- Methods ---
 const handleFilterChange = () => {
   currentPage.value = 1;
@@ -595,8 +657,18 @@ const toggleSelectAll = () => {
 };
 
 const viewAdmin = (admin) => {
-  // Hook for future detail modal
-  // alert(`Viewing: ${admin.name}`)
+  if (isMobileView.value) {
+    expandedAdminId.value = expandedAdminId.value === admin.id ? null : admin.id;
+    return;
+  }
+
+  selectedAdmin.value = admin;
+  isDetailModalOpen.value = true;
+};
+
+const closeAdminDetails = () => {
+  isDetailModalOpen.value = false;
+  selectedAdmin.value = null;
 };
 
 const editAdmin = async (admin) => {
@@ -693,6 +765,30 @@ watch(adminsError, (err) => {
     notifyError(err?.message || 'Failed to load admin data');
   }
 })
+
+const updateViewport = () => {
+  if (!import.meta.client) return;
+  isMobileView.value = window.innerWidth < 1024;
+};
+
+onMounted(() => {
+  if (!import.meta.client) return;
+  updateViewport();
+  window.addEventListener('resize', updateViewport);
+});
+
+onBeforeUnmount(() => {
+  if (!import.meta.client) return;
+  window.removeEventListener('resize', updateViewport);
+});
+
+watch(isMobileView, (isMobile) => {
+  if (!isMobile) {
+    expandedAdminId.value = null;
+  } else {
+    isDetailModalOpen.value = false;
+  }
+});
 </script>
 
 <style scoped>
@@ -777,5 +873,16 @@ input[type="date"]:hover::-webkit-calendar-picker-indicator {
 
 .border-gray-200 {
   border-color: #e5e7eb;
+}
+
+.collapse-enter-active,
+.collapse-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.collapse-enter-from,
+.collapse-leave-to {
+  opacity: 0;
+  transform: translateY(-6px);
 }
 </style>
