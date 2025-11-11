@@ -101,17 +101,24 @@
 import { ref, onMounted } from 'vue';
 import { MoreHorizontal } from 'lucide-vue-next';
 import { getStatusClass } from '~/composables/useStatusClass'
+import { useStubClient } from '~/services/stubClient'
 
 // Load recent companies from stub
 const rows = ref([]);
+const stubClient = useStubClient();
+const nuxtApp = useNuxtApp();
 
 const fetchData = async () => {
   try {
-    const response = await fetch('/stubs/recentCompanies.json');
-    const rowsData = await response.json();
+    const rowsData = await stubClient.list('recentCompanies', { delay: 140 });
     rows.value = rowsData || [];
   } catch (error) {
     console.error('Failed to load recent companies:', error);
+    if (import.meta.client) {
+      try {
+        nuxtApp.$awn?.alert('Failed to load recent companies');
+      } catch {}
+    }
     rows.value = [];
   }
 };

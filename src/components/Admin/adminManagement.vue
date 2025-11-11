@@ -474,7 +474,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watchEffect } from 'vue';
+import { ref, computed, watchEffect, watch } from 'vue';
 import { 
   Search as SearchIcon,
   Eye as EyeIcon,
@@ -493,6 +493,7 @@ import {
 } from 'lucide-vue-next';
 import { getStatusClass, getRoleClass } from '~/composables/useStatusClass'
 import { useSelection } from '~/composables/useSelection'
+import { useStubClient, useStubResource } from '~/services/stubClient'
 
 // --- State ---
 const showMobileFilters = ref(false);
@@ -522,9 +523,25 @@ const stats = ref({
 
 // --- Composables ---
 const { allSelected, toggleSelection, toggleAll } = useSelection(admins);
+const stubClient = useStubClient()
+const nuxtApp = useNuxtApp()
+
+const notifyError = (message) => {
+  if (!import.meta.client) return
+  try {
+    nuxtApp.$awn?.alert(message)
+  } catch {}
+}
+
+const notifySuccess = (message) => {
+  if (!import.meta.client) return
+  try {
+    nuxtApp.$awn?.success(message)
+  } catch {}
+}
 
 // --- Data Fetching (SSR-friendly) ---
-const { data: adminsData, pending } = await useFetch('/stubs/admins.json')
+const { data: adminsData, pending, error: adminsError, refresh } = await useStubResource('admins')
 const isLoading = computed(() => pending.value)
 
 // --- Computed ---
@@ -582,26 +599,39 @@ const viewAdmin = (admin) => {
   // alert(`Viewing: ${admin.name}`)
 };
 
-const editAdmin = (admin) => {
+const editAdmin = async (admin) => {
   // Hook for edit functionality
   // alert(`Editing: ${admin.name}`)
 };
 
-const deleteAdmin = (admin) => {
+const deleteAdmin = async (admin) => {
   // Hook for delete functionality
-  if (confirm(`Are you sure you want to delete ${admin.name}?`)) {
-    admins.value = admins.value.filter(a => a.id !== admin.id);
-    updateStats();
+  if (!confirm(`Are you sure you want to delete ${admin.name}?`)) return;
+  try {
+    await stubClient.remove('admins', admin.id, { delay: 180 });
+    await refresh();
+    notifySuccess(`${admin.name} removed`);
+  } catch (error) {
+    console.error('Failed to delete admin', error);
+    notifyError(`Failed to delete ${admin.name}`);
   }
 };
 
-const changeStatus = (admin) => {
+const changeStatus = async (admin) => {
   // Cycle through statuses to demo behavior
   const statuses = ['Active', 'Inactive', 'Suspended'];
   const currentIndex = statuses.indexOf(admin.status);
   const nextIndex = (currentIndex + 1) % statuses.length;
-  admin.status = statuses[nextIndex];
-  updateStats();
+  const nextStatus = statuses[nextIndex];
+
+  try {
+    await stubClient.update('admins', admin.id, { status: nextStatus }, { delay: 160 });
+    await refresh();
+    notifySuccess(`${admin.name} marked as ${nextStatus}`);
+  } catch (error) {
+    console.error('Failed to update status', error);
+    notifyError(`Failed to update ${admin.name}`);
+  }
 };
 
 const applyMobileFilters = () => {
@@ -655,6 +685,13 @@ watchEffect(() => {
   const raw = adminsData?.value || []
   admins.value = raw.map(u => ({ ...u, selected: false }))
   updateStats()
+})
+
+watch(adminsError, (err) => {
+  if (err) {
+    console.error('Failed to load admins', err);
+    notifyError(err?.message || 'Failed to load admin data');
+  }
 })
 </script>
 

@@ -467,7 +467,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watchEffect, defineAsyncComponent } from 'vue'
+import { ref, computed, watchEffect, watch, defineAsyncComponent } from 'vue'
 import { 
   Search as SearchIcon, 
   Filter as FilterIcon,
@@ -487,6 +487,7 @@ import {
 } from 'lucide-vue-next'
 import RatingStars from '~/components/common/RatingStars.vue'
 import { getStatusClass } from '~/composables/useStatusClass'
+import { useStubClient, useStubResource } from '~/services/stubClient'
 
 const ViewReview = defineAsyncComponent(() => import('~/components/modal/viewReview.vue'))
 
@@ -520,36 +521,20 @@ const filters = ref({
   status: ''
 })
 
-// --- Data Fetching ---
-const fetchData = async () => {
-  isLoading.value = true;
-  try {
-    await new Promise(resolve => setTimeout(resolve, 500));
-    const response = await fetch('/stubs/agencyReviews.json');
-    const reviewsData = await response.json();
-    const base = (reviewsData || []).map(r => ({ ...r, status: r.status || 'Pending' }));
-    reviews.value = base;
-    
-    // Calculate stats
-    stats.value.totalReviews = base.length;
-    stats.value.pending = base.filter(r => r.status === 'Pending').length;
-    stats.value.approved = base.filter(r => r.status === 'Approved').length;
-    stats.value.rejected = base.filter(r => r.status === 'Rejected').length;
-    stats.value.onHold = base.filter(r => r.status === 'On Hold').length;
-    stats.value.bannedUsers = Math.floor(Math.random() * 10); // Mock data for banned users
-  } catch (error) {
-    console.error('Failed to load reviews:', error);
-    reviews.value = [];
-  } finally {
-    isLoading.value = false;
-  }
-};
+// --- Services ---
+const stubClient = useStubClient()
+const nuxtApp = useNuxtApp()
 
-onMounted(() => {
-  fetchData();
-})
+const toast = (type, message) => {
+  if (!import.meta.client) return
+  try {
+    if (type === 'success') nuxtApp.$awn?.success(message)
+    else nuxtApp.$awn?.alert(message)
+  } catch {}
+}
+
 // --- Data Fetching (SSR-friendly) ---
-const { data: reviewsData, pending } = await useFetch('/stubs/agencyReviews.json')
+const { data: reviewsData, pending, error: reviewsError, refresh } = await useStubResource('agencyReviews')
 const isLoading = computed(() => pending.value)
 
 // --- Helpers ---
@@ -645,26 +630,44 @@ const getDisplayIndex = (indexInPage) => {
   return String(trueIndex).padStart(2, '0')
 }
 
-const changeStatus = (review) => {
+const changeStatus = async (review) => {
   // Cycle through statuses to demo behavior
   const statuses = ['Pending', 'Approved', 'Rejected', 'On Hold']
   const currentIndex = statuses.indexOf(review.status || 'Pending')
   const nextIndex = (currentIndex + 1) % statuses.length
-  review.status = statuses[nextIndex]
-  
-  // Update stats
-  updateStats()
+  const nextStatus = statuses[nextIndex]
+
+  try {
+    await stubClient.update('agencyReviews', review.id, { status: nextStatus }, { delay: 160 })
+    await refresh()
+    toast('success', `Review marked as ${nextStatus}`)
+  } catch (error) {
+    console.error('Failed to update review status', error)
+    toast('error', 'Failed to update review status')
+  }
 }
 
-const approveReview = (review) => { 
-  review.status = 'Approved' 
-  updateStats()
+const approveReview = async (review) => { 
+  try {
+    await stubClient.update('agencyReviews', review.id, { status: 'Approved' }, { delay: 150 })
+    await refresh()
+    toast('success', 'Review approved')
+  } catch (error) {
+    console.error('Failed to approve review', error)
+    toast('error', 'Failed to approve review')
+  }
 }
 
-const deleteReview = (review) => { 
-  // Update stats before deleting
-  reviews.value = reviews.value.filter(r => r.id !== review.id) 
-  updateStats()
+const deleteReview = async (review) => { 
+  if (!confirm(`Delete review from ${review.reviewerName}?`)) return
+  try {
+    await stubClient.remove('agencyReviews', review.id, { delay: 150 })
+    await refresh()
+    toast('success', 'Review removed')
+  } catch (error) {
+    console.error('Failed to delete review', error)
+    toast('error', 'Failed to delete review')
+  }
 }
 
 const updateStats = () => {
@@ -674,6 +677,7 @@ const updateStats = () => {
   stats.value.approved = base.filter(r => r.status === 'Approved').length
   stats.value.rejected = base.filter(r => r.status === 'Rejected').length
   stats.value.onHold = base.filter(r => r.status === 'On Hold').length
+  stats.value.bannedUsers = base.filter(r => Number(r.rating) <= 2).length
 }
 
 const nextPage = () => { if (currentPage.value < totalPages.value) currentPage.value++ }
@@ -700,6 +704,13 @@ watchEffect(() => {
   const base = (reviewsData?.value || []).map(r => ({ ...r, status: r.status || 'Pending' }))
   reviews.value = base
   updateStats()
+})
+
+watch(reviewsError, (err) => {
+  if (err) {
+    console.error('Failed to load reviews', err)
+    toast('error', err?.message || 'Failed to load reviews')
+  }
 })
 </script>
 

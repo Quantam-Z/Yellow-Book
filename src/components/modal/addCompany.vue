@@ -207,6 +207,7 @@
 <script setup>
 import { ref } from 'vue';
 import { X } from "lucide-vue-next";
+import { useStubClient } from '~/services/stubClient';
 
 // Define props and emits
 const props = defineProps({
@@ -216,10 +217,14 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['close']);
+const emit = defineEmits(['close', 'created']);
+
+const nuxtApp = useNuxtApp();
+const stubClient = useStubClient();
 
 // Modal state
 const currentStep = ref(1);
+const submitting = ref(false);
 
 // Form data
 const formData = ref({
@@ -238,6 +243,7 @@ const formData = ref({
 
 // Modal functions
 const handleClose = () => {
+  if (submitting.value) return;
   emit('close');
   resetFormAndSteps();
 };
@@ -271,10 +277,49 @@ const previousStep = () => {
   }
 };
 
-const submitForm = () => {
-  // Add your form submission logic here
-  emit('close');
-  resetFormAndSteps();
+const submitForm = async () => {
+  if (submitting.value) return;
+
+  const name = formData.value.companyName.trim();
+  if (!name) {
+    if (import.meta.client) {
+      try {
+        nuxtApp.$awn?.alert('Company name is required');
+      } catch {}
+    }
+    return;
+  }
+
+  submitting.value = true;
+  const payload = {
+    name,
+    website: formData.value.website?.trim() || '',
+    category: formData.value.category || 'General',
+    mobile: formData.value.phone?.trim() || '',
+    status: 'Pending',
+    verified: false,
+    description: formData.value.description?.trim() || '',
+  };
+
+  try {
+    const created = await stubClient.create('companies', payload, { delay: 220 });
+    emit('created', created);
+    if (import.meta.client) {
+      try {
+        nuxtApp.$awn?.success('Company added');
+      } catch {}
+    }
+    handleClose();
+  } catch (error) {
+    console.error('Failed to create company', error);
+    if (import.meta.client) {
+      try {
+        nuxtApp.$awn?.alert('Failed to create company');
+      } catch {}
+    }
+  } finally {
+    submitting.value = false;
+  }
 };
 </script>
 

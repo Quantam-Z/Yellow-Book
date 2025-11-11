@@ -195,10 +195,11 @@
 
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, watchEffect } from 'vue';
 import RatingStars from '~/components/common/RatingStars.vue'
 import CompanyVerificationModal from '~/components/modal/verifyReview.vue';
 import ReviewModal from '~/components/modal/reviewModal.vue';
+import { useStubClient, useStubResource } from '~/services/stubClient';
 
 // Modal states
 const selectedCompany = ref(null);
@@ -208,28 +209,50 @@ const selectedReview = ref(null);
 const companies = ref([]);
 const reviews = ref([]);
 
-// Load data on component mount and handle refresh
-onMounted(async () => {
-  await loadData();
+const nuxtApp = useNuxtApp();
+const stubClient = useStubClient();
+
+const {
+  data: companiesData,
+  error: companiesError,
+  refresh: refreshCompanies,
+} = await useStubResource('subadminAssignedCompanies');
+
+const {
+  data: reviewsData,
+  error: reviewsError,
+  refresh: refreshReviews,
+} = await useStubResource('subadminReviews');
+
+watchEffect(() => {
+  companies.value = Array.isArray(companiesData.value) ? companiesData.value : [];
 });
 
-// Function to load data
-const loadData = async () => {
-  try {
-    // Load companies data
-    const { data: companiesData } = await useFetch('/stubs/subadminAssignedCompanies.json');
-    companies.value = companiesData.value || [];
-    
-    // Load reviews data
-    const { data: reviewsData } = await useFetch('/stubs/subadminReviews.json');
-    reviews.value = reviewsData.value || [];
-  } catch (error) {
-    console.error('Error loading data:', error);
-    // Fallback to empty arrays if data fails to load
-    companies.value = [];
-    reviews.value = [];
+watchEffect(() => {
+  reviews.value = Array.isArray(reviewsData.value) ? reviewsData.value : [];
+});
+
+watchEffect(() => {
+  if (companiesError.value) {
+    console.error('Failed to load assigned companies', companiesError.value);
+    if (import.meta.client) {
+      try {
+        nuxtApp.$awn?.alert('Failed to load company assignments');
+      } catch {}
+    }
   }
-};
+});
+
+watchEffect(() => {
+  if (reviewsError.value) {
+    console.error('Failed to load assigned reviews', reviewsError.value);
+    if (import.meta.client) {
+      try {
+        nuxtApp.$awn?.alert('Failed to load review tasks');
+      } catch {}
+    }
+  }
+});
 
 // Computed properties
 const companiesLen = computed(() => companies.value.length);
@@ -246,20 +269,46 @@ const closeCompanyVerification = () => {
   selectedCompany.value = null;
 };
 
-const handleCompanyApprove = ({ companyId, verification }) => {
-  const index = companies.value.findIndex(c => c.id === companyId);
-  if (index !== -1) {
-    companies.value.splice(index, 1);
+const handleCompanyApprove = async ({ companyId, verification }) => {
+  try {
+    await stubClient.remove('subadminAssignedCompanies', companyId, { delay: 150 });
+    await refreshCompanies();
+    if (import.meta.client) {
+      try {
+        nuxtApp.$awn?.success('Company verified');
+      } catch {}
+    }
+  } catch (error) {
+    console.error('Failed to approve company', error);
+    if (import.meta.client) {
+      try {
+        nuxtApp.$awn?.alert('Failed to approve company');
+      } catch {}
+    }
+  } finally {
+    closeCompanyVerification();
   }
-  closeCompanyVerification();
 };
 
-const handleCompanyReject = ({ companyId, verification }) => {
-  const index = companies.value.findIndex(c => c.id === companyId);
-  if (index !== -1) {
-    companies.value.splice(index, 1);
+const handleCompanyReject = async ({ companyId, verification }) => {
+  try {
+    await stubClient.remove('subadminAssignedCompanies', companyId, { delay: 150 });
+    await refreshCompanies();
+    if (import.meta.client) {
+      try {
+        nuxtApp.$awn?.success('Company rejection recorded');
+      } catch {}
+    }
+  } catch (error) {
+    console.error('Failed to reject company', error);
+    if (import.meta.client) {
+      try {
+        nuxtApp.$awn?.alert('Failed to reject company');
+      } catch {}
+    }
+  } finally {
+    closeCompanyVerification();
   }
-  closeCompanyVerification();
 };
 
 // Review Moderation Methods
@@ -271,20 +320,46 @@ const closeReviewModeration = () => {
   selectedReview.value = null;
 };
 
-const handleReviewStatusUpdate = ({ reviewId, status }) => {
-  const index = reviews.value.findIndex(r => r.id === reviewId);
-  if (index !== -1) {
-    reviews.value.splice(index, 1);
+const handleReviewStatusUpdate = async ({ reviewId, status }) => {
+  try {
+    await stubClient.update('subadminReviews', reviewId, { status }, { delay: 140 });
+    await refreshReviews();
+    if (import.meta.client) {
+      try {
+        nuxtApp.$awn?.success('Review status updated');
+      } catch {}
+    }
+  } catch (error) {
+    console.error('Failed to update review status', error);
+    if (import.meta.client) {
+      try {
+        nuxtApp.$awn?.alert('Failed to update review status');
+      } catch {}
+    }
+  } finally {
+    closeReviewModeration();
   }
-  closeReviewModeration();
 };
 
-const handleReviewBan = (reviewId) => {
-  const index = reviews.value.findIndex(r => r.id === reviewId);
-  if (index !== -1) {
-    reviews.value.splice(index, 1);
+const handleReviewBan = async (reviewId) => {
+  try {
+    await stubClient.remove('subadminReviews', reviewId, { delay: 140 });
+    await refreshReviews();
+    if (import.meta.client) {
+      try {
+        nuxtApp.$awn?.success('Reviewer banned');
+      } catch {}
+    }
+  } catch (error) {
+    console.error('Failed to ban reviewer', error);
+    if (import.meta.client) {
+      try {
+        nuxtApp.$awn?.alert('Failed to ban reviewer');
+      } catch {}
+    }
+  } finally {
+    closeReviewModeration();
   }
-  closeReviewModeration();
 };
 </script>
 

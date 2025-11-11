@@ -370,8 +370,9 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, watch, watchEffect } from 'vue'
 import { CheckCircle, Trash2, Plus, Star, ChevronDown, Loader2, Calendar, X } from 'lucide-vue-next'
+import { useStubClient, useStubResource } from '~/services/stubClient'
 
 const reviews = ref([])
 const selectedRating = ref('')
@@ -379,11 +380,32 @@ const currentPage = ref(1)
 const reviewsPerPage = 10
 const dateFrom = ref('')
 const dateTo = ref('')
-const isLoading = ref(false)
 const selectedReview = ref(null)
+const nuxtApp = useNuxtApp()
+const stubClient = useStubClient()
 
 // Load reviews from stub json
-const { data: reviewsData } = await useFetch('/stubs/agencyReviews.json')
+const { data: reviewsData, pending, error: reviewsError, refresh } = await useStubResource('agencyReviews')
+const isLoading = computed(() => pending.value)
+
+watchEffect(() => {
+  const raw = Array.isArray(reviewsData.value) ? reviewsData.value : []
+  reviews.value = raw.map((r) => ({
+    ...r,
+    rating: Number(r.rating) || 0,
+  }))
+})
+
+watch(reviewsError, (err) => {
+  if (err) {
+    console.error('Failed to load agency reviews', err)
+    if (import.meta.client) {
+      try {
+        nuxtApp.$awn?.alert('Failed to load reviews')
+      } catch {}
+    }
+  }
+})
 
 // Format date for display
 const formatDate = (date) => {
@@ -503,15 +525,42 @@ const resetFilters = () => {
   console.log('Filters reset')
 }
 
-const approveReview = (id) => { 
-  console.log('Approving review:', id)
-  alert(`Review ${id} approved!`)
+const approveReview = async (id) => { 
+  try {
+    await stubClient.update('agencyReviews', id, { status: 'Approved' }, { delay: 140 })
+    await refresh()
+    if (import.meta.client) {
+      try {
+        nuxtApp.$awn?.success('Review approved')
+      } catch {}
+    }
+  } catch (error) {
+    console.error('Failed to approve review', error)
+    if (import.meta.client) {
+      try {
+        nuxtApp.$awn?.alert('Failed to approve review')
+      } catch {}
+    }
+  }
 }
 
-const deleteReview = (id) => { 
-  if (confirm('Are you sure you want to delete this review?')) {
-    reviews.value = reviews.value.filter(r => r.id !== id)
-    console.log('Review deleted:', id)
+const deleteReview = async (id) => { 
+  if (!confirm('Are you sure you want to delete this review?')) return
+  try {
+    await stubClient.remove('agencyReviews', id, { delay: 140 })
+    await refresh()
+    if (import.meta.client) {
+      try {
+        nuxtApp.$awn?.success('Review removed')
+      } catch {}
+    }
+  } catch (error) {
+    console.error('Failed to delete review', error)
+    if (import.meta.client) {
+      try {
+        nuxtApp.$awn?.alert('Failed to delete review')
+      } catch {}
+    }
   }
 }
 
@@ -528,12 +577,6 @@ watch([selectedRating, dateFrom, dateTo], () => {
   currentPage.value = 1
 })
 
-// Init
-onMounted(() => { 
-  reviews.value = reviewsData.value || []
-  console.log('Reviews loaded:', reviews.value.length)
-  console.log('Sample reviews:', reviews.value.slice(0, 3))
-})
 </script>
 
 <style scoped>

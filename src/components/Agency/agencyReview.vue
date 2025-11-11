@@ -313,13 +313,14 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, computed, onMounted, onUnmounted } from 'vue';
+  import { ref, computed, onMounted, onUnmounted, watch, watchEffect } from 'vue';
   import { MessageSquare, ChevronDown, ExternalLink, X, Star } from 'lucide-vue-next';
   import { Teleport } from 'vue';
   
   import StarRatingBox from '@/components/common/starRatingBox.vue';
   import CompanyReview from '@/components/modal/companyReview.vue'; 
   import RatingStars from '@/components/common/RatingStars.vue';
+  import { useStubClient, useStubResource } from '~/services/stubClient';
 
   interface CompanyResponse {
     name: string;
@@ -329,6 +330,7 @@
   }
 
   interface ReviewItem {
+    id: number;
     reviewer: string;
     rating: number;
     date: string;
@@ -386,57 +388,41 @@
 
   // Data states for fetching
   const reviews = ref<ReviewItem[]>([]);
-  const loading = ref(true);
+  const nuxtApp = useNuxtApp();
+  const stubClient = useStubClient();
+  const { data: reviewsData, error: reviewsError, pending, refresh } = await useStubResource('agencyReviews');
+  const loading = computed(() => pending.value);
   const error = ref<string | null>(null);
 
   const isDesktop = ref(false);
   const isMobile = ref(false);
   const isTablet = ref(false);
 
+  watchEffect(() => {
+    const data = (reviewsData.value || []) as Array<any>;
+    reviews.value = data.map((r) => ({
+      id: Number(r.id),
+      reviewer: r.reviewerName || r.reviewer || 'Anonymous',
+      rating: Number(r.rating) || 0,
+      date: r.date,
+      review: r.content || r.review || '',
+      avatar: r.avatar,
+      companyResponse: r.companyResponse,
+      likes: Number(r.likes ?? 0),
+      dislikes: Number(r.dislikes ?? 0),
+    }));
+  });
 
-  const fetchReviews = async () => {
-    loading.value = true;
-    error.value = null;
-    const filePath = '/stubs/reviews.json';
-
-    try {
-      const response = await fetch(filePath);
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch reviews: HTTP ${response.status}`);
-      }
-
-      const data = (await response.json()) as Array<{
-        reviewer: string;
-        rating: number | string;
-        date: string;
-        review: string;
-        avatar?: string;
-        companyResponse?: CompanyResponse;
-      }>;
-
-      reviews.value = data.map((r) => ({
-        reviewer: r.reviewer,
-        rating: Number(r.rating) || 0,
-        date: r.date,
-        review: r.review,
-        avatar: r.avatar,
-        companyResponse: r.companyResponse,
-        likes: Math.floor(Math.random() * 500),
-        dislikes: Math.floor(Math.random() * 100),
-      }));
-
-    } catch (err: any) {
+  watch(reviewsError, (err) => {
+    if (err) {
       console.error('Error fetching reviews:', err);
       error.value = err.message || 'An unknown error occurred while fetching reviews.';
-    } finally {
-      loading.value = false;
+    } else {
+      error.value = null;
     }
-  };
+  });
 
   onMounted(() => {
-    fetchReviews();
-
     const checkScreenSize = () => {
       const width = window.innerWidth;
       // Tailwind's default breakpoints: sm: 640px, md: 768px, lg: 1024px
@@ -509,31 +495,71 @@
   });
 
   function handleNewReview(reviewData: { rating: number, text: string }) {
-    const newReview: ReviewItem = {
-      reviewer: 'New User',
+    const payload = {
+      reviewerName: 'New User',
       rating: Number(reviewData.rating) || 0,
-      date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-      review: reviewData.text.trim(),
-      avatar: `https://i.pravatar.cc/150?img=${Math.floor(Math.random() * 50) + 10}`,
+      date: new Date().toISOString().slice(0, 10),
+      time: new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
+      content: reviewData.text.trim(),
       likes: 0,
-      dislikes: 0
+      dislikes: 0,
     };
 
-    reviews.value.unshift(newReview);
-    showCompanyReview.value = false;
-    console.log('Review submitted:', newReview);
+    stubClient
+      .create('agencyReviews', payload, { delay: 200 })
+      .then(() => refresh())
+      .then(() => {
+        showCompanyReview.value = false;
+        if (import.meta.client) {
+          try {
+            nuxtApp.$awn?.success('Review submitted');
+          } catch {}
+        }
+      })
+      .catch((err) => {
+        console.error('Failed to submit review', err);
+        if (import.meta.client) {
+          try {
+            nuxtApp.$awn?.alert('Failed to submit review');
+          } catch {}
+        }
+      });
   }
 
   function toggleFilter() {
     showFilter.value = !showFilter.value;
   }
 
-  function like(review: ReviewItem) {
-    review.likes++;
+  async function like(review: ReviewItem) {
+    const nextLikes = review.likes + 1;
+    review.likes = nextLikes;
+    try {
+      await stubClient.update('agencyReviews', review.id, { likes: nextLikes }, { delay: 120 });
+    } catch (err) {
+      review.likes = nextLikes - 1;
+      console.error('Failed to register like', err);
+      if (import.meta.client) {
+        try {
+          nuxtApp.$awn?.alert('Unable to like this review right now');
+        } catch {}
+      }
+    }
   }
 
-  function dislike(review: ReviewItem) {
-    review.dislikes++;
+  async function dislike(review: ReviewItem) {
+    const nextDislikes = review.dislikes + 1;
+    review.dislikes = nextDislikes;
+    try {
+      await stubClient.update('agencyReviews', review.id, { dislikes: nextDislikes }, { delay: 120 });
+    } catch (err) {
+      review.dislikes = nextDislikes - 1;
+      console.error('Failed to register dislike', err);
+      if (import.meta.client) {
+        try {
+          nuxtApp.$awn?.alert('Unable to dislike this review right now');
+        } catch {}
+      }
+    }
   }
 </script>
 

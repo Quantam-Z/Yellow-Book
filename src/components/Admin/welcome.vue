@@ -64,33 +64,37 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { computed, watch } from 'vue';
 import { Search, Building, Clock, XCircle, Star, Hourglass, Users } from "lucide-vue-next";
+import { useStubResource } from '~/services/stubClient'
 
-// Dynamic stats
-const adminStats = ref(null);
+const defaultStats = {
+  welcomeName: 'User',
+  registeredCompanies: 0,
+  pendingVerifications: 0,
+  rejectedVerifications: 0,
+  totalReviews: 0,
+  pendingReviews: 0,
+  adminUsers: 0
+}
 
-const fetchData = async () => {
-  try {
-    const response = await fetch('/stubs/adminStats.json');
-    const data = await response.json();
-    adminStats.value = data;
-  } catch (error) {
-    console.error('Failed to load admin stats:', error);
-    adminStats.value = {
-      welcomeName: 'User',
-      registeredCompanies: 0,
-      pendingVerifications: 0,
-      rejectedVerifications: 0,
-      totalReviews: 0,
-      pendingReviews: 0,
-      adminUsers: 0
-    };
+const nuxtApp = useNuxtApp()
+
+const { data: statsData, error: statsError } = await useStubResource('adminStats', {
+  default: defaultStats,
+})
+
+const adminStats = computed(() => statsData.value || defaultStats)
+
+watch(statsError, (err) => {
+  if (err) {
+    console.error('Failed to load admin stats', err)
+    if (import.meta.client) {
+      try {
+        nuxtApp.$awn?.alert('Failed to load dashboard stats')
+      } catch {}
+    }
   }
-};
-
-onMounted(() => {
-  fetchData();
-});
+})
 </script>
 

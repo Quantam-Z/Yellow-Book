@@ -72,34 +72,79 @@ import {
   MessageCircle, 
   DollarSign
 } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { ref, watchEffect } from 'vue';
+import { useStubClient, useStubResource } from '~/services/stubClient';
 
 // Map icon names from stub to actual components
 const iconMap = { Star, BadgeCheck, AlertCircle, Megaphone, MessageCircle, DollarSign };
+const nuxtApp = useNuxtApp();
+const stubClient = useStubClient();
 
-// Load notifications from stub JSON and keep them mutable for actions
 const notifications = ref([]);
-const { data: notificationsData } = await useFetch('/stubs/agencyNotifications.json');
-notifications.value = (notificationsData.value || []).map(n => ({
-  id: n.id,
-  title: n.title,
-  message: n.message,
-  time: n.time,
-  icon: iconMap[n.icon] || MessageCircle,
-  iconColor: n.iconColor || 'text-gray-600',
-  bgColor: n.bgColor || 'bg-gray-100',
-  unread: Boolean(n.unread),
-}));
+
+const { data: notificationsData, error: notificationsError, refresh } = await useStubResource('agencyNotifications');
+
+watchEffect(() => {
+  notifications.value = (notificationsData.value || []).map(n => ({
+    id: n.id,
+    title: n.title,
+    message: n.message,
+    time: n.time,
+    icon: iconMap[n.icon] || MessageCircle,
+    iconColor: n.iconColor || 'text-gray-600',
+    bgColor: n.bgColor || 'bg-gray-100',
+    unread: Boolean(n.unread),
+  }));
+});
+
+watchEffect(() => {
+  if (notificationsError.value) {
+    console.error('Failed to load notifications', notificationsError.value);
+    if (import.meta.client) {
+      try {
+        nuxtApp.$awn?.alert('Failed to load notifications');
+      } catch {}
+    }
+  }
+});
 
 // Methods
-const markAllAsRead = () => {
-  notifications.value.forEach(notification => {
-    notification.unread = false;
-  });
+const markAllAsRead = async () => {
+  try {
+    await Promise.all(
+      notifications.value.map((notification) =>
+        notification.unread
+          ? stubClient.update('agencyNotifications', notification.id, { unread: false }, { delay: 120 })
+          : Promise.resolve()
+      )
+    );
+    await refresh();
+  } catch (error) {
+    console.error('Failed to mark notifications as read', error);
+    if (import.meta.client) {
+      try {
+        nuxtApp.$awn?.alert('Unable to mark notifications as read');
+      } catch {}
+    }
+  }
 };
 
-const clearAllNotifications = () => {
-  notifications.value = [];
+const clearAllNotifications = async () => {
+  try {
+    await Promise.all(
+      notifications.value.map((notification) =>
+        stubClient.remove('agencyNotifications', notification.id, { delay: 120 })
+      )
+    );
+    await refresh();
+  } catch (error) {
+    console.error('Failed to clear notifications', error);
+    if (import.meta.client) {
+      try {
+        nuxtApp.$awn?.alert('Unable to clear notifications');
+      } catch {}
+    }
+  }
 };
 </script>
 
