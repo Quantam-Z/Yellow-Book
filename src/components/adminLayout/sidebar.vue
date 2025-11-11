@@ -45,19 +45,29 @@
       <div class="h-px w-full border-t border-solid border-white my-4" />
 
       <nav class="flex flex-col gap-2">
-        <NuxtLink
-          v-for="(item, index) in bottomMenu"
-          :key="index"
-          :to="item.to"
-          class="flex items-center gap-3 py-3 px-4 rounded-lg text-base font-medium text-[#212121] transition-all duration-200 ease-in-out hover:bg-[#fafafa] no-underline"
-          :class="{
-            'bg-[#f3f3f3] font-semibold': $route.path === item.to
-          }"
-          @click="closeSidebar"
-        >
-          <component :is="item.icon" class="w-[22px] h-[22px]" />
-          <span class="leading-[130%] capitalize">{{ item.label }}</span>
-        </NuxtLink>
+        <template v-for="(item, index) in bottomMenu" :key="index">
+          <NuxtLink
+            v-if="item.to"
+            :to="item.to"
+            class="flex items-center gap-3 py-3 px-4 rounded-lg text-base font-medium text-[#212121] transition-all duration-200 ease-in-out hover:bg-[#fafafa] no-underline"
+            :class="{
+              'bg-[#f3f3f3] font-semibold': $route.path === item.to
+            }"
+            @click="closeSidebar"
+          >
+            <component :is="item.icon" class="w-[22px] h-[22px]" />
+            <span class="leading-[130%] capitalize">{{ item.label }}</span>
+          </NuxtLink>
+          <button
+            v-else
+            type="button"
+            class="flex items-center gap-3 py-3 px-4 rounded-lg text-base font-medium text-[#212121] transition-all duration-200 ease-in-out hover:bg-[#fafafa] text-left bg-transparent border-0 cursor-pointer"
+            @click="handleBottomMenuAction(item)"
+          >
+            <component :is="item.icon" class="w-[22px] h-[22px]" />
+            <span class="leading-[130%] capitalize">{{ item.label }}</span>
+          </button>
+        </template>
       </nav>
     </aside>
   </div>
@@ -75,6 +85,7 @@ import {
   Menu 
 } from "lucide-vue-next";
 import { ref, onMounted, onUnmounted } from "vue";
+import { useAuthStore } from '~/stores/auth';
 
 const isOpen = ref(false);
 const isScrolled = ref(false); 
@@ -87,9 +98,15 @@ const mainMenu = [
   { label: "Admin Management", icon: Shield, to: "/dashboard/admin/admin-management" },
 ];
 
+const authStore = useAuthStore();
+
+const handleLogout = async () => {
+  await authStore.logout();
+};
+
 const bottomMenu = [
   { label: "Settings", icon: Settings, to: "/dashboard/admin/settings" },
-  { label: "Logout", icon: LogOut, to: "/logout" },
+  { label: "Logout", icon: LogOut, action: handleLogout },
 ];
 
 // Function to handle scroll event
@@ -101,6 +118,18 @@ const handleScroll = () => {
 const closeSidebar = () => {
   if (window.innerWidth < 768) {
     isOpen.value = false;
+  }
+};
+
+const handleBottomMenuAction = async (item) => {
+  try {
+    if (typeof item.action === 'function') {
+      await item.action();
+    }
+  } catch (error) {
+    console.error('Sidebar action failed:', error);
+  } finally {
+    closeSidebar();
   }
 };
 
