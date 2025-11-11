@@ -564,28 +564,60 @@
 </script>
 
 <style scoped>
-  .reply-connector::before {
-    content: '';
-    position: absolute;
-    left: 1px;
-    top: -12px;
-    width: 33px;
-    height: 57px;
-    border-left: 1px solid #c0c0c0;
-    border-bottom: 1px solid #c0c0c0;
-    border-bottom-left-radius: 12px;
+  .reply-connector {
+    --connector-horizontal-offset: 0.75rem;
+    --connector-top-gap: 1.5rem;
+    position: relative;
   }
 
-  @media (max-width: 640px) {
+  .reply-connector::before,
+  .reply-connector::after {
+    content: '';
+    position: absolute;
+    pointer-events: none;
+    display: none;
+  }
+
+  @media (min-width: 640px) {
+    .reply-connector::before,
+    .reply-connector::after {
+      display: block;
+    }
+
     .reply-connector::before {
-      display: none;
+      left: calc(-1 * var(--connector-horizontal-offset));
+      top: calc(-1 * var(--connector-top-gap));
+      width: var(--connector-horizontal-offset);
+      height: calc(100% + var(--connector-top-gap));
+      border-left: 1.5px solid #d1d5db;
+      border-bottom: 1.5px solid #d1d5db;
+      border-bottom-left-radius: 16px;
+      background: transparent;
+    }
+
+    .reply-connector::after {
+      left: calc(-1 * var(--connector-horizontal-offset));
+      top: calc(-1 * var(--connector-top-gap));
+      width: 10px;
+      height: 10px;
+      background-color: #ffffff;
+      border: 1.5px solid #d1d5db;
+      border-radius: 9999px;
+      transform: translate(-50%, -50%);
     }
   }
 
-  @media (min-width: 640px) and (max-width: 767px) {
-    .reply-connector::before {
-      width: 28px;
-      height: 52px;
+  @media (min-width: 768px) {
+    .reply-connector {
+      --connector-horizontal-offset: 1.5rem;
+      --connector-top-gap: 1.75rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .reply-connector {
+      --connector-horizontal-offset: 2.5rem;
+      --connector-top-gap: 2rem;
     }
   }
 </style>
