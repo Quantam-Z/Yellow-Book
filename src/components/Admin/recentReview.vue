@@ -3,9 +3,12 @@
     <!-- Header -->
     <div class="w-full flex items-center justify-between">
       <h2 class="relative leading-[130%] capitalize font-bold text-lg lg:text-xl">Recent Reviews</h2>
-      <div class="relative text-sm lg:text-base leading-[130%] capitalize font-semibold text-amber-500 cursor-pointer hover:text-amber-600 transition-colors">
+      <NuxtLink
+        to="/dashboard/admin/manage-review"
+        class="relative text-sm lg:text-base leading-[130%] capitalize font-semibold text-amber-500 hover:text-amber-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white rounded-md px-2 py-1 cursor-pointer"
+      >
         See All
-      </div>
+      </NuxtLink>
     </div>
 
     <!-- Desktop Table -->
@@ -31,15 +34,22 @@
             </td>
             <td class="px-4 py-3 text-gray-700 text-sm whitespace-nowrap">{{ review.date }}</td>
             <td class="px-4 py-3 text-gray-700 text-sm truncate">
-  {{ review.review.split(' ').slice(0, 1).join(' ') }}
-</td>
+              {{ review.review.split(' ').slice(0, 1).join(' ') }}
+            </td>
             <td class="px-4 py-3 whitespace-nowrap">
               <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-md font-medium text-sm" :class="getStatusClass(review.status, 'soft')">
                 {{ review.status }}
               </span>
             </td>
             <td class="px-4 py-3 whitespace-nowrap">
-              <MoreHorizontal class="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer" />
+              <button
+                type="button"
+                class="inline-flex h-8 w-8 items-center justify-center rounded-full text-gray-400 hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-amber-500 transition"
+                @click.stop="viewDetails(review)"
+                :aria-label="`View details for ${review.reviewer}`"
+              >
+                <MoreHorizontal class="w-5 h-5" />
+              </button>
             </td>
           </tr>
         </tbody>
@@ -48,8 +58,8 @@
 
     <!-- Mobile Cards -->
     <div class="lg:hidden w-full flex flex-col gap-4">
-      <div 
-        v-for="(review, index) in reviews" 
+      <div
+        v-for="(review, index) in reviews"
         :key="index"
         class="w-full rounded-xl border border-gray-200 p-3 sm:p-4 bg-white shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.01] cursor-pointer hover:bg-indigo-50"
       >
@@ -64,7 +74,14 @@
             <span class="text-xs font-medium px-2 py-1 rounded-full" :class="getStatusClass(review.status, 'soft') + ' bg-opacity-10'">
               {{ review.status }}
             </span>
-            <MoreHorizontal class="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer" />
+            <button
+              type="button"
+              class="inline-flex h-8 w-8 items-center justify-center rounded-full text-gray-400 hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-amber-500 transition"
+              @click.stop="viewDetails(review)"
+              :aria-label="`View details for ${review.reviewer}`"
+            >
+              <MoreHorizontal class="w-5 h-5" />
+            </button>
           </div>
         </div>
 
@@ -72,14 +89,15 @@
           <p class="text-sm text-gray-700 line-clamp-2">{{ review.review }}</p>
         </div>
 
-          <div class="flex justify-between items-center text-xs text-gray-500">
+        <div class="flex justify-between items-center text-xs text-gray-500">
           <span>{{ review.date }}</span>
-          <span
-              @click="viewDetails(review)"
-            class="text-amber-500 hover:text-amber-600 font-medium cursor-pointer"
+          <button
+            type="button"
+            @click="viewDetails(review)"
+            class="text-amber-500 hover:text-amber-600 font-medium cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-amber-500 rounded-md px-1 py-0.5"
           >
             View Details
-          </span>
+          </button>
         </div>
       </div>
     </div>
@@ -92,11 +110,13 @@ import { MoreHorizontal } from 'lucide-vue-next';
 import RatingStars from '~/components/common/RatingStars.vue'
 import { getStatusClass } from '~/composables/useStatusClass'
 import { useStubClient } from '~/services/stubClient'
+import { useRouter } from 'vue-router'
 
 // Load recent reviews from stub
 const reviews = ref([]);
 const stubClient = useStubClient();
 const nuxtApp = useNuxtApp();
+const router = useRouter();
 
 const fetchData = async () => {
   try {
@@ -114,8 +134,12 @@ const fetchData = async () => {
 };
 
 const viewDetails = (review) => {
-  // Placeholder for modal or navigation
-  console.info('Viewing review from', review.reviewer);
+  const query = review?.id ? { reviewId: review.id } : {};
+  router.push({ path: '/dashboard/admin/manage-review', query }).catch((error) => {
+    if (error?.name !== 'NavigationDuplicated') {
+      console.error('Failed to navigate to review details:', error);
+    }
+  });
 };
 
 onMounted(() => {
