@@ -279,7 +279,7 @@ export default {
     performSearch() {
       const value = (this.searchQuery || this.selectedSearch).trim()
 
-      if (!value) {
+      if (!value || value === this.defaultSearchPlaceholder) {
         return
       }
 
@@ -294,6 +294,11 @@ export default {
       }
       if (matchedRecord) {
         this.navigateToPopularListing(matchedRecord)
+      } else if (this.$router) {
+        this.$router.push({
+          path: '/agency',
+          query: { title: value }
+        })
       }
     },
     selectSearch(item) {
@@ -332,46 +337,47 @@ export default {
       }
       this.isLoadingSearchData = true
       try {
-        const response = await fetch('/stubs/agencies.json', { cache: 'no-store' })
+        const response = await fetch('/stubs/companies.json', { cache: 'no-store' })
         if (!response.ok) {
-          throw new Error(`Failed to load agencies stub (${response.status})`)
+          throw new Error(`Failed to load companies stub (${response.status})`)
         }
         const payload = await response.json()
         if (!Array.isArray(payload)) {
-          throw new Error('Agencies stub did not return an array')
+          throw new Error('Companies stub did not return an array')
         }
 
         const normalizedRecords = payload
           .map(item => {
-            const rawTitle = typeof item?.title === 'string' ? item.title.trim() : ''
+            const rawTitle =
+              typeof item?.name === 'string'
+                ? item.name.trim()
+                : typeof item?.title === 'string'
+                ? item.title.trim()
+                : ''
             if (!rawTitle) return null
             const normalizedTitle = this.normalizeTitle(rawTitle)
             if (!normalizedTitle) return null
             return {
               title: rawTitle,
               normalizedTitle,
-              slug: this.slugify(rawTitle)
+              slug: this.slugify(rawTitle),
+              id: item?.id ?? null
             }
           })
           .filter(Boolean)
 
         this.agencyRecords = normalizedRecords
-        this.searchData = normalizedRecords.map(record => record.title)
+        this.searchData = [...new Set(normalizedRecords.map(record => record.title))]
 
         const initialTitle = normalizedRecords[0]?.title
         if (initialTitle) {
-          if (!this.searchQuery) {
-            this.searchQuery = initialTitle
-          }
-          if (!this.selectedSearch || this.selectedSearch === this.defaultSearchPlaceholder) {
-            this.selectedSearch = initialTitle
-          }
-          if (!this.cachedSearchQuery) {
-            this.cachedSearchQuery = initialTitle
-          }
+          this.searchQuery = this.searchQuery || initialTitle
+          this.selectedSearch =
+            !this.selectedSearch || this.selectedSearch === this.defaultSearchPlaceholder ? initialTitle : this.selectedSearch
+          this.cachedSearchQuery = this.cachedSearchQuery || initialTitle
         }
       } catch (error) {
-        console.error('Failed to load agencies search data:', error)
+        console.error('Failed to load company search data:', error)
       } finally {
         this.isLoadingSearchData = false
       }
@@ -405,7 +411,7 @@ export default {
       if (!this.$router || !record) {
         return
       }
-      const query = record.slug ? { slug: record.slug } : { title: record.title }
+      const query = record.id != null ? { id: record.id } : record.slug ? { slug: record.slug } : { title: record.title }
       this.$router.push({ path: '/agency', query })
     }
   },
