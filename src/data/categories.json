@@ -1,303 +1,99 @@
 {
   "categories": [
     {
-      "id": "animals-pets",
       "name": "Animals & Pets",
-      "slug": "animals-pets",
-      "tagline": "Caring services for every companion animal",
-      "description": "Discover trusted groomers, veterinarians, trainers, and sitters offering compassionate care for pets of every kind.",
       "icon": "PawPrint",
-      "color": "text-emerald-600",
-      "heroImage": "/logo/p1.png",
-      "quickStats": {
-        "totalListings": 48,
-        "averageRating": 4.6,
-        "verifiedPercent": 72
-      },
-      "topServices": [
-        { "label": "Emergency Vet Clinics", "value": "Veterinary" },
-        { "label": "Luxury Boarding", "value": "Boarding" },
-        { "label": "Certified Trainers", "value": "Training" }
-      ],
-      "insights": [
-        "Same-day appointments are available with over 60% of providers.",
-        "Average consultation fees range between $45 and $220."
-      ],
+      "color": "text-black",
       "filters": {
         "serviceTypes": {
           "label": "Pet Services",
-          "placeholder": "Select service type",
           "options": ["Grooming", "Veterinary", "Training", "Boarding", "Pet Sitting"]
         },
         "specializations": {
           "label": "Animal Types",
-          "placeholder": "Filter by animal",
           "options": ["Dogs", "Cats", "Birds", "Reptiles", "Small Animals"]
         },
-        "priceRange": {
-          "label": "Typical consultation range",
-          "min": 25,
-          "max": 320,
-          "step": 5,
-          "default": 220,
-          "currency": "USD"
-        },
         "emergencyService": true
-      },
-      "meta": {
-        "ctaLabel": "Browse pet experts",
-        "ctaHref": "/catagory?name=Animals%20%26%20Pets",
-        "lastUpdated": "2025-11-01"
       }
     },
     {
-      "id": "beauty-well-beings",
       "name": "Beauty & Well-beings",
-      "slug": "beauty-well-beings",
-      "tagline": "Wellness experiences crafted for mind and body",
-      "description": "From rejuvenating spa sessions to precision styling, explore professionals dedicated to your self-care routine.",
       "icon": "Sparkles",
-      "color": "text-rose-600",
-      "heroImage": "/logo/image6.png",
-      "quickStats": {
-        "totalListings": 65,
-        "averageRating": 4.7,
-        "verifiedPercent": 68
-      },
-      "topServices": [
-        { "label": "Hair Specialists", "value": "Hair Styling" },
-        { "label": "Clinical Skincare", "value": "Skincare" },
-        { "label": "Luxury Spa Treatments", "value": "Spa Treatments" }
-      ],
-      "insights": [
-        "Weekend appointments see the highest demand between 10am and 2pm.",
-        "80% of providers offer bundled wellness packages."
-      ],
+      "color": "text-black",
       "filters": {
         "serviceTypes": {
           "label": "Beauty Services",
-          "placeholder": "Select beauty focus",
           "options": ["Hair Styling", "Skincare", "Massage", "Nails", "Makeup"]
         },
         "specializations": {
           "label": "Specializations",
-          "placeholder": "Filter by specialty",
           "options": ["Hair Care", "Skin Care", "Spa Treatments", "Beauty Therapy"]
         },
-        "priceRange": {
-          "label": "Typical session range",
-          "min": 30,
-          "max": 280,
-          "step": 5,
-          "default": 150,
-          "currency": "USD"
-        },
         "emergencyService": false
-      },
-      "meta": {
-        "ctaLabel": "Book a wellness expert",
-        "ctaHref": "/catagory?name=Beauty%20%26%20Well-beings",
-        "lastUpdated": "2025-11-01"
       }
     },
     {
-      "id": "food-beverage",
       "name": "Food & Beverage",
-      "slug": "food-beverage",
-      "tagline": "Culinary partners ready for every event and craving",
-      "description": "Connect with acclaimed chefs, caterers, and specialty food vendors tailored to your audience.",
       "icon": "Utensils",
-      "color": "text-amber-600",
-      "heroImage": "/logo/p2.png",
-      "quickStats": {
-        "totalListings": 54,
-        "averageRating": 4.5,
-        "verifiedPercent": 74
-      },
-      "topServices": [
-        { "label": "Event Catering", "value": "Catering" },
-        { "label": "Signature Restaurants", "value": "Restaurant" },
-        { "label": "Gourmet Coffee Bars", "value": "Coffee Shop" }
-      ],
-      "insights": [
-        "Peak booking season aligns with major holidays and graduation periods.",
-        "Most partners offer menus compliant with vegan and gluten-free preferences."
-      ],
+      "color": "text-black",
       "filters": {
         "serviceTypes": {
           "label": "Food Services",
-          "placeholder": "Select food service",
           "options": ["Restaurant", "Catering", "Food Truck", "Bakery", "Coffee Shop"]
         },
         "specializations": {
           "label": "Cuisine Types",
-          "placeholder": "Filter by cuisine",
           "options": ["Italian", "Asian", "Mexican", "American", "French"]
         },
-        "priceRange": {
-          "label": "Typical per-guest range",
-          "min": 15,
-          "max": 180,
-          "step": 5,
-          "default": 65,
-          "currency": "USD"
-        },
         "emergencyService": false
-      },
-      "meta": {
-        "ctaLabel": "Plan a tasting",
-        "ctaHref": "/catagory?name=Food%20%26%20Beverage",
-        "lastUpdated": "2025-11-01"
       }
     },
     {
-      "id": "tourism-hospitality",
       "name": "Tourism & Hospitality",
-      "slug": "tourism-hospitality",
-      "tagline": "Remarkable stays and adventures, curated for modern travelers",
-      "description": "Find premium resorts, guided tour operators, and travel planners delivering memorable guest experiences.",
       "icon": "Plane",
-      "color": "text-sky-600",
-      "heroImage": "/logo/p3.png",
-      "quickStats": {
-        "totalListings": 39,
-        "averageRating": 4.6,
-        "verifiedPercent": 81
-      },
-      "topServices": [
-        { "label": "Beach Resorts", "value": "Hotels" },
-        { "label": "Adventure Tours", "value": "Adventure" },
-        { "label": "Luxury Vacation Rentals", "value": "Vacation Rental" }
-      ],
-      "insights": [
-        "Flexible cancellation policies are now standard with 70% of partners.",
-        "Travelers are booking 35% more sustainable experiences year-over-year."
-      ],
+      "color": "text-black",
       "filters": {
         "serviceTypes": {
           "label": "Tourism Services",
-          "placeholder": "Select tourism service",
           "options": ["Hotels", "Tours", "Travel Agency", "Vacation Rental", "Adventure"]
         },
         "specializations": {
           "label": "Destination Types",
-          "placeholder": "Filter by destination",
           "options": ["Beach", "Mountain", "City", "Cultural", "Adventure"]
         },
-        "priceRange": {
-          "label": "Typical nightly range",
-          "min": 80,
-          "max": 520,
-          "step": 10,
-          "default": 280,
-          "currency": "USD"
-        },
         "emergencyService": true
-      },
-      "meta": {
-        "ctaLabel": "Design a getaway",
-        "ctaHref": "/catagory?name=Tourism%20%26%20Hospitality",
-        "lastUpdated": "2025-11-01"
       }
     },
     {
-      "id": "it-software",
       "name": "IT & Software",
-      "slug": "it-software",
-      "tagline": "Build and scale with proven technology partners",
-      "description": "Partner with software studios, security experts, and cloud specialists trusted by high-growth teams.",
       "icon": "Laptop",
-      "color": "text-indigo-600",
-      "heroImage": "/logo/image7.png",
-      "quickStats": {
-        "totalListings": 71,
-        "averageRating": 4.8,
-        "verifiedPercent": 87
-      },
-      "topServices": [
-        { "label": "Product Engineering Squads", "value": "Web Development" },
-        { "label": "Mobile App Studios", "value": "App Development" },
-        { "label": "Cloud Migration Experts", "value": "Cloud Services" }
-      ],
-      "insights": [
-        "Demand for AI-driven enhancements has doubled since last quarter.",
-        "75% of providers offer 24/7 incident response retainers."
-      ],
+      "color": "text-black",
       "filters": {
         "serviceTypes": {
           "label": "IT Services",
-          "placeholder": "Select IT service",
           "options": ["Web Development", "App Development", "IT Support", "Cybersecurity", "Cloud Services"]
         },
         "specializations": {
           "label": "Technologies",
-          "placeholder": "Filter by stack",
           "options": ["Frontend", "Backend", "Mobile", "Database", "DevOps"]
         },
-        "priceRange": {
-          "label": "Typical project retainer",
-          "min": 100,
-          "max": 850,
-          "step": 25,
-          "default": 450,
-          "currency": "USD"
-        },
         "emergencyService": true
-      },
-      "meta": {
-        "ctaLabel": "Meet technology teams",
-        "ctaHref": "/catagory?name=IT%20%26%20Software",
-        "lastUpdated": "2025-11-01"
       }
     },
     {
-      "id": "general-services",
       "name": "More",
-      "slug": "more-services",
-      "tagline": "Specialized experts across consulting, education, and more",
-      "description": "Explore a diverse network of professional services covering finance, legal, education, and tailored advisory support.",
       "icon": "MoreHorizontal",
-      "color": "text-slate-600",
-      "heroImage": "/logo/logo.png",
-      "quickStats": {
-        "totalListings": 83,
-        "averageRating": 4.4,
-        "verifiedPercent": 65
-      },
-      "topServices": [
-        { "label": "Business Consulting", "value": "Consulting" },
-        { "label": "Continuing Education", "value": "Education" },
-        { "label": "Financial Advisory", "value": "Financial" }
-      ],
-      "insights": [
-        "Most providers offer hybrid delivery (on-site and remote).",
-        "Regulatory and compliance support is the fastest-growing request."
-      ],
+      "color": "text-black",
       "filters": {
         "serviceTypes": {
           "label": "Service Types",
-          "placeholder": "Select service type",
           "options": ["Consulting", "Education", "Legal", "Financial", "Other Services"]
         },
         "specializations": {
           "label": "Specializations",
-          "placeholder": "Filter by focus",
           "options": ["General", "Professional", "Technical", "Creative"]
         },
-        "priceRange": {
-          "label": "Typical hourly range",
-          "min": 20,
-          "max": 400,
-          "step": 10,
-          "default": 200,
-          "currency": "USD"
-        },
         "emergencyService": false
-      },
-      "meta": {
-        "ctaLabel": "Browse specialized services",
-        "ctaHref": "/catagory?name=More",
-        "lastUpdated": "2025-11-01"
       }
     }
   ]
