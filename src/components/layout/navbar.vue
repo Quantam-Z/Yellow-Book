@@ -1,7 +1,7 @@
 <template>
   <div class="w-full relative flex-shrink-0 text-left text-base text-[#616161] bg-[#fff9e6] rounded-sm font-['Plus_Jakarta_Sans'] pb-7 boat-bottom-radius">
     <div class="relative z-10 w-full px-4 sm:px-6 md:px-12 lg:px-[120px] py-4 sm:py-6 flex flex-col">
-      <div class="flex items-center justify-between mb-6 sm:mb-12 md:mb-16">
+        <div class="flex items-center justify-between mb-6 sm:mb-12 md:mb-16">
         <nuxt-link
           to="/"
           class="w-[120px] sm:w-[118px] md:w-[118px] rounded-[4px] flex flex-col items-start p-2 box-border"
@@ -22,10 +22,10 @@
             <div class="w-[30px] bg-[#212121] h-[2px]"></div>
           </nuxt-link>
 
-          <nuxt-link
-            to="/agency"
-            class="flex items-center justify-center cursor-pointer no-underline"
-          >
+            <nuxt-link
+              :to="popularListingLink"
+              class="flex items-center justify-center cursor-pointer no-underline"
+            >
             <div class="relative leading-[160%] font-normal text-base text-[#616161]">Popular Listing</div>
           </nuxt-link>
 
@@ -41,10 +41,10 @@
           <div class="flex items-center justify-center cursor-pointer" @click="openLoginModal">
             <div class="relative leading-[160%] font-normal text-base">Login</div>
           </div>
-          <nuxt-link
-            to="/agency"
-            class="relative rounded border-gray border-solid border-[1px] box-border h-12 flex items-center justify-center py-[18px] px-9 text-center text-base text-[#212121] font-plus-jakarta-sans no-underline"
-          >
+            <nuxt-link
+              :to="listYourAgencyLink"
+              class="relative rounded border-gray border-solid border-[1px] box-border h-12 flex items-center justify-center py-[18px] px-9 text-center text-base text-[#212121] font-plus-jakarta-sans no-underline"
+            >
             <div class="relative leading-[130%] capitalize font-semibold">List Your Agency</div>
           </nuxt-link>
         </div>
@@ -89,11 +89,11 @@
                 Category
               </nuxt-link>
 
-              <nuxt-link
-                to="/agency"
-                class="py-4 px-4 text-[#616161] hover:bg-[#fff9e6] rounded-lg transition-colors border-b border-gray-100 no-underline"
-                @click.native="closeMobileMenu"
-              >
+                <nuxt-link
+                  :to="popularListingLink"
+                  class="py-4 px-4 text-[#616161] hover:bg-[#fff9e6] rounded-lg transition-colors border-b border-gray-100 no-underline"
+                  @click.native="closeMobileMenu"
+                >
                 Popular Listing
               </nuxt-link>
 
@@ -113,11 +113,11 @@
               >
                 Login
               </button>
-              <nuxt-link
-                to="/agency"
-                class="w-full py-3 px-6 bg-[#fcc207] text-[#212121] font-semibold text-lg rounded-lg border-b-2 border-[#e5b106] hover:bg-[#e5b106] transition-all text-center no-underline block"
-                @click.native="closeMobileMenu"
-              >
+                <nuxt-link
+                  :to="listYourAgencyLink"
+                  class="w-full py-3 px-6 bg-[#fcc207] text-[#212121] font-semibold text-lg rounded-lg border-b-2 border-[#e5b106] hover:bg-[#e5b106] transition-all text-center no-underline block"
+                  @click.native="closeMobileMenu"
+                >
                 List Your Agency
               </nuxt-link>
             </div>
@@ -225,56 +225,72 @@ export default {
   name: 'ResponsiveLandingPage',
   // LoginModal component registered here
   components: { LoginModal, Menu, X },
-  emits: ['search'],
-  setup() {
-    const {
-      ensureLoaded,
-      pending,
-      ready,
-      matchSearch,
-      getBySlug,
-      getById,
-      getByTitle,
-      listings,
-    } = useDirectoryListings()
+    emits: ['search'],
+    setup() {
+      const {
+        ensureLoaded,
+        pending,
+        ready,
+        matchSearch,
+        getBySlug,
+        getById,
+        getByTitle,
+        listings,
+      } = useDirectoryListings()
 
-    return {
-      directoryEnsureLoaded: ensureLoaded,
-      directoryPending: pending,
-      directoryReady: ready,
-      directoryMatchSearch: matchSearch,
-      directoryGetBySlug: getBySlug,
-      directoryGetById: getById,
-      directoryGetByTitle: getByTitle,
-      directoryListings: listings,
-    }
-  },
-  data() {
-    const defaultSearchPlaceholder = 'Search agencies'
-    return {
-      showDropdown: false,
-      selectedSearch: defaultSearchPlaceholder,
-      searchQuery: '',
-      cachedSearchQuery: '',
-      showLoginModal: false,
-      isMobileMenuOpen: false,
-      defaultSearchPlaceholder,
-      dropdownResultLimit: 12,
-      directoryInitialized: false,
-    }
-  },
-  computed: {
-    isLoadingSearchData() {
-      return this.directoryPending && !this.directoryReady
-    },
-    filteredSearchEntries() {
-      if (!this.directoryReady) {
-        return []
+      return {
+        directoryEnsureLoaded: ensureLoaded,
+        directoryPending: pending,
+        directoryReady: ready,
+        directoryMatchSearch: matchSearch,
+        directoryGetBySlug: getBySlug,
+        directoryGetById: getById,
+        directoryGetByTitle: getByTitle,
+        directoryListings: listings,
       }
-      const query = this.searchQuery.trim()
-      return this.directoryMatchSearch(query, this.dropdownResultLimit)
-    }
-  },
+    },
+    data() {
+      const defaultSearchPlaceholder = 'Search agencies'
+      return {
+        showDropdown: false,
+        selectedSearch: defaultSearchPlaceholder,
+        searchQuery: '',
+        cachedSearchQuery: '',
+        showLoginModal: false,
+        isMobileMenuOpen: false,
+        defaultSearchPlaceholder,
+        dropdownResultLimit: 12,
+        directoryInitialized: false,
+      }
+    },
+    computed: {
+      isLoadingSearchData() {
+        return this.directoryPending && !this.directoryReady
+      },
+      filteredSearchEntries() {
+        if (!this.directoryReady) {
+          return []
+        }
+        const query = this.searchQuery.trim()
+        return this.directoryMatchSearch(query, this.dropdownResultLimit)
+      },
+      defaultAgencyQuery() {
+        const record = this.getFirstDirectoryRecord()
+        if (!record) {
+          return null
+        }
+        return this.buildAgencyQuery(record)
+      },
+      popularListingLink() {
+        if (this.defaultAgencyQuery) {
+          return { path: '/agency', query: this.defaultAgencyQuery }
+        }
+        return '/agency'
+      },
+      listYourAgencyLink() {
+        return this.popularListingLink
+      }
+    },
   methods: {
     async initializeSearchDirectory() {
       if (this.directoryInitialized) return
@@ -361,39 +377,59 @@ export default {
         }
       }
     },
-    findAgencyRecord(value) {
-      const normalized = this.normalizeTitle(value)
-      if (!normalized) return null
+      findAgencyRecord(value) {
+        const normalized = this.normalizeTitle(value)
+        if (!normalized) return null
 
-      const exactByTitle = this.directoryGetByTitle(value)
-      if (exactByTitle) return exactByTitle
+        const exactByTitle = this.directoryGetByTitle(value)
+        if (exactByTitle) return exactByTitle
 
-      const suggestions = this.directoryMatchSearch(value, 1)
-      if (suggestions.length) {
-        const bySlug = this.directoryGetBySlug(suggestions[0].slug)
-        if (bySlug) return bySlug
+        const suggestions = this.directoryMatchSearch(value, 1)
+        if (suggestions.length) {
+          const bySlug = this.directoryGetBySlug(suggestions[0].slug)
+          if (bySlug) return bySlug
+        }
+        return null
+      },
+      getFirstDirectoryRecord() {
+        if (!this.directoryReady || !Array.isArray(this.directoryListings) || !this.directoryListings.length) {
+          return null
+        }
+        return this.directoryListings[0]
+      },
+      buildAgencyQuery(record) {
+        if (!record) return null
+        const query = {}
+        if (record.slug) {
+          query.slug = record.slug
+        }
+        if (record.id != null) {
+          query.id = String(record.id)
+        } else if (!record.slug && record.title) {
+          query.title = record.title
+        }
+        return Object.keys(query).length ? query : null
+      },
+      normalizeTitle(value) {
+        return String(value || '')
+          .toLowerCase()
+          .replace(/\s+/g, ' ')
+          .trim()
+      },
+      navigateToPopularListing(record) {
+        if (!this.$router) return
+        const target = record || this.getFirstDirectoryRecord()
+        if (!target) {
+          this.$router.push({ path: '/agency' })
+          return
+        }
+        const query = this.buildAgencyQuery(target)
+        if (query) {
+          this.$router.push({ path: '/agency', query })
+        } else {
+          this.$router.push({ path: '/agency' })
+        }
       }
-      return null
-    },
-    normalizeTitle(value) {
-      return String(value || '')
-        .toLowerCase()
-        .replace(/\s+/g, ' ')
-        .trim()
-    },
-    navigateToPopularListing(record) {
-      if (!this.$router || !record) return
-      const query = {}
-      if (record.slug) {
-        query.slug = record.slug
-      }
-      if (record.id != null) {
-        query.id = String(record.id)
-      } else if (!record.slug) {
-        query.title = record.title
-      }
-      this.$router.push({ path: '/agency', query })
-    }
   },
   mounted() {
     document.addEventListener('click', this.handleClickOutside)
