@@ -34,13 +34,13 @@
       </button>
     </div>
 
-      <div 
-        v-if="showMobileFilters" 
-        id="mobile-filters-panel" 
-        class="mt-3 p-3 bg-white rounded-lg shadow-lg border border-gray-200 sm:hidden 
-               relative z-10 space-y-4 mb-4" 
-      >
-        <div class="flex flex-col gap-2">
+    <div 
+      v-if="showMobileFilters" 
+      id="mobile-filters-panel" 
+      class="mt-3 p-3 bg-white rounded-lg shadow-lg border border-gray-200 sm:hidden 
+             relative z-10 space-y-4 mb-4" 
+    >
+      <div class="flex flex-col gap-2">
           <label class="text-sm text-gray-700 font-medium">Status</label>
           <div class="relative">
             <select
@@ -56,26 +56,7 @@
           </div>
         </div>
 
-        <div class="flex flex-col gap-2">
-          <label class="text-sm text-gray-700 font-medium">Category</label>
-          <div class="relative">
-            <select
-              v-model="filters.category"
-              class="h-10 w-full rounded-lg bg-gray-100 border border-gray-300 appearance-none py-0 pl-4 pr-10 text-left text-sm text-gray-600 cursor-pointer focus:outline-none focus:ring-0"
-            >
-              <option value="">All Categories</option>
-              <option 
-                v-for="category in categories" 
-                :key="category" 
-                :value="category"
-              >
-                {{ category }}
-              </option>
-            </select>
-            <ChevronDown class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" aria-hidden="true" />
-          </div>
-        </div>
-
+   
         <div class="flex justify-end pt-2">
           <button 
             @click="showMobileFilters = false" 
@@ -85,7 +66,7 @@
             Close Filters
           </button>
         </div>
-      </div>
+    </div>
 
     <div class="hidden sm:flex items-center justify-between gap-3 sm:gap-4 mb-4">
       <h2 class="text-base sm:text-lg font-semibold text-gray-900 whitespace-nowrap flex-shrink-0">All List</h2>
@@ -103,55 +84,13 @@
           </select>
           <ChevronDown class="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none"/>
         </div>
-        <div class="relative w-full xs:w-auto min-w-[140px] sm:min-w-[160px]">
-          <select 
-            v-model="filters.category"
-            class="h-9 sm:h-10 w-full rounded-lg bg-white border border-gray-300 box-border flex items-center py-0 pl-3 pr-8 text-xs sm:text-sm text-gray-700 leading-[130%] font-medium appearance-none cursor-pointer focus:ring-1 focus:ring-yellow-400 focus:border-yellow-400 transition"
-          >
-            <option value="">All Categories</option>
-            <option 
-              v-for="category in categories" 
-              :key="category" 
-              :value="category"
-            >
-              {{ category }}
-            </option>
-          </select>
-          <ChevronDown class="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none"/>
-        </div>
-        <button
-          type="button"
-          @click="resetFilters"
-          class="px-3 sm:px-4 h-9 sm:h-10 bg-gray-100 text-gray-700 text-xs sm:text-sm font-medium rounded-lg border border-gray-200 hover:bg-gray-50 active:bg-gray-100 transition"
-        >
-          Reset
-        </button>
+     
       </div>
     </div>
 
     <div class="w-full bg-white rounded-xl shadow-md overflow-hidden">
-      <div v-if="isLoading" class="flex flex-col items-center justify-center gap-3 py-10 sm:py-16">
-        <div class="w-10 h-10 rounded-full border-2 border-yellow-400 border-t-transparent animate-spin"></div>
-        <p class="text-sm text-gray-600">Loading assigned companies…</p>
-      </div>
-
-      <div v-else-if="loadError" class="flex flex-col items-center gap-3 py-10 sm:py-16 px-4 text-center">
-        <div class="w-12 h-12 rounded-full bg-red-50 text-red-500 flex items-center justify-center">
-          <span class="text-lg font-semibold">!</span>
-        </div>
-        <p class="text-sm text-gray-700">Unable to load company data.</p>
-        <p class="text-xs text-gray-500 max-w-xs">Please check your connection and try again. If the issue persists, contact support.</p>
-        <button
-          type="button"
-          @click="retryFetch"
-          class="px-4 py-2 text-sm font-medium text-gray-900 bg-yellow-400 rounded-lg border-0 hover:bg-yellow-500 active:bg-yellow-600 transition"
-        >
-          Retry
-        </button>
-      </div>
-
-      <template v-else>
-        <div class="sm:hidden w-full flex flex-col gap-3">
+      
+      <div class="sm:hidden w-full flex flex-col gap-3">
           <div 
             v-for="company in paginatedCompanies" 
             :key="company.id"
@@ -176,76 +115,54 @@
               </div>
 
               <div class="flex items-center gap-2 shrink-0 ml-4">
-                  <span class="text-xs font-medium px-2 py-1 rounded-full whitespace-nowrap cursor-pointer" :class="getStatusClass(company.status)" @click="changeStatus(company)">
-                    {{ formatStatusLabel(company.status) }}
+                <span 
+                  class="text-xs font-medium px-2 py-1 rounded-full whitespace-nowrap cursor-pointer" 
+                  :class="getStatusClass(company.status)" 
+                  @click="changeStatus(company)"
+                >
+                  {{ company.status }}
                 </span>
               </div>
             </div>
 
-              <div class="flex flex-col gap-3 pl-7">
-                <div class="flex items-end justify-between gap-3">
-                  <div class="flex flex-col gap-1 text-sm flex-1 min-w-0">
-                    <div class="text-gray-600 truncate">Mobile: {{ company.mobile || 'N/A' }}</div>
-                    <div class="text-gray-500 text-xs">Assigned: {{ formatDate(company.assignedDate) }}</div>
-                    <div class="text-gray-500 text-xs">Primary Contact: {{ company.primaryContact || 'N/A' }}</div>
+            <div class="flex flex-col pl-7">
+              <div class="flex justify-between items-end">
+                <div class="flex flex-col gap-1 text-sm flex-1 min-w-0">
+                  <div class="text-gray-600 truncate">Mobile: {{ company.mobile || 'N/A' }}</div>
+                  <div v-if="expandedCompanyId === company.id" class="text-gray-500 text-xs mt-1 transition-all duration-300">ID: {{ company.id }}</div>
+                  
+                  <div v-if="expandedCompanyId === company.id" class="flex flex-col gap-1 mt-2 text-xs text-gray-700 transition-all duration-300">
+                    <div class="flex gap-2">
+                        <strong class="text-gray-900">Address:</strong> <span>{{ company.address || 'Not Provided' }}</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <strong class="text-gray-900">Email:</strong> <span>{{ company.email || 'Not Provided' }}</span>
+                    </div>
                   </div>
-                  <button
-                    type="button"
-                    @click="viewDetails(company)"
-                    class="flex items-center gap-1 text-amber-500 hover:text-amber-600 font-medium text-sm cursor-pointer whitespace-nowrap transition"
-                    :aria-expanded="company.expanded ? 'true' : 'false'"
-                    :aria-controls="`company-details-${company.id}`"
-                  >
-                    <span>{{ company.expanded ? 'Hide Details' : 'View Details' }}</span>
-                    <ChevronDown class="w-4 h-4 transition-transform duration-200" :class="company.expanded ? 'rotate-180' : ''" />
-                  </button>
                 </div>
-
-                <Transition name="mobile-detail">
-                  <div
-                    v-if="company.expanded"
-                    class="bg-gray-50 rounded-lg p-3 text-sm space-y-2"
-                    :id="`company-details-${company.id}`"
+                
+                <div class="ml-4 flex-shrink-0">
+                  <span 
+                    @click="toggleDetails(company.id)" 
+                    class="text-amber-500 hover:text-amber-600 font-medium text-sm cursor-pointer whitespace-nowrap"
                   >
-                    <div class="flex items-start justify-between gap-4">
-                      <span class="text-gray-500 font-medium">Company ID</span>
-                      <span class="text-gray-900">{{ company.id }}</span>
-                    </div>
-                    <div class="flex items-start justify-between gap-4">
-                      <span class="text-gray-500 font-medium">Email</span>
-                      <span class="text-gray-900 text-right break-words">{{ company.email || '—' }}</span>
-                    </div>
-                    <div class="flex items-start justify-between gap-4">
-                      <span class="text-gray-500 font-medium">Website</span>
-                      <a
-                        v-if="company.website"
-                        :href="company.website"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="text-amber-500 hover:text-amber-600 break-all"
-                      >
-                        {{ company.website }}
-                      </a>
-                      <span v-else class="text-gray-900">—</span>
-                    </div>
-                    <div class="flex items-start justify-between gap-4">
-                      <span class="text-gray-500 font-medium">Address</span>
-                      <span class="text-gray-900 text-right break-words">{{ company.address || '—' }}</span>
-                    </div>
-                  </div>
-                </Transition>
+                    {{ expandedCompanyId === company.id ? 'Show Less' : 'View Details' }}
+                  </span>
+                </div>
               </div>
+            </div>
           </div>
-        </div>
+      </div>
 
-        <div class="hidden sm:block overflow-x-auto scrollbar-thin">
+      <div class="hidden sm:block overflow-x-auto scrollbar-thin">
         <table class="w-full table-auto" style="min-width: 700px;">
           <thead class="bg-gray-50 border-b border-gray-200">
             <tr>
               <th class="px-2 sm:px-3 md:px-4 py-2.5 sm:py-3 text-left w-12 border-r border-gray-100">
                 <input 
                   type="checkbox" 
-                    v-model="selectAll"
+                  v-model="selectAll"
+                  @change="toggleSelectAll"
                   class="w-4 h-4 rounded border-gray-300 cursor-pointer touch-manipulation" 
                 />
               </th>
@@ -283,38 +200,36 @@
                 <span class="truncate max-w-full block">{{ company.category }}</span>
               </td>
               <td class="px-2 sm:px-3 md:px-4 py-2.5 sm:py-3 whitespace-nowrap border-r border-gray-100">
-                  <div 
-                    class="inline-flex items-center gap-1 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md font-medium text-[9px] sm:text-xs cursor-pointer touch-manipulation"
-                    :class="getStatusClass(company.status)"
-                    @click="changeStatus(company)"
-                  >
-                    <span>{{ formatStatusLabel(company.status) }}</span>
+                <div 
+                  class="inline-flex items-center gap-1 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md font-medium text-[9px] sm:text-xs cursor-pointer touch-manipulation"
+                  :class="getStatusClass(company.status)"
+                  @click="changeStatus(company)"
+                >
+                  <span>{{ company.status }}</span>
                   <ChevronDown class="w-2.5 h-2.5 sm:w-3 sm:h-3 flex-shrink-0" />
                 </div>
               </td>
 
               <td class="px-2 sm:px-3 md:px-4 py-2.5 sm:py-3 text-center">
-                  <button
-                    type="button"
+                <span
                   @click="viewDetails(company)"
-                    class="text-[10px] sm:text-xs font-medium text-yellow-600 hover:text-yellow-700 active:text-yellow-800 transition touch-manipulation underline cursor-pointer"
+                  class="text-[10px] sm:text-xs font-medium text-yellow-600 hover:text-yellow-700 active:text-yellow-800 transition touch-manipulation underline cursor-pointer"
                 >
                   Details
-                  </button>
+                </span>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
 
-        <div v-if="filteredCompanies.length === 0" class="text-center py-8 sm:py-12">
+      <div v-if="filteredCompanies.length === 0" class="text-center py-8 sm:py-12">
         <div class="w-12 h-12 mx-auto mb-3 bg-gray-100 rounded-full flex items-center justify-center">
           <Search class="w-6 h-6 text-gray-400" />
         </div>
         <p class="text-gray-500 text-xs sm:text-sm">No companies found matching your criteria</p>
         <p class="text-gray-400 text-[10px] sm:text-xs mt-1">Try adjusting your search or filters</p>
       </div>
-      </template>
     </div>
 
     <div class="flex flex-col sm:flex-row justify-between items-center mt-4 gap-3">
@@ -366,191 +281,140 @@
       </div>
     </div>
   </div>
-
-  <DetailModal
-    :open="isDetailModalOpen"
-    :title="detailModalTitle"
-    :items="detailModalItems"
-    @close="closeDetailModal"
-  />
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import { Search, CheckCircle, ChevronDown, ChevronLeft, ChevronRight, Filter as FilterIcon } from "lucide-vue-next";
-import DetailModal from '~/components/common/DetailModal.vue';
-import { useStubClient } from '~/services/stubClient';
 
-const stubClient = useStubClient();
+import { getStatusClass } from '~/composables/useStatusClass' 
+import { useStubClient } from '~/services/stubClient'
 
-const getStatusClass = (status) => {
-  const statusMap = {
-    pending: 'bg-yellow-100 text-yellow-800 border border-yellow-200',
-    verified: 'bg-green-100 text-green-800 border border-green-200',
-    rejected: 'bg-red-100 text-red-800 border border-red-200',
-  };
-  return statusMap[status?.toLowerCase()] || 'bg-gray-100 text-gray-800 border border-gray-200';
-};
-
-const itemsPerPage = 8;
-
-const companies = ref([]);
-const isLoading = ref(false);
-const loadError = ref(null);
+const companies = ref([]); // Data will be loaded here
 const searchQuery = ref('');
+const selectAll = ref(false);
 const currentPage = ref(1);
+const itemsPerPage = 8; 
 const showMobileFilters = ref(false);
+const expandedCompanyId = ref(null); 
+const nuxtApp = typeof useNuxtApp === 'function' ? useNuxtApp() : {}; // Safely get nuxtApp instance
+const stubClient = typeof useStubClient === 'function' ? useStubClient() : null; // Safely get stubClient instance
+
 const filters = ref({
   status: '',
-  category: '',
+  category: ''
 });
 
-const isDetailModalOpen = ref(false);
-const selectedCompany = ref(null);
-const isDesktop = ref(false);
+let nextId = 1; // Used for unique IDs if data doesn't provide them
 
-let lastIsDesktop = false;
+// --- DATA FETCHING ---
 
-const formatStatusLabel = (status) => {
-  if (!status) return 'Unknown';
-  const value = status.toString();
-  return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
-};
-
-const formatDate = (value) => {
-  if (!value) return '—';
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return value;
-  return new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' }).format(date);
-};
-
-const normalizeCompany = (company) => ({
-  id: company.id,
-  name: company.name,
-  category: company.category,
-  status: (company.status || 'pending').toLowerCase(),
-  mobile: company.mobile || '',
-  email: company.email || '',
-  assignedDate: company.assignedDate || '',
-  verified: Boolean(company.verified),
-  primaryContact: company.primaryContact || '',
-  address: company.address || '',
-  website: company.website || '',
-  selected: false,
-  expanded: false,
-});
-
-const handleResize = () => {
-  const matches = window.matchMedia('(min-width: 640px)').matches;
-  if (matches && !lastIsDesktop) {
-    companies.value.forEach((company) => {
-      if (company.expanded) {
-        company.expanded = false;
-      }
-    });
+const fetchData = async () => {
+  if (!stubClient) {
+     console.error("useStubClient is not available. Using empty data array.");
+     return;
   }
-  if (matches) {
-    showMobileFilters.value = false;
-  }
-  isDesktop.value = matches;
-  lastIsDesktop = matches;
-};
-
-const fetchCompanies = async () => {
-  isLoading.value = true;
-  loadError.value = null;
+  
   try {
-    const data = await stubClient.list('subadminAssignedCompanies', { delay: 0 });
-    companies.value = (data || []).map((entry) => normalizeCompany(entry));
+    // Specify the path to your mock data file
+    const endpoint = 'subadminAssignedCompanies.json';
+    const rowsData = await stubClient.list(endpoint, { delay: 140 }); 
+    
+    companies.value = (rowsData || []).map(row => ({
+      ...row,
+      id: row.id || nextId++,
+      status: row.status || 'Pending',
+      selected: false,
+      // Ensure all fields needed for rendering are present, even if empty
+      mobile: row.mobile || '',
+      address: row.address || '',
+      email: row.email || '',
+      verified: !!row.verified 
+    }));
+    
+    // Optional AWN notification (success)
+    if (nuxtApp.$awn) {
+      nuxtApp.$awn.success('Company data loaded successfully!');
+    }
+
   } catch (error) {
-    console.error('[assignCompanies] Failed to load stub data:', error);
-    loadError.value = error?.message || 'Failed to load companies';
-  } finally {
-    isLoading.value = false;
+    console.error('Failed to load assigned companies:', error);
+    
+    // Optional AWN notification (error)
+    if (nuxtApp.$awn) {
+      nuxtApp.$awn.alert('Failed to load assigned companies.');
+    }
+    companies.value = [];
   }
 };
 
-const retryFetch = () => fetchCompanies();
 
-const categories = computed(() => {
-  const unique = new Set();
-  companies.value.forEach((company) => {
-    if (company.category) {
-      unique.add(company.category);
-    }
-  });
-  return Array.from(unique).sort((a, b) => a.localeCompare(b));
-});
+// --- COMPUTED PROPERTIES ---
 
+// Filtered companies
 const filteredCompanies = computed(() => {
-  const query = searchQuery.value.trim().toLowerCase();
-  const statusFilter = filters.value.status ? filters.value.status.toLowerCase() : '';
-  const categoryFilter = filters.value.category ? filters.value.category.toLowerCase() : '';
-
-  return companies.value.filter((company) => {
-    if (query) {
-      const matches = [
-        company.name,
-        company.category,
-        company.mobile,
-        company.email,
-        company.primaryContact,
-        company.address,
-      ].some((field) => field && field.toString().toLowerCase().includes(query));
-      if (!matches) return false;
+  const q = (searchQuery.value || '').toLowerCase()
+  const status = filters.value.status
+  
+  const result = companies.value.filter(company => {
+    // Search
+    if (q) {
+      const matches = company.name.toLowerCase().includes(q) || 
+                     company.category.toLowerCase().includes(q) || 
+                     (company.mobile && company.mobile.includes(q))
+      if (!matches) return false
     }
+    // Status Filter
+    if (status && company.status.toLowerCase() !== status) return false
+    
+    return true
+  })
+  
+  return result
+})
 
-    if (statusFilter && company.status !== statusFilter) return false;
-    if (categoryFilter && company.category?.toLowerCase() !== categoryFilter) return false;
-
-    return true;
-  });
+// Total Pages
+const totalPages = computed(() => {
+  return Math.ceil(filteredCompanies.value.length / itemsPerPage);
 });
 
-const totalPages = computed(() => Math.max(1, Math.ceil(filteredCompanies.value.length / itemsPerPage)));
-
+// Paginated Companies
 const paginatedCompanies = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage;
   const end = start + itemsPerPage;
   return filteredCompanies.value.slice(start, end);
 });
 
-const selectAll = computed({
-  get() {
-    const visible = paginatedCompanies.value;
-    if (!visible.length) return false;
-    return visible.every((company) => company.selected);
-  },
-  set(value) {
-    paginatedCompanies.value.forEach((company) => {
-      company.selected = value;
-    });
-  },
-});
+// --- METHODS ---
 
 const getVisiblePages = () => {
   const pages = [];
   const maxVisible = 5;
   const total = totalPages.value;
-
+  
   if (total <= maxVisible) {
-    for (let i = 1; i <= total; i += 1) {
+    for (let i = 1; i <= total; i++) {
       pages.push(i);
     }
   } else {
     let start = Math.max(1, currentPage.value - Math.floor(maxVisible / 2));
     let end = Math.min(total, start + maxVisible - 1);
-
+    
     if (end - start + 1 < maxVisible) {
       start = Math.max(1, end - maxVisible + 1);
     }
-
-    for (let i = start; i <= end; i += 1) {
+    
+    for (let i = start; i <= end; i++) {
       pages.push(i);
     }
   }
-
   return pages;
+};
+
+const toggleSelectAll = () => {
+  paginatedCompanies.value.forEach(company => {
+    company.selected = selectAll.value;
+  });
 };
 
 const goToPage = (page) => {
@@ -560,79 +424,52 @@ const goToPage = (page) => {
 };
 
 const changeStatus = (company) => {
-  console.log('Change status for:', company.name);
+  const statuses = ['Pending', 'Verified', 'Rejected'];
+  const currentStatus = company.status;
+  const currentIndex = statuses.indexOf(currentStatus);
+  const nextIndex = (currentIndex + 1) % statuses.length;
+  const newStatus = statuses[nextIndex];
+
+  // Find the company in the main list and update its status
+  const companyIndex = companies.value.findIndex(c => c.id === company.id);
+  if (companyIndex !== -1) {
+    companies.value[companyIndex].status = newStatus;
+    
+    if (nuxtApp.$awn) {
+      nuxtApp.$awn.info(`Status for ${company.name} updated to ${newStatus}.`);
+    } else {
+      console.log(`Status for ${company.name} updated to ${newStatus}.`);
+    }
+  }
 };
-
-const closeDetailModal = () => {
-  isDetailModalOpen.value = false;
-  selectedCompany.value = null;
-};
-
-const detailModalTitle = computed(() => {
-  if (!selectedCompany.value) return 'Company Details';
-  return `${selectedCompany.value.name} Details`;
-});
-
-const detailModalItems = computed(() => {
-  if (!selectedCompany.value) return [];
-  const company = selectedCompany.value;
-
-  return [
-    { label: 'Company ID', value: company.id },
-    { label: 'Category', value: company.category || '—' },
-    { label: 'Status', value: formatStatusLabel(company.status) },
-    { label: 'Primary Contact', value: company.primaryContact || '—' },
-    { label: 'Mobile', value: company.mobile || '—' },
-    { label: 'Email', value: company.email || '—' },
-    { label: 'Website', value: company.website || '—' },
-    { label: 'Assigned Date', value: formatDate(company.assignedDate) },
-    { label: 'Address', value: company.address || '—' },
-  ];
-});
 
 const viewDetails = (company) => {
-  if (isDesktop.value) {
-    selectedCompany.value = company;
-    isDetailModalOpen.value = true;
-    return;
+  // Logic to open the DetailModal for desktop/tablet view
+  // Emit an event or trigger a centralized modal state change
+  if (nuxtApp.$awn) {
+      nuxtApp.$awn.info(`Modal trigger for ${company.name} (ID: ${company.id}).`);
+  } else {
+      console.log('OPEN MODAL: Viewing full details for:', company);
   }
-
-  const nextState = !company.expanded;
-  companies.value.forEach((item) => {
-    item.expanded = item.id === company.id ? nextState : false;
-  });
 };
 
-const resetFilters = () => {
-  filters.value.status = '';
-  filters.value.category = '';
-  searchQuery.value = '';
+const toggleDetails = (companyId) => {
+  expandedCompanyId.value = expandedCompanyId.value === companyId ? null : companyId;
 };
 
+// --- WATCHERS & LIFECYCLE HOOKS ---
+
+// Watch for filter/search changes to reset pagination to page 1
 watch([searchQuery, filters], () => {
   currentPage.value = 1;
 }, { deep: true });
 
-watch(filteredCompanies, () => {
-  const total = totalPages.value;
-  if (currentPage.value > total) {
-    currentPage.value = total;
-  }
-});
-
 onMounted(() => {
-  handleResize();
-  window.addEventListener('resize', handleResize, { passive: true });
-  fetchCompanies();
-});
-
-onBeforeUnmount(() => {
-  window.removeEventListener('resize', handleResize);
+  fetchData();
 });
 </script>
 
 <style scoped>
-/* Scoped styles are largely unchanged but retained for completeness */
 .font-plus-jakarta-sans {
   font-family: 'Plus Jakarta Sans', sans-serif;
 }
@@ -642,7 +479,6 @@ onBeforeUnmount(() => {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Thin custom scrollbar */
 .scrollbar-thin::-webkit-scrollbar {
   height: 6px;
   width: 6px;
@@ -662,18 +498,6 @@ onBeforeUnmount(() => {
   background: #94a3b8;
 }
 
-.mobile-detail-enter-active,
-.mobile-detail-leave-active {
-  transition: opacity 0.2s ease, transform 0.2s ease;
-}
-
-.mobile-detail-enter-from,
-.mobile-detail-leave-to {
-  opacity: 0;
-  transform: translateY(-4px);
-}
-
-/* Added a small breakpoint for buttons to help with responsive wrapping */
 @media (max-width: 480px) {
   .xs\:hidden {
     display: none !important;
