@@ -311,16 +311,16 @@ let nextId = 1; // Used for unique IDs if data doesn't provide them
 
 const fetchData = async () => {
   if (!stubClient) {
-     console.error("useStubClient is not available. Using empty data array.");
-     return;
+    console.error("useStubClient is not available. Using empty data array.");
+    return;
   }
-  
+
   try {
     // Specify the path to your mock data file
-    const endpoint = 'subadminAssignedCompanies.json';
-    const rowsData = await stubClient.list(endpoint, { delay: 140 }); 
-    
-    companies.value = (rowsData || []).map(row => ({
+    const endpoint = 'subadminAssignedCompanies';
+    const rowsData = await stubClient.list(endpoint, { delay: 140 });
+
+    companies.value = (rowsData || []).map((row) => ({
       ...row,
       id: row.id || nextId++,
       status: row.status || 'Pending',
@@ -329,17 +329,16 @@ const fetchData = async () => {
       mobile: row.mobile || '',
       address: row.address || '',
       email: row.email || '',
-      verified: !!row.verified 
+      verified: !!row.verified,
     }));
-    
+
     // Optional AWN notification (success)
     if (nuxtApp.$awn) {
       nuxtApp.$awn.success('Company data loaded successfully!');
     }
-
   } catch (error) {
     console.error('Failed to load assigned companies:', error);
-    
+
     // Optional AWN notification (error)
     if (nuxtApp.$awn) {
       nuxtApp.$awn.alert('Failed to load assigned companies.');
