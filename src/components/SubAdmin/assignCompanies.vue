@@ -129,16 +129,6 @@
               <div class="flex justify-between items-end">
                 <div class="flex flex-col gap-1 text-sm flex-1 min-w-0">
                   <div class="text-gray-600 truncate">Mobile: {{ company.mobile || 'N/A' }}</div>
-                  <div v-if="expandedCompanyId === company.id" class="text-gray-500 text-xs mt-1 transition-all duration-300">ID: {{ company.id }}</div>
-                  
-                  <div v-if="expandedCompanyId === company.id" class="flex flex-col gap-1 mt-2 text-xs text-gray-700 transition-all duration-300">
-                    <div class="flex gap-2">
-                        <strong class="text-gray-900">Address:</strong> <span>{{ company.address || 'Not Provided' }}</span>
-                    </div>
-                    <div class="flex gap-2">
-                        <strong class="text-gray-900">Email:</strong> <span>{{ company.email || 'Not Provided' }}</span>
-                    </div>
-                  </div>
                 </div>
                 
                 <div class="ml-4 flex-shrink-0">
@@ -149,6 +139,25 @@
                     {{ expandedCompanyId === company.id ? 'Show Less' : 'View Details' }}
                   </span>
                 </div>
+              </div>
+
+              <div v-if="expandedCompanyId === company.id" class="mt-3 pt-3 border-t border-gray-100 space-y-2 text-xs text-gray-700 transition-all duration-300">
+                  <div class="flex justify-between">
+                      <strong class="text-gray-900 font-semibold">ID:</strong> 
+                      <span class="font-medium text-right">{{ company.id }}</span>
+                  </div>
+                  <div class="flex justify-between">
+                      <strong class="text-gray-900 font-semibold">Email:</strong> 
+                      <span class="text-right truncate max-w-[70%]">{{ company.email || 'Not Provided' }}</span>
+                  </div>
+                  <div class="flex justify-between">
+                      <strong class="text-gray-900 font-semibold">Address:</strong> 
+                      <span class="text-right truncate max-w-[70%]">{{ company.address || 'Not Provided' }}</span>
+                  </div>
+                  <div class="flex justify-between">
+                      <strong class="text-gray-900 font-semibold">Assigned:</strong> 
+                      <span class="text-right">{{ company.assignedDate || 'N/A' }}</span>
+                  </div>
               </div>
             </div>
           </div>
@@ -280,35 +289,47 @@
         </button>
       </div>
     </div>
+
+    <DetailModal 
+      :isVisible="showDetailModal"
+      :company="selectedCompany"
+      @close="closeDetailModal"
+      @changeStatus="changeStatusFromModal"
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue';
-import { Search, CheckCircle, ChevronDown, ChevronLeft, ChevronRight, Filter as FilterIcon } from "lucide-vue-next";
+import { Search, CheckCircle, ChevronDown, ChevronLeft, ChevronRight, Filter as FilterIcon, X } from "lucide-vue-next";
+import DetailModal from '@/components/common/DetailModal.vue'
 
 import { getStatusClass } from '~/composables/useStatusClass' 
 import { useStubClient } from '~/services/stubClient'
 
-const companies = ref([]); // Data will be loaded here
+const companies = ref([]);
 const searchQuery = ref('');
 const selectAll = ref(false);
 const currentPage = ref(1);
 const itemsPerPage = 8; 
 const showMobileFilters = ref(false);
 const expandedCompanyId = ref(null); 
-const nuxtApp = typeof useNuxtApp === 'function' ? useNuxtApp() : {}; // Safely get nuxtApp instance
-const stubClient = typeof useStubClient === 'function' ? useStubClient() : null; // Safely get stubClient instance
+
+// MODAL STATE
+const showDetailModal = ref(false);
+const selectedCompany = ref({});
+
+const nuxtApp = typeof useNuxtApp === 'function' ? useNuxtApp() : {};
+const stubClient = typeof useStubClient === 'function' ? useStubClient() : null;
 
 const filters = ref({
   status: '',
   category: ''
 });
 
-let nextId = 1; // Used for unique IDs if data doesn't provide them
+let nextId = 1;
 
 // --- DATA FETCHING ---
-
 const fetchData = async () => {
   if (!stubClient) {
     console.error("useStubClient is not available. Using empty data array.");
@@ -316,7 +337,6 @@ const fetchData = async () => {
   }
 
   try {
-    // Specify the path to your mock data file
     const endpoint = 'subadminAssignedCompanies';
     const rowsData = await stubClient.list(endpoint, { delay: 140 });
 
@@ -325,21 +345,19 @@ const fetchData = async () => {
       id: row.id || nextId++,
       status: row.status || 'Pending',
       selected: false,
-      // Ensure all fields needed for rendering are present, even if empty
-      mobile: row.mobile || '',
-      address: row.address || '',
-      email: row.email || '',
+      mobile: row.mobile || 'N/A',
+      address: row.address || 'N/A',
+      email: row.email || 'N/A',
       verified: !!row.verified,
+      assignedDate: row.assignedDate || 'N/A' 
     }));
-
-    // Optional AWN notification (success)
+    
     if (nuxtApp.$awn) {
       nuxtApp.$awn.success('Company data loaded successfully!');
     }
   } catch (error) {
     console.error('Failed to load assigned companies:', error);
-
-    // Optional AWN notification (error)
+    
     if (nuxtApp.$awn) {
       nuxtApp.$awn.alert('Failed to load assigned companies.');
     }
@@ -347,23 +365,18 @@ const fetchData = async () => {
   }
 };
 
-
 // --- COMPUTED PROPERTIES ---
-
-// Filtered companies
 const filteredCompanies = computed(() => {
   const q = (searchQuery.value || '').toLowerCase()
   const status = filters.value.status
   
   const result = companies.value.filter(company => {
-    // Search
     if (q) {
       const matches = company.name.toLowerCase().includes(q) || 
                      company.category.toLowerCase().includes(q) || 
                      (company.mobile && company.mobile.includes(q))
       if (!matches) return false
     }
-    // Status Filter
     if (status && company.status.toLowerCase() !== status) return false
     
     return true
@@ -372,12 +385,10 @@ const filteredCompanies = computed(() => {
   return result
 })
 
-// Total Pages
 const totalPages = computed(() => {
   return Math.ceil(filteredCompanies.value.length / itemsPerPage);
 });
 
-// Paginated Companies
 const paginatedCompanies = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage;
   const end = start + itemsPerPage;
@@ -425,13 +436,13 @@ const goToPage = (page) => {
 const changeStatus = (company) => {
   const statuses = ['Pending', 'Verified', 'Rejected'];
   const currentStatus = company.status;
-  const currentIndex = statuses.indexOf(currentStatus);
-  const nextIndex = (currentIndex + 1) % statuses.length;
-  const newStatus = statuses[nextIndex];
-
-  // Find the company in the main list and update its status
   const companyIndex = companies.value.findIndex(c => c.id === company.id);
+
   if (companyIndex !== -1) {
+    const currentIndex = statuses.indexOf(currentStatus);
+    const nextIndex = (currentIndex + 1) % statuses.length;
+    const newStatus = statuses[nextIndex];
+    
     companies.value[companyIndex].status = newStatus;
     
     if (nuxtApp.$awn) {
@@ -442,14 +453,27 @@ const changeStatus = (company) => {
   }
 };
 
+// Method called by the Detail Modal
+const changeStatusFromModal = (company) => {
+    changeStatus(company);
+    // Refresh the selected company object in the modal
+    const updatedCompany = companies.value.find(c => c.id === company.id);
+    if(updatedCompany) {
+        selectedCompany.value = updatedCompany;
+    }
+}
+
+
 const viewDetails = (company) => {
-  // Logic to open the DetailModal for desktop/tablet view
-  // Emit an event or trigger a centralized modal state change
+  selectedCompany.value = company;
+  showDetailModal.value = true;
   if (nuxtApp.$awn) {
-      nuxtApp.$awn.info(`Modal trigger for ${company.name} (ID: ${company.id}).`);
-  } else {
-      console.log('OPEN MODAL: Viewing full details for:', company);
+      nuxtApp.$awn.info(`Showing details for ${company.name}`);
   }
+};
+
+const closeDetailModal = () => {
+  showDetailModal.value = false;
 };
 
 const toggleDetails = (companyId) => {
@@ -457,8 +481,6 @@ const toggleDetails = (companyId) => {
 };
 
 // --- WATCHERS & LIFECYCLE HOOKS ---
-
-// Watch for filter/search changes to reset pagination to page 1
 watch([searchQuery, filters], () => {
   currentPage.value = 1;
 }, { deep: true });
