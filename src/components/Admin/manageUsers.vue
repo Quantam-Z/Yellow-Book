@@ -275,85 +275,104 @@
       <!-- Content -->
       <template v-else>
         <!-- Mobile Card View -->
-        <div class="lg:hidden w-full flex flex-col gap-4">
-          <div 
-            v-for="user in paginatedUsers" 
-            :key="user.id"
-            class="w-full rounded-xl border border-gray-200 p-4 bg-white shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.01] hover:bg-indigo-50"
-          >
-            <!-- Card header -->
-            <div class="flex justify-between items-start mb-3">
-              <div class="flex flex-col min-w-0">
-                <div class="flex items-center gap-2 min-w-0">
-                  <h3 class="font-semibold text-gray-900 text-base truncate">{{ user.name }}</h3>
-                  <CheckCircleIcon v-if="user.verified" class="w-4 h-4 text-green-500 flex-shrink-0" />
-                </div>
-                <div class="mt-1 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium" :class="getSignupMethodClass(user.signupMethod, 'soft') + ' bg-opacity-10'">
-                  {{ user.signupMethod }}
-                </div>
-              </div>
-              <div class="flex items-center gap-2 shrink-0 ml-4">
-                <span class="text-xs font-medium px-2 py-1 rounded-full whitespace-nowrap" :class="getStatusClass(user.status, 'soft') + ' bg-opacity-10'" @click="changeStatus(user)">
-                  {{ user.status }}
-                </span>
-                <MoreHorizontal class="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer" />
-              </div>
-            </div>
-
-              <!-- Card body -->
-              <div class="flex flex-col gap-3">
-                <div class="flex justify-end">
-                  <button
-                    type="button"
-                    @click="viewUser(user)"
-                    class="text-amber-500 hover:text-amber-600 font-medium text-sm cursor-pointer whitespace-nowrap bg-transparent border-0 p-0 focus:outline-none"
-                    :aria-expanded="expandedUserId === user.id ? 'true' : 'false'"
-                  >
-                    {{ expandedUserId === user.id ? 'Hide Details' : 'View Details' }}
-                  </button>
-                </div>
-
-                <Transition name="collapse">
-                  <div
-                    v-if="expandedUserId === user.id"
-                    class="pt-3 border-t border-dashed border-gray-200 text-sm text-gray-600 space-y-2"
-                  >
-                    <div class="text-gray-700 break-all">{{ user.email }}</div>
-                    <div class="flex items-start justify-between gap-4">
-                      <span class="text-gray-500 font-medium">Signup Date</span>
-                      <span class="text-gray-900 text-right">{{ formatDate(user.signupDate) }}</span>
-                    </div>
-                    <div class="flex items-start justify-between gap-4">
-                      <span class="text-gray-500 font-medium">Signup Method</span>
-                      <span class="text-right">
-                        <span
-                          class="inline-flex items-center gap-2 px-2.5 py-1 rounded-md text-xs font-semibold"
-                          :class="getSignupMethodClass(user.signupMethod, 'soft')"
-                        >
-                          {{ user.signupMethod }}
-                        </span>
-                      </span>
-                    </div>
-                    <div class="flex items-start justify-between gap-4">
-                      <span class="text-gray-500 font-medium">Status</span>
-                      <span class="text-right">
-                        <span
-                          class="inline-flex items-center gap-2 px-2.5 py-1 rounded-md text-xs font-semibold"
-                          :class="getStatusClass(user.status, 'soft')"
-                        >
-                          {{ user.status }}
-                        </span>
-                      </span>
-                    </div>
-                    <div class="flex items-start justify-between gap-4">
-                      <span class="text-gray-500 font-medium">Verified</span>
-                      <span class="text-gray-900 text-right">{{ user.verified ? 'Yes' : 'No' }}</span>
-                    </div>
+          <div class="lg:hidden w-full flex flex-col gap-4">
+            <div 
+              v-for="(user, index) in paginatedUsers" 
+              :key="user.id"
+              class="w-full rounded-xl border border-gray-200 p-4 bg-white shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.01] hover:bg-indigo-50 cursor-pointer relative"
+            >
+              <div class="flex justify-between items-start mb-3">
+                <div class="flex flex-col min-w-0">
+                  <div class="flex items-center gap-2 min-w-0">
+                    <h3 class="font-semibold text-gray-900 text-base truncate">{{ user.name }}</h3>
+                    <CheckCircleIcon v-if="user.verified" class="w-4 h-4 text-green-500 flex-shrink-0" />
                   </div>
-                </Transition>
+                  <div class="mt-1 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium" :class="getSignupMethodClass(user.signupMethod, 'soft') + ' bg-opacity-10'">
+                    {{ user.signupMethod }}
+                  </div>
+                </div>
+                <div class="flex items-center gap-2 shrink-0 relative">
+                  <span 
+                    class="text-xs font-medium px-2 py-1 rounded-full whitespace-nowrap cursor-pointer transition-opacity" 
+                    :class="getStatusClass(user.status, 'soft') + ' bg-opacity-10'" 
+                    @click.stop="changeStatus(user)"
+                  >
+                    {{ user.status }}
+                  </span>
+                  <button
+                    v-if="mobileActionsIndex === index"
+                    type="button"
+                    class="text-amber-500 hover:text-amber-600 transition-colors flex items-center justify-center"
+                    @click.stop="viewUser(user)"
+                    title="Quick view"
+                  >
+                    <EyeIcon class="w-5 h-5" />
+                  </button>
+                  <MoreHorizontal 
+                    v-else
+                    class="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer" 
+                    @click.stop="toggleMobileActions(index)"
+                  />
+                </div>
               </div>
+
+              <div class="mb-3">
+                <p class="text-sm text-gray-700 break-all">
+                  {{ user.email }}
+                </p>
+              </div>
+
+              <div class="flex justify-between items-center text-xs text-gray-500">
+                <span>{{ formatDate(user.signupDate) }}</span>
+                <button
+                  type="button"
+                  @click.stop="viewUser(user)"
+                  class="text-amber-500 hover:text-amber-600 font-medium text-sm cursor-pointer whitespace-nowrap bg-transparent border-0 p-0 focus:outline-none"
+                  :aria-expanded="expandedUserId === user.id ? 'true' : 'false'"
+                >
+                  {{ expandedUserId === user.id ? 'Hide Details' : 'View Details' }}
+                </button>
+              </div>
+
+              <Transition name="collapse">
+                <div
+                  v-if="expandedUserId === user.id"
+                  class="pt-3 mt-3 border-t border-dashed border-gray-200 text-sm text-gray-600 space-y-2"
+                >
+                  <div class="flex items-start justify-between gap-4">
+                    <span class="text-gray-500 font-medium">Signup Method</span>
+                    <span class="text-right">
+                      <span
+                        class="inline-flex items-center gap-2 px-2.5 py-1 rounded-md text-xs font-semibold"
+                        :class="getSignupMethodClass(user.signupMethod, 'soft')"
+                      >
+                        {{ user.signupMethod }}
+                      </span>
+                    </span>
+                  </div>
+                  <div class="flex items-start justify-between gap-4">
+                    <span class="text-gray-500 font-medium">Signup Date</span>
+                    <span class="text-gray-900 text-right">{{ formatDate(user.signupDate) }}</span>
+                  </div>
+                  <div class="flex items-start justify-between gap-4">
+                    <span class="text-gray-500 font-medium">Status</span>
+                    <span class="text-right">
+                      <span
+                        class="inline-flex items-center gap-2 px-2.5 py-1 rounded-md text-xs font-semibold"
+                        :class="getStatusClass(user.status, 'soft')"
+                      >
+                        {{ user.status }}
+                      </span>
+                    </span>
+                  </div>
+                  <div class="flex items-start justify-between gap-4">
+                    <span class="text-gray-500 font-medium">Verified</span>
+                    <span class="text-gray-900 text-right">{{ user.verified ? 'Yes' : 'No' }}</span>
+                  </div>
+                </div>
+              </Transition>
+            </div>
           </div>
-        </div>
 
         <!-- Desktop Table View -->
         <div class="hidden lg:block overflow-x-auto">
@@ -519,6 +538,7 @@ const showMobileFilters = ref(false);
 const searchQuery = ref('');
 const users = ref([]);
 const expandedUserId = ref(null);
+const mobileActionsIndex = ref(null);
 const selectedUser = ref(null);
 const isDetailModalOpen = ref(false);
 const isMobileView = ref(false);
@@ -616,6 +636,8 @@ const userDetailItems = computed(() => {
 // --- Methods ---
 const handleFilterChange = () => {
   currentPage.value = 1;
+  mobileActionsIndex.value = null;
+  expandedUserId.value = null;
 };
 
 const getDisplayIndex = (indexInPage) => {
@@ -625,9 +647,15 @@ const getDisplayIndex = (indexInPage) => {
 
 const toggleSelectAll = () => {
   toggleAll(paginatedUsers.value);
+  mobileActionsIndex.value = null;
+};
+
+const toggleMobileActions = (index) => {
+  mobileActionsIndex.value = mobileActionsIndex.value === index ? null : index;
 };
 
 const viewUser = (user) => {
+  mobileActionsIndex.value = null;
   if (isMobileView.value) {
     expandedUserId.value = expandedUserId.value === user.id ? null : user.id;
     return;
@@ -653,6 +681,7 @@ const changeStatus = async (user) => {
     await stubClient.update('users', user.id, { status: nextStatus }, { delay: 150 });
     await refresh();
     toast('success', `${user.name} status -> ${nextStatus}`);
+    mobileActionsIndex.value = null;
   } catch (error) {
     console.error('Failed to update user status', error);
     toast('error', `Failed to update ${user.name}`);
@@ -662,6 +691,7 @@ const changeStatus = async (user) => {
 const applyMobileFilters = () => {
   handleFilterChange();
   showMobileFilters.value = false;
+  mobileActionsIndex.value = null;
 };
 
 const resetFilters = () => {
@@ -697,11 +727,19 @@ const updateStats = () => {
 };
 
 const nextPage = () => {
-  if (currentPage.value < totalPages.value) currentPage.value++;
+  if (currentPage.value < totalPages.value) {
+    currentPage.value++;
+    mobileActionsIndex.value = null;
+    expandedUserId.value = null;
+  }
 };
 
 const prevPage = () => {
-  if (currentPage.value > 1) currentPage.value--;
+  if (currentPage.value > 1) {
+    currentPage.value--;
+    mobileActionsIndex.value = null;
+    expandedUserId.value = null;
+  }
 };
 
 // Populate users when fetch completes
@@ -709,6 +747,8 @@ watchEffect(() => {
   const raw = usersData?.value || []
   users.value = raw.map(u => ({ ...u, selected: false }))
   updateStats()
+  mobileActionsIndex.value = null
+  expandedUserId.value = null
 })
 
 watch(usersError, (err) => {
@@ -740,6 +780,7 @@ watch(isMobileView, (isMobile) => {
   } else {
     isDetailModalOpen.value = false;
   }
+  mobileActionsIndex.value = null;
 });
 </script>
 

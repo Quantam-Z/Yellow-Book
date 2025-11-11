@@ -240,82 +240,102 @@
       <!-- Content -->
       <template v-else>
         <!-- Mobile Cards -->
-        <div class="lg:hidden w-full flex flex-col gap-4">
-          <div 
-            v-for="company in paginatedCompanies" 
-            :key="company.id"
-            class="w-full rounded-xl border border-gray-200 p-3 sm:p-4 bg-white shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.01] hover:bg-indigo-50"
-          >
-            <!-- Card header -->
-            <div class="flex justify-between items-start mb-3">
-              <div class="flex flex-col min-w-0">
-                <div class="flex items-center gap-2 min-w-0">
-                  <h3 class="font-semibold text-gray-900 text-base truncate">{{ company.name }}</h3>
-                  <CheckCircleIcon v-if="company.verified" class="w-4 h-4 text-green-500 flex-shrink-0" title="Verified" />
-                </div>
-                <span class="text-sm text-gray-600 mt-1 truncate">{{ company.category }}</span>
-              </div>
-              <div class="flex items-center gap-2 shrink-0 ml-4">
-                <span class="text-xs font-medium px-2 py-1 rounded-full whitespace-nowrap" :class="getStatusClass(company.status, 'soft') + ' bg-opacity-10'">
-                  {{ company.status }}
-                </span>
-                <MoreHorizontal class="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer" />
-              </div>
-            </div>
-
-              <!-- Card body -->
-              <div class="flex flex-col gap-3">
-                <div class="flex justify-end">
-                  <button
-                    type="button"
-                    @click="viewCompany(company)"
-                    class="text-amber-500 hover:text-amber-600 font-medium text-sm cursor-pointer whitespace-nowrap bg-transparent border-0 p-0 focus:outline-none"
-                    :aria-expanded="expandedCompanyId === company.id ? 'true' : 'false'"
-                  >
-                    {{ expandedCompanyId === company.id ? 'Hide Details' : 'View Details' }}
-                  </button>
-                </div>
-
-                <Transition name="collapse">
-                  <div
-                    v-if="expandedCompanyId === company.id"
-                    class="pt-3 border-t border-dashed border-gray-200 text-sm text-gray-600 space-y-3"
-                  >
-                    <div class="flex items-center gap-2 text-gray-700">
-                      <PhoneIcon class="w-4 h-4 flex-shrink-0" aria-hidden="true" />
-                      <span class="font-medium text-gray-900">{{ company.mobile }}</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                      <GlobeIcon class="w-4 h-4 flex-shrink-0 text-amber-500" aria-hidden="true" />
-                      <a
-                        :href="company.website ? 'https://' + company.website : '#'"
-                        class="text-amber-500 hover:text-amber-600 truncate break-all"
-                        target="_blank"
-                        rel="noopener"
-                      >
-                        {{ company.website }}
-                      </a>
-                    </div>
-                    <div class="flex items-start justify-between gap-4">
-                      <span class="text-gray-500 font-medium">Status</span>
-                      <span class="text-right">
-                        <span
-                          class="inline-flex items-center gap-2 px-2.5 py-1 rounded-md text-xs font-semibold"
-                          :class="getStatusClass(company.status, 'soft')"
-                        >
-                          {{ company.status }}
-                        </span>
-                      </span>
-                    </div>
-                    <div class="flex items-start justify-between gap-4">
-                      <span class="text-gray-500 font-medium">Verified</span>
-                      <span class="text-gray-900 text-right">{{ company.verified ? 'Yes' : 'No' }}</span>
-                    </div>
+          <div class="lg:hidden w-full flex flex-col gap-4">
+            <div 
+              v-for="(company, index) in paginatedCompanies" 
+              :key="company.id"
+              class="w-full rounded-xl border border-gray-200 p-3 sm:p-4 bg-white shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.01] hover:bg-indigo-50 cursor-pointer relative"
+            >
+              <div class="flex justify-between items-start mb-3">
+                <div class="flex flex-col min-w-0">
+                  <div class="flex items-center gap-2 min-w-0">
+                    <h3 class="font-semibold text-gray-900 text-base truncate">{{ company.name }}</h3>
+                    <CheckCircleIcon v-if="company.verified" class="w-4 h-4 text-green-500 flex-shrink-0" title="Verified" />
                   </div>
-                </Transition>
+                  <span class="text-sm text-gray-600 mt-1 truncate">{{ company.category }}</span>
+                </div>
+                <div class="flex items-center gap-2 shrink-0 relative">
+                  <span 
+                    class="text-xs font-medium px-2 py-1 rounded-full whitespace-nowrap cursor-pointer transition-opacity" 
+                    :class="getStatusClass(company.status, 'soft') + ' bg-opacity-10'"
+                    @click.stop="changeStatus(company)"
+                  >
+                    {{ company.status }}
+                  </span>
+                  <button
+                    v-if="mobileActionsIndex === index"
+                    type="button"
+                    class="text-amber-500 hover:text-amber-600 transition-colors flex items-center justify-center"
+                    @click.stop="viewCompany(company)"
+                    title="Quick view"
+                  >
+                    <EyeIcon class="w-5 h-5" />
+                  </button>
+                  <MoreHorizontal 
+                    v-else
+                    class="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer" 
+                    @click.stop="toggleMobileActions(index)"
+                  />
+                </div>
               </div>
+
+              <div class="mb-3">
+                <p class="text-sm text-gray-700 break-all">
+                  {{ company.website || 'No website provided' }}
+                </p>
+              </div>
+
+              <div class="flex justify-between items-center text-xs text-gray-500">
+                <span>{{ company.mobile || 'No contact number' }}</span>
+                <button
+                  type="button"
+                  @click.stop="viewCompany(company)"
+                  class="text-amber-500 hover:text-amber-600 font-medium text-sm cursor-pointer whitespace-nowrap bg-transparent border-0 p-0 focus:outline-none"
+                  :aria-expanded="expandedCompanyId === company.id ? 'true' : 'false'"
+                >
+                  {{ expandedCompanyId === company.id ? 'Hide Details' : 'View Details' }}
+                </button>
+              </div>
+
+              <Transition name="collapse">
+                <div
+                  v-if="expandedCompanyId === company.id"
+                  class="pt-3 mt-3 border-t border-dashed border-gray-200 text-sm text-gray-600 space-y-3"
+                >
+                  <div class="flex items-center gap-2 text-gray-700">
+                    <PhoneIcon class="w-4 h-4 flex-shrink-0" aria-hidden="true" />
+                    <span class="font-medium text-gray-900">{{ company.mobile || 'No contact number' }}</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <GlobeIcon class="w-4 h-4 flex-shrink-0 text-amber-500" aria-hidden="true" />
+                    <a
+                      :href="company.website ? (company.website.startsWith('http') ? company.website : 'https://' + company.website) : '#'"
+                      class="text-amber-500 hover:text-amber-600 truncate break-all"
+                      target="_blank"
+                      rel="noopener"
+                    >
+                      {{ company.website || 'No website provided' }}
+                    </a>
+                  </div>
+                  <div class="flex items-start justify-between gap-4">
+                    <span class="text-gray-500 font-medium">Status</span>
+                    <span class="text-right">
+                      <span
+                        class="inline-flex items-center gap-2 px-2.5 py-1 rounded-md text-xs font-semibold"
+                        :class="getStatusClass(company.status, 'soft')"
+                      >
+                        {{ company.status }}
+                      </span>
+                    </span>
+                  </div>
+                  <div class="flex items-start justify-between gap-4">
+                    <span class="text-gray-500 font-medium">Verified</span>
+                    <span class="text-gray-900 text-right">{{ company.verified ? 'Yes' : 'No' }}</span>
+                  </div>
+                </div>
+              </Transition>
+            </div>
           </div>
-        </div>
 
         <!-- Desktop Table -->
         <div class="hidden lg:block overflow-x-auto">
@@ -468,6 +488,7 @@ const showMobileFilters = ref(false);
 const searchQuery = ref('');
 const companies = ref([]);
 const expandedCompanyId = ref(null);
+const mobileActionsIndex = ref(null);
 const selectedCompany = ref(null);
 const isDetailModalOpen = ref(false);
 const isMobileView = ref(false);
@@ -548,6 +569,8 @@ const companyDetailItems = computed(() => {
 // --- Methods ---
 const handleFilterChange = () => {
   currentPage.value = 1;
+  mobileActionsIndex.value = null;
+  expandedCompanyId.value = null;
 };
 
 const getDisplayIndex = (indexInPage) => {
@@ -565,9 +588,11 @@ const closeModal = () => {
 
 const toggleSelectAll = () => {
   toggleAll(paginatedCompanies.value);
+  mobileActionsIndex.value = null;
 };
 
 const viewCompany = (company) => {
+  mobileActionsIndex.value = null;
   if (isMobileView.value) {
     expandedCompanyId.value = expandedCompanyId.value === company.id ? null : company.id;
     return;
@@ -582,6 +607,10 @@ const closeCompanyDetails = () => {
   selectedCompany.value = null;
 };
 
+const toggleMobileActions = (index) => {
+  mobileActionsIndex.value = mobileActionsIndex.value === index ? null : index;
+};
+
 const changeStatus = async (company) => {
   const statuses = ['Approved', 'Pending', 'Rejected'];
   const currentIndex = statuses.indexOf(company.status);
@@ -591,6 +620,7 @@ const changeStatus = async (company) => {
     await stubClient.update('companies', company.id, { status: nextStatus }, { delay: 150 });
     await refresh();
     toast('success', `${company.name} marked as ${nextStatus}`);
+    mobileActionsIndex.value = null;
   } catch (error) {
     console.error('Failed to update company status', error);
     toast('error', `Failed to update ${company.name}`);
@@ -600,6 +630,7 @@ const changeStatus = async (company) => {
 const applyMobileFilters = () => {
   handleFilterChange();
   showMobileFilters.value = false;
+  mobileActionsIndex.value = null;
 };
 
 const resetFilters = () => {
@@ -616,12 +647,16 @@ const resetFilters = () => {
 const nextPage = () => {
     if (currentPage.value < totalPages.value) {
         currentPage.value++;
+        mobileActionsIndex.value = null;
+        expandedCompanyId.value = null;
     }
 };
 
 const prevPage = () => {
     if (currentPage.value > 1) {
         currentPage.value--;
+        mobileActionsIndex.value = null;
+        expandedCompanyId.value = null;
     }
 };
 
@@ -633,6 +668,8 @@ const handleCompanyCreated = async () => {
 watchEffect(() => {
   const raw = companiesData?.value || []
   companies.value = raw.map(c => ({ ...c, selected: false }))
+  mobileActionsIndex.value = null
+  expandedCompanyId.value = null
 })
 
 watch(companiesError, (err) => {
@@ -664,6 +701,7 @@ watch(isMobileView, (isMobile) => {
   } else {
     isDetailModalOpen.value = false;
   }
+  mobileActionsIndex.value = null;
 });
 </script>
 
