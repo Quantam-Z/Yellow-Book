@@ -3,7 +3,7 @@
 
     <div class="relative w-full">
       <img 
-        class="w-full h-auto object-cover rounded-lg" 
+        class="w-full h-auto md:h-[70vh] object-cover rounded-lg" 
         :src="heroImageSrc" 
         alt="Main background" 
       />
