@@ -269,8 +269,10 @@ export default {
     handleSearchClick() {
       const trimmedQuery = this.searchQuery.trim()
 
-      if (!this.showDropdown && (!trimmedQuery || trimmedQuery === this.selectedSearch)) {
-        this.openDropdown()
+      if (!trimmedQuery) {
+        if (!this.showDropdown) {
+          this.openDropdown()
+        }
         return
       }
 
