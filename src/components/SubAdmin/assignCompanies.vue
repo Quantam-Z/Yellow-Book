@@ -291,10 +291,10 @@
     </div>
 
     <DetailModal 
-      :isVisible="showDetailModal"
-      :company="selectedCompany"
+      :open="showDetailModal"
+      title="Company Details"
+      :items="detailModalItems"
       @close="closeDetailModal"
-      @changeStatus="changeStatusFromModal"
     />
   </div>
 </template>
@@ -318,6 +318,23 @@ const expandedCompanyId = ref(null);
 // MODAL STATE
 const showDetailModal = ref(false);
 const selectedCompany = ref({});
+const detailModalItems = computed(() => {
+  if (!selectedCompany.value || Object.keys(selectedCompany.value).length === 0) {
+    return [];
+  }
+
+  const company = selectedCompany.value;
+  return [
+    { label: 'Company Name', value: company.name || 'N/A' },
+    { label: 'ID', value: company.id || 'N/A' },
+    { label: 'Category', value: company.category || 'N/A' },
+    { label: 'Status', value: company.status || 'N/A' },
+    { label: 'Assigned Date', value: company.assignedDate || 'N/A' },
+    { label: 'Email', value: company.email || 'N/A' },
+    { label: 'Mobile', value: company.mobile || 'N/A' },
+    { label: 'Address', value: company.address || 'N/A' },
+  ];
+});
 
 const nuxtApp = typeof useNuxtApp === 'function' ? useNuxtApp() : {};
 const stubClient = typeof useStubClient === 'function' ? useStubClient() : null;
