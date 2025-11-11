@@ -55,6 +55,7 @@ import { useStubResource } from '~/services/stubClient';
 
 // Load stub companies from public folder (available at runtime)
 const { data: companiesData, error: companiesError } = await useStubResource('companies');
+const { data: agenciesData, error: agenciesError } = await useStubResource('agencies');
 
 type StubCompany = {
   id: number;
@@ -64,13 +65,38 @@ type StubCompany = {
   category?: string;
   status?: string;
   verified?: boolean;
+  location?: string;
+  revenue?: string;
+  rating?: number;
+  ratingCount?: number;
 };
 
-const companies = computed<StubCompany[]>(() => Array.isArray(companiesData.value) ? (companiesData.value as StubCompany[]) : []);
+type StubAgency = {
+  title: string;
+  description?: string;
+  image?: string;
+  rating?: number;
+  ratingCount?: number;
+  location?: string;
+};
+
+const companies = computed<StubCompany[]>(() =>
+  Array.isArray(companiesData.value) ? (companiesData.value as StubCompany[]) : [],
+);
+
+const agencies = computed<StubAgency[]>(() =>
+  Array.isArray(agenciesData.value) ? (agenciesData.value as StubAgency[]) : [],
+);
 
 watch(companiesError, (err) => {
   if (err) {
     console.error('Failed to load companies', err);
+  }
+});
+
+watch(agenciesError, (err) => {
+  if (err) {
+    console.error('Failed to load agencies', err);
   }
 });
 
@@ -86,6 +112,44 @@ function slugify(name: string): string {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
 }
+
+function humanizeSlug(slug?: string | null): string {
+  if (!slug) return '';
+  return slug
+    .split('-')
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
+const stubAgencyRecord = computed<StubAgency | null>(() => {
+  if (!agencies.value?.length) return null;
+
+  const matchBy = (predicate: (agency: StubAgency) => boolean) => agencies.value.find(predicate) ?? null;
+
+  if (slugQuery.value) {
+    const match = matchBy((agency) => slugify(agency.title) === slugQuery.value);
+    if (match) return match;
+  }
+
+  if (idQuery.value) {
+    const normalizedId = normalizeName(idQuery.value);
+    const match = matchBy(
+      (agency) =>
+        slugify(agency.title) === idQuery.value ||
+        normalizeName(agency.title) === normalizedId,
+    );
+    if (match) return match;
+  }
+
+  if (titleQuery.value) {
+    const target = normalizeName(titleQuery.value);
+    const match = matchBy((agency) => normalizeName(agency.title) === target);
+    if (match) return match;
+  }
+
+  return null;
+});
 
 const stubCompany = computed<StubCompany | null>(() => {
   if (!companies.value?.length) return null;
@@ -127,42 +191,88 @@ type Agency = {
   rating?: number;
   ratingCount?: number;
   serviceType?: string;
+  description?: string;
+  image?: string;
 };
 
 const agency = computed<Agency | null>(() => {
   const stub = stubCompany.value;
   const listing = listingFromService.value as Partial<Agency> | null;
+  const stubAgency = stubAgencyRecord.value;
 
-  if (stub) {
-    return {
-      id: stub.id,
-      name: stub.name,
-      category: stub.category || listing?.category || 'General Services',
-      website: stub.website || listing?.website || '',
-      location: listing?.location || '',
-      revenue: listing?.revenue || '',
-      rating: typeof listing?.rating === 'number' ? listing!.rating : 0,
-      ratingCount: typeof listing?.ratingCount === 'number' ? listing!.ratingCount : 0,
-      serviceType: listing?.serviceType || undefined,
-    };
+  const resolvedName =
+    stub?.name ||
+    listing?.name ||
+    stubAgency?.title ||
+    titleQuery.value ||
+    humanizeSlug(slugQuery.value) ||
+    '';
+
+  if (!resolvedName) {
+    return null;
   }
 
-  if (listing && listing.name) {
-    return listing as Agency;
-  }
+  const resolvedLocation = stub?.location || listing?.location || stubAgency?.location || '';
+  const resolvedRating =
+    typeof listing?.rating === 'number'
+      ? listing.rating
+      : typeof stubAgency?.rating === 'number'
+      ? stubAgency.rating
+      : 0;
+  const resolvedRatingCount =
+    typeof listing?.ratingCount === 'number'
+      ? listing.ratingCount
+      : typeof stubAgency?.ratingCount === 'number'
+      ? stubAgency.ratingCount
+      : 0;
 
-  return null;
+  return {
+    id: stub?.id ?? listing?.id ?? slugQuery.value ?? idQuery.value ?? resolvedName,
+    name: resolvedName,
+    category: stub?.category || listing?.category || 'General Services',
+    website: stub?.website || listing?.website || '',
+    location: resolvedLocation,
+    revenue: stub?.revenue || listing?.revenue || '',
+    rating: resolvedRating,
+    ratingCount: resolvedRatingCount,
+    serviceType: listing?.serviceType || undefined,
+    description: stubAgency?.description,
+    image: stubAgency?.image,
+  };
 });
 
- const agencyNameFromQuery = computed(() => titleQuery.value || slugQuery.value || '');
+const agencyNameFromQuery = computed(() =>
+  agency.value?.name ||
+  stubAgencyRecord.value?.title ||
+  titleQuery.value ||
+  humanizeSlug(slugQuery.value) ||
+  '',
+);
 
-const agencyTagline = computed(() => (agency.value ? `Top-rated ${agency.value.serviceType || 'services'} in ${agency.value.location || 'your area'}` : ''));
- const heroImage = computed(() => '/logo/image6.png');
- const logoImage = computed(() => '/logo/image7.png');
- const aboutText = computed(
+const agencyTagline = computed(() => {
+  if (stubAgencyRecord.value?.description) {
+    return stubAgencyRecord.value.description;
+  }
+  if (agency.value) {
+    return `Top-rated ${agency.value.serviceType || 'services'} in ${
+      agency.value.location || 'your area'
+    }`;
+  }
+  return '';
+});
+const heroImage = computed(() => agency.value?.image || '/logo/image6.png');
+const logoImage = computed(() => stubAgencyRecord.value?.image || '/logo/image7.png');
+const aboutText = computed(
    () =>
-     (agency.value && `Discover ${agency.value.name} — delivering ${agency.value.serviceType?.toLowerCase() || 'quality services'} with excellence in ${agency.value.location}.`) ||
-     'Discover our agency — delivering quality services with excellence.'
+      (agency.value &&
+        `Discover ${agency.value.name} — ${
+          stubAgencyRecord.value?.description ||
+          `delivering ${agency.value.serviceType?.toLowerCase() || 'quality services'} with excellence in ${
+            agency.value.location || 'your area'
+          }.`
+        }`) ||
+      stubAgencyRecord.value?.description ||
+      'Discover our agency — delivering quality services with excellence.'
  );
 const agencyPhone = computed(() => {
   return (stubCompany.value?.mobile && `+${stubCompany.value.mobile}`) || '+976 1234 5678';
