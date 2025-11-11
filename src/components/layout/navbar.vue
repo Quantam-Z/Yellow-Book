@@ -173,39 +173,31 @@
               </div>
             </div>
 
-              <transition name="dropdown">
+            <transition name="dropdown">
+              <div
+                v-if="showDropdown"
+                class="absolute top-full mt-2 left-4 right-4 rounded-[8px] border border-[#fee38d] overflow-hidden bg-white shadow-xl z-20 max-h-[200px] sm:max-h-[250px] md:max-h-[300px] overflow-y-auto"
+              >
                 <div
-                  v-if="showDropdown"
-                  class="absolute top-full mt-2 left-4 right-4 rounded-[8px] border border-[#fee38d] overflow-hidden bg-white shadow-xl z-20 max-h-[200px] sm:max-h-[250px] md:max-h-[300px] overflow-y-auto"
+                  v-for="(item, index) in filteredSearchData"
+                  :key="index"
+                  @click="selectSearch(item)"
+                  :class="[
+                    'w-full h-[40px] sm:h-[44px] flex items-center px-3 sm:px-4 cursor-pointer transition-all text-xs sm:text-sm md:text-[14px] active:scale-[0.98]',
+                    'bg-white hover:bg-[#f0f0f0]', 
+                    index !== filteredSearchData.length - 1 ? 'border-b border-[#e0e0e0]' : ''
+                  ]"
                 >
-                  <div
-                    v-if="isLoadingSearchData"
-                    class="w-full py-4 px-4 text-center text-xs sm:text-sm text-[#9e9e9e] bg-white"
-                  >
-                    Loading search options...
-                  </div>
-                  <template v-else>
-                    <div
-                      v-for="(item, index) in filteredSearchData"
-                      :key="index"
-                      @click="selectSearch(item)"
-                      :class="[
-                        'w-full h-[40px] sm:h-[44px] flex items-center px-3 sm:px-4 cursor-pointer transition-all text-xs sm:text-sm md:text-[14px] active:scale-[0.98]',
-                        'bg-white hover:bg-[#f0f0f0]',
-                        index !== filteredSearchData.length - 1 ? 'border-b border-[#e0e0e0]' : ''
-                      ]"
-                    >
-                      <div class="leading-[170%] capitalize">{{ item }}</div>
-                    </div>
-                    <div
-                      v-if="!filteredSearchData.length"
-                      class="w-full py-4 px-4 text-center text-xs sm:text-sm text-[#9e9e9e] bg-white"
-                    >
-                      No matches found
-                    </div>
-                  </template>
+                  <div class="leading-[170%] capitalize">{{ item }}</div>
                 </div>
-              </transition>
+                <div
+                  v-if="!filteredSearchData.length"
+                  class="w-full py-4 px-4 text-center text-xs sm:text-sm text-[#9e9e9e] bg-white"
+                >
+                  No matches found
+                </div>
+              </div>
+            </transition>
           </div>
         </div>
       </div>
@@ -226,18 +218,25 @@ export default {
   components: { LoginModal, Menu, X },
   emits: ['search'],
   data() {
-    const defaultSearchPlaceholder = 'Search agencies'
     return {
       showDropdown: false,
-      selectedSearch: defaultSearchPlaceholder,
-      searchQuery: '',
+      selectedSearch: 'Nomadic Travel',
+      searchQuery: 'Nomadic Travel',
       cachedSearchQuery: '',
       showLoginModal: false,
       isMobileMenuOpen: false,
-      searchData: [],
-      agencyRecords: [],
-      isLoadingSearchData: false,
-      defaultSearchPlaceholder
+      searchData: [
+        'Nomadic Travel',
+        'Altai Tours',
+        'Steppe Adventure',
+        'Discover Mongolia',
+        'Desert Expeditions',
+        'Mountain Hiking',
+        'Cultural Tours',
+        'Wildlife Safari',
+        'City Exploration',
+        'Beach Resort'
+      ]
     }
   },
   computed: {
@@ -287,13 +286,8 @@ export default {
       this.searchQuery = value
       this.cachedSearchQuery = value
       this.showDropdown = false
-
-      const matchedRecord = this.findAgencyRecord(value)
       if (this.$emit) {
         this.$emit('search', value)
-      }
-      if (matchedRecord) {
-        this.navigateToPopularListing(matchedRecord)
       }
     },
     selectSearch(item) {
@@ -325,93 +319,10 @@ export default {
           }
         }
       }
-    },
-    async loadSearchData() {
-      if (this.isLoadingSearchData) {
-        return
-      }
-      this.isLoadingSearchData = true
-      try {
-        const response = await fetch('/stubs/agencies.json', { cache: 'no-store' })
-        if (!response.ok) {
-          throw new Error(`Failed to load agencies stub (${response.status})`)
-        }
-        const payload = await response.json()
-        if (!Array.isArray(payload)) {
-          throw new Error('Agencies stub did not return an array')
-        }
-
-        const normalizedRecords = payload
-          .map(item => {
-            const rawTitle = typeof item?.title === 'string' ? item.title.trim() : ''
-            if (!rawTitle) return null
-            const normalizedTitle = this.normalizeTitle(rawTitle)
-            if (!normalizedTitle) return null
-            return {
-              title: rawTitle,
-              normalizedTitle,
-              slug: this.slugify(rawTitle)
-            }
-          })
-          .filter(Boolean)
-
-        this.agencyRecords = normalizedRecords
-        this.searchData = normalizedRecords.map(record => record.title)
-
-        const initialTitle = normalizedRecords[0]?.title
-        if (initialTitle) {
-          if (!this.searchQuery) {
-            this.searchQuery = initialTitle
-          }
-          if (!this.selectedSearch || this.selectedSearch === this.defaultSearchPlaceholder) {
-            this.selectedSearch = initialTitle
-          }
-          if (!this.cachedSearchQuery) {
-            this.cachedSearchQuery = initialTitle
-          }
-        }
-      } catch (error) {
-        console.error('Failed to load agencies search data:', error)
-      } finally {
-        this.isLoadingSearchData = false
-      }
-    },
-    findAgencyRecord(value) {
-      const normalized = this.normalizeTitle(value)
-      if (!normalized) {
-        return null
-      }
-      const exactMatch = this.agencyRecords.find(record => record.normalizedTitle === normalized)
-      if (exactMatch) {
-        return exactMatch
-      }
-      return this.agencyRecords.find(record => record.normalizedTitle.includes(normalized)) || null
-    },
-    normalizeTitle(value) {
-      return String(value || '')
-        .toLowerCase()
-        .replace(/\s+/g, ' ')
-        .trim()
-    },
-    slugify(value) {
-      return String(value || '')
-        .toLowerCase()
-        .trim()
-        .replace(/&/g, 'and')
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-+|-+$/g, '')
-    },
-    navigateToPopularListing(record) {
-      if (!this.$router || !record) {
-        return
-      }
-      const query = record.slug ? { slug: record.slug } : { title: record.title }
-      this.$router.push({ path: '/agency', query })
     }
   },
   mounted() {
     document.addEventListener('click', this.handleClickOutside)
-    this.loadSearchData()
   },
   beforeUnmount() {
     document.removeEventListener('click', this.handleClickOutside)
