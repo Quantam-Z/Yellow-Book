@@ -33,7 +33,7 @@
       >
         
         <div class="block sm:hidden absolute top-4 right-4 z-10">
-           <div @click.stop.prevent="removeFavorite(item.name)" class="p-1 rounded-full hover:bg-gainsboro transition-colors cursor-pointer" aria-label="Remove favorite">
+             <div @click.stop.prevent="removeFavorite(item.id, item.name)" class="p-1 rounded-full hover:bg-gainsboro transition-colors cursor-pointer" aria-label="Remove favorite">
             <Heart class="w-6 h-6 text-red-500 cursor-pointer" />
           </div>
         </div>
@@ -79,8 +79,8 @@
           </div>
         </div>
 
-        <div class="hidden sm:flex items-center">
-            <div @click.stop.prevent="removeFavorite(item.name)" class="p-2 rounded-lg hover:bg-gainsboro transition-colors cursor-pointer" aria-label="Remove favorite">
+          <div class="hidden sm:flex items-center">
+              <div @click.stop.prevent="removeFavorite(item.id, item.name)" class="p-2 rounded-lg hover:bg-gainsboro transition-colors cursor-pointer" aria-label="Remove favorite">
               <Heart class="w-6 h-6 text-red-500 cursor-pointer" />
             </div>
         </div>
@@ -91,15 +91,24 @@
 
 <script setup lang="ts">
 import { Building2, Star, Heart } from 'lucide-vue-next'
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 
 // Load favourite companies from public stubs
-const { data: companiesData } = await useFetch('/stubs/companies.json')
+import { useStubClient, useStubResource } from '~/services/stubClient'
+import type { Ref } from 'vue'
+
+const nuxtApp = useNuxtApp()
+const stubClient = useStubClient()
+
+const { data: companiesData, error: companiesError, refresh } = await useStubResource('companies')
 
 // Map to the view model used by the design
 const items = computed(() => {
   const raw = (companiesData.value || []) as Array<any>
-  return raw.slice(0, 8).map((c, index) => ({
+  return raw
+    .filter((c) => c?.favourited !== false)
+    .slice(0, 8)
+    .map((c, index) => ({
     id: c.id || index,
     name: c.name,
     category: c.category || 'Technology',
@@ -109,10 +118,35 @@ const items = computed(() => {
 })
 
 // Placeholder action handler
-const removeFavorite = (name: string) => {
-  console.log(`Removing ${name} from favorites.`)
-  // Implement logic to remove the item from the list/API call here
+const removeFavorite = async (id: number, name: string) => {
+  try {
+    await stubClient.update('companies', id, { favourited: false }, { delay: 140 })
+    await refresh()
+    if (import.meta.client) {
+      try {
+        nuxtApp.$awn?.success(`${name} removed from favorites`)
+      } catch {}
+    }
+  } catch (error) {
+    console.error('Failed to remove favourite', error)
+    if (import.meta.client) {
+      try {
+        nuxtApp.$awn?.alert(`Failed to remove ${name}`)
+      } catch {}
+    }
+  }
 }
+
+watch(companiesError as Ref<any>, (err) => {
+  if (err) {
+    console.error('Failed to load companies', err)
+    if (import.meta.client) {
+      try {
+        nuxtApp.$awn?.alert('Failed to load favourites')
+      } catch {}
+    }
+  }
+})
 </script>
 
 <style scoped>

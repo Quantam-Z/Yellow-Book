@@ -447,7 +447,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watchEffect } from 'vue';
+import { ref, computed, watchEffect, watch } from 'vue';
 import { 
   Search as SearchIcon,
   Eye as EyeIcon,
@@ -464,6 +464,7 @@ import {
 } from 'lucide-vue-next';
 import { getStatusClass, getStatusShort, getSignupMethodClass } from '~/composables/useStatusClass'
 import { useSelection } from '~/composables/useSelection'
+import { useStubClient, useStubResource } from '~/services/stubClient'
 
 // --- State ---
 const showMobileFilters = ref(false);
@@ -493,9 +494,19 @@ const stats = ref({
 
 // --- Composables ---
 const { allSelected, toggleSelection, toggleAll } = useSelection(users);
+const stubClient = useStubClient()
+const nuxtApp = useNuxtApp()
+
+const toast = (type, message) => {
+  if (!import.meta.client) return
+  try {
+    if (type === 'success') nuxtApp.$awn?.success(message)
+    else nuxtApp.$awn?.alert(message)
+  } catch {}
+}
 
 // --- Data Fetching (SSR-friendly) ---
-const { data: usersData, pending } = await useFetch('/stubs/users.json')
+const { data: usersData, pending, error: usersError, refresh } = await useStubResource('users')
 const isLoading = computed(() => pending.value)
 
 // --- Computed ---
@@ -556,12 +567,21 @@ const viewUser = (user) => {
   // alert(`Viewing: ${user.name}`)
 };
 
-const changeStatus = (user) => {
+const changeStatus = async (user) => {
   // Cycle through common statuses to demo behavior
   const statuses = ['Active', 'Inactive', 'Suspended', 'Pending'];
   const currentIndex = statuses.indexOf(user.status);
   const nextIndex = (currentIndex + 1) % statuses.length;
-  user.status = statuses[nextIndex];
+  const nextStatus = statuses[nextIndex];
+
+  try {
+    await stubClient.update('users', user.id, { status: nextStatus }, { delay: 150 });
+    await refresh();
+    toast('success', `${user.name} status -> ${nextStatus}`);
+  } catch (error) {
+    console.error('Failed to update user status', error);
+    toast('error', `Failed to update ${user.name}`);
+  }
 };
 
 const applyMobileFilters = () => {
@@ -614,6 +634,13 @@ watchEffect(() => {
   const raw = usersData?.value || []
   users.value = raw.map(u => ({ ...u, selected: false }))
   updateStats()
+})
+
+watch(usersError, (err) => {
+  if (err) {
+    console.error('Failed to load users', err);
+    toast('error', err?.message || 'Failed to load users');
+  }
 })
 </script>
 

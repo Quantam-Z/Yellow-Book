@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { MapPin } from 'lucide-vue-next';
 import StarRatingBox from '@/components/common/starRatingBox.vue';
+import { useStubResource } from '~/services/stubClient';
 
 // --- Types ---
 type StubAgency = {
@@ -36,8 +37,8 @@ const props = withDefaults(
 const router = useRouter();
 
 // --- Reactive States ---
-const agenciesData = ref<StubAgency[]>([]);
-const loading = ref(true);
+const { data: agenciesDataRef, pending, error: agenciesError } = await useStubResource('agencies');
+const loading = computed(() => pending.value);
 const error = ref<string | null>(null);
 
 // --- Utility Functions ---
@@ -60,26 +61,18 @@ const goToAgency = (title: string, slug?: string, id?: number | string) => {
   router.push({ path: '/agency', query });
 };
 
-// --- Client-Side Fetch ---
-onMounted(async () => {
-  loading.value = true;
-  error.value = null;
-  try {
-    const res = await fetch('/stubs/agencies.json');
-    if (!res.ok) throw new Error(`Failed to fetch: ${res.statusText}`);
-    const data: StubAgency[] = await res.json();
-    agenciesData.value = data;
-  } catch (err: any) {
+watch(agenciesError, (err) => {
+  if (err) {
     console.error(err);
     error.value = err.message || 'Failed to load agencies';
-  } finally {
-    loading.value = false;
+  } else {
+    error.value = null;
   }
 });
 
 // --- Computed: Map & Sort ---
 const mappedAgencies = computed(() =>
-  agenciesData.value.map(a => ({
+  (agenciesDataRef.value || []).map((a: StubAgency) => ({
     id: slugify(a.title),
     title: a.title,
     description: a.description,

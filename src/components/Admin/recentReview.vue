@@ -72,10 +72,10 @@
           <p class="text-sm text-gray-700 line-clamp-2">{{ review.review }}</p>
         </div>
 
-        <div class="flex justify-between items-center text-xs text-gray-500">
+          <div class="flex justify-between items-center text-xs text-gray-500">
           <span>{{ review.date }}</span>
           <span
-            @click="viewDetails(company)"
+              @click="viewDetails(review)"
             class="text-amber-500 hover:text-amber-600 font-medium cursor-pointer"
           >
             View Details
@@ -91,19 +91,31 @@ import { ref, onMounted } from 'vue';
 import { MoreHorizontal } from 'lucide-vue-next';
 import RatingStars from '~/components/common/RatingStars.vue'
 import { getStatusClass } from '~/composables/useStatusClass'
+import { useStubClient } from '~/services/stubClient'
 
 // Load recent reviews from stub
 const reviews = ref([]);
+const stubClient = useStubClient();
+const nuxtApp = useNuxtApp();
 
 const fetchData = async () => {
   try {
-    const response = await fetch('/stubs/recentReviews.json');
-    const reviewsData = await response.json();
+    const reviewsData = await stubClient.list('recentReviews', { delay: 150 });
     reviews.value = reviewsData || [];
   } catch (error) {
     console.error('Failed to load recent reviews:', error);
+    if (import.meta.client) {
+      try {
+        nuxtApp.$awn?.alert('Failed to load recent reviews');
+      } catch {}
+    }
     reviews.value = [];
   }
+};
+
+const viewDetails = (review) => {
+  // Placeholder for modal or navigation
+  console.info('Viewing review from', review.reviewer);
 };
 
 onMounted(() => {

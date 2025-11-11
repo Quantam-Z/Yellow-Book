@@ -235,7 +235,8 @@ import {
   CategoryScale,
 } from "chart.js";
 import { Line } from "vue-chartjs";
-import { computed } from 'vue';
+import { computed, watchEffect } from 'vue';
+import { useStubResource } from '~/services/stubClient';
 
 // Register Chart.js modules
 ChartJS.register(Title, Tooltip, Legend, LineElement, PointElement, LinearScale, CategoryScale);
@@ -244,9 +245,18 @@ ChartJS.register(Title, Tooltip, Legend, LineElement, PointElement, LinearScale,
 // 1. DATA FETCHING (from stubs/mock data)
 // ====================================================================
 
-// Use useFetch to load data from stubs (Nuxt environment assumed)
-const { data: latestReviewsData } = await useFetch('/stubs/agencyReviews.json');
-const { data: dashboardData } = await useFetch('/stubs/agencyDashboard.json');
+// Use stub resources to load data with error handling
+const { data: latestReviewsData, error: reviewsError } = await useStubResource('agencyReviews');
+const { data: dashboardData, error: dashboardError } = await useStubResource('agencyDashboard');
+
+watchEffect(() => {
+  if (reviewsError.value) {
+    console.error('Failed to load latest reviews', reviewsError.value);
+  }
+  if (dashboardError.value) {
+    console.error('Failed to load dashboard stats', dashboardError.value);
+  }
+});
 
 
 const reviews = computed(() => {

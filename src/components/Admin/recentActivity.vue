@@ -34,17 +34,19 @@
   </div>
   </template>
   
-  <script setup>
-  import { ref, onMounted } from 'vue';
+<script setup>
+import { ref, onMounted } from 'vue';
   import { Plus, CheckCircle, MessageSquare, UserPlus, Building2 } from 'lucide-vue-next';
+import { useStubClient } from '~/services/stubClient'
   
   const iconMap = { Building2, CheckCircle, MessageSquare };
   const activities = ref([]);
+const stubClient = useStubClient();
+const nuxtApp = useNuxtApp();
   
   const fetchData = async () => {
     try {
-      const response = await fetch('/stubs/recentActivities.json');
-      const activitiesData = await response.json();
+    const activitiesData = await stubClient.list('recentActivities', { delay: 140 });
       activities.value = (activitiesData || []).map(a => ({
         icon: iconMap[a.icon] || MessageSquare,
         title: a.title,
@@ -52,6 +54,11 @@
       }));
     } catch (error) {
       console.error('Failed to load recent activities:', error);
+    if (import.meta.client) {
+      try {
+        nuxtApp.$awn?.alert('Failed to load recent activities');
+      } catch {}
+    }
       activities.value = [];
     }
   };

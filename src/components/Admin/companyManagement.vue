@@ -409,15 +409,16 @@
     </div>
 
     <!-- Modals -->
-    <AddCompany :is-open="isModalOpen" @close="closeModal" />
+  <AddCompany :is-open="isModalOpen" @close="closeModal" @created="handleCompanyCreated" />
   </div>
 </template>
 
 <script setup>
-import { ref, computed, defineAsyncComponent, watchEffect } from 'vue';
+import { ref, computed, defineAsyncComponent, watchEffect, watch } from 'vue';
 import { Search as SearchIcon, Eye as EyeIcon, CheckCircle as CheckCircleIcon, ChevronDown as ChevronDownIcon, ChevronLeft as ChevronLeftIcon, ChevronRight as ChevronRightIcon, Filter as FilterIcon, Phone as PhoneIcon, Globe as GlobeIcon, MoreHorizontal } from "lucide-vue-next";
 import { getStatusClass, getStatusShort } from '~/composables/useStatusClass'
 import { useSelection } from '~/composables/useSelection'
+import { useStubClient, useStubResource } from '~/services/stubClient'
 
 const AddCompany = defineAsyncComponent(() => import('~/components/modal/addCompany.vue'))
 
@@ -442,9 +443,19 @@ const filters = ref({
 
 // --- Composables ---
 const { selectAll, toggleSelection, toggleAll } = useSelection(companies); 
+const stubClient = useStubClient()
+const nuxtApp = useNuxtApp()
+
+const toast = (type, message) => {
+  if (!import.meta.client) return
+  try {
+    if (type === 'success') nuxtApp.$awn?.success(message)
+    else nuxtApp.$awn?.alert(message)
+  } catch {}
+}
 
 // --- Data Fetching (SSR-friendly) ---
-const { data: companiesData, pending } = await useFetch('/stubs/companies.json')
+const { data: companiesData, pending, error: companiesError, refresh } = await useStubResource('companies')
 const isLoading = computed(() => pending.value)
 
 // --- Computed Properties ---
@@ -500,14 +511,23 @@ const toggleSelectAll = () => {
 };
 
 const viewCompany = (company) => {
-  alert(`Viewing: ${company.name}`);
+  // Placeholder for future modal
+  console.info('Viewing company', company.name);
 };
 
-const changeStatus = (company) => {
+const changeStatus = async (company) => {
   const statuses = ['Approved', 'Pending', 'Rejected'];
   const currentIndex = statuses.indexOf(company.status);
   const nextIndex = (currentIndex + 1) % statuses.length;
-  company.status = statuses[nextIndex];
+  const nextStatus = statuses[nextIndex];
+  try {
+    await stubClient.update('companies', company.id, { status: nextStatus }, { delay: 150 });
+    await refresh();
+    toast('success', `${company.name} marked as ${nextStatus}`);
+  } catch (error) {
+    console.error('Failed to update company status', error);
+    toast('error', `Failed to update ${company.name}`);
+  }
 };
 
 const applyMobileFilters = () => {
@@ -538,10 +558,21 @@ const prevPage = () => {
     }
 };
 
+const handleCompanyCreated = async () => {
+  await refresh();
+};
+
 // Populate companies when fetch completes
 watchEffect(() => {
   const raw = companiesData?.value || []
   companies.value = raw.map(c => ({ ...c, selected: false }))
+})
+
+watch(companiesError, (err) => {
+  if (err) {
+    console.error('Failed to load companies', err);
+    toast('error', err?.message || 'Failed to load companies');
+  }
 })
 </script>
 

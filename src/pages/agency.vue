@@ -31,8 +31,8 @@
   </div>
  </template>
 
- <script setup lang="ts">
-import { computed } from 'vue';
+<script setup lang="ts">
+import { computed, watch } from 'vue';
  import { useRoute } from 'vue-router';
  import CommonAgencyProfile from '~/components/Agency/agencyProfile.vue';
  import AgencyHead from '~/components/Agency/agencyHead.vue';
@@ -41,6 +41,7 @@ import { computed } from 'vue';
  import AgencyReview from '~/components/Agency/agencyReview.vue';
  import { categoryService } from '@/services/categoryService';
  import Footer from '~/components/layout/footer.vue';
+import { useStubResource } from '~/services/stubClient';
 
  definePageMeta({
    layout: 'catagory',
@@ -53,7 +54,7 @@ import { computed } from 'vue';
  const idQuery = computed(() => (route.query.id ? String(route.query.id) : ''));
 
 // Load stub companies from public folder (available at runtime)
-const { data: companiesData } = await useFetch('/stubs/companies.json');
+const { data: companiesData, error: companiesError } = await useStubResource('companies');
 
 type StubCompany = {
   id: number;
@@ -66,6 +67,12 @@ type StubCompany = {
 };
 
 const companies = computed<StubCompany[]>(() => Array.isArray(companiesData.value) ? (companiesData.value as StubCompany[]) : []);
+
+watch(companiesError, (err) => {
+  if (err) {
+    console.error('Failed to load companies', err);
+  }
+});
 
 function normalizeName(name: string): string {
   return String(name || '').toLowerCase().replace(/[^a-z0-9]/g, '').trim();

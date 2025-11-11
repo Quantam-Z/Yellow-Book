@@ -85,33 +85,95 @@
 
 <script setup lang="ts">
 import { Star, Edit3, Trash2 } from 'lucide-vue-next'
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
+import type { Ref } from 'vue'
+import { useStubClient, useStubResource } from '~/services/stubClient'
+
+const nuxtApp = useNuxtApp()
+const stubClient = useStubClient()
 
 // Load reviews from public stubs and map to UI shape
-const { data: reviewsData } = await useFetch('/stubs/recentReviews.json')
+const { data: reviewsData, error: reviewsError, refresh } = await useStubResource('recentReviews')
 
 const reviews = computed(() => {
   const raw = (reviewsData.value || []) as Array<any>
-  return raw.slice(0, 10).map((r, index) => ({
-    id: r.id || index, 
+  return raw.map((r) => ({
+    id: r.id,
     company: r.company || r.reviewer || 'Company Name',
     date: r.date,
-    rating: Number(r.rating) || r.rating || 0,
+    rating: Number(r.rating) || 0,
     comment: r.review || r.content || r.text || 'No review comment provided.',
+    status: r.status || 'Pending',
   }))
 })
 
-// Action handlers (placeholders)
-const editReview = (id: number) => {
-  console.log(`Editing review with ID: ${id}`)
+const promptValue = (message: string, defaultValue: string) => {
+  if (!import.meta.client) return defaultValue
+  return window.prompt(message, defaultValue) ?? defaultValue
 }
 
-const deleteReview = (id: number) => {
-  console.log(`Deleting review with ID: ${id}`)
-  if (confirm('Are you sure you want to delete this review?')) {
-    // API call here
+// Action handlers
+const editReview = async (id: number) => {
+  const current = reviews.value.find((r) => r.id === id)
+  if (!current) return
+
+  const updatedComment = promptValue('Update your review comment:', current.comment)
+  const updatedRating = promptValue('Update rating (1-5):', String(current.rating))
+  const ratingNumber = Number(updatedRating)
+
+  const payload: Record<string, any> = {
+    review: updatedComment,
+    rating: Number.isFinite(ratingNumber) ? Math.min(Math.max(ratingNumber, 1), 5) : current.rating,
+  }
+
+  try {
+    await stubClient.update('recentReviews', id, payload, { delay: 160 })
+    await refresh()
+    if (import.meta.client) {
+      try {
+        nuxtApp.$awn?.success('Review updated')
+      } catch {}
+    }
+  } catch (error) {
+    console.error('Failed to update review', error)
+    if (import.meta.client) {
+      try {
+        nuxtApp.$awn?.alert('Failed to update review')
+      } catch {}
+    }
   }
 }
+
+const deleteReview = async (id: number) => {
+  if (!confirm('Are you sure you want to delete this review?')) return
+  try {
+    await stubClient.remove('recentReviews', id, { delay: 140 })
+    await refresh()
+    if (import.meta.client) {
+      try {
+        nuxtApp.$awn?.success('Review removed')
+      } catch {}
+    }
+  } catch (error) {
+    console.error('Failed to delete review', error)
+    if (import.meta.client) {
+      try {
+        nuxtApp.$awn?.alert('Failed to delete review')
+      } catch {}
+    }
+  }
+}
+
+watch(reviewsError as Ref<any>, (err) => {
+  if (err) {
+    console.error('Failed to load reviews', err)
+    if (import.meta.client) {
+      try {
+        nuxtApp.$awn?.alert('Failed to load reviews')
+      } catch {}
+    }
+  }
+})
 </script>
 
 <style scoped>
