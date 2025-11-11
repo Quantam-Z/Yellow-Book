@@ -50,16 +50,14 @@
             </td>
             
             <td class="px-4 py-3 whitespace-nowrap relative">
-              
               <span
-  v-if="editingIndex === index"
-  @click="simulateDelete(review)"
-  title="Delete Review"
-  class="w-5 h-5 text-red-600 cursor-pointer hover:text-red-700 active:text-red-800 transition touch-manipulation flex items-center justify-center"
->
-  <Trash2 class="w-5 h-5" />
-</span>
-
+                v-if="editingIndex === index"
+                @click="simulateDelete(review)"
+                title="Delete Review"
+                class="w-5 h-5 text-red-600 cursor-pointer hover:text-red-700 active:text-red-800 transition touch-manipulation flex items-center justify-center"
+              >
+                <Trash2 class="w-5 h-5" />
+              </span>
               
               <MoreHorizontal 
                 v-else
@@ -96,13 +94,13 @@
             </span>
             
             <span
-  v-if="editingIndex === index"
-  @click="simulateDelete(review)"
-  title="Delete Review"
-  class="text-red-500 hover:text-red-700 transition-colors cursor-pointer flex items-center"
->
-  <Trash2 class="w-5 h-5" />
-</span>
+              v-if="editingIndex === index"
+              @click="simulateDelete(review)"
+              title="Delete Review"
+              class="text-red-500 hover:text-red-700 transition-colors cursor-pointer flex items-center"
+            >
+              <Trash2 class="w-5 h-5" />
+            </span>
 
 
             <MoreHorizontal 
@@ -169,8 +167,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
-import Swal from 'sweetalert2';
+import { ref, onMounted, computed, nextTick } from 'vue';
 import { MoreHorizontal, ChevronLeft, ChevronRight, Trash2 } from 'lucide-vue-next'; 
 import RatingStars from '~/components/common/RatingStars.vue'
 import { getStatusClass } from '~/composables/useStatusClass'
@@ -192,10 +189,7 @@ let nextId = 1;
 const fetchData = async () => {
   try {
     const reviewsData = await stubClient.list('recentReviews', { delay: 150 });
-    allReviews.value = (reviewsData || []).map(review => ({
-      ...review,
-      id: review.id || nextId++, 
-    }));
+    allReviews.value = (reviewsData || []).map(review => ({ ...review, id: review.id || nextId++ }));
   } catch (error) {
     console.error('Failed to load reviews:', error);
     if (import.meta.client) {
@@ -207,19 +201,12 @@ const fetchData = async () => {
   }
 };
 
-const totalPages = computed(() => {
-  if (allReviews.value.length === 0) return 0;
-  return Math.ceil(allReviews.value.length / pageSize.value);
-});
+const totalPages = computed(() => allReviews.value.length === 0 ? 0 : Math.ceil(allReviews.value.length / pageSize.value));
 
 const displayedReviews = computed(() => {
-  if (!isExpanded.value) {
-    return allReviews.value.slice(0, RECENT_REVIEWS_LIMIT);
-  }
-
+  if (!isExpanded.value) return allReviews.value.slice(0, RECENT_REVIEWS_LIMIT);
   const start = (currentPage.value - 1) * pageSize.value;
-  const end = start + pageSize.value;
-  return allReviews.value.slice(start, end);
+  return allReviews.value.slice(start, start + pageSize.value);
 });
 
 const handleSeeAllClick = () => {
@@ -238,20 +225,14 @@ const goToPage = (page) => {
 };
 
 const toggleReviewDetails = (reviewId) => {
-  if (expandedReviewId.value === reviewId) {
-    expandedReviewId.value = null;
-  } else {
-    expandedReviewId.value = reviewId;
-  }
+  expandedReviewId.value = expandedReviewId.value === reviewId ? null : reviewId;
 };
 
 const toggleActions = (index) => {
   editingIndex.value = editingIndex.value === index ? null : index;
 };
 
-const findReviewIndexById = (reviewId) => {
-  return allReviews.value.findIndex(review => review.id === reviewId);
-};
+const findReviewIndexById = (reviewId) => allReviews.value.findIndex(review => review.id === reviewId);
 
 const toggleStatus = (row) => {
   const actualIndex = findReviewIndexById(row.id);
@@ -259,39 +240,28 @@ const toggleStatus = (row) => {
     const currentStatus = allReviews.value[actualIndex].status;
     allReviews.value[actualIndex].status = (currentStatus === 'Approved') ? 'Rejected' : 'Approved';
 
-    console.log(`Review by ${row.reviewer} status changed to ${allReviews.value[actualIndex].status}.`);
+    if (import.meta.client) {
+      const newStatus = allReviews.value[actualIndex].status;
+      nuxtApp.$awn?.success(`Review status updated to ${newStatus}.`);
+    }
   }
   editingIndex.value = null; 
 };
 
-const simulateDelete = async (review) => {
-  
-  const result = await Swal.fire({
-    title: 'Are you sure?',
-    html: `You are about to delete the review by <strong>${review.reviewer}</strong>. <br> This action cannot be undone.`,
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#d33',
-    cancelButtonColor: '#3085d6',
-    confirmButtonText: 'Yes, delete it!',
-    cancelButtonText: 'Cancel'
-  });
-
-  if (result.isConfirmed) {
-    allReviews.value = allReviews.value.filter(r => r.id !== review.id);
-    console.log(`Review by ${review.reviewer} DELETED.`);
+const simulateDelete = (review) => {
+  if (import.meta.client) {
     
-    // Check if the current page is now empty and move back if necessary
+    // 1. Perform Deletion Instantly
+    allReviews.value = allReviews.value.filter(r => r.id !== review.id);
+    
+    // 2. Adjust Pagination
     const newTotalPages = Math.ceil(allReviews.value.length / pageSize.value);
     if (currentPage.value > newTotalPages && currentPage.value > 1) {
         currentPage.value = newTotalPages;
     }
 
-    Swal.fire(
-      'Deleted!',
-      `The review by ${review.reviewer} has been deleted.`,
-      'success'
-    );
+    // 3. Show Error/Danger Notification immediately after state update.
+    nuxtApp.$awn?.error(`Review by ${review.reviewer} has been permanently deleted.`);
   }
   
   editingIndex.value = null;
@@ -306,5 +276,4 @@ onMounted(() => {
 .font-plus-jakarta-sans {
   font-family: 'Plus Jakarta Sans', sans-serif;
 }
-
 </style>
