@@ -37,7 +37,15 @@
       "rating": 3,
       "date": "2024-11-13",
       "time": "1:45 PM",
-      "content": "It was okay, not great, not bad. Average service for the price paid."
+        "content": "It was okay, not great, not bad. Average service for the price paid.",
+        "companyResponse": {
+          "name": "Lena Ortiz",
+          "title": "Client Relations Manager",
+          "date": "2024-11-14",
+          "time": "08:40 AM",
+          "text": "Charlie, thank you for the honest feedback. We've shared your notes with the team and would love a chance to deliver a five-star experience next time.",
+          "avatar": "/profile.png"
+        }
     },
     {
       "id": 4,
@@ -45,7 +53,15 @@
       "rating": 5,
       "date": "2024-11-12",
       "time": "11:00 AM",
-      "content": "Absolutely loved it, exceeded expectations! Will definitely come back."
+        "content": "Absolutely loved it, exceeded expectations! Will definitely come back.",
+        "companyResponse": {
+          "name": "Marcus Lee",
+          "title": "Agency Director",
+          "date": "2024-11-13",
+          "time": "10:05 AM",
+          "text": "Diana, we're thrilled you had such a great experience! Thank you for trusting us—we can't wait to partner with you again.",
+          "avatar": "/profile.png"
+        }
     },
     {
       "id": 5,
@@ -53,7 +69,15 @@
       "rating": 2,
       "date": "2024-11-11",
       "time": "4:10 PM",
-      "content": "Service was slow and not very helpful. Expected better communication."
+        "content": "Service was slow and not very helpful. Expected better communication.",
+        "companyResponse": {
+          "name": "Nora Bennett",
+          "title": "Operations Lead",
+          "date": "2024-11-12",
+          "time": "02:30 PM",
+          "text": "Hi Ethan, sorry about the delay you experienced. We're tightening our workflow and will reach out directly to make this right.",
+          "avatar": "/profile.png"
+        }
     },
     {
       "id": 6,
@@ -61,7 +85,15 @@
       "rating": 1,
       "date": "2024-11-10",
       "time": "9:00 AM",
-      "content": "Very disappointed, would not recommend. Poor quality and unprofessional."
+        "content": "Very disappointed, would not recommend. Poor quality and unprofessional.",
+        "companyResponse": {
+          "name": "Andre Patel",
+          "title": "Quality Assurance Lead",
+          "date": "2024-11-11",
+          "time": "09:55 AM",
+          "text": "Fiona, we completely understand your frustration. We're investigating what went wrong and will be in touch to offer a remedy.",
+          "avatar": "/profile.png"
+        }
     },
     {
       "id": 7,
@@ -69,7 +101,15 @@
       "rating": 5,
       "date": "2024-11-09",
       "time": "3:20 PM",
-      "content": "Outstanding service! Went above and beyond to help us achieve our goals."
+        "content": "Outstanding service! Went above and beyond to help us achieve our goals.",
+        "companyResponse": {
+          "name": "Sophia Martinez",
+          "title": "Customer Success Lead",
+          "date": "2024-11-10",
+          "time": "11:45 AM",
+          "text": "George, we appreciate the kind words! Our team loved working with you and we're excited for what's next.",
+          "avatar": "/profile.png"
+        }
     },
     {
       "id": 8,
@@ -77,6 +117,14 @@
       "rating": 4,
       "date": "2024-11-08",
       "time": "2:00 PM",
-      "content": "Great experience overall. Minor issues but quickly resolved by support."
+        "content": "Great experience overall. Minor issues but quickly resolved by support.",
+        "companyResponse": {
+          "name": "Lena Ortiz",
+          "title": "Client Relations Manager",
+          "date": "2024-11-09",
+          "time": "07:20 PM",
+          "text": "Hannah, thank you for highlighting both the positives and the areas we can polish—we're on it and hope to earn that fifth star soon.",
+          "avatar": "/profile.png"
+        }
     }
   ]
