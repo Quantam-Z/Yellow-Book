@@ -300,18 +300,58 @@
               </div>
             </div>
 
-            <!-- Card body -->
-            <div class="flex justify-between items-end">
-              <div class="flex flex-col gap-2 text-sm flex-1 min-w-0">
-                <div class="text-gray-600 truncate">{{ user.email }}</div>
-                <div class="text-gray-500">Signup: {{ formatDate(user.signupDate) }}</div>
+              <!-- Card body -->
+              <div class="flex flex-col gap-3">
+                <div class="flex justify-end">
+                  <button
+                    type="button"
+                    @click="viewUser(user)"
+                    class="text-amber-500 hover:text-amber-600 font-medium text-sm cursor-pointer whitespace-nowrap bg-transparent border-0 p-0 focus:outline-none"
+                    :aria-expanded="expandedUserId === user.id ? 'true' : 'false'"
+                  >
+                    {{ expandedUserId === user.id ? 'Hide Details' : 'View Details' }}
+                  </button>
+                </div>
+
+                <Transition name="collapse">
+                  <div
+                    v-if="expandedUserId === user.id"
+                    class="pt-3 border-t border-dashed border-gray-200 text-sm text-gray-600 space-y-2"
+                  >
+                    <div class="text-gray-700 break-all">{{ user.email }}</div>
+                    <div class="flex items-start justify-between gap-4">
+                      <span class="text-gray-500 font-medium">Signup Date</span>
+                      <span class="text-gray-900 text-right">{{ formatDate(user.signupDate) }}</span>
+                    </div>
+                    <div class="flex items-start justify-between gap-4">
+                      <span class="text-gray-500 font-medium">Signup Method</span>
+                      <span class="text-right">
+                        <span
+                          class="inline-flex items-center gap-2 px-2.5 py-1 rounded-md text-xs font-semibold"
+                          :class="getSignupMethodClass(user.signupMethod, 'soft')"
+                        >
+                          {{ user.signupMethod }}
+                        </span>
+                      </span>
+                    </div>
+                    <div class="flex items-start justify-between gap-4">
+                      <span class="text-gray-500 font-medium">Status</span>
+                      <span class="text-right">
+                        <span
+                          class="inline-flex items-center gap-2 px-2.5 py-1 rounded-md text-xs font-semibold"
+                          :class="getStatusClass(user.status, 'soft')"
+                        >
+                          {{ user.status }}
+                        </span>
+                      </span>
+                    </div>
+                    <div class="flex items-start justify-between gap-4">
+                      <span class="text-gray-500 font-medium">Verified</span>
+                      <span class="text-gray-900 text-right">{{ user.verified ? 'Yes' : 'No' }}</span>
+                    </div>
+                  </div>
+                </Transition>
               </div>
-              <div class="ml-4 flex-shrink-0">
-                <span @click="viewUser(user)" class="text-amber-500 hover:text-amber-600 font-medium text-sm cursor-pointer whitespace-nowrap">
-                  View Details
-                </span>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -443,11 +483,18 @@
         </button>
       </div>
     </div>
+
+    <DetailModal
+      :open="isDetailModalOpen"
+      title="User Details"
+      :items="userDetailItems"
+      @close="closeUserDetails"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, computed, watchEffect, watch } from 'vue';
+import { ref, computed, watchEffect, watch, onMounted, onBeforeUnmount } from 'vue';
 import { 
   Search as SearchIcon,
   Eye as EyeIcon,
@@ -465,11 +512,16 @@ import {
 import { getStatusClass, getStatusShort, getSignupMethodClass } from '~/composables/useStatusClass'
 import { useSelection } from '~/composables/useSelection'
 import { useStubClient, useStubResource } from '~/services/stubClient'
+import DetailModal from '~/components/common/DetailModal.vue'
 
 // --- State ---
 const showMobileFilters = ref(false);
 const searchQuery = ref('');
 const users = ref([]);
+const expandedUserId = ref(null);
+const selectedUser = ref(null);
+const isDetailModalOpen = ref(false);
+const isMobileView = ref(false);
 
 // Pagination State
 const currentPage = ref(1);
@@ -548,6 +600,19 @@ const paginatedUsers = computed(() => {
   return filteredUsers.value.slice(start, end);
 });
 
+const userDetailItems = computed(() => {
+  if (!selectedUser.value) return [];
+  const user = selectedUser.value;
+  return [
+    { label: 'Name', value: user.name },
+    { label: 'Email', value: user.email },
+    { label: 'Signup Method', value: user.signupMethod },
+    { label: 'Signup Date', value: user.signupDate ? formatDate(user.signupDate) : '—' },
+    { label: 'Status', value: user.status },
+    { label: 'Verified', value: user.verified ? 'Yes' : 'No' }
+  ];
+});
+
 // --- Methods ---
 const handleFilterChange = () => {
   currentPage.value = 1;
@@ -563,8 +628,18 @@ const toggleSelectAll = () => {
 };
 
 const viewUser = (user) => {
-  // Hook for future detail modal
-  // alert(`Viewing: ${user.name}`)
+  if (isMobileView.value) {
+    expandedUserId.value = expandedUserId.value === user.id ? null : user.id;
+    return;
+  }
+
+  selectedUser.value = user;
+  isDetailModalOpen.value = true;
+};
+
+const closeUserDetails = () => {
+  isDetailModalOpen.value = false;
+  selectedUser.value = null;
 };
 
 const changeStatus = async (user) => {
@@ -642,6 +717,30 @@ watch(usersError, (err) => {
     toast('error', err?.message || 'Failed to load users');
   }
 })
+
+const updateViewport = () => {
+  if (!import.meta.client) return;
+  isMobileView.value = window.innerWidth < 1024;
+};
+
+onMounted(() => {
+  if (!import.meta.client) return;
+  updateViewport();
+  window.addEventListener('resize', updateViewport);
+});
+
+onBeforeUnmount(() => {
+  if (!import.meta.client) return;
+  window.removeEventListener('resize', updateViewport);
+});
+
+watch(isMobileView, (isMobile) => {
+  if (!isMobile) {
+    expandedUserId.value = null;
+  } else {
+    isDetailModalOpen.value = false;
+  }
+});
 </script>
 
 <style scoped>
@@ -731,5 +830,16 @@ input[type="date"]:hover::-webkit-calendar-picker-indicator {
 
 .border-gray-200 {
   border-color: #e5e7eb;
+}
+
+.collapse-enter-active,
+.collapse-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.collapse-enter-from,
+.collapse-leave-to {
+  opacity: 0;
+  transform: translateY(-6px);
 }
 </style>

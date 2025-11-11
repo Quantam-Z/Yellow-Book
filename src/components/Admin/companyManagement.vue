@@ -263,24 +263,57 @@
               </div>
             </div>
 
-            <!-- Card body -->
-            <div class="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-end">
-              <div class="flex flex-col gap-2 text-sm flex-1 min-w-0">
-                <div class="flex items-center gap-1 text-gray-700">
-                  <PhoneIcon class="w-4 h-4" aria-hidden="true" />
-                  <span class="whitespace-nowrap truncate">{{ company.mobile }}</span>
+              <!-- Card body -->
+              <div class="flex flex-col gap-3">
+                <div class="flex justify-end">
+                  <button
+                    type="button"
+                    @click="viewCompany(company)"
+                    class="text-amber-500 hover:text-amber-600 font-medium text-sm cursor-pointer whitespace-nowrap bg-transparent border-0 p-0 focus:outline-none"
+                    :aria-expanded="expandedCompanyId === company.id ? 'true' : 'false'"
+                  >
+                    {{ expandedCompanyId === company.id ? 'Hide Details' : 'View Details' }}
+                  </button>
                 </div>
-                <a :href="'https://' + company.website" class="text-amber-500 hover:text-amber-600 truncate flex items-center gap-2 break-all" target="_blank" rel="noopener">
-                  <GlobeIcon class="w-4 h-4" aria-hidden="true" />
-                  {{ company.website }}
-                </a>
+
+                <Transition name="collapse">
+                  <div
+                    v-if="expandedCompanyId === company.id"
+                    class="pt-3 border-t border-dashed border-gray-200 text-sm text-gray-600 space-y-3"
+                  >
+                    <div class="flex items-center gap-2 text-gray-700">
+                      <PhoneIcon class="w-4 h-4 flex-shrink-0" aria-hidden="true" />
+                      <span class="font-medium text-gray-900">{{ company.mobile }}</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <GlobeIcon class="w-4 h-4 flex-shrink-0 text-amber-500" aria-hidden="true" />
+                      <a
+                        :href="company.website ? 'https://' + company.website : '#'"
+                        class="text-amber-500 hover:text-amber-600 truncate break-all"
+                        target="_blank"
+                        rel="noopener"
+                      >
+                        {{ company.website }}
+                      </a>
+                    </div>
+                    <div class="flex items-start justify-between gap-4">
+                      <span class="text-gray-500 font-medium">Status</span>
+                      <span class="text-right">
+                        <span
+                          class="inline-flex items-center gap-2 px-2.5 py-1 rounded-md text-xs font-semibold"
+                          :class="getStatusClass(company.status, 'soft')"
+                        >
+                          {{ company.status }}
+                        </span>
+                      </span>
+                    </div>
+                    <div class="flex items-start justify-between gap-4">
+                      <span class="text-gray-500 font-medium">Verified</span>
+                      <span class="text-gray-900 text-right">{{ company.verified ? 'Yes' : 'No' }}</span>
+                    </div>
+                  </div>
+                </Transition>
               </div>
-              <div class="sm:ml-4 flex-shrink-0">
-                <span @click="viewCompany(company)" class="text-amber-500 hover:text-amber-600 font-medium text-sm cursor-pointer whitespace-nowrap">
-                  View Details
-                </span>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -409,16 +442,23 @@
     </div>
 
     <!-- Modals -->
-  <AddCompany :is-open="isModalOpen" @close="closeModal" @created="handleCompanyCreated" />
+    <AddCompany :is-open="isModalOpen" @close="closeModal" @created="handleCompanyCreated" />
+    <DetailModal
+      :open="isDetailModalOpen"
+      title="Company Details"
+      :items="companyDetailItems"
+      @close="closeCompanyDetails"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, computed, defineAsyncComponent, watchEffect, watch } from 'vue';
+import { ref, computed, defineAsyncComponent, watchEffect, watch, onMounted, onBeforeUnmount } from 'vue';
 import { Search as SearchIcon, Eye as EyeIcon, CheckCircle as CheckCircleIcon, ChevronDown as ChevronDownIcon, ChevronLeft as ChevronLeftIcon, ChevronRight as ChevronRightIcon, Filter as FilterIcon, Phone as PhoneIcon, Globe as GlobeIcon, MoreHorizontal } from "lucide-vue-next";
 import { getStatusClass, getStatusShort } from '~/composables/useStatusClass'
 import { useSelection } from '~/composables/useSelection'
 import { useStubClient, useStubResource } from '~/services/stubClient'
+import DetailModal from '~/components/common/DetailModal.vue'
 
 const AddCompany = defineAsyncComponent(() => import('~/components/modal/addCompany.vue'))
 
@@ -427,6 +467,10 @@ const isModalOpen = ref(false);
 const showMobileFilters = ref(false);
 const searchQuery = ref('');
 const companies = ref([]);
+const expandedCompanyId = ref(null);
+const selectedCompany = ref(null);
+const isDetailModalOpen = ref(false);
+const isMobileView = ref(false);
 
 // Pagination State
 const currentPage = ref(1);
@@ -488,6 +532,19 @@ const paginatedCompanies = computed(() => {
     return filteredCompanies.value.slice(start, end);
 });
 
+const companyDetailItems = computed(() => {
+  if (!selectedCompany.value) return [];
+  const company = selectedCompany.value;
+  return [
+    { label: 'Company', value: company.name },
+    { label: 'Category', value: company.category },
+    { label: 'Website', value: company.website },
+    { label: 'Mobile', value: company.mobile },
+    { label: 'Status', value: company.status },
+    { label: 'Verified', value: company.verified ? 'Yes' : 'No' }
+  ];
+});
+
 // --- Methods ---
 const handleFilterChange = () => {
   currentPage.value = 1;
@@ -511,8 +568,18 @@ const toggleSelectAll = () => {
 };
 
 const viewCompany = (company) => {
-  // Placeholder for future modal
-  console.info('Viewing company', company.name);
+  if (isMobileView.value) {
+    expandedCompanyId.value = expandedCompanyId.value === company.id ? null : company.id;
+    return;
+  }
+
+  selectedCompany.value = company;
+  isDetailModalOpen.value = true;
+};
+
+const closeCompanyDetails = () => {
+  isDetailModalOpen.value = false;
+  selectedCompany.value = null;
 };
 
 const changeStatus = async (company) => {
@@ -574,6 +641,30 @@ watch(companiesError, (err) => {
     toast('error', err?.message || 'Failed to load companies');
   }
 })
+
+const updateViewport = () => {
+  if (!import.meta.client) return;
+  isMobileView.value = window.innerWidth < 1024;
+};
+
+onMounted(() => {
+  if (!import.meta.client) return;
+  updateViewport();
+  window.addEventListener('resize', updateViewport);
+});
+
+onBeforeUnmount(() => {
+  if (!import.meta.client) return;
+  window.removeEventListener('resize', updateViewport);
+});
+
+watch(isMobileView, (isMobile) => {
+  if (!isMobile) {
+    expandedCompanyId.value = null;
+  } else {
+    isDetailModalOpen.value = false;
+  }
+});
 </script>
 
 <style scoped>
@@ -659,5 +750,16 @@ input[type="date"]:hover::-webkit-calendar-picker-indicator {
 
 .border-gray-200 {
   border-color: #e5e7eb;
+}
+
+.collapse-enter-active,
+.collapse-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.collapse-enter-from,
+.collapse-leave-to {
+  opacity: 0;
+  transform: translateY(-6px);
 }
 </style>
