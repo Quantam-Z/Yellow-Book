@@ -150,26 +150,39 @@
               </div>
             </div>
 
-            <div v-if="review.companyResponse" class="ml-2 sm:ml-3 md:ml-6 lg:ml-10 pl-2 sm:pl-3 md:pl-6 lg:pl-10 py-4 sm:py-5 relative reply-connector space-y-2 sm:space-y-3">
-              <div class="flex items-start gap-2 sm:gap-3">
-                <img
-                  :src="review.companyResponse.avatar || 'https://i.pravatar.cc/150?img=10'"
-                  :alt="review.companyResponse.name"
-                  class="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover flex-shrink-0"
-                />
-                <div class="flex-1 min-w-0">
-                  <h4 class="font-semibold text-gray-800 capitalize mb-1 sm:mb-2 text-sm sm:text-base break-words">
-                    {{ review.companyResponse.name }}
-                  </h4>
-                  <p class="text-xs sm:text-sm font-medium text-gray-400 capitalize">
-                    Date: {{ review.companyResponse.date }}
+              <div
+                v-if="review.companyResponse"
+                class="relative reply-connector ml-2 sm:ml-3 md:ml-6 lg:ml-10 pl-2 sm:pl-3 md:pl-6 lg:pl-10 py-4 sm:py-5 space-y-3 sm:space-y-4"
+              >
+                <div class="reply-card p-3 sm:p-4 md:p-5 space-y-3 sm:space-y-4">
+                  <div class="flex items-start gap-2 sm:gap-3">
+                    <img
+                      :src="review.companyResponse.avatar || 'https://i.pravatar.cc/150?img=10'"
+                      :alt="review.companyResponse.name"
+                      class="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover flex-shrink-0 ring-2 ring-blue-100"
+                    />
+                    <div class="flex-1 min-w-0 space-y-1">
+                      <div class="reply-badge text-blue-600">
+                        <CornerDownRight class="w-4 h-4" />
+                        <span>{{ companyResponseLabel }}</span>
+                      </div>
+                      <h4 class="font-semibold text-gray-800 capitalize text-sm sm:text-base break-words">
+                        {{ review.companyResponse.name }}
+                      </h4>
+                      <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs sm:text-sm font-medium text-gray-500">
+                        <span v-if="review.companyResponse.title" class="text-gray-500">{{ review.companyResponse.title }}</span>
+                        <span v-if="review.companyResponse.date" class="text-gray-400 capitalize">
+                          {{ review.companyResponse.date }}
+                          <span v-if="review.companyResponse.time"> · {{ review.companyResponse.time }}</span>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <p class="text-gray-700 leading-relaxed italic text-xs sm:text-sm md:text-base break-words">
+                    "{{ review.companyResponse.text }}"
                   </p>
                 </div>
               </div>
-              <p class="text-gray-600 leading-relaxed italic text-xs sm:text-sm md:text-base break-words">
-                "{{ review.companyResponse.text }}"
-              </p>
-            </div>
           </div>
 
           <div
@@ -314,7 +327,7 @@
 
 <script setup lang="ts">
   import { ref, computed, onMounted, onUnmounted, watch, watchEffect } from 'vue';
-  import { MessageSquare, ChevronDown, ExternalLink, X, Star } from 'lucide-vue-next';
+  import { MessageSquare, ChevronDown, ExternalLink, X, Star, CornerDownRight } from 'lucide-vue-next';
   import { Teleport } from 'vue';
   
   import StarRatingBox from '@/components/common/starRatingBox.vue';
@@ -326,7 +339,9 @@
     name: string;
     avatar?: string;
     text: string;
-    date: string
+    date?: string;
+    time?: string;
+    title?: string;
   }
 
   interface ReviewItem {
@@ -363,6 +378,7 @@
     filterTitle: 'Filter Options',
     reviewScoreTitle: 'Review Score',
     dateFilterTitle: 'Date Filter',
+    companyResponseLabel: 'Agency Response',
   };
 
   const dateFilterOptions = [
@@ -375,8 +391,16 @@
 
   // Destructure constants for cleaner template access
   const {
-      pageTitle, filterText, websiteText, addReviewTitle, reviewPlaceholder,
-      submitText, filterTitle, reviewScoreTitle, dateFilterTitle
+    pageTitle,
+    filterText,
+    websiteText,
+    addReviewTitle,
+    reviewPlaceholder,
+    submitText,
+    filterTitle,
+    reviewScoreTitle,
+    dateFilterTitle,
+    companyResponseLabel,
   } = TEXT_CONTENT;
 
 
@@ -398,6 +422,31 @@
   const isMobile = ref(false);
   const isTablet = ref(false);
 
+  function normalizeCompanyResponse(raw: any): CompanyResponse | undefined {
+    if (!raw) return undefined;
+
+    if (typeof raw === 'string') {
+      const text = raw.trim();
+      if (!text) return undefined;
+      return {
+        name: 'Agency Representative',
+        text,
+      };
+    }
+
+    const text = (raw.text ?? raw.reply ?? raw.response ?? raw.message ?? '').toString().trim();
+    if (!text) return undefined;
+
+    return {
+      name: raw.name ?? raw.responderName ?? raw.respondent ?? raw.agentName ?? 'Agency Representative',
+      avatar: raw.avatar ?? raw.imageUrl ?? raw.photo,
+      text,
+      date: raw.date ?? raw.respondedAt ?? raw.responseDate,
+      time: raw.time ?? raw.respondedTime ?? raw.responseTime,
+      title: raw.title ?? raw.role ?? raw.position,
+    };
+  }
+
   watchEffect(() => {
     const data = (reviewsData.value || []) as Array<any>;
     reviews.value = data.map((r) => ({
@@ -407,7 +456,13 @@
       date: r.date,
       review: r.content || r.review || '',
       avatar: r.avatar,
-      companyResponse: r.companyResponse,
+      companyResponse: normalizeCompanyResponse(
+        r.companyResponse ??
+        r.company_response ??
+        r.companyReply ??
+        r.reply ??
+        r.response
+      ),
       likes: Number(r.likes ?? 0),
       dislikes: Number(r.dislikes ?? 0),
     }));
@@ -563,29 +618,76 @@
   }
 </script>
 
-<style scoped>
-  .reply-connector::before {
-    content: '';
-    position: absolute;
-    left: 1px;
-    top: -12px;
-    width: 33px;
-    height: 57px;
-    border-left: 1px solid #c0c0c0;
-    border-bottom: 1px solid #c0c0c0;
-    border-bottom-left-radius: 12px;
-  }
-
-  @media (max-width: 640px) {
+  <style scoped>
     .reply-connector::before {
+      content: '';
+      position: absolute;
+      left: 1.25rem;
+      top: -1.5rem;
+      width: 2px;
+      height: calc(100% + 1.5rem);
+      background: linear-gradient(180deg, rgba(148, 163, 184, 0.65) 0%, rgba(148, 163, 184, 0.1) 100%);
+      border-radius: 999px;
+      pointer-events: none;
       display: none;
     }
-  }
-
-  @media (min-width: 640px) and (max-width: 767px) {
-    .reply-connector::before {
-      width: 28px;
-      height: 52px;
+  
+    .reply-connector::after {
+      content: '';
+      position: absolute;
+      left: calc(1.25rem - 6px);
+      top: -0.75rem;
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      background: #ffffff;
+      border: 2px solid #2563eb;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+      pointer-events: none;
+      display: none;
     }
-  }
-</style>
+  
+    .reply-card {
+      background: linear-gradient(180deg, rgba(37, 99, 235, 0.06) 0%, rgba(37, 99, 235, 0.02) 100%);
+      border: 1px solid rgba(37, 99, 235, 0.18);
+      border-left-width: 4px;
+      border-left-color: rgba(37, 99, 235, 0.5);
+      border-radius: 18px;
+      box-shadow: 0 12px 30px -12px rgba(37, 99, 235, 0.35);
+    }
+  
+    .reply-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      background: rgba(37, 99, 235, 0.12);
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+    }
+  
+    .reply-badge svg {
+      flex-shrink: 0;
+    }
+  
+    @media (min-width: 640px) {
+      .reply-connector::before,
+      .reply-connector::after {
+        display: block;
+      }
+    }
+  
+    @media (min-width: 768px) {
+      .reply-connector::before {
+        left: 1.5rem;
+        height: calc(100% + 2rem);
+      }
+  
+      .reply-connector::after {
+        left: calc(1.5rem - 6px);
+      }
+    }
+  </style>
