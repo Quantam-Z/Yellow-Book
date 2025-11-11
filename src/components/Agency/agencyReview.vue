@@ -582,10 +582,8 @@
   }
 
   .reply-connector::before {
-    left: -18px;
-    top: -16px;
+   
     width: 26px;
-    height: calc(100% + 24px);
   }
 }
 
