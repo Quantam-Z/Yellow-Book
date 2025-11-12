@@ -81,26 +81,29 @@ const companiesSeed: Company[] = allCompanyIds.map((id) => {
   const listing = listingIndex.get(id);
   const company = companyIndex.get(id);
 
-  const name = company?.name || listing?.name || '';
+  const resolvedName = listing?.name ?? company?.name ?? `company-${id}`;
+  const resolvedCategory = listing?.category ?? company?.category ?? '';
+  const resolvedWebsite = listing?.website ?? company?.website ?? '';
 
   return {
     id,
-    name,
-    category: company?.category || listing?.category,
-    website: company?.website || listing?.website,
-    mobile: company?.mobile || '',
+    name: resolvedName,
+    category: resolvedCategory,
+    website: resolvedWebsite,
+    mobile: company?.mobile ?? '',
     status: company?.status,
     verified: company?.verified,
-    rating: listing?.rating,
+    rating: listing?.rating ?? company?.rating,
     ratingCount: listing?.ratingCount,
-    location: listing?.location,
-    revenue: listing?.revenue,
+    location: listing?.location ?? company?.location,
+    revenue: listing?.revenue ?? company?.revenue,
     comments: listing?.comments,
     serviceType: listing?.serviceType,
     specialization: listing?.specialization,
     emergencyService: listing?.emergencyService,
-    price: listing?.price,
-    slug: generateSlug(name),
+    price: listing?.price ?? company?.price,
+    slug: generateSlug(resolvedName),
+    favourited: company?.favourited,
   };
 });
 
