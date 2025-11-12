@@ -39,6 +39,64 @@ class StubApiError extends Error {
   }
 }
 
+const httpTransportState = {
+  unavailable: false,
+  lastError: null,
+};
+
+const HTTP_TRANSPORT_FALLBACK_REASONS = new Set(["invalid-json", "http-non-json", "html-response", "network-error"]);
+
+const summarizeTransportError = (error) => {
+  if (!error || typeof error !== "object") return "";
+  const segments = [];
+  if (typeof error.status === "number" && Number.isFinite(error.status)) {
+    segments.push(`status ${error.status}`);
+  }
+  const reason = error?.details?.reason;
+  if (reason) {
+    segments.push(String(reason));
+  }
+  const url = error?.details?.url;
+  if (url) {
+    segments.push(String(url));
+  }
+  return segments.join(" | ");
+};
+
+const markHttpTransportUnavailable = (error) => {
+  if (!import.meta.client) return;
+  if (httpTransportState.unavailable) {
+    if (error && !httpTransportState.lastError) {
+      httpTransportState.lastError = error;
+    }
+    return;
+  }
+  httpTransportState.unavailable = true;
+  httpTransportState.lastError = error || null;
+  if (typeof console !== "undefined" && typeof console.warn === "function") {
+    const summary = summarizeTransportError(error);
+    console.warn(
+      `[stub] Disabled HTTP transport for stub requests - falling back to local stub files${
+        summary ? ` (${summary})` : ""
+      }`,
+    );
+  }
+};
+
+const isTransportFailureLikelyPermanent = (error) => {
+  if (!error || typeof error !== "object") return false;
+  const reason = error?.details?.reason;
+  if (reason && HTTP_TRANSPORT_FALLBACK_REASONS.has(String(reason))) {
+    return true;
+  }
+  return false;
+};
+
+const resolveTransportPreference = (options = {}) => {
+  const value = options?.transport;
+  return typeof value === "string" ? value : "auto";
+};
+
 const structuredCloneSafe = (value) => {
   if (value === null || value === undefined) return value;
   if (typeof structuredClone === "function") return structuredClone(value);
@@ -292,7 +350,13 @@ const buildStubUrl = ({ resource, id, query, delay }) => {
   return queryString ? `${path}?${queryString}` : path;
 };
 
-const shouldUseHttpTransport = (options = {}) => import.meta.client && options.transport !== "local";
+const shouldUseHttpTransport = (options = {}) => {
+  if (!import.meta.client) return false;
+  const preference = resolveTransportPreference(options);
+  if (preference === "local" || preference === "local-only") return false;
+  if (preference === "remote-only") return true;
+  return !httpTransportState.unavailable;
+};
 
 const performHttpStubRequest = async (options) => {
   const { resource, method = "GET", id, payload, delay, query, params } = options;
@@ -315,27 +379,69 @@ const performHttpStubRequest = async (options) => {
       body,
     });
 
+    const status = response.status;
+    const statusText = response.statusText;
+    const contentType = response.headers?.get?.("content-type") || "";
+
+    let rawText = "";
     let parsed = null;
-    if (response.status !== 204) {
-      const text = await response.text();
-      parsed = text ? JSON.parse(text) : null;
+
+    if (status !== 204) {
+      rawText = await response.text();
+      if (rawText) {
+        try {
+          parsed = JSON.parse(rawText);
+        } catch (parseError) {
+          throw new StubApiError(status || 500, "Stub HTTP response was not valid JSON", {
+            reason: "invalid-json",
+            contentType,
+            bodyPreview: rawText.slice(0, 160),
+            url,
+            resource,
+            status,
+            statusText,
+            cause: parseError,
+          });
+        }
+      }
     }
 
     if (!response.ok) {
-      const message = parsed?.error || response.statusText || "Stub request failed";
-      const details = parsed?.details || {};
-      throw new StubApiError(response.status, message, details);
+      const message = parsed?.error || statusText || "Stub request failed";
+      const details = {
+        ...(parsed && typeof parsed.details === "object" ? parsed.details : {}),
+        reason:
+          parsed?.reason ||
+          (parsed ? "http-error" : rawText ? "http-non-json" : "http-empty"),
+        status,
+        statusText,
+        url,
+        resource,
+        contentType,
+      };
+      throw new StubApiError(status, message, details);
     }
 
     return {
       ok: true,
-      status: response.status,
-      statusText: response.statusText,
+      status,
+      statusText,
       data: parsed?.data ?? null,
       meta: parsed?.meta ?? {},
       duration: parsed?.duration ?? null,
     };
   } catch (error) {
+    if (error instanceof StubApiError) {
+      throw error;
+    }
+    if (error?.name === "TypeError") {
+      throw new StubApiError(503, "Stub HTTP request failed", {
+        reason: "network-error",
+        url,
+        resource,
+        cause: error,
+      });
+    }
     throw toStubError(error);
   }
 };
@@ -545,7 +651,18 @@ const stubClient = {
     }
 
     if (shouldUseHttpTransport(options)) {
-      return performHttpStubRequest(options);
+      try {
+        return await performHttpStubRequest(options);
+      } catch (error) {
+        const stubError = toStubError(error);
+        const preference = resolveTransportPreference(options);
+        const allowFallback = import.meta.client && preference !== "remote-only";
+        if (allowFallback && isTransportFailureLikelyPermanent(stubError)) {
+          markHttpTransportUnavailable(stubError);
+          return processStubRequest(options);
+        }
+        throw stubError;
+      }
     }
 
     return processStubRequest(options);
