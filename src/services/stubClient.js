@@ -224,6 +224,228 @@ const assertCollection = (state, operation) => {
   }
 };
 
+const METHODS_WITH_BODY = new Set(["POST", "PUT", "PATCH"]);
+
+const toIterable = (value) => {
+  if (Array.isArray(value)) return value;
+  return [value];
+};
+
+const createSearchParams = (rawQuery = {}, delay) => {
+  const query = rawQuery instanceof URLSearchParams ? Object.fromEntries(rawQuery.entries()) : rawQuery;
+  const searchParams = new URLSearchParams();
+  for (const [key, rawValue] of Object.entries(query || {})) {
+    if (rawValue === undefined || rawValue === null || rawValue === "") continue;
+    for (const entry of toIterable(rawValue)) {
+      if (entry === undefined || entry === null) continue;
+      searchParams.append(key, String(entry));
+    }
+  }
+  if (typeof delay === "number" && Number.isFinite(delay) && !searchParams.has("delay")) {
+    searchParams.set("delay", String(delay));
+  }
+  return searchParams;
+};
+
+const buildStubUrl = ({ resource, id, query, delay }) => {
+  let path = `/api/stubs/${encodeURIComponent(resource)}`;
+  if (id !== undefined && id !== null && id !== "") {
+    path += `/${encodeURIComponent(String(id))}`;
+  }
+  const searchParams = createSearchParams(query, delay);
+  const queryString = searchParams.toString();
+  return queryString ? `${path}?${queryString}` : path;
+};
+
+const shouldUseHttpTransport = (options = {}) => import.meta.client && options.transport !== "local";
+
+const performHttpStubRequest = async (options) => {
+  const { resource, method = "GET", id, payload, delay, query, params } = options;
+  const normalizedMethod = method.toUpperCase();
+  const url = buildStubUrl({ resource, id, query: query ?? params, delay });
+  const hasBody = METHODS_WITH_BODY.has(normalizedMethod);
+
+  const headers = {};
+  let body;
+  if (hasBody && payload !== undefined) {
+    headers["Content-Type"] = "application/json";
+    body = JSON.stringify(payload);
+  }
+
+  try {
+    const response = await fetch(url, {
+      method: normalizedMethod,
+      credentials: "same-origin",
+      headers,
+      body,
+    });
+
+    let parsed = null;
+    if (response.status !== 204) {
+      const text = await response.text();
+      parsed = text ? JSON.parse(text) : null;
+    }
+
+    if (!response.ok) {
+      const message = parsed?.error || response.statusText || "Stub request failed";
+      const details = parsed?.details || {};
+      throw new StubApiError(response.status, message, details);
+    }
+
+    return {
+      ok: true,
+      status: response.status,
+      statusText: response.statusText,
+      data: parsed?.data ?? null,
+      meta: parsed?.meta ?? {},
+      duration: parsed?.duration ?? null,
+    };
+  } catch (error) {
+    throw toStubError(error);
+  }
+};
+
+const processStubRequest = async (options) => {
+  const { resource, id, payload, delay, query, params } = options;
+  const method = (options.method || "GET").toUpperCase();
+  const state = await ensureResourceState(resource);
+  const config = state.config;
+  const meta = { id, payload, delay, query: query ?? params };
+
+  switch (method) {
+    case "GET":
+      return perform(
+        resource,
+        method,
+        async () => {
+          if (id != null) {
+            assertCollection(state, "retrieve");
+            const pk = config.primaryKey || DEFAULT_COLLECTION_PRIMARY_KEY;
+            const item = state.data.find((entry) => String(entry?.[pk]) === String(id));
+            if (!item) {
+              throw new StubApiError(404, `Item ${id} not found in "${resource}"`);
+            }
+            return {
+              data: item,
+              meta: { version: state.version, resource, id },
+            };
+          }
+          return {
+            data: state.data,
+            meta: { version: state.version, resource },
+          };
+        },
+        meta,
+      );
+
+    case "POST":
+      ensureMutable(config, method);
+      return perform(
+        resource,
+        method,
+        async () => {
+          if (config.type === "singleton") {
+            if (typeof payload !== "object" || payload === null) {
+              throw new StubApiError(400, "Payload must be an object");
+            }
+            state.data = { ...structuredCloneSafe(payload) };
+            state.version += 1;
+            return {
+              status: 201,
+              data: state.data,
+              meta: { version: state.version, resource },
+            };
+          }
+
+          assertCollection(state, "create");
+          const pk = config.primaryKey || DEFAULT_COLLECTION_PRIMARY_KEY;
+          const records = state.data;
+          const nextId = payload?.[pk] ?? generateIdentifier(records, pk);
+          const record = { ...structuredCloneSafe(payload), [pk]: nextId };
+
+          records.push(record);
+          state.version += 1;
+          return {
+            status: 201,
+            data: record,
+            meta: { version: state.version, resource, id: nextId },
+          };
+        },
+        meta,
+      );
+
+    case "PUT":
+    case "PATCH":
+      ensureMutable(config, method);
+      return perform(
+        resource,
+        method,
+        async () => {
+          if (config.type === "singleton") {
+            if (typeof payload !== "object" || payload === null) {
+              throw new StubApiError(400, "Payload must be an object");
+            }
+            state.data = { ...state.data, ...structuredCloneSafe(payload) };
+            state.version += 1;
+            return {
+              status: 200,
+              data: state.data,
+              meta: { version: state.version, resource },
+            };
+          }
+
+          assertCollection(state, "update");
+          const pk = config.primaryKey || DEFAULT_COLLECTION_PRIMARY_KEY;
+          const records = state.data;
+          const targetIndex = records.findIndex((entry) => String(entry?.[pk]) === String(id));
+
+          if (targetIndex === -1) {
+            throw new StubApiError(404, `Item ${id} not found in "${resource}"`);
+          }
+
+          const updated = { ...records[targetIndex], ...structuredCloneSafe(payload) };
+          records[targetIndex] = updated;
+          state.version += 1;
+          return {
+            status: 200,
+            data: updated,
+            meta: { version: state.version, resource, id },
+          };
+        },
+        meta,
+      );
+
+    case "DELETE":
+      ensureMutable(config, method);
+      return perform(
+        resource,
+        method,
+        async () => {
+          assertCollection(state, "delete");
+          const pk = config.primaryKey || DEFAULT_COLLECTION_PRIMARY_KEY;
+          const records = state.data;
+          const targetIndex = records.findIndex((entry) => String(entry?.[pk]) === String(id));
+
+          if (targetIndex === -1) {
+            throw new StubApiError(404, `Item ${id} not found in "${resource}"`);
+          }
+
+          const [removed] = records.splice(targetIndex, 1);
+          state.version += 1;
+          return {
+            status: 204,
+            data: null,
+            meta: { version: state.version, resource, id, removed: structuredCloneSafe(removed) },
+          };
+        },
+        meta,
+      );
+
+    default:
+      throw new StubApiError(405, `Unsupported method "${method}"`);
+  }
+};
+
 const stubClient = {
   async list(resource, options = {}) {
     return this.request({
@@ -282,144 +504,16 @@ const stubClient = {
     return this.list(resource, { delay: 0 });
   },
 
-  async request({ resource, method = "GET", id, payload, delay }) {
-    method = method.toUpperCase();
-    const state = await ensureResourceState(resource);
-    const config = state.config;
-    const meta = { id, payload, delay };
-
-    switch (method) {
-      case "GET":
-        return perform(
-          resource,
-          method,
-          async () => {
-            if (id != null) {
-              assertCollection(state, "retrieve");
-              const pk = config.primaryKey || DEFAULT_COLLECTION_PRIMARY_KEY;
-              const item = state.data.find((entry) => String(entry?.[pk]) === String(id));
-              if (!item) {
-                throw new StubApiError(404, `Item ${id} not found in "${resource}"`);
-              }
-              return {
-                data: item,
-                meta: { version: state.version, resource, id },
-              };
-            }
-            return {
-              data: state.data,
-              meta: { version: state.version, resource },
-            };
-          },
-          meta,
-        );
-
-      case "POST":
-        ensureMutable(config, method);
-        return perform(
-          resource,
-          method,
-          async () => {
-            if (config.type === "singleton") {
-              if (typeof payload !== "object" || payload === null) {
-                throw new StubApiError(400, "Payload must be an object");
-              }
-              state.data = { ...structuredCloneSafe(payload) };
-              state.version += 1;
-              return {
-                status: 201,
-                data: state.data,
-                meta: { version: state.version, resource },
-              };
-            }
-
-            assertCollection(state, "create");
-            const pk = config.primaryKey || DEFAULT_COLLECTION_PRIMARY_KEY;
-            const records = state.data;
-            const nextId = payload?.[pk] ?? generateIdentifier(records, pk);
-            const record = { ...structuredCloneSafe(payload), [pk]: nextId };
-
-            records.push(record);
-            state.version += 1;
-            return {
-              status: 201,
-              data: record,
-              meta: { version: state.version, resource, id: nextId },
-            };
-          },
-          meta,
-        );
-
-      case "PUT":
-      case "PATCH":
-        ensureMutable(config, method);
-        return perform(
-          resource,
-          method,
-          async () => {
-            if (config.type === "singleton") {
-              if (typeof payload !== "object" || payload === null) {
-                throw new StubApiError(400, "Payload must be an object");
-              }
-              state.data = { ...state.data, ...structuredCloneSafe(payload) };
-              state.version += 1;
-              return {
-                status: 200,
-                data: state.data,
-                meta: { version: state.version, resource },
-              };
-            }
-
-            assertCollection(state, "update");
-            const pk = config.primaryKey || DEFAULT_COLLECTION_PRIMARY_KEY;
-            const records = state.data;
-            const targetIndex = records.findIndex((entry) => String(entry?.[pk]) === String(id));
-
-            if (targetIndex === -1) {
-              throw new StubApiError(404, `Item ${id} not found in "${resource}"`);
-            }
-
-            const updated = { ...records[targetIndex], ...structuredCloneSafe(payload) };
-            records[targetIndex] = updated;
-            state.version += 1;
-            return {
-              status: 200,
-              data: updated,
-              meta: { version: state.version, resource, id },
-            };
-          },
-          meta,
-        );
-
-      case "DELETE":
-        ensureMutable(config, method);
-        return perform(
-          resource,
-          method,
-          async () => {
-            assertCollection(state, "delete");
-            const pk = config.primaryKey || DEFAULT_COLLECTION_PRIMARY_KEY;
-            const records = state.data;
-            const targetIndex = records.findIndex((entry) => String(entry?.[pk]) === String(id));
-
-            if (targetIndex === -1) {
-              throw new StubApiError(404, `Item ${id} not found in "${resource}"`);
-            }
-
-            const [removed] = records.splice(targetIndex, 1);
-            state.version += 1;
-            return {
-              status: 204,
-              data: null,
-              meta: { version: state.version, resource, id, removed: structuredCloneSafe(removed) },
-            };
-          },
-          meta,
-        );
-
-      default:
-        throw new StubApiError(405, `Unsupported method "${method}"`);
+  async request(options = {}) {
+    if (!options?.resource) {
+      throw new StubApiError(400, "Stub request requires a resource");
     }
+
+    if (shouldUseHttpTransport(options)) {
+      return performHttpStubRequest(options);
+    }
+
+    return processStubRequest(options);
   },
 };
 
@@ -444,5 +538,7 @@ export const useStubResource = (resource, options = {}) => {
     default: () => structuredCloneSafe(defaultValue ?? null),
   });
 };
+
+export const executeStubRequest = (options) => processStubRequest(options);
 
 export { StubApiError };
