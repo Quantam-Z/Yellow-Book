@@ -21,30 +21,21 @@ export async function useAgencyData() {
   const slugQuery = computed(() => toStringQuery(route.query.slug || ''));
   const idQuery = computed(() => toStringQuery(route.query.id || ''));
 
-  const {
-    ensureLoaded,
-    getBySlug,
-    getById,
-    getByTitle,
-  } = useDirectoryListings();
+  const { ensureLoaded, getBySlug, getById, getByTitle } = useDirectoryListings();
 
-  await ensureLoaded();
+  const companiesResource = useStubResource('companies');
+  const companyDetailResource = useStubResource('agencyCompany');
+  const profileResource = useStubResource('agencyProfile');
 
-  const { data: companiesData, pending: companiesPending, error: companiesError } = await useStubResource(
-    'companies',
-  );
+  const ensurePromise = ensureLoaded();
 
-  const {
-    data: companyDetailData,
-    pending: companyDetailPending,
-    error: companyDetailError,
-  } = await useStubResource('agencyCompany');
+  const [
+    { data: companiesData, pending: companiesPending, error: companiesError },
+    { data: companyDetailData, pending: companyDetailPending, error: companyDetailError },
+    { data: profileData, pending: profilePending, error: profileError },
+  ] = await Promise.all([companiesResource, companyDetailResource, profileResource]);
 
-  const {
-    data: profileData,
-    pending: profilePending,
-    error: profileError,
-  } = await useStubResource('agencyProfile');
+  await ensurePromise;
 
   const companies = computed<StubCompany[]>(() =>
     Array.isArray(companiesData.value) ? (companiesData.value as StubCompany[]) : [],
