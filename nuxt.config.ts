@@ -56,39 +56,41 @@ export default defineNuxtConfig({
     configFile: "./src/config/formkit.config.js",
   },
 
-  // ✅ Tailwind customizations handled in tailwind.config.js
+    // ✅ Tailwind customizations handled in tailwind.config.js
 
-  // ✅ PWA setup (auto handled by @kevinmarrec/nuxt-pwa)
-  pwa: {
-    meta: {
-      title: metaInfo.siteName,
-      ogSiteName: metaInfo.siteName,
-      description: metaInfo.siteDescription,
-      author: "Author.",
-      theme_color: "#ffffff",
+    // ✅ PWA setup (auto handled by @kevinmarrec/nuxt-pwa)
+    pwa: {
+      meta: {
+        title: metaInfo.siteName,
+        ogSiteName: metaInfo.siteName,
+        description: metaInfo.siteDescription,
+        author: "Author.",
+        theme_color: "#ffffff",
+      },
+      manifest: {
+        name: metaInfo.siteName,
+        short_name: "Yellow-Book",
+        lang: "en",
+        background_color: "#ffffff",
+        display: "standalone",
+        start_url: "/",
+        icons: [], // Add icons later if needed
+      },
+      workbox: { enabled: false },
     },
-    manifest: {
-      name: metaInfo.siteName,
-      short_name: "Yellow-Book",
-      lang: "en",
-      background_color: "#ffffff",
-      display: "standalone",
-      start_url: "/",
-      icons: [], // Add icons later if needed
-    },
-    workbox: { enabled: false },
-  },
 
-  // ✅ Runtime config (Vercel env support)
-  runtimeConfig: {
-    public: {
-      gtagId: "G-HXRZKQV1EN",
-      siteName: "Yellow-Book",
-      apiBaseUrl:
-        process.env.NUXT_PUBLIC_API_BASE_URL ??
-        "http://127.0.0.1:8000/api/", // fallback for local dev
+    // ✅ Runtime config (Vercel env support)
+    runtimeConfig: {
+      public: {
+        gtagId: "G-HXRZKQV1EN",
+        siteName: "Yellow-Book",
+        /**
+         * Default to the local Nuxt server handlers so the app works with dummy APIs out of the box.
+         * Supply NUXT_PUBLIC_API_BASE_URL to point at a real backend (ensure it ends with a slash).
+         */
+        apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL ?? "/api/",
+      },
     },
-  },
 
   // ✅ Vue compiler options (for custom directives, e.g. motion)
   vue: {
