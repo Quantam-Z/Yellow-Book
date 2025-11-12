@@ -4,7 +4,15 @@
 
     <div class="w-full relative rounded-lg bg-white/80 backdrop-blur-sm flex items-center px-4 py-3 gap-3 mb-4">
       <Search class="w-5 h-5 text-gray-400" />
-      <span class="text-gray-600 capitalize">Search companies by name or category</span>
+      <input
+        type="search"
+        v-model="searchTerm"
+        @keydown.enter.prevent="handleSearch"
+        placeholder="Search companies by name or category"
+        class="flex-1 min-w-0 bg-transparent text-gray-600 placeholder:text-gray-500 outline-none border-none focus:outline-none focus:ring-0"
+        aria-label="Search companies by name or category"
+        autocomplete="off"
+      />
     </div>
 
     <div class="w-full flex flex-col gap-4 text-gray-800">
@@ -64,8 +72,9 @@
 </template>
 
 <script setup>
-import { computed, watch } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { Search, Building, Clock, XCircle, Star, Hourglass, Users } from "lucide-vue-next";
+import { useRouter } from 'vue-router';
 import { useStubResource } from '~/services/stubClient'
 
 const defaultStats = {
@@ -79,12 +88,25 @@ const defaultStats = {
 }
 
 const nuxtApp = useNuxtApp()
+const router = useRouter()
+const searchTerm = ref('')
 
 const { data: statsData, error: statsError } = await useStubResource('adminStats', {
   default: defaultStats,
 })
 
 const adminStats = computed(() => statsData.value || defaultStats)
+
+const handleSearch = () => {
+  if (!import.meta.client) return
+  const query = searchTerm.value.trim()
+  const targetRoute = { path: '/dashboard/admin/manage-companies' }
+  if (query) {
+    targetRoute.query = { search: query }
+  }
+
+  router.push(targetRoute).catch(() => {})
+}
 
 watch(statsError, (err) => {
   if (err) {

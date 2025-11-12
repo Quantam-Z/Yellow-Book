@@ -474,6 +474,7 @@
 
 <script setup>
 import { ref, computed, defineAsyncComponent, watchEffect, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { Search as SearchIcon, Eye as EyeIcon, CheckCircle as CheckCircleIcon, ChevronDown as ChevronDownIcon, ChevronLeft as ChevronLeftIcon, ChevronRight as ChevronRightIcon, Filter as FilterIcon, Phone as PhoneIcon, Globe as GlobeIcon, MoreHorizontal } from "lucide-vue-next";
 import { getStatusClass, getStatusShort } from '~/composables/useStatusClass'
 import { useSelection } from '~/composables/useSelection'
@@ -511,6 +512,16 @@ const filters = ref({
 const { selectAll, toggleSelection, toggleAll } = useSelection(companies); 
 const stubClient = useStubClient()
 const nuxtApp = useNuxtApp()
+const route = useRoute()
+const router = useRouter()
+const syncingRouteSearch = ref(false)
+
+const normalizeSearchParam = (value) => {
+  if (Array.isArray(value)) {
+    return value[0] ?? '';
+  }
+  return typeof value === 'string' ? value : '';
+};
 
 const toast = (type, message) => {
   if (!import.meta.client) return
@@ -573,6 +584,39 @@ const handleFilterChange = () => {
   mobileActionsIndex.value = null;
   expandedCompanyId.value = null;
 };
+
+const applyRouteSearch = (value) => {
+  const normalized = normalizeSearchParam(value)
+  if (normalized === searchQuery.value) return
+  syncingRouteSearch.value = true
+  searchQuery.value = normalized
+  handleFilterChange()
+  syncingRouteSearch.value = false
+};
+
+applyRouteSearch(route.query.search);
+
+if (import.meta.client) {
+  watch(() => route.query.search, (newValue) => {
+    applyRouteSearch(newValue);
+  });
+
+  watch(searchQuery, (newValue) => {
+    if (syncingRouteSearch.value) return;
+    const nextValue = normalizeSearchParam(newValue);
+    const current = normalizeSearchParam(route.query.search);
+    if (nextValue === current) return;
+
+    const nextQuery = { ...route.query };
+    if (nextValue.trim()) {
+      nextQuery.search = nextValue;
+    } else {
+      delete nextQuery.search;
+    }
+
+    router.replace({ query: nextQuery }).catch(() => {});
+  });
+}
 
 const getDisplayIndex = (indexInPage) => {
     const trueIndex = (currentPage.value - 1) * itemsPerPage + indexInPage + 1;
