@@ -92,15 +92,15 @@
             <div class="relative leading-[160%] capitalize font-medium text-right">{{ maxPrice }}$</div>
           </div>
           <div class="self-stretch relative px-2">
-            <input 
-              type="range" 
-              :min="minPrice" 
-              :max="maxPrice" 
-              v-model="currentPrice"
-              @input="handlePriceChange"
-              class="w-full relative max-w-full overflow-hidden h-[18px] shrink-0 custom-slider"
-              :style="{'--progress': `${((currentPrice - minPrice) / (maxPrice - minPrice)) * 100}%`}"
-            />
+              <input 
+                type="range" 
+                :min="minPrice" 
+                :max="maxPrice" 
+                v-model.number="currentPrice"
+                @input="handlePriceChange"
+                class="w-full relative max-w-full overflow-hidden h-[18px] shrink-0 custom-slider"
+                :style="{'--progress': priceProgress}"
+              />
             <div class="w-8 absolute top-[-25px] left-1/2 transform -translate-x-1/2 shadow-[0px_2px_4px_rgba(0,_0,_0,_0.1)] flex flex-col items-center z-[2] text-[12px] text-yellow-500">
               <div class="self-stretch rounded-[4px] bg-white flex items-center justify-center p-1">
                 <b class="relative leading-[170%] capitalize">{{ currentPrice }}</b>
@@ -622,18 +622,41 @@ export default {
         };
       });
 
-      const minPrice = computed(() => priceBounds.value.min || 0);
-      const maxPrice = computed(() => priceBounds.value.max || 0);
+        const minPrice = computed(() => {
+          const value = Number(priceBounds.value.min);
+          return Number.isFinite(value) ? value : 0;
+        });
+        const maxPrice = computed(() => {
+          const value = Number(priceBounds.value.max);
+          return Number.isFinite(value) ? value : 0;
+        });
 
-      watch(
-        priceBounds,
-        (bounds) => {
-          const nextMax = bounds.max || 0;
-          currentPrice.value = nextMax;
-          toggleFilter('maxPrice', Infinity);
-        },
-        { immediate: true }
-      );
+        const priceProgress = computed(() => {
+          const min = minPrice.value;
+          const max = maxPrice.value;
+          const current = Number(currentPrice.value);
+          if (!(max > min) || !Number.isFinite(current)) {
+            return '0%';
+          }
+          const ratio = ((current - min) / (max - min)) * 100;
+          const clamped = Math.max(0, Math.min(100, ratio));
+          return `${clamped}%`;
+        });
+
+        watch(
+          priceBounds,
+          (bounds) => {
+            const max = Number(bounds.max);
+            if (Number.isFinite(max) && max > 0) {
+              currentPrice.value = max;
+            } else {
+              const min = Number(bounds.min);
+              currentPrice.value = Number.isFinite(min) ? min : 0;
+            }
+            toggleFilter('maxPrice', Infinity);
+          },
+          { immediate: true }
+        );
 
       const clampRating = (value) => {
       const num = Number(value);
@@ -648,15 +671,32 @@ export default {
       };
 
     // Methods
-      const handlePriceChange = () => {
-        const bounds = priceBounds.value;
-        if (!bounds.max || currentPrice.value >= bounds.max) {
-          toggleFilter('maxPrice', Infinity);
-        } else {
-          toggleFilter('maxPrice', currentPrice.value);
-        }
-        currentPage.value = 1;
-      };
+        const handlePriceChange = () => {
+          const { min, max } = priceBounds.value;
+          const numericMax = Number(max);
+          const numericMin = Number(min);
+          const sliderValue = Number(currentPrice.value);
+
+          if (!Number.isFinite(numericMax) || numericMax <= 0) {
+            toggleFilter('maxPrice', Infinity);
+            currentPrice.value = Number.isFinite(sliderValue) ? sliderValue : 0;
+            currentPage.value = 1;
+            return;
+          }
+
+          const lowerBound = Number.isFinite(numericMin) ? numericMin : 0;
+          let nextValue = Number.isFinite(sliderValue) ? sliderValue : numericMax;
+          if (nextValue < lowerBound) nextValue = lowerBound;
+          if (nextValue > numericMax) nextValue = numericMax;
+
+          currentPrice.value = nextValue;
+          if (nextValue >= numericMax) {
+            toggleFilter('maxPrice', Infinity);
+          } else {
+            toggleFilter('maxPrice', nextValue);
+          }
+          currentPage.value = 1;
+        };
 
     const setEmergencyService = (value) => {
       toggleFilter('emergencyService', value);
@@ -688,32 +728,39 @@ export default {
       currentPage.value = 1;
     };
 
-    const removeActiveFilter = (type, value) => {
-      removeFilter(type, value);
-      if (type === 'maxPrice') {
-        currentPrice.value = maxPrice.value;
-      }
-    };
-
-      const clearAllFilters = () => {
-        clearFilters();
-        currentPrice.value = maxPrice.value;
-        showMobileFilters.value = false;
-
-        const next = { ...route.query };
-        let changed = false;
-        if (next.q) {
-          delete next.q;
-          changed = true;
-        }
-        if (next.page) {
-          delete next.page;
-          changed = true;
-        }
-        if (changed) {
-          navigateTo({ query: next }, { replace: true });
+      const removeActiveFilter = (type, value) => {
+        removeFilter(type, value);
+        if (type === 'maxPrice') {
+          const resetValue = Number(maxPrice.value);
+          currentPrice.value = Number.isFinite(resetValue) && resetValue > 0
+            ? resetValue
+            : Number(minPrice.value) || 0;
         }
       };
+
+        const clearAllFilters = () => {
+          clearFilters();
+          toggleFilter('maxPrice', Infinity);
+          const resetValue = Number(maxPrice.value);
+          currentPrice.value = Number.isFinite(resetValue) && resetValue > 0
+            ? resetValue
+            : Number(minPrice.value) || 0;
+          showMobileFilters.value = false;
+
+          const next = { ...route.query };
+          let changed = false;
+          if (next.q) {
+            delete next.q;
+            changed = true;
+          }
+          if (next.page) {
+            delete next.page;
+            changed = true;
+          }
+          if (changed) {
+            navigateTo({ query: next }, { replace: true });
+          }
+        };
 
     const toggleSortDropdown = (event) => {
       if (event) event.stopPropagation();
@@ -764,11 +811,15 @@ export default {
         { immediate: true }
       );
 
-      watch(normalizedCategoryName, () => {
-        clearFilters();
-        currentPrice.value = maxPrice.value;
-        currentPage.value = 1;
-      });
+        watch(normalizedCategoryName, () => {
+          clearFilters();
+          toggleFilter('maxPrice', Infinity);
+          const resetValue = Number(maxPrice.value);
+          currentPrice.value = Number.isFinite(resetValue) && resetValue > 0
+            ? resetValue
+            : Number(minPrice.value) || 0;
+          currentPage.value = 1;
+        });
 
       watch(totalPages, (total) => {
         if (currentPage.value > total) {
@@ -796,35 +847,36 @@ export default {
         }
       });
 
-    return {
-      currentCategory,
-      loading,
-      minPrice,
-      maxPrice,
-      currentPrice,
-      showSortOptions,
-      showMobileFilters,
-      ratings,
-      hasActiveFilters,
-      activeFiltersDisplay,
-      displayedListings,
-      paginatedListings,
-      currentPage,
-      totalPages,
-      filters,
-      handlePriceChange,
-      setEmergencyService,
-      toggleService,
-      toggleSpecialization,
-      toggleRating,
-      removeActiveFilter,
-      clearAllFilters,
-      toggleSortDropdown,
-      applyMobileFilters,
-      getStatusClass,
-      clampRating,
-      formatRating
-    };
+      return {
+        currentCategory,
+        loading,
+        minPrice,
+        maxPrice,
+        currentPrice,
+        priceProgress,
+        showSortOptions,
+        showMobileFilters,
+        ratings,
+        hasActiveFilters,
+        activeFiltersDisplay,
+        displayedListings,
+        paginatedListings,
+        currentPage,
+        totalPages,
+        filters,
+        handlePriceChange,
+        setEmergencyService,
+        toggleService,
+        toggleSpecialization,
+        toggleRating,
+        removeActiveFilter,
+        clearAllFilters,
+        toggleSortDropdown,
+        applyMobileFilters,
+        getStatusClass,
+        clampRating,
+        formatRating
+      };
   }
 };
 </script>
