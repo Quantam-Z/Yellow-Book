@@ -313,7 +313,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, computed, onMounted, onUnmounted, watch, watchEffect } from 'vue';
+  import { ref, computed, watch, watchEffect } from 'vue';
   import { MessageSquare, ChevronDown, ExternalLink, X, Star } from 'lucide-vue-next';
   import { Teleport } from 'vue';
   
@@ -321,6 +321,7 @@
   import CompanyReview from '@/components/modal/companyReview.vue'; 
   import RatingStars from '@/components/common/RatingStars.vue';
   import { useStubClient, useStubResource } from '~/services/stubClient';
+  import { useClientEventListener } from '@/composables/useClientEventListener';
 
   interface CompanyResponse {
     name: string;
@@ -422,21 +423,16 @@
     }
   });
 
-  onMounted(() => {
-    const checkScreenSize = () => {
-      const width = window.innerWidth;
-      // Tailwind's default breakpoints: sm: 640px, md: 768px, lg: 1024px
-      isMobile.value = width < 640;
-      isTablet.value = width >= 640 && width < 1024;
-      isDesktop.value = width >= 1024;
-    };
-    checkScreenSize();
-    window.addEventListener('resize', checkScreenSize);
+  const checkScreenSize = () => {
+    if (!import.meta.client) return;
+    const width = window.innerWidth;
+    // Tailwind's default breakpoints: sm: 640px, md: 768px, lg: 1024px
+    isMobile.value = width < 640;
+    isTablet.value = width >= 640 && width < 1024;
+    isDesktop.value = width >= 1024;
+  };
 
-    onUnmounted(() => {
-      window.removeEventListener('resize', checkScreenSize);
-    });
-  });
+  useClientEventListener<Event>(() => window, 'resize', checkScreenSize, { passive: true, immediate: true });
 
 
   const totalReviews = computed(() => reviews.value.length);

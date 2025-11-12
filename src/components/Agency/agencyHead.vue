@@ -39,6 +39,10 @@ const router = useRouter();
 const agencyName = computed(() => props.agencyName || '');
 
 const goBack = () => {
+  if (!import.meta.client) {
+    router.push('/');
+    return;
+  }
   if (window.history.length > 1) {
     router.back();
   } else {

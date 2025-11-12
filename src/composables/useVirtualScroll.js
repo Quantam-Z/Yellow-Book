@@ -1,4 +1,5 @@
-import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { ref, computed } from 'vue';
+import { useClientEventListener } from '@/composables/useClientEventListener';
 
 export function useVirtualScroll(items, itemHeight = 200, buffer = 3) {
   const scrollTop = ref(0);
@@ -33,20 +34,14 @@ export function useVirtualScroll(items, itemHeight = 200, buffer = 3) {
   };
 
   const updateContainerHeight = () => {
+    if (!import.meta.client) return;
     // Calculate available height based on viewport minus header/footer
     const headerHeight = 80;
     const footerHeight = 60;
     containerHeight.value = window.innerHeight - headerHeight - footerHeight;
   };
 
-  onMounted(() => {
-    updateContainerHeight();
-    window.addEventListener('resize', updateContainerHeight);
-  });
-
-  onUnmounted(() => {
-    window.removeEventListener('resize', updateContainerHeight);
-  });
+  useClientEventListener(() => window, 'resize', updateContainerHeight, { passive: true, immediate: true });
 
   return {
     visibleItems,
