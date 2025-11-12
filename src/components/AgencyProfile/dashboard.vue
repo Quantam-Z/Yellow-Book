@@ -83,147 +83,224 @@
           </div>
         </div>
 
-        <div class="w-full">
-          <div 
-            v-for="(review, index) in reviews" 
-            :key="index"
-            class="w-full border-b border-gainsboro border-solid border-[1px] flex items-center p-3 gap-4 hover:bg-gray-50 transition-colors last:border-b-0"
-          >
-            <div class="w-20 flex items-center justify-center p-2">
-              <div class="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                <span class="text-white font-bold text-xs">{{ getInitials(review.reviewer) }}</span>
-              </div>
-            </div>
-            
-            <div class="w-48 flex items-center justify-start p-2">
-              <div class="text-gray-800 text-sm capitalize truncate text-left">{{ review.reviewer }}</div>
-            </div>
-            
-            <div class="w-20 flex items-center justify-center p-2">
-              <div class="flex items-center gap-1">
-                <Star
-                  v-for="i in 5"
-                  :key="i"
-                  class="h-4 w-4"
-                  :class="i <= review.rating ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300'"
-                />
-              </div>
-            </div>
-            
-            <div class="w-24 flex items-center justify-center p-2">
-              <div class="text-gray-600 text-sm">{{ review.likes || '0' }}</div>
-            </div>
-            
-            <div class="w-28 flex items-center justify-center p-2">
-              <div class="text-gray-600 text-sm">{{ review.shares || '0' }}</div>
-            </div>
-            
-            <div class="w-24 flex items-center justify-start p-2">
-              <div class="text-gray-500 text-sm text-left">{{ formatDate(review.date) }}</div>
-            </div>
-            
-            <div class="flex-1 flex items-center justify-between p-2 gap-2">
-              <div class="text-gray-600 text-sm text-left line-clamp-2 pr-2">"{{ review.comment }}"</div> 
-              <span
-                class="text-deepskyblue font-semibold text-sm hover:text-blue-600 transition-colors cursor-pointer whitespace-nowrap flex-shrink-0"
-                @click="viewFullReview(review)"
-              >
-                Full view
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="hidden md:block lg:hidden w-full">
-        <div class="space-y-3">
-          <div 
-            v-for="(review, index) in reviews" 
-            :key="index"
-            class="rounded border-gainsboro border-solid border-[1px] p-3 bg-white hover:bg-gray-50 transition-colors"
-          >
-            <div class="flex items-center justify-between mb-3">
-              <div class="flex items-center gap-3">
+          <div class="w-full">
+            <div
+              v-for="(review, index) in reviews"
+              :key="index"
+              class="w-full border-b border-gainsboro border-solid border-[1px] flex items-center p-3 gap-4 hover:bg-gray-50 transition-colors last:border-b-0"
+            >
+              <div class="w-20 flex items-center justify-center p-2">
                 <div class="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
                   <span class="text-white font-bold text-xs">{{ getInitials(review.reviewer) }}</span>
                 </div>
-                <div>
-                  <div class="font-medium text-gray-800 text-sm text-left">{{ review.reviewer }}</div>
-                  <div class="text-gray-500 text-xs text-left">{{ formatDate(review.date) }}</div>
+              </div>
+
+              <div class="w-48 flex items-center justify-start p-2">
+                <div class="text-gray-800 text-sm capitalize truncate text-left">{{ review.reviewer }}</div>
+              </div>
+
+              <div class="w-20 flex items-center justify-center p-2">
+                <div class="flex items-center gap-1">
+                  <Star
+                    v-for="i in 5"
+                    :key="i"
+                    class="h-4 w-4"
+                    :class="i <= review.rating ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300'"
+                  />
                 </div>
               </div>
-              <div class="flex items-center gap-1">
-                <Star
-                  v-for="i in 5"
-                  :key="i"
-                  class="h-3 w-3"
-                  :class="i <= review.rating ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300'"
-                />
+
+              <div class="w-24 flex items-center justify-center p-2">
+                <div class="text-gray-600 text-sm">{{ review.likes || '0' }}</div>
+              </div>
+
+              <div class="w-28 flex items-center justify-center p-2">
+                <div class="text-gray-600 text-sm">{{ review.shares || '0' }}</div>
+              </div>
+
+              <div class="w-24 flex items-center justify-start p-2">
+                <div class="text-gray-500 text-sm text-left">{{ formatDate(review.date) }}</div>
+              </div>
+
+              <div class="flex-1 flex items-center justify-between p-2 gap-2">
+                <div class="text-gray-600 text-sm text-left line-clamp-2 pr-2">"{{ review.comment }}"</div>
+                <button
+                  type="button"
+                  class="text-deepskyblue font-semibold text-sm hover:text-blue-600 transition-colors cursor-pointer whitespace-nowrap flex-shrink-0 bg-transparent border-0 p-0"
+                  @click="viewFullReview(review)"
+                >
+                  Full view
+                </button>
               </div>
             </div>
-            <div class="flex justify-start items-center mb-2">
-              <div class="text-gray-600 text-xs text-left">
-                <span class="mr-2">{{ review.likes || '0' }} likes</span> 
-                <span>{{ review.shares || '0' }} shares</span>
-              </div>
-            </div>
-            <p class="text-gray-600 text-sm line-clamp-2 mb-2 text-left">"{{ review.comment }}"</p>
-            <span
-              class="text-deepskyblue font-semibold text-sm hover:text-blue-600 transition-colors cursor-pointer whitespace-nowrap text-left block w-full"
-              @click="viewFullReview(review)"
-            >
-              Full view
-            </span>
           </div>
-        </div>
       </div>
 
-      <div class="block md:hidden w-full">
-        <div class="space-y-3">
-          <div 
-            v-for="(review, index) in reviews" 
-            :key="index"
-            class="rounded border-gainsboro border-solid border-[1px] p-3 bg-white hover:bg-gray-50 transition-colors"
-          >
-            <div class="flex items-start justify-between mb-2">
-              <div class="flex items-center gap-2">
-                <div class="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                  <span class="text-white font-bold text-xs">{{ getInitials(review.reviewer) }}</span>
+        <div class="hidden md:block lg:hidden w-full">
+          <div class="space-y-3">
+            <div
+              v-for="(review, index) in reviews"
+              :key="index"
+              class="rounded border-gainsboro border-solid border-[1px] p-3 bg-white hover:bg-gray-50 transition-colors"
+            >
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-3">
+                  <div class="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                    <span class="text-white font-bold text-xs">{{ getInitials(review.reviewer) }}</span>
+                  </div>
+                  <div>
+                    <div class="font-medium text-gray-800 text-sm text-left">{{ review.reviewer }}</div>
+                    <div class="text-gray-500 text-xs text-left">{{ formatDate(review.date) }}</div>
+                  </div>
                 </div>
-                <div>
-                  <div class="font-medium text-gray-800 text-sm text-left">{{ review.reviewer }}</div>
-                  <div class="text-gray-500 text-xs text-left">{{ formatDate(review.date) }}</div>
+                <div class="flex items-center gap-1">
+                  <Star
+                    v-for="i in 5"
+                    :key="i"
+                    class="h-3 w-3"
+                    :class="i <= review.rating ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300'"
+                  />
                 </div>
               </div>
-              <div class="flex items-center gap-1">
-                <Star
-                  v-for="i in 5"
-                  :key="i"
-                  class="h-3 w-3"
-                  :class="i <= review.rating ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300'"
-                />
+              <div class="flex justify-start items-center mb-2">
+                <div class="text-gray-600 text-xs text-left">
+                  <span class="mr-2">{{ review.likes || '0' }} likes</span>
+                  <span>{{ review.shares || '0' }} shares</span>
+                </div>
               </div>
-            </div>
-            <p class="text-gray-600 text-xs line-clamp-2 mb-2 text-left">"{{ review.comment }}"</p>
-            <div class="flex justify-start items-center text-xs text-gray-500 gap-3">
-              <span>{{ review.likes || '0' }} likes</span>
-              <span>{{ review.shares || '0' }} shares</span>
-              <span
-                class="text-deepskyblue font-semibold cursor-pointer text-right ml-auto"
+              <p class="text-gray-600 text-sm line-clamp-2 mb-2 text-left">"{{ review.comment }}"</p>
+              <button
+                type="button"
+                class="text-deepskyblue font-semibold text-sm hover:text-blue-600 transition-colors cursor-pointer whitespace-nowrap text-left block w-full bg-transparent border-0 p-0"
                 @click="viewFullReview(review)"
               >
                 Full view
-              </span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="block md:hidden w-full">
+          <div class="space-y-3">
+            <div
+              v-for="(review, index) in reviews"
+              :key="index"
+              class="rounded border-gainsboro border-solid border-[1px] p-3 bg-white hover:bg-gray-50 transition-colors"
+            >
+              <div class="flex items-start justify-between mb-2">
+                <div class="flex items-center gap-2">
+                  <div class="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                    <span class="text-white font-bold text-xs">{{ getInitials(review.reviewer) }}</span>
+                  </div>
+                  <div>
+                    <div class="font-medium text-gray-800 text-sm text-left">{{ review.reviewer }}</div>
+                    <div class="text-gray-500 text-xs text-left">{{ formatDate(review.date) }}</div>
+                  </div>
+                </div>
+                <div class="flex items-center gap-1">
+                  <Star
+                    v-for="i in 5"
+                    :key="i"
+                    class="h-3 w-3"
+                    :class="i <= review.rating ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300'"
+                  />
+                </div>
+              </div>
+              <p class="text-gray-600 text-xs line-clamp-2 mb-2 text-left">"{{ review.comment }}"</p>
+              <div class="flex justify-start items-center text-xs text-gray-500 gap-3">
+                <span>{{ review.likes || '0' }} likes</span>
+                <span>{{ review.shares || '0' }} shares</span>
+                <button
+                  type="button"
+                  class="text-deepskyblue font-semibold cursor-pointer text-right ml-auto bg-transparent border-0 p-0"
+                  @click="viewFullReview(review)"
+                >
+                  Full view
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
+      <Teleport to="body">
+        <transition name="fade">
+          <div
+            v-if="isModalOpen"
+            class="fixed inset-0 z-50 flex items-center justify-center px-4 py-6 sm:px-6"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="full-review-title"
+            aria-describedby="full-review-content"
+          >
+            <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" @click="closeModal"></div>
+
+            <div
+              class="relative z-10 w-full max-w-lg bg-white rounded-xl shadow-2xl overflow-hidden focus:outline-none"
+              tabindex="-1"
+              role="document"
+            >
+              <button
+                type="button"
+                class="absolute right-4 top-4 text-gray-400 hover:text-gray-600 transition"
+                @click="closeModal"
+                aria-label="Close"
+              >
+                <X class="h-5 w-5" />
+              </button>
+              <div v-if="selectedReview" class="p-6 sm:p-8 space-y-4">
+                <div class="flex items-center gap-4">
+                  <div class="h-12 w-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                    <span class="text-white font-bold text-sm">{{ getInitials(selectedReview.reviewer) }}</span>
+                  </div>
+                  <div>
+                    <h2 id="full-review-title" class="text-lg font-semibold text-gray-900 text-left">
+                      {{ selectedReview.reviewer }}
+                    </h2>
+                    <p class="text-sm text-gray-500 text-left">{{ formatDate(selectedReview.date) }}</p>
+                  </div>
+                </div>
+
+                <div class="flex items-center gap-2 text-left">
+                  <div class="flex items-center gap-1">
+                    <Star
+                      v-for="i in 5"
+                      :key="i"
+                      class="h-4 w-4"
+                      :class="i <= selectedReview.rating ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300'"
+                    />
+                  </div>
+                  <span class="text-sm text-gray-600">{{ selectedReview.rating }} / 5</span>
+                </div>
+
+                <p id="full-review-content" class="text-gray-700 text-sm sm:text-base leading-relaxed text-left">
+                  "{{ selectedReview.comment }}"
+                </p>
+
+                <div class="flex flex-wrap gap-4 text-sm text-gray-500 text-left">
+                  <span>{{ selectedReview.likes || '0' }} likes</span>
+                  <span>{{ selectedReview.shares || '0' }} shares</span>
+                </div>
+
+                <div class="flex justify-end pt-2">
+                  <button
+                    type="button"
+                    class="inline-flex items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-800 transition"
+                    @click="closeModal"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </transition>
+      </Teleport>
     </div>
-  </div>
-</template>
+  </template>
 
 <script setup>
-import { ShieldCheck, MessageSquare, UserCheck, Star } from "lucide-vue-next";
+import { ShieldCheck, MessageSquare, UserCheck, Star, X } from "lucide-vue-next";
 import {
   Chart as ChartJS,
   Title,
@@ -235,7 +312,7 @@ import {
   CategoryScale,
 } from "chart.js";
 import { Line } from "vue-chartjs";
-import { computed, watchEffect } from 'vue';
+import { computed, watchEffect, ref, onMounted, onBeforeUnmount } from 'vue';
 import { useStubResource } from '~/services/stubClient';
 
 // Register Chart.js modules
@@ -298,10 +375,36 @@ const formatDate = (date) => {
   return new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) 
 }
 
-const viewFullReview = (review) => {
-  // Logic to show a modal or navigate to a detail page
-  console.log('View full review:', review)
+const isModalOpen = ref(false)
+const selectedReview = ref(null)
+
+const closeModal = () => {
+  isModalOpen.value = false
+  selectedReview.value = null
 }
+
+const viewFullReview = (review) => {
+  selectedReview.value = review
+  isModalOpen.value = true
+}
+
+const handleKeydown = (event) => {
+  if (event.key === 'Escape') {
+    closeModal()
+  }
+}
+
+onMounted(() => {
+  if (typeof window !== 'undefined') {
+    window.addEventListener('keydown', handleKeydown)
+  }
+})
+
+onBeforeUnmount(() => {
+  if (typeof window !== 'undefined') {
+    window.removeEventListener('keydown', handleKeydown)
+  }
+})
 
 
 
@@ -405,5 +508,15 @@ span:focus-visible {
   .hidden.md\:block {
     display: none !important;
   }
+}
+
+:deep(.fade-enter-active),
+:deep(.fade-leave-active) {
+  transition: opacity 0.2s ease;
+}
+
+:deep(.fade-enter-from),
+:deep(.fade-leave-to) {
+  opacity: 0;
 }
 </style>
