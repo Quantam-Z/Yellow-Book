@@ -490,7 +490,8 @@
 <script>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import Pagination from '~/components/common/pagination.vue';
-import { categoryService } from '@/services/categoryService';
+  import { categoryService } from '@/services/categoryService';
+  import { resolveCategoryDirectory } from '@/services/directoryMapper';
 import { useListingsFilter } from '@/composables/useListingsFilter';
 import { getStatusClass } from '@/utils/filterUtils';
 import starRatingBox from '@/components/common/starRatingBox.vue';
@@ -527,9 +528,11 @@ export default {
         categoryService.normalizeCategoryName(categoryNameParam.value)
       );
 
-      const currentCategory = computed(() =>
-        categoryService.getCategoryByName(categoryNameParam.value)
-      );
+        const categoryDirectory = computed(() =>
+          resolveCategoryDirectory(categoryNameParam.value)
+        );
+
+        const currentCategory = computed(() => categoryDirectory.value.category);
 
       const categoryListings = computed(() => {
         const normalized = normalizedCategoryName.value;
