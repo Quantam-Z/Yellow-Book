@@ -19,8 +19,8 @@ These types are the contract the UI expects. When you replace the stubs, return 
 ## Category Flow
 
 ### Data sources
-- `src/data/categories.json`
-- `src/data/listings.json`
+- `public/stubs/categories.json`
+- `public/stubs/listings.json`
 
 ### Service layer
 - `src/services/categoryService.ts`
@@ -51,7 +51,7 @@ These types are the contract the UI expects. When you replace the stubs, return 
 - `public/stubs/companies.json`
 - `public/stubs/agencyCompany.json`
 - `public/stubs/agencyProfile.json`
-- `src/data/listings.json` (same listings used for categories)
+- `public/stubs/listings.json` (same listings used for categories)
 
 ### Service layer
 - `src/services/directoryMapper.ts`

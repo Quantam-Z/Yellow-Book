@@ -13,21 +13,24 @@ export function useListingsFilter(listings) {
   const filteredListings = computed(() => {
     const { services, specializations, emergencyService, maxPrice, ratings, query } = filters.value;
     const listingsData = listings.value;
-    
-    if (services.size === 0 && 
-        specializations.size === 0 && 
-        emergencyService === null && 
-        maxPrice === Infinity && 
-        ratings.size === 0 &&
-        !query) {
+
+    if (
+      services.size === 0 &&
+      specializations.size === 0 &&
+      emergencyService === null &&
+      maxPrice === Infinity &&
+      ratings.size === 0 &&
+      !query
+    ) {
       return listingsData;
     }
 
-    return listingsData.filter(listing => {
+    return listingsData.filter((listing) => {
       if (services.size > 0 && !services.has(listing.serviceType)) return false;
       if (specializations.size > 0 && !specializations.has(listing.specialization)) return false;
       if (emergencyService !== null && listing.emergencyService !== emergencyService) return false;
-      if (maxPrice < Infinity && listing.price > maxPrice) return false;
+      const listingPrice = Number(listing.price);
+      if (maxPrice < Infinity && Number.isFinite(listingPrice) && listingPrice > maxPrice) return false;
       if (ratings.size > 0 && !ratings.has(Math.floor(listing.rating))) return false;
       if (query) {
         const q = String(query).toLowerCase();
@@ -42,7 +45,8 @@ export function useListingsFilter(listings) {
     if (filterType === 'emergencyService') {
       filters.value[filterType] = filters.value[filterType] === value ? null : value;
     } else if (filterType === 'maxPrice') {
-      filters.value[filterType] = value;
+      const numericValue = Number(value);
+      filters.value[filterType] = Number.isFinite(numericValue) ? numericValue : Infinity;
     } else if (filterType === 'query') {
       filters.value.query = value || '';
     } else {

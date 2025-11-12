@@ -16,6 +16,8 @@ export const STUB_REGISTRY = {
   agencyProfile: { file: "agencyProfile.json", type: "singleton", mutable: true },
   agencyReviews: { file: "agencyReviews.json", type: "collection", primaryKey: "id", mutable: true },
   companies: { file: "companies.json", type: "collection", primaryKey: "id", mutable: true },
+  directoryCategories: { file: "categories.json", type: "singleton", mutable: false },
+  directoryListings: { file: "listings.json", type: "singleton", mutable: false },
   recentActivities: { file: "recentActivities.json", type: "collection", mutable: false },
   recentCompanies: { file: "recentCompanies.json", type: "collection", mutable: false },
   recentReviews: { file: "recentReviews.json", type: "collection", primaryKey: "id", mutable: true },

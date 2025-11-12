@@ -1,5 +1,5 @@
-import categoriesData from '@/data/categories.json';
-import listingsData from '@/data/listings.json';
+import categoriesData from '@/public/stubs/categories.json';
+import listingsData from '@/public/stubs/listings.json';
 import type {
   CategoryDefinition,
   DirectoryListing,
