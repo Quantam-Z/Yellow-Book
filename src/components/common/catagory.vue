@@ -44,33 +44,20 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch } from 'vue'
-import { storeToRefs } from 'pinia'
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { categoryService } from '@/services/categoryService'
 import { PawPrint, Sparkles, Utensils, Plane, Laptop, MoreHorizontal } from 'lucide-vue-next'
 
-import { useCategoryStore } from '@/stores/category'
-
 const router = useRouter()
-const categoryStore = useCategoryStore()
-
-await categoryStore.ensureCategories()
-
-const { categories: storeCategories, error: categoryError } = storeToRefs(categoryStore)
 
 const iconMap: Record<string, any> = { PawPrint, Sparkles, Utensils, Plane, Laptop, MoreHorizontal }
 
-const categories = computed(() =>
-  (storeCategories.value || []).map((cat) => ({
+const categories = computed(() => {
+  return categoryService.getCategories().map(cat => ({
     ...cat,
-    icon: iconMap[cat.icon as keyof typeof iconMap] || MoreHorizontal,
-  })),
-)
-
-watch(categoryError, (err) => {
-  if (err) {
-    console.error('Failed to load categories', err)
-  }
+    icon: iconMap[cat.icon] || MoreHorizontal
+  }))
 })
 
 const goToCategory = (categoryName: string) => {

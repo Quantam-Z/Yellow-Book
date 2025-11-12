@@ -92,33 +92,36 @@
 <script setup lang="ts">
 import { Building2, Star, Heart } from 'lucide-vue-next'
 import { computed, watch } from 'vue'
-import { storeToRefs } from 'pinia'
 
-import { useCompanyStore } from '@/stores/company'
+// Load favourite companies from public stubs
+import { useStubClient, useStubResource } from '~/services/stubClient'
+import type { Ref } from 'vue'
 
 const nuxtApp = useNuxtApp()
-const companyStore = useCompanyStore()
-const { companies, error: companyError } = storeToRefs(companyStore)
+const stubClient = useStubClient()
 
-await companyStore.fetchCompanies()
+const { data: companiesData, error: companiesError, refresh } = await useStubResource('companies')
 
+// Map to the view model used by the design
 const items = computed(() => {
-  const raw = companies.value || []
+  const raw = (companiesData.value || []) as Array<any>
   return raw
     .filter((c) => c?.favourited !== false)
     .slice(0, 8)
     .map((c, index) => ({
-      id: c.id ?? index,
-      name: c.name,
-      category: c.category || 'Technology',
-      assigned: '2024-10-22',
-      rating: 4 + (((c.id ?? index) || 1) % 2),
-    }))
+    id: c.id || index,
+    name: c.name,
+    category: c.category || 'Technology',
+    assigned: '2024-10-22',
+    rating: 4 + ((c.id || 1) % 2),
+  }))
 })
 
+// Placeholder action handler
 const removeFavorite = async (id: number, name: string) => {
   try {
-    await companyStore.updateCompany(id, { favourited: false })
+    await stubClient.update('companies', id, { favourited: false }, { delay: 140 })
+    await refresh()
     if (import.meta.client) {
       try {
         nuxtApp.$awn?.success(`${name} removed from favorites`)
@@ -134,7 +137,7 @@ const removeFavorite = async (id: number, name: string) => {
   }
 }
 
-watch(companyError, (err) => {
+watch(companiesError as Ref<any>, (err) => {
   if (err) {
     console.error('Failed to load companies', err)
     if (import.meta.client) {

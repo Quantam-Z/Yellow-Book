@@ -1,11 +1,12 @@
-import { computed } from 'vue';
-import { storeToRefs } from 'pinia';
+import { computed, reactive } from 'vue';
+import { categoryService } from '@/services/categoryService';
 
-import { useCategoryStore } from '@/stores/category';
-import { useCompanyStore } from '@/stores/company';
-import type { Company } from '@/api/mockService';
+type DirectoryListing = ReturnType<typeof categoryService.getEnrichedListings>[number];
 
-type DirectoryListing = ReturnType<typeof buildNormalizedListings>[number];
+type NormalizedListing = DirectoryListing & {
+  normalizedTitle: string;
+  normalizedCategory: string;
+};
 
 type SearchEntry = {
   title: string;
@@ -13,117 +14,149 @@ type SearchEntry = {
   normalizedTitle: string;
 };
 
-const normalizeWhitespace = (value: string) =>
-  String(value || '')
+type DirectoryState = {
+  pending: boolean;
+  error: Error | null;
+  listings: NormalizedListing[];
+  searchEntries: SearchEntry[];
+  slugIndex: Map<string, NormalizedListing>;
+  idIndex: Map<string, NormalizedListing>;
+  titleIndex: Map<string, NormalizedListing>;
+};
+
+const directoryState = reactive<DirectoryState>({
+  pending: false,
+  error: null,
+  listings: [],
+  searchEntries: [],
+  slugIndex: new Map(),
+  idIndex: new Map(),
+  titleIndex: new Map(),
+});
+
+let ensurePromise: Promise<NormalizingResult> | null = null;
+
+type NormalizingResult = {
+  listings: NormalizedListing[];
+  searchEntries: SearchEntry[];
+  slugIndex: Map<string, NormalizedListing>;
+  idIndex: Map<string, NormalizedListing>;
+  titleIndex: Map<string, NormalizedListing>;
+};
+
+const normalizeString = (value: string) =>
+  value
     .toLowerCase()
     .replace(/\s+/g, ' ')
     .trim();
 
-const slugifyTitle = (value: string) =>
-  String(value || '')
-    .toLowerCase()
-    .trim()
-    .replace(/&/g, 'and')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
+const normalizeCategory = (value: string) => categoryService.normalizeCategoryName(value);
 
-const buildNormalizedListings = (records: Company[]) => {
-  const categoryStore = useCategoryStore();
+async function loadDirectoryListings(): Promise<NormalizingResult> {
+  const rawListings = categoryService.getEnrichedListings();
 
-  return records.map((entry) => {
-    const slug = entry.slug || slugifyTitle(entry.name);
-    const normalizedCategory = categoryStore.normalizeCategoryName(entry.category || '');
+  const listings: NormalizedListing[] = rawListings.map((entry) => ({
+    ...entry,
+    normalizedTitle: normalizeString(entry.title),
+    normalizedCategory: normalizeCategory(entry.category || ''),
+  }));
 
-    return {
-      ...entry,
-      slug,
-      normalizedTitle: normalizeWhitespace(entry.name || entry.slug || ''),
-      normalizedCategory,
-    };
-  });
-};
+  const searchEntries: SearchEntry[] = listings.map((entry) => ({
+    title: entry.title,
+    slug: entry.slug,
+    normalizedTitle: entry.normalizedTitle,
+  }));
+
+  const slugIndex = new Map<string, NormalizedListing>();
+  const idIndex = new Map<string, NormalizedListing>();
+  const titleIndex = new Map<string, NormalizedListing>();
+
+  for (const listing of listings) {
+    if (listing.slug) {
+      slugIndex.set(listing.slug, listing);
+    }
+    if (listing.id != null) {
+      idIndex.set(String(listing.id), listing);
+    }
+    if (listing.normalizedTitle) {
+      titleIndex.set(listing.normalizedTitle, listing);
+    }
+  }
+
+  return { listings, searchEntries, slugIndex, idIndex, titleIndex };
+}
+
+async function ensureDirectoryLoaded() {
+  if (directoryState.listings.length > 0 || ensurePromise) {
+    if (ensurePromise) {
+      await ensurePromise;
+    }
+    return;
+  }
+
+  directoryState.pending = true;
+  directoryState.error = null;
+
+  ensurePromise = loadDirectoryListings()
+    .then((result) => {
+      directoryState.listings = result.listings;
+      directoryState.searchEntries = result.searchEntries;
+      directoryState.slugIndex = result.slugIndex;
+      directoryState.idIndex = result.idIndex;
+      directoryState.titleIndex = result.titleIndex;
+    })
+    .catch((error) => {
+      directoryState.error = error instanceof Error ? error : new Error(String(error));
+      throw directoryState.error;
+    })
+    .finally(() => {
+      directoryState.pending = false;
+      ensurePromise = null;
+    });
+
+  await ensurePromise;
+}
 
 export function useDirectoryListings() {
-  const companyStore = useCompanyStore();
-  const categoryStore = useCategoryStore();
-  const { companies, loading, error } = storeToRefs(companyStore);
+  const pending = computed(() => directoryState.pending);
+  const error = computed(() => directoryState.error);
+  const listings = computed(() => directoryState.listings);
+  const searchEntries = computed(() => directoryState.searchEntries);
 
-  const listings = computed(() => buildNormalizedListings(companies.value || []));
-
-  const searchEntries = computed<SearchEntry[]>(() =>
-    listings.value.map((entry) => ({
-      title: entry.name,
-      slug: entry.slug,
-      normalizedTitle: entry.normalizedTitle,
-    })),
-  );
-
-  const slugIndex = computed(() => {
-    const index = new Map<string, DirectoryListing>();
-    listings.value.forEach((entry) => index.set(entry.slug, entry));
-    return index;
-  });
-
-  const idIndex = computed(() => {
-    const index = new Map<string, DirectoryListing>();
-    listings.value.forEach((entry) => {
-      if (entry.id != null) {
-        index.set(String(entry.id), entry);
-      }
-    });
-    return index;
-  });
-
-  const titleIndex = computed(() => {
-    const index = new Map<string, DirectoryListing>();
-    listings.value.forEach((entry) => {
-      index.set(entry.normalizedTitle, entry);
-    });
-    return index;
-  });
+  const ready = computed(() => !directoryState.pending && directoryState.listings.length > 0);
 
   const matchSearch = (query: string, limit = 12) => {
-    const normalizedQuery = normalizeWhitespace(query);
+    const normalizedQuery = normalizeString(query);
     if (!normalizedQuery) {
-      return searchEntries.value.slice(0, limit);
+      return directoryState.searchEntries.slice(0, limit);
     }
 
     const results: SearchEntry[] = [];
-    for (const entry of searchEntries.value) {
+    for (const entry of directoryState.searchEntries) {
       if (entry.normalizedTitle.includes(normalizedQuery)) {
         results.push(entry);
         if (results.length >= limit) break;
       }
     }
+
     return results;
   };
 
-  const ensureLoaded = async (options: { pageSize?: number } = {}) => {
-    await categoryStore.ensureCategories();
-    await companyStore.fetchCompanies({
-      search: '',
-      category: '',
-      page: 1,
-      pageSize: options.pageSize ?? 100,
-    });
-  };
-
-  const getBySlug = (slug: string) => slugIndex.value.get(slug) || null;
-  const getById = (id: string | number) => idIndex.value.get(String(id)) || null;
-  const getByTitle = (title: string) =>
-    titleIndex.value.get(normalizeWhitespace(title)) || null;
+  const getBySlug = (slug: string) => directoryState.slugIndex.get(slug) || null;
+  const getById = (id: string | number) => directoryState.idIndex.get(String(id)) || null;
+  const getByTitle = (title: string) => directoryState.titleIndex.get(normalizeString(title)) || null;
   const getByCategory = (category: string) => {
-    const normalized = categoryStore.normalizeCategoryName(category);
-    return listings.value.filter((entry) => entry.normalizedCategory === normalized);
+    const normalized = normalizeCategory(category);
+    return directoryState.listings.filter((listing) => listing.normalizedCategory === normalized);
   };
 
   return {
-    ensureLoaded,
-    pending: loading,
+    ensureLoaded: ensureDirectoryLoaded,
+    pending,
     error,
     listings,
     searchEntries,
-    ready: computed(() => !loading.value && listings.value.length > 0),
+    ready,
     matchSearch,
     getBySlug,
     getById,
@@ -131,3 +164,4 @@ export function useDirectoryListings() {
     getByCategory,
   };
 }
+
