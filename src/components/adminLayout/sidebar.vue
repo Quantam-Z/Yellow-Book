@@ -151,9 +151,9 @@ const handleResize = () => {
   }
 };
 
-useClientEventListener<KeyboardEvent>(() => document, 'keydown', handleEscapeKey);
-useClientEventListener<Event>(() => window, 'resize', handleResize, { passive: true, immediate: true });
-useClientEventListener<Event>(() => window, 'scroll', handleScroll, { passive: true, immediate: true }); 
+useClientEventListener(() => document, 'keydown', handleEscapeKey);
+useClientEventListener(() => window, 'resize', handleResize, { passive: true, immediate: true });
+useClientEventListener(() => window, 'scroll', handleScroll, { passive: true, immediate: true }); 
 </script>
 
 <style scoped>
