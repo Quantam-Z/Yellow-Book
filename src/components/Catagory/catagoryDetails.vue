@@ -489,18 +489,18 @@
 
 <script>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
-import Pagination from '~/components/common/pagination.vue';
-import { categoryService } from '@/services/categoryService';
+  import Pagination from '~/components/common/pagination.vue';
 import { useListingsFilter } from '@/composables/useListingsFilter';
 import { getStatusClass } from '@/utils/filterUtils';
 import starRatingBox from '@/components/common/starRatingBox.vue';
 import { useDirectoryListings } from '@/composables/useDirectoryListings';
+  import { useCategoryStore } from '@/stores/category';
 
 export default {
   name: 'CategoryPage',
   components: { Pagination, starRatingBox },
   
-    setup() {
+    async setup() {
       const route = useRoute();
       const showSortOptions = ref(false);
       const showMobileFilters = ref(false);
@@ -523,13 +523,16 @@ export default {
         return typeof raw === 'string' ? decodeURIComponent(raw) : '';
       });
 
-      const normalizedCategoryName = computed(() =>
-        categoryService.normalizeCategoryName(categoryNameParam.value)
-      );
+        const categoryStore = useCategoryStore();
+        await categoryStore.ensureCategories();
 
-      const currentCategory = computed(() =>
-        categoryService.getCategoryByName(categoryNameParam.value)
-      );
+        const normalizedCategoryName = computed(() =>
+          categoryStore.normalizeCategoryName(categoryNameParam.value)
+        );
+
+        const currentCategory = computed(() =>
+          categoryStore.findByName(categoryNameParam.value) || categoryStore.getDefaultCategory()
+        );
 
       const categoryListings = computed(() => {
         const normalized = normalizedCategoryName.value;

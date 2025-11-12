@@ -94,14 +94,12 @@
         <!-- Status Filter -->
         <div class="relative">
           <select 
-            v-model="filters.status"
+            v-model="statusFilter"
             @change="handleFilterChange"
             class="h-12 rounded-xl bg-gray-100 border border-gray-200 appearance-none py-0 pl-4 pr-10 text-left text-sm text-gray-600 cursor-pointer focus:outline-none focus:ring-0 min-w-[140px]"
           >
             <option value="">Select Status</option>
-            <option value="Approved">Approved</option>
-            <option value="Pending">Pending</option>
-            <option value="Rejected">Rejected</option>
+            <option v-for="status in statusOptions" :key="status" :value="status">{{ status }}</option>
           </select>
           <ChevronDownIcon class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" aria-hidden="true" />
         </div>
@@ -109,7 +107,7 @@
         <!-- Category Filter -->
         <div class="relative">
           <select 
-            v-model="filters.category"
+            v-model="categoryFilter"
             @change="handleFilterChange"
             class="h-12 rounded-xl bg-gray-100 border border-gray-200 appearance-none py-0 pl-4 pr-10 text-left text-sm text-gray-600 cursor-pointer focus:outline-none focus:ring-0 min-w-[140px]"
           >
@@ -172,14 +170,14 @@
             <label class="text-sm text-gray-700 font-medium">Status</label>
             <div class="relative">
               <select
-                v-model="filters.status"
+                v-model="statusFilter"
                 @change="handleFilterChange"
                 class="h-12 w-full rounded-xl bg-gray-100 border border-gray-200 appearance-none py-0 pl-4 pr-10 text-left text-sm text-gray-600 cursor-pointer focus:outline-none focus:ring-0"
               >
                 <option value="">Select Status</option>
-                <option value="Approved">Approved</option>
-                <option value="Pending">Pending</option>
-                <option value="Rejected">Rejected</option>
+                <option v-for="status in statusOptions" :key="status" :value="status">
+                  {{ status }}
+                </option>
               </select>
               <ChevronDownIcon class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" aria-hidden="true" />
             </div>
@@ -190,7 +188,7 @@
             <label class="text-sm text-gray-700 font-medium">Category</label>
             <div class="relative">
               <select 
-                v-model="filters.category"
+                v-model="categoryFilter"
                 @change="handleFilterChange"
                 class="h-12 w-full rounded-xl bg-gray-100 border border-gray-200 appearance-none py-0 pl-4 pr-10 text-left text-sm text-gray-600 cursor-pointer focus:outline-none focus:ring-0"
               >
@@ -422,8 +420,8 @@
     <!-- Pagination -->
     <div class="flex flex-col sm:flex-row justify-between items-center mt-6 gap-4 px-3 lg:px-0">
       <p class="text-sm text-gray-600 text-center sm:text-left">
-        Showing <span class="font-semibold">{{ paginatedCompanies.length }}</span> of 
-        <span class="font-semibold">{{ filteredCompanies.length }}</span> companies (Page {{ currentPage }} of {{ totalPages }})
+          Showing <span class="font-semibold">{{ paginatedCompanies.length }}</span> of 
+          <span class="font-semibold">{{ totalRecords }}</span> companies (Page {{ currentPage }} of {{ totalPages }})
       </p>
       <div class="flex gap-2">
         <button 
@@ -438,7 +436,7 @@
         <template v-for="page in totalPages" :key="page">
           <button 
             v-if="page === currentPage || page === currentPage - 1 || page === currentPage + 1"
-            @click="currentPage = page"
+              @click="goToSpecificPage(page)"
             :class="[
               'px-4 py-2.5 rounded-lg text-sm font-medium transition touch-manipulation min-w-[44px]',
               page === currentPage 
@@ -473,12 +471,13 @@
 </template>
 
 <script setup>
-import { ref, computed, defineAsyncComponent, watchEffect, watch } from 'vue';
+import { ref, computed, defineAsyncComponent, watch } from 'vue';
+import { storeToRefs } from 'pinia';
 import { useRoute, useRouter } from 'vue-router';
 import { Search as SearchIcon, Eye as EyeIcon, CheckCircle as CheckCircleIcon, ChevronDown as ChevronDownIcon, ChevronLeft as ChevronLeftIcon, ChevronRight as ChevronRightIcon, Filter as FilterIcon, Phone as PhoneIcon, Globe as GlobeIcon, MoreHorizontal } from "lucide-vue-next";
 import { getStatusClass, getStatusShort } from '~/composables/useStatusClass'
 import { useSelection } from '~/composables/useSelection'
-import { useStubClient, useStubResource } from '~/services/stubClient'
+import { useCompanyStore } from '@/stores/company'
 import DetailModal from '~/components/common/DetailModal.vue'
 import { useClientEventListener } from '@/composables/useClientEventListener';
 
@@ -487,7 +486,26 @@ const AddCompany = defineAsyncComponent(() => import('~/components/modal/addComp
 // --- State ---
 const isModalOpen = ref(false);
 const showMobileFilters = ref(false);
-const searchQuery = ref('');
+const searchQuery = computed({
+  get: () => storeFilters.value.search,
+  set: async (value) => {
+    if (value === storeFilters.value.search) return;
+    syncingRouteSearch.value = true;
+    await companyStore.applyFilters({ search: value }).catch(() => {});
+    if (import.meta.client) {
+      const nextValue = normalizeSearchParam(value);
+      const nextQuery = { ...route.query };
+      if (nextValue.trim()) {
+        nextQuery.search = nextValue;
+      } else {
+        delete nextQuery.search;
+      }
+      router.replace({ query: nextQuery }).catch(() => {});
+    }
+    syncingRouteSearch.value = false;
+    clearRowState();
+  },
+});
 const companies = ref([]);
 const expandedCompanyId = ref(null);
 const mobileActionsIndex = ref(null);
@@ -495,22 +513,53 @@ const selectedCompany = ref(null);
 const isDetailModalOpen = ref(false);
 const isMobileView = ref(false);
 
-// Pagination State
-const currentPage = ref(1);
-const itemsPerPage = 10;
-
 // Filter State
 const filters = ref({
   dateFrom: '',
   dateTo: '',
   timeRange: '',
-  status: '',
-  category: ''
 });
 
 // --- Composables ---
-const { selectAll, toggleSelection, toggleAll } = useSelection(companies); 
-const stubClient = useStubClient()
+const companyStore = useCompanyStore()
+const {
+  companies: storeCompanies,
+  filters: storeFilters,
+  pagination,
+  loading: companiesLoading,
+  error: storeError,
+  availableCategories,
+  availableStatuses,
+} = storeToRefs(companyStore)
+
+await companyStore.fetchCompanies()
+
+const isLoading = computed(() => companiesLoading.value)
+
+const currentPage = computed(() => pagination.value.page || 1)
+const itemsPerPage = computed(() => pagination.value.pageSize || 10)
+const totalPages = computed(() => Math.max(1, pagination.value.totalPages || 1))
+const totalRecords = computed(() => pagination.value.total || 0)
+
+const statusFilter = computed({
+  get: () => storeFilters.value.status,
+  set: (value) => {
+    if (value === storeFilters.value.status) return;
+    companyStore.applyFilters({ status: value }).catch(() => {});
+    clearRowState();
+  },
+});
+
+const categoryFilter = computed({
+  get: () => storeFilters.value.category,
+  set: (value) => {
+    if (value === storeFilters.value.category) return;
+    companyStore.applyFilters({ category: value }).catch(() => {});
+    clearRowState();
+  },
+});
+
+const { selectAll, toggleSelection, toggleAll } = useSelection(companies);
 const nuxtApp = useNuxtApp()
 const route = useRoute()
 const router = useRouter()
@@ -531,39 +580,17 @@ const toast = (type, message) => {
   } catch {}
 }
 
-// --- Data Fetching (SSR-friendly) ---
-const { data: companiesData, pending, error: companiesError, refresh } = await useStubResource('companies')
-const isLoading = computed(() => pending.value)
-
 // --- Computed Properties ---
-const categories = computed(() => {
-  return [...new Set(companies.value.map(c => c.category))];
-});
-
-const filteredCompanies = computed(() => {
-  if (isLoading.value) return [];
-  
-  const query = (searchQuery.value || '').toLowerCase();
-  const { status, category } = filters.value;
-
-  return companies.value.filter(company => {
-    const searchMatch = !query || company.name.toLowerCase().includes(query) || company.category.toLowerCase().includes(query);
-    const statusMatch = !status || company.status === status;
-    const categoryMatch = !category || company.category === category;
-    
-    return searchMatch && statusMatch && categoryMatch;
+const categories = computed(() => availableCategories.value || []);
+const statusOptions = computed(() => {
+  const unique = new Set(['Approved', 'Pending', 'Rejected']);
+  (availableStatuses.value || []).forEach((status) => {
+    if (status) unique.add(status);
   });
+  return Array.from(unique);
 });
 
-const totalPages = computed(() => {
-    return Math.ceil(filteredCompanies.value.length / itemsPerPage);
-});
-
-const paginatedCompanies = computed(() => {
-    const start = (currentPage.value - 1) * itemsPerPage;
-    const end = start + itemsPerPage;
-    return filteredCompanies.value.slice(start, end);
-});
+const paginatedCompanies = computed(() => companies.value);
 
 const companyDetailItems = computed(() => {
   if (!selectedCompany.value) return [];
@@ -580,47 +607,56 @@ const companyDetailItems = computed(() => {
 
 // --- Methods ---
 const handleFilterChange = () => {
-  currentPage.value = 1;
-  mobileActionsIndex.value = null;
-  expandedCompanyId.value = null;
+  clearRowState();
 };
 
-const applyRouteSearch = (value) => {
-  const normalized = normalizeSearchParam(value)
-  if (normalized === searchQuery.value) return
-  syncingRouteSearch.value = true
-  searchQuery.value = normalized
-  handleFilterChange()
-  syncingRouteSearch.value = false
+function clearRowState() {
+  mobileActionsIndex.value = null;
+  expandedCompanyId.value = null;
+}
+
+const applyRouteSearch = async (value) => {
+  const normalized = normalizeSearchParam(value);
+  if (normalized === storeFilters.value.search) return;
+  syncingRouteSearch.value = true;
+  await companyStore.applyFilters({ search: normalized });
+  clearRowState();
+  syncingRouteSearch.value = false;
 };
 
 applyRouteSearch(route.query.search);
 
 if (import.meta.client) {
-  watch(() => route.query.search, (newValue) => {
-    applyRouteSearch(newValue);
-  });
+  watch(
+    () => route.query.search,
+    async (newValue) => {
+      await applyRouteSearch(newValue);
+    },
+  );
 
-  watch(searchQuery, (newValue) => {
-    if (syncingRouteSearch.value) return;
-    const nextValue = normalizeSearchParam(newValue);
-    const current = normalizeSearchParam(route.query.search);
-    if (nextValue === current) return;
+  watch(
+    () => storeFilters.value.search,
+    (newValue) => {
+      if (syncingRouteSearch.value) return;
+      const nextValue = normalizeSearchParam(newValue);
+      const current = normalizeSearchParam(route.query.search);
+      if (nextValue === current) return;
 
-    const nextQuery = { ...route.query };
-    if (nextValue.trim()) {
-      nextQuery.search = nextValue;
-    } else {
-      delete nextQuery.search;
-    }
+      const nextQuery = { ...route.query };
+      if (nextValue.trim()) {
+        nextQuery.search = nextValue;
+      } else {
+        delete nextQuery.search;
+      }
 
-    router.replace({ query: nextQuery }).catch(() => {});
-  });
+      router.replace({ query: nextQuery }).catch(() => {});
+    },
+  );
 }
 
 const getDisplayIndex = (indexInPage) => {
-    const trueIndex = (currentPage.value - 1) * itemsPerPage + indexInPage + 1;
-    return String(trueIndex).padStart(2, '0');
+  const trueIndex = (currentPage.value - 1) * itemsPerPage.value + indexInPage + 1;
+  return String(trueIndex).padStart(2, '0');
 };
 
 const openAddModal = () => {
@@ -657,15 +693,16 @@ const toggleMobileActions = (index) => {
 };
 
 const changeStatus = async (company) => {
-  const statuses = ['Approved', 'Pending', 'Rejected'];
+  const statuses = statusOptions.value.length
+    ? statusOptions.value
+    : ['Approved', 'Pending', 'Rejected'];
   const currentIndex = statuses.indexOf(company.status);
   const nextIndex = (currentIndex + 1) % statuses.length;
-  const nextStatus = statuses[nextIndex];
+  const nextStatus = statuses[nextIndex] || 'Pending';
   try {
-    await stubClient.update('companies', company.id, { status: nextStatus }, { delay: 150 });
-    await refresh();
+    await companyStore.updateCompany(company.id, { status: nextStatus });
     toast('success', `${company.name} marked as ${nextStatus}`);
-    mobileActionsIndex.value = null;
+    clearRowState();
   } catch (error) {
     console.error('Failed to update company status', error);
     toast('error', `Failed to update ${company.name}`);
@@ -678,46 +715,68 @@ const applyMobileFilters = () => {
   mobileActionsIndex.value = null;
 };
 
-const resetFilters = () => {
+const resetFilters = async () => {
   filters.value = {
     dateFrom: '',
     dateTo: '',
     timeRange: '',
-    status: '',
-    category: ''
   };
-  handleFilterChange();
+  await companyStore.resetFilters();
+  clearRowState();
+  if (import.meta.client) {
+    const nextQuery = { ...route.query };
+    delete nextQuery.search;
+    router.replace({ query: nextQuery }).catch(() => {});
+  }
 };
 
 const nextPage = () => {
-    if (currentPage.value < totalPages.value) {
-        currentPage.value++;
-        mobileActionsIndex.value = null;
-        expandedCompanyId.value = null;
-    }
+  if (currentPage.value < totalPages.value) {
+    companyStore.goToPage(currentPage.value + 1);
+    clearRowState();
+  }
 };
 
 const prevPage = () => {
-    if (currentPage.value > 1) {
-        currentPage.value--;
-        mobileActionsIndex.value = null;
-        expandedCompanyId.value = null;
-    }
+  if (currentPage.value > 1) {
+    companyStore.goToPage(currentPage.value - 1);
+    clearRowState();
+  }
+};
+
+const goToSpecificPage = (page) => {
+  companyStore.goToPage(page);
+  clearRowState();
 };
 
 const handleCompanyCreated = async () => {
-  await refresh();
+  await companyStore.fetchCompanies();
+  clearRowState();
 };
 
 // Populate companies when fetch completes
-watchEffect(() => {
-  const raw = companiesData?.value || []
-  companies.value = raw.map(c => ({ ...c, selected: false }))
-  mobileActionsIndex.value = null
-  expandedCompanyId.value = null
-})
+watch(
+  storeCompanies,
+  (records) => {
+    const existingSelection = new Map(
+      companies.value.map((company) => [company.id, company.selected]),
+    );
+    companies.value = (records || []).map((company) => ({
+      ...company,
+      selected: existingSelection.get(company.id) ?? false,
+    }));
+    clearRowState();
+    if (selectedCompany.value) {
+      const replacement = companies.value.find(
+        (company) => company.id === selectedCompany.value.id,
+      );
+      selectedCompany.value = replacement || null;
+    }
+  },
+  { immediate: true },
+);
 
-watch(companiesError, (err) => {
+watch(storeError, (err) => {
   if (err) {
     console.error('Failed to load companies', err);
     toast('error', err?.message || 'Failed to load companies');
