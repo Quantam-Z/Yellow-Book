@@ -33,28 +33,32 @@
 
 <script setup lang="ts">
 import { computed, watch } from 'vue';
- import { useRoute } from 'vue-router';
- import CommonAgencyProfile from '~/components/Agency/agencyProfile.vue';
- import AgencyHead from '~/components/Agency/agencyHead.vue';
- import AgencyDetails from '~/components/Agency/agencyDetails.vue';
- import AgencyContact from '~/components/Agency/agencyContact.vue';
- import AgencyReview from '~/components/Agency/agencyReview.vue';
-import { categoryService } from '@/services/categoryService';
- import Footer from '~/components/layout/footer.vue';
-import { useStubResource } from '~/services/stubClient';
+import { storeToRefs } from 'pinia';
+import { useRoute } from 'vue-router';
+import CommonAgencyProfile from '~/components/Agency/agencyProfile.vue';
+import AgencyHead from '~/components/Agency/agencyHead.vue';
+import AgencyDetails from '~/components/Agency/agencyDetails.vue';
+import AgencyContact from '~/components/Agency/agencyContact.vue';
+import AgencyReview from '~/components/Agency/agencyReview.vue';
+import Footer from '~/components/layout/footer.vue';
 import { useDirectoryListings } from '@/composables/useDirectoryListings';
+import { useCompanyStore } from '@/stores/company';
 
- definePageMeta({
-   layout: 'catagory',
- });
+definePageMeta({
+  layout: 'catagory',
+});
 
- const route = useRoute();
+const route = useRoute();
 
- const titleQuery = computed(() => (route.query.title ? decodeURIComponent(String(route.query.title)) : ''));
- const slugQuery = computed(() => (route.query.slug ? String(route.query.slug) : ''));
- const idQuery = computed(() => (route.query.id ? String(route.query.id) : ''));
+const titleQuery = computed(() =>
+  route.query.title ? decodeURIComponent(String(route.query.title)) : '',
+);
+const slugQuery = computed(() => (route.query.slug ? String(route.query.slug) : ''));
+const idQuery = computed(() => (route.query.id ? String(route.query.id) : ''));
 
-// Unified directory listings (homepage + detail)
+const companyStore = useCompanyStore();
+const { companies: companyRecords, error: companyError } = storeToRefs(companyStore);
+
 const {
   ensureLoaded: ensureDirectoryLoaded,
   getBySlug: getDirectoryBySlug,
@@ -62,31 +66,21 @@ const {
   getByTitle: getDirectoryByTitle,
 } = useDirectoryListings();
 
-await ensureDirectoryLoaded();
+await ensureDirectoryLoaded({ pageSize: 100 });
 
-// Load stub companies from public folder (available at runtime)
-const { data: companiesData, error: companiesError } = await useStubResource('companies');
+const companies = computed(() => companyRecords.value || []);
 
-type StubCompany = {
-  id: number;
-  name: string;
-  website?: string;
-  mobile?: string;
-  category?: string;
-  status?: string;
-  verified?: boolean;
-};
-
-const companies = computed<StubCompany[]>(() => Array.isArray(companiesData.value) ? (companiesData.value as StubCompany[]) : []);
-
-watch(companiesError, (err) => {
+watch(companyError, (err) => {
   if (err) {
     console.error('Failed to load companies', err);
   }
 });
 
 function normalizeName(name: string): string {
-  return String(name || '').toLowerCase().replace(/[^a-z0-9]/g, '').trim();
+  return String(name || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '')
+    .trim();
 }
 
 function slugify(name: string): string {
@@ -98,7 +92,7 @@ function slugify(name: string): string {
     .replace(/^-+|-+$/g, '');
 }
 
-const stubCompany = computed<StubCompany | null>(() => {
+const activeCompany = computed(() => {
   if (!companies.value?.length) return null;
 
   if (idQuery.value) {
@@ -117,14 +111,6 @@ const stubCompany = computed<StubCompany | null>(() => {
     if (foundByTitle) return foundByTitle;
   }
 
-  return null;
-});
-
-// Fallback to listings.json via existing service if needed
-const listingFromService = computed(() => {
-  if (slugQuery.value) return categoryService.getListingBySlug(slugQuery.value);
-  if (idQuery.value) return categoryService.getListingById(idQuery.value);
-  if (titleQuery.value) return categoryService.getListingByName(titleQuery.value);
   return null;
 });
 
@@ -147,8 +133,12 @@ const directoryAgency = computed<Agency | null>(() => {
     website: match.website,
     location: match.location,
     revenue: match.revenue,
-    rating: typeof match.rating === 'number' ? match.rating : Number(match.rating) || 0,
-    ratingCount: typeof match.ratingCount === 'number' ? match.ratingCount : Number(match.ratingCount) || 0,
+    rating:
+      typeof match.rating === 'number' ? match.rating : Number(match.rating) || 0,
+    ratingCount:
+      typeof match.ratingCount === 'number'
+        ? match.ratingCount
+        : Number(match.ratingCount) || 0,
     serviceType: match.serviceType || match.specialization,
   };
 });
@@ -166,55 +156,72 @@ type Agency = {
 };
 
 const agency = computed<Agency | null>(() => {
-  if (directoryAgency.value) {
-    return directoryAgency.value;
-  }
+  const directory = directoryAgency.value;
+  const company = activeCompany.value;
 
-  const stub = stubCompany.value;
-  const listing = listingFromService.value as Partial<Agency> | null;
-
-  if (stub) {
+  if (directory && company) {
     return {
-      id: stub.id,
-      name: stub.name,
-      category: stub.category || listing?.category || 'General Services',
-      website: stub.website || listing?.website || '',
-      location: listing?.location || '',
-      revenue: listing?.revenue || '',
-      rating: typeof listing?.rating === 'number' ? listing!.rating : 0,
-      ratingCount: typeof listing?.ratingCount === 'number' ? listing!.ratingCount : 0,
-      serviceType: listing?.serviceType || undefined,
+      id: company.id ?? directory.id,
+      name: company.name ?? directory.name,
+      category: company.category || directory.category || 'General Services',
+      website: company.website || directory.website || '',
+      location: directory.location || company.location || '',
+      revenue: directory.revenue || company.revenue || '',
+      rating: directory.rating ?? company.rating ?? 0,
+      ratingCount: directory.ratingCount ?? company.ratingCount ?? 0,
+      serviceType: directory.serviceType || company.serviceType || company.specialization,
     };
   }
 
-  if (listing && listing.name) {
-    return listing as Agency;
+  if (directory) return directory;
+
+  if (company) {
+    return {
+      id: company.id,
+      name: company.name,
+      category: company.category || 'General Services',
+      website: company.website || '',
+      location: company.location || '',
+      revenue: company.revenue || '',
+      rating: company.rating || 0,
+      ratingCount: company.ratingCount || 0,
+      serviceType: company.serviceType || company.specialization,
+    };
   }
 
   return null;
 });
 
- const agencyNameFromQuery = computed(() => titleQuery.value || slugQuery.value || '');
+const agencyNameFromQuery = computed(() => titleQuery.value || slugQuery.value || '');
 
-const agencyTagline = computed(() => (agency.value ? `Top-rated ${agency.value.serviceType || 'services'} in ${agency.value.location || 'your area'}` : ''));
- const heroImage = computed(() => '/logo/image6.png');
- const logoImage = computed(() => '/logo/image7.png');
- const aboutText = computed(
-   () =>
-     (agency.value && `Discover ${agency.value.name} — delivering ${agency.value.serviceType?.toLowerCase() || 'quality services'} with excellence in ${agency.value.location}.`) ||
-     'Discover our agency — delivering quality services with excellence.'
- );
+const agencyTagline = computed(() =>
+  agency.value
+    ? `Top-rated ${agency.value.serviceType || 'services'} in ${
+        agency.value.location || 'your area'
+      }`
+    : '',
+);
+const heroImage = computed(() => '/logo/image6.png');
+const logoImage = computed(() => '/logo/image7.png');
+const aboutText = computed(
+  () =>
+    (agency.value &&
+      `Discover ${agency.value.name} — delivering ${
+        agency.value.serviceType?.toLowerCase() || 'quality services'
+      } with excellence in ${agency.value.location}.`) ||
+    'Discover our agency — delivering quality services with excellence.',
+);
 const agencyPhone = computed(() => {
-  return (stubCompany.value?.mobile && `+${stubCompany.value.mobile}`) || '+976 1234 5678';
+  return (activeCompany.value?.mobile && `+${activeCompany.value.mobile}`) || '+976 1234 5678';
 });
 const agencyEmail = computed(() => 'contact@example.com');
- const employeesText = computed(() => '10-20');
- const industryText = computed(() => agency.value?.category || 'General Services');
- const profileImage = computed(() => '/profile.png');
- const ownerName = computed(() => 'Cameron Williamson');
- const ownerTitle = computed(() => 'CEO & Founder');
- const ownerBio = computed(
-   () =>
-     "I'm a dedicated agency owner passionate about delivering trusted services, building client relationships, and helping everyday users solve real-world problems with care and integrity"
- );
- </script>
+const employeesText = computed(() => '10-20');
+const industryText = computed(() => agency.value?.category || 'General Services');
+const profileImage = computed(() => '/profile.png');
+const ownerName = computed(() => 'Cameron Williamson');
+const ownerTitle = computed(() => 'CEO & Founder');
+const ownerBio = computed(
+  () =>
+    "I'm a dedicated agency owner passionate about delivering trusted services, building client relationships, and helping everyday users solve real-world problems with care and integrity",
+);
+</script>
