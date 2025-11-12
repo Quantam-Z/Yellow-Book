@@ -137,23 +137,58 @@ const loadStubFromDisk = async (file, type) => {
   };
 
   if (import.meta.server) {
-    const [{ readFile }, { join }] = await Promise.all([
-      import("node:fs/promises"),
-      import("node:path"),
-    ]);
-    const filePath = join(process.cwd(), "public", "stubs", file);
+    let rawFromStorage;
+
     try {
-      const raw = await readFile(filePath, "utf-8");
-      const json = await parseJson(raw);
+      const { useStorage } = await import("#imports");
+      const storage = typeof useStorage === "function" ? useStorage("assets:public") : null;
+      if (storage) {
+        const stored = await storage.getItem(`stubs/${file}`);
+        if (stored !== null && stored !== undefined) {
+          if (typeof stored === "string") {
+            rawFromStorage = stored;
+          } else if (stored instanceof Uint8Array) {
+            rawFromStorage = Buffer.from(stored).toString("utf-8");
+          } else if (typeof stored === "object" && typeof stored.toString === "function") {
+            rawFromStorage = stored.toString();
+          }
+        }
+      }
+    } catch (error) {
+      // Ignore storage lookup errors, we'll fall back to filesystem access
+      if (typeof process !== "undefined" && process.dev) {
+        console.warn(`[stub] Failed to read "${file}" from assets storage`, error);
+      }
+    }
+
+    if (rawFromStorage !== undefined) {
+      const json = await parseJson(rawFromStorage);
       validateType(json, type, file);
       return json;
-    } catch (error) {
-      if (error.code === "ENOENT") {
-        throw new StubApiError(404, `Stub file "${file}" not found`);
-      }
-      if (error instanceof StubApiError) throw error;
-      throw new StubApiError(500, `Unable to load stub file "${file}"`, { cause: error });
     }
+
+    const [{ readFile }, { join }] = await Promise.all([import("node:fs/promises"), import("node:path")]);
+    const candidatePaths = [
+      join(process.cwd(), "public", "stubs", file),
+      join(process.cwd(), "src", "public", "stubs", file),
+    ];
+
+    for (const filePath of candidatePaths) {
+      try {
+        const raw = await readFile(filePath, "utf-8");
+        const json = await parseJson(raw);
+        validateType(json, type, file);
+        return json;
+      } catch (error) {
+        if (error.code === "ENOENT") {
+          continue;
+        }
+        if (error instanceof StubApiError) throw error;
+        throw new StubApiError(500, `Unable to load stub file "${file}"`, { cause: error });
+      }
+    }
+
+    throw new StubApiError(404, `Stub file "${file}" not found`);
   } else {
     const response = await fetch(`/stubs/${file}`);
     if (!response.ok) {
