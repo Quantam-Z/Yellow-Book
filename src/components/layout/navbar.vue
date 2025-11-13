@@ -22,10 +22,11 @@
             <div class="w-[30px] bg-[#212121] h-[2px]"></div>
           </nuxt-link>
 
-            <nuxt-link
-              :to="popularListingLink"
-              class="flex items-center justify-center cursor-pointer no-underline"
-            >
+          <nuxt-link
+            :to="popularListingLink"
+            class="flex items-center justify-center cursor-pointer no-underline"
+            @click="handlePopularLinkClick"
+          >
             <div class="relative leading-[160%] font-normal text-base text-[#616161]">Popular Listing</div>
           </nuxt-link>
 
@@ -92,7 +93,7 @@
                 <nuxt-link
                   :to="popularListingLink"
                   class="py-4 px-4 text-[#616161] hover:bg-[#fff9e6] rounded-lg transition-colors border-b border-gray-100 no-underline"
-                  @click.native="closeMobileMenu"
+                  @click="handlePopularLinkClick"
                 >
                 Popular Listing
               </nuxt-link>
@@ -274,18 +275,8 @@ export default {
         const query = this.searchQuery.trim()
         return this.directoryMatchSearch(query, this.dropdownResultLimit)
       },
-      defaultAgencyQuery() {
-        const record = this.getFirstDirectoryRecord()
-        if (!record) {
-          return null
-        }
-        return this.buildAgencyQuery(record)
-      },
       popularListingLink() {
-        if (this.defaultAgencyQuery) {
-          return { path: '/agency', query: this.defaultAgencyQuery }
-        }
-        return '/agency'
+        return { path: '/', hash: '#popular-listings' }
       },
       listYourAgencyLink() {
         return this.popularListingLink
@@ -375,6 +366,24 @@ export default {
             this.searchQuery = this.cachedSearchQuery || this.selectedSearch
           }
         }
+      }
+    },
+    scrollToSection(id) {
+      if (typeof window === 'undefined') return
+      const element = document.getElementById(id)
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+    },
+    handlePopularLinkClick(event) {
+      this.closeMobileMenu()
+      if (this.$route?.path === '/' && typeof window !== 'undefined') {
+        if (event && typeof event.preventDefault === 'function') {
+          event.preventDefault()
+        }
+        this.$nextTick(() => {
+          this.scrollToSection('popular-listings')
+        })
       }
     },
       findAgencyRecord(value) {
