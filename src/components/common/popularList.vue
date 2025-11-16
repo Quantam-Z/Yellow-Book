@@ -155,20 +155,9 @@ const formatPrice = (value?: number) => {
 </script>
 
 <template>
-  <section
-    class="w-full relative flex flex-col items-center gap-10 text-gray-900 font-plus-jakarta-sans px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 bg-[#fffdf5]"
-  >
-    <div class="w-full max-w-3xl text-center flex flex-col items-center gap-4">
-      <p class="text-xs tracking-[0.3em] uppercase text-[#9e9e9e]">Discover top-rated partners</p>
-      <h2 class="text-[32px] sm:text-[40px] lg:text-[48px] leading-tight font-semibold capitalize text-gray-900">
-        Popular list
-      </h2>
-      <p class="text-base sm:text-lg text-gray-500 max-w-2xl">
-        Explore high-performing companies across industries. Filter by category, city, or service to find the right fit
-        for your next project.
-      </p>
-    </div>
-
+    <section
+      class="w-full relative flex flex-col items-center gap-10 text-gray-900 font-plus-jakarta-sans px-4 sm:px-6 lg:px-8 py-10 sm:py-12 lg:py-14 bg-[#fffdf5]"
+    >
     <form
       class="w-full max-w-5xl grid gap-3 sm:grid-cols-[1fr_auto]"
       @submit.prevent="onSearchSubmit"

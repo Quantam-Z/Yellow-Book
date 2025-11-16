@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import InfoPageNav from '~/components/common/infoPageNav.vue';
 import Frequent from '~/components/common/frequent.vue';
 
 useHead({
@@ -14,6 +15,10 @@ useHead({
 
 <template>
   <main class="min-h-screen bg-[#fffefa] flex flex-col items-center">
+    <InfoPageNav
+      title="Frequently Asked Questions"
+      description="Everything you need to know about using Yellow Book."
+    />
     <Frequent />
   </main>
 </template>
