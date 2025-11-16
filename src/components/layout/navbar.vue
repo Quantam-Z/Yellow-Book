@@ -274,22 +274,22 @@ export default {
         const query = this.searchQuery.trim()
         return this.directoryMatchSearch(query, this.dropdownResultLimit)
       },
-      defaultAgencyQuery() {
-        const record = this.getFirstDirectoryRecord()
-        if (!record) {
-          return null
+        defaultAgencyQuery() {
+          const record = this.getFirstDirectoryRecord()
+          if (!record) {
+            return null
+          }
+          return this.buildAgencyQuery(record)
+        },
+        popularListingLink() {
+          return '/popular-list'
+        },
+        listYourAgencyLink() {
+          if (this.defaultAgencyQuery) {
+            return { path: '/agency', query: this.defaultAgencyQuery }
+          }
+          return '/agency'
         }
-        return this.buildAgencyQuery(record)
-      },
-      popularListingLink() {
-        if (this.defaultAgencyQuery) {
-          return { path: '/agency', query: this.defaultAgencyQuery }
-        }
-        return '/agency'
-      },
-      listYourAgencyLink() {
-        return this.popularListingLink
-      }
     },
   methods: {
     async initializeSearchDirectory() {
