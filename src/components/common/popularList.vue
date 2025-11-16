@@ -1,12 +1,16 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import { MapPin, Search } from 'lucide-vue-next';
 
 import Pagination from '@/components/common/pagination.vue';
 import RatingStars from '@/components/common/RatingStars.vue';
+import { useDirectoryListings } from '@/composables/useDirectoryListings';
+import type { DirectoryListing } from '@/types/directory';
 
-type Listing = {
-  id: number;
+type ListingCard = {
+  id: string;
+  slug?: string;
   title: string;
   description: string;
   location: string;
@@ -14,113 +18,64 @@ type Listing = {
   rating: number;
   reviews: number;
   category: string;
+  serviceType?: string;
+  revenue?: string;
+  price?: number;
+  website?: string;
+  emergencyService?: boolean;
 };
 
 const PAGE_SIZE = 6;
+const SKELETON_CARD_COUNT = 6;
 
-const listings = ref<Listing[]>([
-  {
-    id: 1,
-    title: 'Revolutionizing Technology',
-    description: 'Innovative technology solutions for modern businesses.',
-    location: 'Ulaanbaatar, Mongolia',
-    cover: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1200&q=80',
-    rating: 4.9,
-    reviews: 134,
-    category: 'Technology',
-  },
-  {
-    id: 2,
-    title: 'Skyline Architects',
-    description: 'Human-centered architecture reshaping city skylines.',
-    location: 'Singapore, Singapore',
-    cover: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=1200&q=80',
-    rating: 4.6,
-    reviews: 98,
-    category: 'Architecture',
-  },
-  {
-    id: 3,
-    title: 'EcoRide Mobility',
-    description: 'Connected mobility solutions built for smart cities.',
-    location: 'Helsinki, Finland',
-    cover: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1200&q=80',
-    rating: 4.8,
-    reviews: 121,
-    category: 'Transportation',
-  },
-  {
-    id: 4,
-    title: 'Nordic Hospitality',
-    description: 'Modern boutique stays with Nordic-inspired wellness.',
-    location: 'Reykjavík, Iceland',
-    cover: 'https://images.unsplash.com/photo-1501117716987-c8e1ecb210cc?auto=format&fit=crop&w=1200&q=80',
-    rating: 4.7,
-    reviews: 76,
-    category: 'Hospitality',
-  },
-  {
-    id: 5,
-    title: 'Blue Horizon Travel',
-    description: 'Curated adventures for the modern explorer.',
-    location: 'Cape Town, South Africa',
-    cover: 'https://images.unsplash.com/photo-1470246973918-29a93221c455?auto=format&fit=crop&w=1200&q=80',
-    rating: 4.5,
-    reviews: 210,
-    category: 'Travel',
-  },
-  {
-    id: 6,
-    title: 'Greens & Grains',
-    description: 'Plant-forward dining inspired by seasonal harvests.',
-    location: 'Portland, USA',
-    cover: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80',
-    rating: 4.4,
-    reviews: 189,
-    category: 'Food & Beverage',
-  },
-  {
-    id: 7,
-    title: 'Atlas Legal Studio',
-    description: 'Independent legal studio for high-growth companies.',
-    location: 'Berlin, Germany',
-    cover: 'https://images.unsplash.com/photo-1488980244383-148acd9f3945?auto=format&fit=crop&w=1200&q=80',
-    rating: 4.3,
-    reviews: 65,
-    category: 'Professional Services',
-  },
-  {
-    id: 8,
-    title: 'Pulse Health Labs',
-    description: 'Diagnostics powered by AI-driven health insights.',
-    location: 'Seoul, South Korea',
-    cover: 'https://images.unsplash.com/photo-1551601651-2a8555f1a136?auto=format&fit=crop&w=1200&q=80',
-    rating: 4.9,
-    reviews: 158,
-    category: 'Healthcare',
-  },
-  {
-    id: 9,
-    title: 'Waveform Studios',
-    description: 'Immersive audio experiences for streaming platforms.',
-    location: 'Toronto, Canada',
-    cover: 'https://images.unsplash.com/photo-1511376777868-611b54f68947?auto=format&fit=crop&w=1200&q=80',
-    rating: 4.2,
-    reviews: 142,
-    category: 'Media',
-  },
-]);
-
+const router = useRouter();
 const searchTerm = ref('');
 const currentPage = ref(1);
 
+const { listings: directoryListings, ensureLoaded, pending, ready } = useDirectoryListings();
+
+await ensureLoaded();
+
+const isLoading = computed(() => pending.value && !ready.value);
+
+const normalizedListings = computed<ListingCard[]>(() => {
+  const entries = directoryListings.value || [];
+  return entries.map((entry: DirectoryListing) => {
+    const title = entry.title || entry.name || 'Unnamed agency';
+    const description =
+      entry.description ||
+      `Leading ${(entry.serviceType || 'professional').toLowerCase()} services trusted across ${
+        entry.location || 'your area'
+      }.`;
+    const id = entry.id != null ? String(entry.id) : entry.slug || title;
+
+    return {
+      id,
+      slug: entry.slug,
+      title,
+      description,
+      location: entry.location || 'Inquire for location',
+      cover: entry.image || '/logo/logo.png',
+      rating: Number(entry.rating ?? 0),
+      reviews: Number(entry.ratingCount ?? 0),
+      category: entry.category || 'General Services',
+      serviceType: entry.serviceType,
+      revenue: entry.revenue,
+      price: entry.price,
+      website: entry.website,
+      emergencyService: entry.emergencyService ?? false,
+    };
+  });
+});
+
 const filteredListings = computed(() => {
   const query = searchTerm.value.trim().toLowerCase();
-  if (!query) return listings.value;
-  return listings.value.filter((listing) =>
-    `${listing.title} ${listing.description} ${listing.location} ${listing.category}`
+  if (!query) return normalizedListings.value;
+
+  return normalizedListings.value.filter((listing) =>
+    `${listing.title} ${listing.description} ${listing.location} ${listing.category} ${listing.serviceType ?? ''}`
       .toLowerCase()
-      .includes(query)
+      .includes(query),
   );
 });
 
@@ -141,11 +96,20 @@ const resultsMeta = computed(() => {
 
 const shouldShowPagination = computed(() => filteredListings.value.length > PAGE_SIZE);
 
+const skeletonCards = Array.from({ length: SKELETON_CARD_COUNT }, (_, index) => index);
+
+const resetToFirstPage = () => {
+  currentPage.value = 1;
+};
+
 watch(
   () => searchTerm.value,
-  () => {
-    currentPage.value = 1;
-  }
+  () => resetToFirstPage(),
+);
+
+watch(
+  () => normalizedListings.value.length,
+  () => resetToFirstPage(),
 );
 
 watch(totalPages, (newTotal) => {
@@ -155,13 +119,44 @@ watch(totalPages, (newTotal) => {
 });
 
 const onSearchSubmit = () => {
-  currentPage.value = 1;
+  resetToFirstPage();
+};
+
+const buildAgencyLink = (listing: ListingCard) => {
+  const query: Record<string, string> = {};
+  if (listing.slug) {
+    query.slug = listing.slug;
+  }
+  if (listing.id) {
+    query.id = listing.id;
+  }
+  if (!listing.slug && listing.title) {
+    query.title = listing.title;
+  }
+  return { path: '/agency', query };
+};
+
+const handleNavigate = (listing: ListingCard) => {
+  router.push(buildAgencyLink(listing));
+};
+
+const formatPrice = (value?: number) => {
+  if (value == null) return '';
+  try {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 0,
+    }).format(value);
+  } catch {
+    return `$${value}`;
+  }
 };
 </script>
 
 <template>
   <section
-    class="w-full relative flex flex-col items-center gap-10 text-gray-900 font-plus-jakarta-sans px-4 py-16 sm:py-20 lg:py-24"
+    class="w-full relative flex flex-col items-center gap-10 text-gray-900 font-plus-jakarta-sans px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 bg-[#fffdf5]"
   >
     <div class="w-full max-w-3xl text-center flex flex-col items-center gap-4">
       <p class="text-xs tracking-[0.3em] uppercase text-[#9e9e9e]">Discover top-rated partners</p>
@@ -175,7 +170,7 @@ const onSearchSubmit = () => {
     </div>
 
     <form
-      class="w-full max-w-4xl flex flex-col gap-4 sm:flex-row sm:items-center"
+      class="w-full max-w-5xl grid gap-3 sm:grid-cols-[1fr_auto]"
       @submit.prevent="onSearchSubmit"
     >
       <label
@@ -185,7 +180,7 @@ const onSearchSubmit = () => {
         <input
           v-model="searchTerm"
           type="search"
-          placeholder="Search company, service, or city"
+          placeholder="Search by name, service, or city"
           class="flex-1 bg-transparent text-sm sm:text-base text-gray-700 placeholder:text-gray-400 focus:outline-none"
           aria-label="Search popular listings"
         />
@@ -198,66 +193,136 @@ const onSearchSubmit = () => {
       </button>
     </form>
 
-    <div class="w-full max-w-5xl text-sm text-gray-500 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+    <div
+      class="w-full max-w-5xl text-sm text-gray-500 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2"
+      aria-live="polite"
+    >
       <span v-if="resultsMeta.total > 0">
         Showing {{ resultsMeta.start }}–{{ resultsMeta.end }} of {{ resultsMeta.total }} curated listings
       </span>
+      <span v-else-if="isLoading">Loading curated listings…</span>
       <span v-else>No listings match your search yet. Try a different keyword.</span>
       <span class="text-xs uppercase tracking-[0.3em] text-gray-400">Updated daily</span>
     </div>
 
-    <div class="w-full grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">
-      <article
-        v-for="listing in paginatedListings"
-        :key="listing.id"
-        class="rounded-[32px] overflow-hidden bg-white border border-gray-100 shadow-xl shadow-black/5 flex flex-col hover:-translate-y-2 hover:shadow-2xl transition duration-300"
+    <div
+      v-if="isLoading"
+      class="w-full max-w-6xl grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8"
+    >
+      <div
+        v-for="index in skeletonCards"
+        :key="index"
+        class="rounded-[32px] bg-white border border-gray-100 shadow-xl shadow-black/5 flex flex-col animate-pulse overflow-hidden"
       >
-        <div class="relative w-full h-64 sm:h-72">
-          <img
-            class="absolute inset-0 w-full h-full object-cover"
-            :src="listing.cover"
-            :alt="listing.title"
-            loading="lazy"
-          />
-          <span
-            class="absolute top-4 left-4 rounded-full bg-white/90 backdrop-blur px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-gray-800"
-          >
-            {{ listing.category }}
-          </span>
+        <div class="w-full h-64 sm:h-72 bg-gray-200" />
+        <div class="flex flex-col gap-4 p-6">
+          <div class="h-6 w-3/4 bg-gray-200 rounded-full" />
+          <div class="h-14 w-full bg-gray-100 rounded-2xl" />
+          <div class="h-5 w-1/2 bg-gray-200 rounded-full" />
         </div>
-
-        <div class="flex flex-col gap-5 p-6 text-left">
-          <div class="flex flex-col gap-3">
-            <h3 class="text-xl font-semibold leading-snug capitalize text-[#212121]">
-              {{ listing.title }}
-            </h3>
-            <p class="text-sm text-gray-600 leading-relaxed">
-              {{ listing.description }}
-            </p>
-          </div>
-
-          <div class="flex items-center justify-between flex-wrap gap-4">
-            <RatingStars
-              :rating="listing.rating"
-              :count="listing.reviews"
-              :show-count="true"
-              :show-value="true"
-              size="sm"
-              color="#fbbf24"
-              empty-color="#f1f5f9"
-              aria-label="Company rating"
-            />
-            <div class="flex items-center gap-2 text-sm text-gray-500">
-              <MapPin class="w-4 h-4 text-[#f97316]" aria-hidden="true" />
-              <span class="font-medium capitalize">{{ listing.location }}</span>
-            </div>
-          </div>
-        </div>
-      </article>
+      </div>
     </div>
 
+    <template v-else>
+      <div
+        v-if="paginatedListings.length"
+        class="w-full max-w-6xl grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8"
+      >
+        <article
+          v-for="listing in paginatedListings"
+          :key="listing.id"
+          class="group rounded-[32px] overflow-hidden bg-white border border-gray-100 shadow-xl shadow-black/5 flex flex-col transition duration-300 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-[#fbd551]"
+          role="button"
+          tabindex="0"
+          :aria-label="`View details for ${listing.title}`"
+          @click="handleNavigate(listing)"
+          @keyup.enter.prevent="handleNavigate(listing)"
+          @keyup.space.prevent="handleNavigate(listing)"
+        >
+          <div class="relative w-full h-64 sm:h-72 overflow-hidden">
+            <img
+              class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              :src="listing.cover"
+              :alt="listing.title"
+              loading="lazy"
+            />
+            <span
+              class="absolute top-4 left-4 rounded-full bg-white/90 backdrop-blur px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-gray-800"
+            >
+              {{ listing.category }}
+            </span>
+            <span
+              v-if="listing.emergencyService"
+              class="absolute top-4 right-4 rounded-full bg-[#fff3d3] px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-[#a16207]"
+            >
+              24/7
+            </span>
+          </div>
+
+          <div class="flex flex-col gap-5 p-6 text-left">
+            <div class="flex flex-col gap-3">
+              <h3 class="text-xl font-semibold leading-snug capitalize text-[#212121]">
+                {{ listing.title }}
+              </h3>
+              <p class="text-sm text-gray-600 leading-relaxed">
+                {{ listing.description }}
+              </p>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2 text-xs font-medium text-gray-600">
+              <span
+                v-if="listing.serviceType"
+                class="inline-flex items-center rounded-full bg-gray-50 px-3 py-1 border border-gray-200"
+              >
+                {{ listing.serviceType }}
+              </span>
+              <span
+                v-if="listing.revenue"
+                class="inline-flex items-center rounded-full bg-gray-50 px-3 py-1 border border-gray-200"
+              >
+                {{ listing.revenue }}
+              </span>
+              <span
+                v-if="listing.price"
+                class="inline-flex items-center rounded-full bg-gray-50 px-3 py-1 border border-gray-200"
+              >
+                {{ formatPrice(listing.price) }} avg
+              </span>
+            </div>
+
+            <div class="flex items-center justify-between flex-wrap gap-4">
+              <RatingStars
+                :rating="listing.rating"
+                :count="listing.reviews"
+                :show-count="true"
+                :show-value="true"
+                size="sm"
+                color="#fbbf24"
+                empty-color="#f1f5f9"
+                aria-label="Company rating"
+              />
+              <div class="flex items-center gap-2 text-sm text-gray-500">
+                <MapPin class="w-4 h-4 text-[#f97316]" aria-hidden="true" />
+                <span class="font-medium capitalize">{{ listing.location }}</span>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <div
+        v-else
+        class="w-full max-w-3xl text-center bg-white border border-dashed border-gray-200 rounded-3xl p-10 flex flex-col gap-4"
+      >
+        <h3 class="text-xl font-semibold text-gray-900">We couldn’t find anything</h3>
+        <p class="text-sm text-gray-500">
+          Try adjusting your search keywords or explore another service category to discover more agencies.
+        </p>
+      </div>
+    </template>
+
     <Pagination
-      v-if="shouldShowPagination"
+      v-if="shouldShowPagination && !isLoading && filteredListings.length"
       v-model="currentPage"
       :total-pages="totalPages"
       :max-visible="4"
@@ -271,10 +336,7 @@ const onSearchSubmit = () => {
   font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
-@media (max-width: 640px) {
-  section {
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
+article:focus-visible {
+  outline: none;
 }
 </style>
