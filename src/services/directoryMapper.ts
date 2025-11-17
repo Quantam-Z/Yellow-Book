@@ -37,7 +37,7 @@ export type AgencyCompanyStub = {
   services?: string;
 };
 
-export type AgencyProfileStub = {
+export type CompanyProfileStub = {
   fullName?: string;
   phoneNumber?: string;
   email?: string;
@@ -91,7 +91,7 @@ export const resolveCategoryDirectory = (name?: string): CategoryDirectory => {
 
 const createOwnerInfo = (
   companyDetail?: AgencyCompanyStub | null,
-  profile?: AgencyProfileStub | null,
+  profile?: CompanyProfileStub | null,
   overrides?: AgencyOwnerInfo,
 ): AgencyOwnerInfo => {
   const fullName =
@@ -131,7 +131,7 @@ interface AgencyRecordSources {
   listing?: DirectoryListing | null;
   company?: StubCompany | null;
   companyDetail?: AgencyCompanyStub | null;
-  profile?: AgencyProfileStub | null;
+  profile?: CompanyProfileStub | null;
   overrides?: Partial<AgencyRecord>;
 }
 

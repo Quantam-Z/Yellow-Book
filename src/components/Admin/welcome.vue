@@ -100,7 +100,7 @@ const adminStats = computed(() => statsData.value || defaultStats)
 const handleSearch = () => {
   if (!import.meta.client) return
   const query = searchTerm.value.trim()
-  const targetRoute = { path: '/dashboard/admin/manage-companies' }
+const targetRoute = { path: '/admin/manage-companies' }
   if (query) {
     targetRoute.query = { search: query }
   }

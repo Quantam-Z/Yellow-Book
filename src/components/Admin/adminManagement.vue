@@ -5,8 +5,8 @@
       <!-- Header -->
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
         <h1 class="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">Admin Management</h1>
-        <NuxtLink
-  to="/dashboard/admin/CreatesubAdmin"
+    <NuxtLink
+  to="/admin/create-sub-admin"
   class="bg-yellow-400 hover:bg-yellow-500 active:bg-yellow-600 text-gray-900 font-semibold px-4 py-2.5 rounded-lg transition shadow-md whitespace-nowrap text-sm w-full sm:w-auto text-center touch-manipulation no-underline"
 >
   Add Sub Admin

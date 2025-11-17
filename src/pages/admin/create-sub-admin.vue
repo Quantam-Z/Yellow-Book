@@ -363,10 +363,10 @@ const submitForm = async () => {
       // Simulate API call
       // Show success message
       showSuccess.value = true;
-      setTimeout(() => {
-        showSuccess.value = false;
-        router.push('/admin-management'); // Redirect to admin list
-      }, 2000);
+        setTimeout(() => {
+          showSuccess.value = false;
+          router.push('/admin/admin-management'); // Redirect to admin list
+        }, 2000);
       
     } catch (error) {
       alert('An error occurred. Please try again.');

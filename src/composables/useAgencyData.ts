@@ -6,7 +6,7 @@ import {
   normalizeTitle,
   slugifyTitle,
   type AgencyCompanyStub,
-  type AgencyProfileStub,
+  type CompanyProfileStub,
   type StubCompany,
 } from '@/services/directoryMapper';
 import type { AgencyRecord } from '@/types/directory';
@@ -25,7 +25,7 @@ export async function useAgencyData() {
 
   const companiesResource = useStubResource('companies');
   const companyDetailResource = useStubResource('agencyCompany');
-  const profileResource = useStubResource('agencyProfile');
+  const profileResource = useStubResource('companyProfile');
 
   const ensurePromise = ensureLoaded();
 
@@ -45,8 +45,8 @@ export async function useAgencyData() {
     companyDetailData.value ? (companyDetailData.value as AgencyCompanyStub) : null,
   );
 
-  const profile = computed<AgencyProfileStub | null>(() =>
-    profileData.value ? (profileData.value as AgencyProfileStub) : null,
+  const profile = computed<CompanyProfileStub | null>(() =>
+    profileData.value ? (profileData.value as CompanyProfileStub) : null,
   );
 
   const normalizedTitleQuery = computed(() => normalizeTitle(titleQuery.value));

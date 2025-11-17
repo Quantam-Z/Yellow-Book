@@ -50,7 +50,7 @@ These types are the contract the UI expects. When you replace the stubs, return 
 ### Data sources
 - `public/stubs/companies.json`
 - `public/stubs/agencyCompany.json`
-- `public/stubs/agencyProfile.json`
+- `public/stubs/companyProfile.json`
 - `public/stubs/listings.json` (same listings used for categories)
 
 ### Service layer

@@ -13,8 +13,8 @@
     </div>
   </template>
   
-  <script setup>
-  import Sidebar from '~/components/agencyprofileLayout/sidebar.vue'
-  import Header from '~/components/agencyprofileLayout/header.vue'
-  </script>
+<script setup>
+import Sidebar from '~/components/agentLayout/sidebar.vue'
+import Header from '~/components/agentLayout/header.vue'
+</script>
   

@@ -3,7 +3,7 @@ import { defineAsyncComponent, computed } from 'vue';
 import { useRoute } from 'vue-router';
 
 definePageMeta({
-  layout: 'subadminpanel',
+  layout: 'agentpanel',
 });
 
 function generateNameCandidates(slug: string): string[] {
@@ -21,6 +21,7 @@ const modules = import.meta.glob('@/components/SubAdmin/*.vue');
 // Map common slugs to component names
 const aliasMap: Record<string, string[]> = {
   'assign-companies': ['AssignCompanies'],
+  'my-profile': ['MyProfile', 'myprofile'],
 };
 
 const SelectedComponent = computed(() => {
@@ -50,7 +51,7 @@ const SelectedComponent = computed(() => {
     <component v-if="SelectedComponent" :is="SelectedComponent" />
     <div v-else class="p-6">
       <h1 class="text-2xl font-semibold">Page not found</h1>
-      <p class="text-gray-600">No matching subadmin component for this route.</p>
+        <p class="text-gray-600">No matching agent component for this route.</p>
     </div>
   </div>
 </template>

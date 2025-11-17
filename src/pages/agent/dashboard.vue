@@ -5,11 +5,11 @@
 </template>
 
 <script setup>
-import Dashboard from '~/components/AgencyProfile/dashboard.vue';
+import Dashboard from '~/components/SubAdmin/dashboard.vue';
 
 
 
 definePageMeta({
-  layout: "agencyprofile",
+  layout: "agentpanel",
 });
 </script>
