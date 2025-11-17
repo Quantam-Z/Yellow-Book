@@ -1,6 +1,15 @@
 <script setup lang="ts">
-import InfoPageNav from '~/components/common/infoPageNav.vue';
 import PopularList from '~/components/common/popularList.vue';
+
+definePageMeta({
+  layout: 'info-page',
+  infoNav: {
+    eyebrow: 'Discover top-rated partners',
+    title: 'Popular list',
+    description:
+      'Explore high-performing companies across industries. Filter by category, city, or service to find the right fit for your next project.',
+  },
+});
 
 useHead({
   title: 'Popular List • Yellow Book',
@@ -14,12 +23,7 @@ useHead({
 </script>
 
 <template>
-  <main class="min-h-screen bg-[#fffdf5]">
-    <InfoPageNav
-      eyebrow="Discover top-rated partners"
-      title="Popular list"
-      description="Explore high-performing companies across industries. Filter by category, city, or service to find the right fit for your next project."
-    />
+  <section class="bg-transparent">
     <PopularList />
-  </main>
+  </section>
 </template>
