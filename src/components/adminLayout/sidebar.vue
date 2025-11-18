@@ -92,11 +92,11 @@ const isOpen = ref(false);
 const isScrolled = ref(false); 
 
 const mainMenu = [
-  { label: "Dashboard", icon: LayoutDashboard, to: "/dashboard/admin" },
-  { label: "Company Management", icon: Building2, to: "/dashboard/admin/manage-companies" },
-  { label: "User Management", icon: Users, to: "/dashboard/admin/manage-users" },
-  { label: "Review Management", icon: Star, to: "/dashboard/admin/manage-review" },
-  { label: "Admin Management", icon: Shield, to: "/dashboard/admin/admin-management" },
+  { label: "Dashboard", icon: LayoutDashboard, to: "/admin/dashboard" },
+  { label: "Company Management", icon: Building2, to: "/admin/manage-companies" },
+  { label: "User Management", icon: Users, to: "/admin/manage-users" },
+  { label: "Review Management", icon: Star, to: "/admin/manage-review" },
+  { label: "Admin Management", icon: Shield, to: "/admin/admin-management" },
 ];
 
 const authStore = useAuthStore();
@@ -106,7 +106,7 @@ const handleLogout = async () => {
 };
 
 const bottomMenu = [
-  { label: "Settings", icon: Settings, to: "/dashboard/admin/settings" },
+  { label: "Settings", icon: Settings, to: "/admin/settings" },
   { label: "Logout", icon: LogOut, action: handleLogout },
 ];
 

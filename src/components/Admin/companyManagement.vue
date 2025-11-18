@@ -92,19 +92,17 @@
         </div>
 
         <!-- Status Filter -->
-        <div class="relative">
-          <select 
-            v-model="filters.status"
-            @change="handleFilterChange"
-            class="h-12 rounded-xl bg-gray-100 border border-gray-200 appearance-none py-0 pl-4 pr-10 text-left text-sm text-gray-600 cursor-pointer focus:outline-none focus:ring-0 min-w-[140px]"
-          >
-            <option value="">Select Status</option>
-            <option value="Approved">Approved</option>
-            <option value="Pending">Pending</option>
-            <option value="Rejected">Rejected</option>
-          </select>
-          <ChevronDownIcon class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" aria-hidden="true" />
-        </div>
+          <div class="relative">
+            <select 
+              v-model="filters.status"
+              @change="handleFilterChange"
+              class="h-12 rounded-xl bg-gray-100 border border-gray-200 appearance-none py-0 pl-4 pr-10 text-left text-sm text-gray-600 cursor-pointer focus:outline-none focus:ring-0 min-w-[140px]"
+            >
+              <option value="">Select Status</option>
+              <option v-for="status in statusOptions" :key="status" :value="status">{{ status }}</option>
+            </select>
+            <ChevronDownIcon class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" aria-hidden="true" />
+          </div>
 
         <!-- Category Filter -->
         <div class="relative">
@@ -177,9 +175,7 @@
                 class="h-12 w-full rounded-xl bg-gray-100 border border-gray-200 appearance-none py-0 pl-4 pr-10 text-left text-sm text-gray-600 cursor-pointer focus:outline-none focus:ring-0"
               >
                 <option value="">Select Status</option>
-                <option value="Approved">Approved</option>
-                <option value="Pending">Pending</option>
-                <option value="Rejected">Rejected</option>
+                  <option v-for="status in statusOptions" :key="status" :value="status">{{ status }}</option>
               </select>
               <ChevronDownIcon class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" aria-hidden="true" />
             </div>
@@ -420,11 +416,11 @@
     </div>
 
     <!-- Pagination -->
-    <div class="flex flex-col sm:flex-row justify-between items-center mt-6 gap-4 px-3 lg:px-0">
-      <p class="text-sm text-gray-600 text-center sm:text-left">
-        Showing <span class="font-semibold">{{ paginatedCompanies.length }}</span> of 
-        <span class="font-semibold">{{ filteredCompanies.length }}</span> companies (Page {{ currentPage }} of {{ totalPages }})
-      </p>
+      <div class="flex flex-col sm:flex-row justify-between items-center mt-6 gap-4 px-3 lg:px-0">
+        <p class="text-sm text-gray-600 text-center sm:text-left">
+          Showing <span class="font-semibold">{{ paginatedCompanies.length }}</span> of 
+          <span class="font-semibold">{{ totalResults }}</span> companies (Page {{ currentPage }} of {{ totalPages }})
+        </p>
       <div class="flex gap-2">
         <button 
           @click="prevPage"
@@ -476,9 +472,9 @@
 import { ref, computed, defineAsyncComponent, watchEffect, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { Search as SearchIcon, Eye as EyeIcon, CheckCircle as CheckCircleIcon, ChevronDown as ChevronDownIcon, ChevronLeft as ChevronLeftIcon, ChevronRight as ChevronRightIcon, Filter as FilterIcon, Phone as PhoneIcon, Globe as GlobeIcon, MoreHorizontal } from "lucide-vue-next";
-import { getStatusClass, getStatusShort } from '~/composables/useStatusClass'
+import { getStatusClass } from '~/composables/useStatusClass'
 import { useSelection } from '~/composables/useSelection'
-import { useStubClient, useStubResource } from '~/services/stubClient'
+import { useStubClient } from '~/services/stubClient'
 import DetailModal from '~/components/common/DetailModal.vue'
 import { useClientEventListener } from '@/composables/useClientEventListener';
 
@@ -531,39 +527,70 @@ const toast = (type, message) => {
   } catch {}
 }
 
+const createDefaultMeta = () => ({
+  page: 1,
+  pageSize: itemsPerPage,
+  total: 0,
+  totalPages: 1,
+  hasNext: false,
+  hasPrevious: false,
+  categories: [],
+  statuses: [],
+});
+
+const fallbackMeta = createDefaultMeta()
+
+const queryParams = computed(() => ({
+  page: currentPage.value,
+  pageSize: itemsPerPage,
+  search: searchQuery.value.trim() || undefined,
+  status: filters.value.status || undefined,
+  category: filters.value.category || undefined,
+  dateFrom: filters.value.dateFrom || undefined,
+  dateTo: filters.value.dateTo || undefined,
+  timeRange: filters.value.timeRange || undefined,
+}));
+
 // --- Data Fetching (SSR-friendly) ---
-const { data: companiesData, pending, error: companiesError, refresh } = await useStubResource('companies')
+const { data: companiesPayload, pending, error: companiesError, refresh } = await useFetch('/api/companies', {
+  query: queryParams,
+  watch: [
+    currentPage,
+    searchQuery,
+    () => filters.value.status,
+    () => filters.value.category,
+    () => filters.value.dateFrom,
+    () => filters.value.dateTo,
+    () => filters.value.timeRange,
+  ],
+  default: () => ({ items: [], meta: createDefaultMeta() }),
+  transform: (response) => ({
+    items: Array.isArray(response?.data) ? response.data : [],
+    meta: { ...createDefaultMeta(), ...(response?.meta || {}) },
+  }),
+});
+
 const isLoading = computed(() => pending.value)
+const paginationMeta = computed(() => companiesPayload.value?.meta ?? fallbackMeta)
+const totalPages = computed(() => paginationMeta.value.totalPages || 1)
+const paginatedCompanies = computed(() => companies.value)
+const totalResults = computed(() => paginationMeta.value.total ?? companies.value.length)
 
-// --- Computed Properties ---
 const categories = computed(() => {
-  return [...new Set(companies.value.map(c => c.category))];
-});
+  const available = paginationMeta.value.categories
+  if (Array.isArray(available) && available.length) {
+    return available
+  }
+  return [...new Set(companies.value.map(c => c.category).filter(Boolean))]
+})
 
-const filteredCompanies = computed(() => {
-  if (isLoading.value) return [];
-  
-  const query = (searchQuery.value || '').toLowerCase();
-  const { status, category } = filters.value;
-
-  return companies.value.filter(company => {
-    const searchMatch = !query || company.name.toLowerCase().includes(query) || company.category.toLowerCase().includes(query);
-    const statusMatch = !status || company.status === status;
-    const categoryMatch = !category || company.category === category;
-    
-    return searchMatch && statusMatch && categoryMatch;
-  });
-});
-
-const totalPages = computed(() => {
-    return Math.ceil(filteredCompanies.value.length / itemsPerPage);
-});
-
-const paginatedCompanies = computed(() => {
-    const start = (currentPage.value - 1) * itemsPerPage;
-    const end = start + itemsPerPage;
-    return filteredCompanies.value.slice(start, end);
-});
+const statusOptions = computed(() => {
+  const available = paginationMeta.value.statuses
+  if (Array.isArray(available) && available.length) {
+    return available
+  }
+  return ['Approved', 'Pending', 'Rejected']
+})
 
 const companyDetailItems = computed(() => {
   if (!selectedCompany.value) return [];
@@ -617,6 +644,16 @@ if (import.meta.client) {
     router.replace({ query: nextQuery }).catch(() => {});
   });
 }
+
+watch(
+  () => paginationMeta.value.totalPages,
+  (nextTotal) => {
+    const maxPages = nextTotal || 1;
+    if (currentPage.value > maxPages) {
+      currentPage.value = maxPages;
+    }
+  },
+);
 
 const getDisplayIndex = (indexInPage) => {
     const trueIndex = (currentPage.value - 1) * itemsPerPage + indexInPage + 1;
@@ -709,9 +746,9 @@ const handleCompanyCreated = async () => {
   await refresh();
 };
 
-// Populate companies when fetch completes
+// Populate page companies when fetch completes
 watchEffect(() => {
-  const raw = companiesData?.value || []
+  const raw = companiesPayload.value?.items || []
   companies.value = raw.map(c => ({ ...c, selected: false }))
   mobileActionsIndex.value = null
   expandedCompanyId.value = null

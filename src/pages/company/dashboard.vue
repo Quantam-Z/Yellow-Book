@@ -5,11 +5,9 @@
 </template>
 
 <script setup>
-import Dashboard from '~/components/SubAdmin/dashboard.vue';
-
-
+import Dashboard from '~/components/Company/dashboard.vue';
 
 definePageMeta({
-  layout: "subadminpanel",
+  layout: "company",
 });
 </script>

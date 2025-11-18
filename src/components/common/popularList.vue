@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import { MapPin, Search } from 'lucide-vue-next';
+import { MapPin, Search, Heart } from 'lucide-vue-next';
+import { storeToRefs } from 'pinia';
 
 import Pagination from '@/components/common/pagination.vue';
 import RatingStars from '@/components/common/RatingStars.vue';
 import { useDirectoryListings } from '@/composables/useDirectoryListings';
 import type { DirectoryListing } from '@/types/directory';
+import { useStubClient, useStubResource } from '~/services/stubClient';
+import { useAuthStore } from '~/stores/auth';
 
 type ListingCard = {
   id: string;
@@ -33,6 +36,11 @@ const searchTerm = ref('');
 const currentPage = ref(1);
 
 const { listings: directoryListings, ensureLoaded, pending, ready } = useDirectoryListings();
+const stubClient = useStubClient();
+const nuxtApp = useNuxtApp();
+const { data: favoritesData, refresh: refreshFavorites } = await useStubResource('favorites');
+const authStore = useAuthStore();
+const { isAuthenticated } = storeToRefs(authStore);
 
 await ensureLoaded();
 
@@ -66,6 +74,20 @@ const normalizedListings = computed<ListingCard[]>(() => {
       emergencyService: entry.emergencyService ?? false,
     };
   });
+});
+
+const favoriteKeyFor = (listing: ListingCard) => String(listing.slug || listing.id);
+
+const favoriteLookup = computed(() => {
+  const map = new Map<string, any>();
+  const raw = Array.isArray(favoritesData.value) ? favoritesData.value : [];
+  for (const entry of raw) {
+    const key = entry?.slug || entry?.listingId || entry?.id;
+    if (key) {
+      map.set(String(key), entry);
+    }
+  }
+  return map;
 });
 
 const filteredListings = computed(() => {
@@ -152,6 +174,53 @@ const formatPrice = (value?: number) => {
     return `$${value}`;
   }
 };
+
+const isListingFavorited = (listing: ListingCard) => favoriteLookup.value.has(favoriteKeyFor(listing));
+
+const notify = (type: 'success' | 'alert', message: string) => {
+  if (!import.meta.client) return;
+  try {
+    nuxtApp.$awn?.[type](message);
+  } catch {}
+};
+
+const ensureLoggedIn = () => {
+  if (isAuthenticated.value) return true;
+  notify('alert', 'Please log in to save favourites.');
+  return false;
+};
+
+const toggleFavorite = async (listing: ListingCard) => {
+  if (!ensureLoggedIn()) return;
+  const key = favoriteKeyFor(listing);
+  const existing = favoriteLookup.value.get(key);
+  try {
+    if (existing) {
+      await stubClient.remove('favorites', existing.id, { delay: 140 });
+      await refreshFavorites();
+      notify('success', 'Removed from favourites');
+    } else {
+      await stubClient.create(
+        'favorites',
+        {
+          name: listing.title,
+          slug: listing.slug,
+          listingId: listing.id,
+          category: listing.category,
+          rating: listing.rating,
+          savedAt: new Date().toISOString(),
+          userId: authStore.user?.id ?? null,
+        },
+        { delay: 150 },
+      );
+      await refreshFavorites();
+      notify('success', 'Saved to favourites');
+    }
+  } catch (error) {
+    console.error('Failed to update favourites', error);
+    notify('alert', 'Unable to update favourites right now.');
+  }
+};
 </script>
 
 <template>
@@ -213,14 +282,14 @@ const formatPrice = (value?: number) => {
     </div>
 
     <template v-else>
-      <div
+        <div
         v-if="paginatedListings.length"
-        class="w-full max-w-6xl grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8"
+          class="w-full max-w-6xl grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8"
       >
         <article
           v-for="listing in paginatedListings"
           :key="listing.id"
-          class="group rounded-[32px] overflow-hidden bg-white border border-gray-100 shadow-xl shadow-black/5 flex flex-col transition duration-300 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-[#fbd551]"
+            class="group relative rounded-[32px] overflow-hidden bg-white border border-gray-100 shadow-xl shadow-black/5 flex flex-col transition duration-300 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-[#fbd551]"
           role="button"
           tabindex="0"
           :aria-label="`View details for ${listing.title}`"
@@ -228,6 +297,19 @@ const formatPrice = (value?: number) => {
           @keyup.enter.prevent="handleNavigate(listing)"
           @keyup.space.prevent="handleNavigate(listing)"
         >
+            <button
+              type="button"
+              class="absolute top-4 right-4 z-10 rounded-full bg-white/80 backdrop-blur px-3 py-2 shadow hover:scale-105 transition transform"
+              :class="isListingFavorited(listing) ? 'text-red-500' : 'text-gray-500'"
+              :aria-pressed="isListingFavorited(listing)"
+              aria-label="Toggle favourite"
+              @click.stop="toggleFavorite(listing)"
+            >
+              <Heart
+                class="h-4 w-4"
+                :class="isListingFavorited(listing) ? 'fill-red-500 text-red-500' : 'fill-transparent text-gray-500'"
+              />
+            </button>
           <div class="relative w-full h-64 sm:h-72 overflow-hidden">
             <img
               class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"

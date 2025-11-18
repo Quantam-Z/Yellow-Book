@@ -4,7 +4,7 @@ definePageMeta({
 })
 
 // Redirect away from dashboard to the profile page
-await navigateTo('/dashboard/userProfile/review', { replace: true })
+await navigateTo('/user/review', { replace: true })
 </script>
 
 <template>

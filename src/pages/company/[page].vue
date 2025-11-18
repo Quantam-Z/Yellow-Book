@@ -3,7 +3,7 @@ import { defineAsyncComponent, computed } from 'vue';
 import { useRoute } from 'vue-router';
 
 definePageMeta({
-  layout: 'agencyprofile',
+  layout: 'company',
 });
 
 function generateNameCandidates(slug: string): string[] {
@@ -16,11 +16,12 @@ function generateNameCandidates(slug: string): string[] {
 }
 
 const route = useRoute();
-const modules = import.meta.glob('@/components/AgencyProfile/*.vue');
+const modules = import.meta.glob('@/components/Company/*.vue');
 
 // Handle known slug aliases/misspellings
 const aliasMap: Record<string, string[]> = {
-  'mycompanie': ['mycompany'],
+  'my-company': ['mycompany', 'mycompanie'],
+  'my-profile': ['myprofile'],
 };
 
 const SelectedComponent = computed(() => {
@@ -50,7 +51,7 @@ const SelectedComponent = computed(() => {
     <component v-if="SelectedComponent" :is="SelectedComponent" />
     <div v-else class="p-6">
       <h1 class="text-2xl font-semibold">Page not found</h1>
-      <p class="text-gray-600">No matching agency profile component for this route.</p>
+        <p class="text-gray-600">No matching company workspace component for this route.</p>
     </div>
   </div>
 </template>

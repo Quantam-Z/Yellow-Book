@@ -2,7 +2,7 @@ export default defineNuxtPlugin((nuxtApp) => {
   const pinia = nuxtApp.$pinia;
   if (!pinia) return;
 
-  const persistPlugin = ({ store, options }) => {
+    const persistPlugin = ({ store, options }) => {
     // Only run on client where localStorage exists
     if (process.server) return;
 
@@ -10,7 +10,8 @@ export default defineNuxtPlugin((nuxtApp) => {
     const shouldPersist = persistOption === true || (typeof persistOption === 'object' && persistOption.enabled !== false);
     if (!shouldPersist) return;
 
-    const storageKey = (typeof persistOption === 'object' && persistOption.key) || `pinia:${store.$id}`;
+      const storageKey = (typeof persistOption === 'object' && persistOption.key) || `pinia:${store.$id}`;
+      const persistPaths = Array.isArray(persistOption?.paths) ? persistOption.paths : null;
 
     try {
       const raw = localStorage.getItem(storageKey);
@@ -21,9 +22,21 @@ export default defineNuxtPlugin((nuxtApp) => {
       // ignore corrupted state
     }
 
-    store.$subscribe((_mutation, state) => {
+      const extractState = (state) => {
+        if (!persistPaths || !persistPaths.length) {
+          return state;
+        }
+        return persistPaths.reduce((acc, key) => {
+          if (key in state) {
+            acc[key] = state[key];
+          }
+          return acc;
+        }, {});
+      };
+
+      store.$subscribe((_mutation, state) => {
       try {
-        localStorage.setItem(storageKey, JSON.stringify(state));
+          localStorage.setItem(storageKey, JSON.stringify(extractState(state)));
       } catch (_) {
         // storage might be full or unavailable
       }

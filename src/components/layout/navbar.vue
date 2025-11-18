@@ -38,8 +38,35 @@
         </div>
 
         <div class="hidden lg:flex items-center gap-6 text-[#212121]">
-          <div class="flex items-center justify-center cursor-pointer" @click="openLoginModal">
-            <div class="relative leading-[160%] font-normal text-base">Login</div>
+          <template v-if="!isAuthenticated">
+            <div class="flex items-center justify-center cursor-pointer" @click="openLoginModal">
+              <div class="relative leading-[160%] font-normal text-base">Login</div>
+            </div>
+          </template>
+          <div v-else class="relative">
+            <button
+              type="button"
+              class="flex items-center gap-3 rounded-full border border-[#dbe7ff] bg-white px-3 py-2 shadow-sm hover:shadow-md transition"
+              @click="toggleUserMenu"
+            >
+              <span class="w-8 h-8 rounded-full bg-[#212121] text-white flex items-center justify-center font-semibold text-sm">
+                {{ userInitials }}
+              </span>
+              <span class="hidden sm:block text-sm font-medium">{{ authUser?.name || authUser?.email }}</span>
+            </button>
+            <transition name="fade">
+              <div
+                v-if="showUserMenu"
+                class="absolute right-0 mt-3 w-48 rounded-xl border border-[#dbe7ff] bg-white shadow-lg py-2 text-sm z-50"
+              >
+                <button class="w-full text-left px-4 py-2 hover:bg-[#fff9e6] transition-colors" @click="goToUserDashboard">
+                  My Dashboard
+                </button>
+                <button class="w-full text-left px-4 py-2 text-red-500 hover:bg-red-50 transition-colors" @click="handleUserLogout">
+                  Logout
+                </button>
+              </div>
+            </transition>
           </div>
             <nuxt-link
               :to="listYourAgencyLink"
@@ -107,12 +134,28 @@
             </nav>
 
             <div class="space-y-3 mt-auto pt-6 border-t border-gray-200">
-              <button
-                @click="openLoginModal"
-                class="w-full py-3 px-6 text-[#212121] font-semibold text-lg border-2 border-[#212121] rounded-lg hover:bg-[#212121] hover:text-white transition-all"
-              >
-                Login
-              </button>
+                <template v-if="!isAuthenticated">
+                  <button
+                    @click="openLoginModal"
+                    class="w-full py-3 px-6 text-[#212121] font-semibold text-lg border-2 border-[#212121] rounded-lg hover:bg-[#212121] hover:text-white transition-all"
+                  >
+                    Login
+                  </button>
+                </template>
+                <template v-else>
+                  <button
+                    @click="goToUserDashboard"
+                    class="w-full py-3 px-6 text-[#212121] font-semibold text-lg border-2 border-[#212121] rounded-lg hover:bg-[#212121] hover:text-white transition-all"
+                  >
+                    My Dashboard
+                  </button>
+                  <button
+                    @click="handleUserLogout"
+                    class="w-full py-3 px-6 text-red-600 font-semibold text-lg border-2 border-red-200 rounded-lg hover:bg-red-50 transition-all"
+                  >
+                    Logout
+                  </button>
+                </template>
                 <nuxt-link
                   :to="listYourAgencyLink"
                   class="w-full py-3 px-6 bg-[#fcc207] text-[#212121] font-semibold text-lg rounded-lg border-b-2 border-[#e5b106] hover:bg-[#e5b106] transition-all text-center no-underline block"
@@ -220,6 +263,8 @@
 import LoginModal from '~/components/common/loginModal.vue'
 import { Menu, X } from 'lucide-vue-next'
 import { useDirectoryListings } from '@/composables/useDirectoryListings'
+import { useAuthStore } from '~/stores/auth'
+import { storeToRefs } from 'pinia'
 
 export default {
   name: 'ResponsiveLandingPage',
@@ -237,6 +282,11 @@ export default {
         getByTitle,
         listings,
       } = useDirectoryListings()
+        const authStore = useAuthStore()
+        if (process.client) {
+          authStore.hydrateFromStorage()
+        }
+        const { isAuthenticated, user } = storeToRefs(authStore)
 
       return {
         directoryEnsureLoaded: ensureLoaded,
@@ -247,6 +297,9 @@ export default {
         directoryGetById: getById,
         directoryGetByTitle: getByTitle,
         directoryListings: listings,
+          authStore,
+          isAuthenticated,
+          authUser: user,
       }
     },
     data() {
@@ -258,6 +311,7 @@ export default {
         cachedSearchQuery: '',
         showLoginModal: false,
         isMobileMenuOpen: false,
+          showUserMenu: false,
         defaultSearchPlaceholder,
         dropdownResultLimit: 12,
         directoryInitialized: false,
@@ -289,7 +343,16 @@ export default {
             return { path: '/agency', query: this.defaultAgencyQuery }
           }
           return '/agency'
-        }
+          },
+          userInitials() {
+            const source = (this.authUser && (this.authUser.name || this.authUser.email)) || ''
+            const parts = source.trim().split(/\s+/).filter(Boolean)
+            if (!parts.length) return 'U'
+            if (parts.length === 1) {
+              return parts[0].slice(0, 2).toUpperCase()
+            }
+            return `${parts[0][0]}${parts[1][0]}`.toUpperCase()
+          },
     },
   methods: {
     async initializeSearchDirectory() {
@@ -299,6 +362,21 @@ export default {
         await this.directoryEnsureLoaded()
       } catch (error) {
         console.error('Failed to load directory listings for search:', error)
+      }
+    },
+    toggleUserMenu() {
+      this.showUserMenu = !this.showUserMenu
+    },
+    async handleUserLogout() {
+      await this.authStore.logout()
+      this.showUserMenu = false
+      this.closeMobileMenu()
+    },
+    goToUserDashboard() {
+      this.showUserMenu = false
+      this.closeMobileMenu()
+      if (this.$router) {
+        this.$router.push('/user/my-profile')
       }
     },
     async openDropdown() {
@@ -376,6 +454,9 @@ export default {
           }
         }
       }
+    if (this.showUserMenu) {
+      this.showUserMenu = false
+    }
     },
       findAgencyRecord(value) {
         const normalized = this.normalizeTitle(value)

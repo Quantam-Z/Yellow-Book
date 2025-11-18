@@ -92,11 +92,11 @@ import { useAuthStore } from '~/stores/auth';
   // NEW: State to track scroll position
   const isScrolled = ref(false); 
   
-  const mainMenu = [
-    { label: "my reviews", icon: ClipboardList, to: "/dashboard/userProfile/my-reviews" },
-    { label: "favourite companies", icon: Briefcase, to: "/dashboard/userProfile/favourite-companies" },
-    { label: "my profile", icon: User, to: "/dashboard/userProfile/my-profile" },
-  ];
+const mainMenu = [
+  { label: "my reviews", icon: ClipboardList, to: "/user/my-reviews" },
+  { label: "favourite companies", icon: Briefcase, to: "/user/favourite-companies" },
+  { label: "my profile", icon: User, to: "/user/my-profile" },
+];
   
 const authStore = useAuthStore();
 
@@ -105,7 +105,7 @@ const handleLogout = async () => {
 };
 
 const bottomMenu = [
-  { label: "Settings", icon: Settings, to: "/dashboard/userProfile/settings" },
+  { label: "Settings", icon: Settings, to: "/user/settings" },
   { label: "Logout", icon: LogOut, action: handleLogout },
 ];
   

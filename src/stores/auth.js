@@ -2,18 +2,8 @@
 import { defineStore } from 'pinia'
 import { useNuxtApp, navigateTo } from '#imports'
 import { useStubClient } from '~/services/stubClient'
+import { normalizeEmail, buildStubToken, parseStubToken } from '~/utils/authTokens'
 import { setToken as setAuthToken, removeToken as clearAuthToken, getUser as getSavedUser, getToken as getSavedToken } from '~/composables/useAuth'
-
-const normalizeEmail = (value) =>
-  typeof value === 'string' ? value.trim().toLowerCase() : String(value ?? '').trim().toLowerCase()
-
-const parseStubToken = (token) => {
-  if (!token) return null
-  const match = /^stub-token-(?<id>[\w-]+)$/i.exec(String(token).trim())
-  return match?.groups?.id ?? null
-}
-
-const buildStubToken = (id) => `stub-token-${id ?? 'guest'}`
 
 const createAuthError = (status, message, code) => {
   const error = new Error(message)
@@ -35,10 +25,11 @@ const getNotifier = () => {
 
 // Authentication store with token and derived auth state
 export const useAuthStore = defineStore('auth', {
-  state: () => ({
-    user: null,
-    token: '',
-  }),
+    state: () => ({
+      user: null,
+      token: '',
+      pendingChallenge: null,
+    }),
   getters: {
     isAuthenticated: (state) => Boolean(state.token || (state.user && state.user.id)),
   },
@@ -91,6 +82,7 @@ export const useAuthStore = defineStore('auth', {
     async logout() {
       this.token = ''
       this.user = null
+        this.pendingChallenge = null
       clearAuthToken()
 
       const notifier = getNotifier()
@@ -118,6 +110,70 @@ export const useAuthStore = defineStore('auth', {
       this.user = { ...user }
       return this.user
     },
-  },
-  persist: true,
+      async requestEmailCode(payload = {}) {
+        const email = normalizeEmail(payload?.email)
+        if (!email) {
+          throw createAuthError(400, 'Email is required', 'EMAIL_REQUIRED')
+        }
+
+        const result = await $fetch('/api/auth/email-code', {
+          method: 'POST',
+          body: { email },
+        })
+
+        const expiresInMs = Number(result?.meta?.expiresInMs) || 5 * 60 * 1000
+        this.pendingChallenge = {
+          email,
+          sentAt: Date.now(),
+          expiresAt: Date.now() + expiresInMs,
+        }
+
+        const notifier = getNotifier()
+        notifier?.success('Verification code sent')
+
+        return result
+      },
+      async verifyEmailCode(payload = {}) {
+        const email = normalizeEmail(payload?.email)
+        const code = String(payload?.code ?? '').trim()
+        if (!email) {
+          throw createAuthError(400, 'Email is required', 'EMAIL_REQUIRED')
+        }
+        if (!code) {
+          throw createAuthError(400, 'Verification code is required', 'CODE_REQUIRED')
+        }
+
+        const response = await $fetch('/api/auth/email-code/verify', {
+          method: 'POST',
+          body: { email, code },
+        })
+
+        const token = response?.token
+        const user = response?.user
+
+        if (!token || !user) {
+          throw createAuthError(500, 'Invalid server response', 'INVALID_RESPONSE')
+        }
+
+        this.token = token
+        this.user = user
+        this.pendingChallenge = null
+        setAuthToken(token, user)
+
+        const notifier = getNotifier()
+        notifier?.success('Logged in successfully')
+
+        return {
+          token,
+          user,
+        }
+      },
+      clearEmailChallenge() {
+        this.pendingChallenge = null
+      },
+    },
+    persist: {
+      key: 'auth',
+      paths: ['user', 'token'],
+    },
 })

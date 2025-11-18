@@ -18,6 +18,13 @@
       <h2 class="text-sm font-semibold text-gray-700">All Favorite List</h2>
 
       <div
+        v-if="!items.length"
+        class="w-full rounded-xl border border-dashed border-gray-300 bg-white py-12 px-6 text-center text-gray-500 text-sm sm:text-base"
+      >
+        You haven't saved any companies yet. Browse the directory and tap the heart icon to add favorites.
+      </div>
+
+      <div
         v-for="(item, index) in items"
         :key="index"
         class="w-full relative rounded-lg border-whitesmoke border-solid border-[1px] box-border text-left text-num-16 text-gray font-plus-jakarta-sans
@@ -92,35 +99,44 @@
 <script setup lang="ts">
 import { Building2, Star, Heart } from 'lucide-vue-next'
 import { computed, watch } from 'vue'
+import { storeToRefs } from 'pinia'
 
-// Load favourite companies from public stubs
 import { useStubClient, useStubResource } from '~/services/stubClient'
 import type { Ref } from 'vue'
+import { useAuthStore } from '~/stores/auth'
 
 const nuxtApp = useNuxtApp()
 const stubClient = useStubClient()
+const authStore = useAuthStore()
+const { user: authUser } = storeToRefs(authStore)
 
-const { data: companiesData, error: companiesError, refresh } = await useStubResource('companies')
+const {
+  data: favoritesData,
+  error: favoritesError,
+  refresh,
+} = await useStubResource('favorites')
 
-// Map to the view model used by the design
 const items = computed(() => {
-  const raw = (companiesData.value || []) as Array<any>
+  const raw = (favoritesData.value || []) as Array<any>
+  const targetId = authUser.value?.id
   return raw
-    .filter((c) => c?.favourited !== false)
-    .slice(0, 8)
-    .map((c, index) => ({
-    id: c.id || index,
-    name: c.name,
-    category: c.category || 'Technology',
-    assigned: '2024-10-22',
-    rating: 4 + ((c.id || 1) % 2),
-  }))
+    .filter((entry) => {
+      if (!targetId) return true
+      if (entry?.userId == null) return true
+      return String(entry.userId) === String(targetId)
+    })
+    .map((entry, index) => ({
+      id: entry.id ?? index,
+      name: entry.name || 'Unnamed company',
+      category: entry.category || 'General services',
+      assigned: entry.assigned || entry.savedAt || '—',
+      rating: entry.rating ?? 4,
+    }))
 })
 
-// Placeholder action handler
 const removeFavorite = async (id: number, name: string) => {
   try {
-    await stubClient.update('companies', id, { favourited: false }, { delay: 140 })
+    await stubClient.remove('favorites', id, { delay: 140 })
     await refresh()
     if (import.meta.client) {
       try {
@@ -137,9 +153,9 @@ const removeFavorite = async (id: number, name: string) => {
   }
 }
 
-watch(companiesError as Ref<any>, (err) => {
+watch(favoritesError as Ref<any>, (err) => {
   if (err) {
-    console.error('Failed to load companies', err)
+    console.error('Failed to load favourites', err)
     if (import.meta.client) {
       try {
         nuxtApp.$awn?.alert('Failed to load favourites')

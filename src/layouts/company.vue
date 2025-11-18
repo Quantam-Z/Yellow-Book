@@ -13,8 +13,8 @@
     </div>
   </template>
   
-  <script setup>
-  import Sidebar from '~/components/subadminLayout/sidebar.vue'
-  import Header from '~/components/subadminLayout/header.vue'
-  </script>
+<script setup>
+import Sidebar from '~/components/companyLayout/sidebar.vue'
+import Header from '~/components/companyLayout/header.vue'
+</script>
   
