@@ -224,181 +224,188 @@ const toggleFavorite = async (listing: ListingCard) => {
 </script>
 
 <template>
-    <section
-      class="w-full relative flex flex-col items-center gap-10 text-gray-900 font-plus-jakarta-sans px-4 sm:px-6 lg:px-8 py-10 sm:py-12 lg:py-14 bg-[#fffdf5]"
-    >
-    <form
-      class="w-full max-w-5xl grid gap-3 sm:grid-cols-[1fr_auto]"
-      @submit.prevent="onSearchSubmit"
-    >
-      <label
-        class="flex flex-1 items-center gap-3 rounded-2xl border border-gray-200 bg-white px-4 py-3 shadow-sm focus-within:border-[#e5b106] focus-within:ring-2 focus-within:ring-[#fbd551] transition duration-200"
+  <section class="w-full bg-[#f5f5f5] px-4 py-10 font-plus-jakarta-sans text-gray-900 sm:py-12 lg:py-16">
+    <div class="mx-auto flex w-full max-w-6xl flex-col gap-10">
+      <div
+        class="relative overflow-hidden rounded-[32px] bg-white shadow-[0_35px_70px_rgba(15,23,42,0.08)] ring-1 ring-black/5"
+        aria-hidden="true"
       >
-        <Search class="w-5 h-5 text-gray-400" aria-hidden="true" />
+        <img
+          src="/Frame(10).svg"
+          alt="Trusted help banner"
+          class="h-full w-full object-cover"
+          loading="lazy"
+        />
+      </div>
+
+      <header class="text-center">
+        <p class="text-sm font-semibold uppercase tracking-[0.35em] text-[#f59e0b]">Curated picks</p>
+        <h1 class="mt-2 text-3xl font-bold text-[#212121] sm:text-[40px]">Popular List</h1>
+        <p class="mx-auto mt-3 max-w-3xl text-base text-[#616161] sm:text-lg">
+          Browse standout agencies and studios trusted by teams across Mongolia. Compare ratings, see what they
+          specialise in, and reach out when you’re ready.
+        </p>
+      </header>
+
+      <form
+        class="mx-auto flex w-full max-w-3xl items-center gap-3 rounded-full border border-[#ececec] bg-white px-4 py-2 shadow-[0_20px_60px_rgba(15,23,42,0.08)]"
+        @submit.prevent="onSearchSubmit"
+      >
+        <label class="sr-only" for="popular-search">Search popular listings</label>
+        <Search class="h-5 w-5 text-gray-400" aria-hidden="true" />
         <input
+          id="popular-search"
           v-model="searchTerm"
           type="search"
-          placeholder="Search by name, service, or city"
-          class="flex-1 bg-transparent text-sm sm:text-base text-gray-700 placeholder:text-gray-400 focus:outline-none"
+          placeholder="Search by company, service, or city"
+          class="flex-1 bg-transparent text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none sm:text-base"
           aria-label="Search popular listings"
         />
-      </label>
-      <button
-        type="submit"
-        class="inline-flex items-center justify-center rounded-2xl bg-[#212121] px-6 py-3 text-white text-sm sm:text-base font-medium shadow-lg shadow-[#212121]/20 hover:bg-[#000] focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#212121] transition duration-200"
-      >
-        Search
-      </button>
-    </form>
+        <button
+          type="submit"
+          class="inline-flex h-12 min-w-[120px] items-center justify-center rounded-full bg-[#212121] px-6 text-sm font-semibold uppercase tracking-wider text-white transition hover:bg-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#fcd34d]"
+        >
+          Search
+        </button>
+      </form>
 
-    <div
-      class="w-full max-w-5xl text-sm text-gray-500 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2"
-      aria-live="polite"
-    >
-      <span v-if="resultsMeta.total > 0">
-        Showing {{ resultsMeta.start }}–{{ resultsMeta.end }} of {{ resultsMeta.total }} curated listings
-      </span>
-      <span v-else-if="isLoading">Loading curated listings…</span>
-      <span v-else>No listings match your search yet. Try a different keyword.</span>
-      <span class="text-xs uppercase tracking-[0.3em] text-gray-400">Updated daily</span>
-    </div>
-
-    <div
-      v-if="isLoading"
-      class="w-full max-w-6xl grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8"
-    >
       <div
-        v-for="index in skeletonCards"
-        :key="index"
-        class="rounded-[32px] bg-white border border-gray-100 shadow-xl shadow-black/5 flex flex-col animate-pulse overflow-hidden"
+        class="flex flex-col items-center gap-2 text-sm text-gray-500 sm:flex-row sm:items-center sm:justify-between"
+        aria-live="polite"
       >
-        <div class="w-full h-64 sm:h-72 bg-gray-200" />
-        <div class="flex flex-col gap-4 p-6">
-          <div class="h-6 w-3/4 bg-gray-200 rounded-full" />
-          <div class="h-14 w-full bg-gray-100 rounded-2xl" />
-          <div class="h-5 w-1/2 bg-gray-200 rounded-full" />
+        <span v-if="resultsMeta.total > 0">
+          Showing {{ resultsMeta.start }}–{{ resultsMeta.end }} of {{ resultsMeta.total }} companies
+        </span>
+        <span v-else-if="isLoading">Loading curated listings…</span>
+        <span v-else>No listings match your search yet. Try changing the keyword.</span>
+        <span class="inline-flex items-center gap-2 text-xs uppercase tracking-[0.3em] text-gray-400">
+          <span class="h-1.5 w-1.5 rounded-full bg-[#f59e0b]" aria-hidden="true" />
+          Updated daily
+        </span>
+      </div>
+
+      <div v-if="isLoading" class="grid w-full gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div
+          v-for="index in skeletonCards"
+          :key="index"
+          class="flex animate-pulse flex-col overflow-hidden rounded-3xl border border-[#f0f0f0] bg-white shadow-[0_20px_50px_rgba(15,23,42,0.08)]"
+        >
+          <div class="h-56 w-full bg-gray-200" />
+          <div class="flex flex-col gap-4 p-6">
+            <div class="h-6 w-3/4 rounded-full bg-gray-200" />
+            <div class="h-4 w-full rounded-full bg-gray-100" />
+            <div class="h-4 w-1/2 rounded-full bg-gray-200" />
+          </div>
         </div>
       </div>
-    </div>
 
-    <template v-else>
-        <div
-        v-if="paginatedListings.length"
-          class="w-full max-w-6xl grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8"
-      >
-        <article
-          v-for="listing in paginatedListings"
-          :key="listing.id"
-            class="group relative rounded-[32px] overflow-hidden bg-white border border-gray-100 shadow-xl shadow-black/5 flex flex-col transition duration-300 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-[#fbd551]"
-          role="button"
-          tabindex="0"
-          :aria-label="`View details for ${listing.title}`"
-          @click="handleNavigate(listing)"
-          @keyup.enter.prevent="handleNavigate(listing)"
-          @keyup.space.prevent="handleNavigate(listing)"
-        >
-            <button
-              type="button"
-              class="absolute top-4 right-4 z-10 rounded-full bg-white/80 backdrop-blur px-3 py-2 shadow hover:scale-105 transition transform"
-              :class="isListingFavorited(listing) ? 'text-red-500' : 'text-gray-500'"
-              :aria-pressed="isListingFavorited(listing)"
-              aria-label="Toggle favourite"
-              @click.stop="toggleFavorite(listing)"
-            >
-              <Heart
-                class="h-4 w-4"
-                :class="isListingFavorited(listing) ? 'fill-red-500 text-red-500' : 'fill-transparent text-gray-500'"
+      <template v-else>
+        <div v-if="paginatedListings.length" class="grid w-full gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <article
+            v-for="listing in paginatedListings"
+            :key="listing.id"
+            class="group flex flex-col overflow-hidden rounded-3xl border border-[#f0f0f0] bg-white shadow-[0_20px_50px_rgba(15,23,42,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_35px_70px_rgba(15,23,42,0.12)] focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-[#fcd34d]"
+            role="button"
+            tabindex="0"
+            :aria-label="`View details for ${listing.title}`"
+            @click="handleNavigate(listing)"
+            @keyup.enter.prevent="handleNavigate(listing)"
+            @keyup.space.prevent="handleNavigate(listing)"
+          >
+            <div class="relative h-56 w-full overflow-hidden">
+              <img
+                class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                :src="listing.cover"
+                :alt="listing.title"
+                loading="lazy"
               />
-            </button>
-          <div class="relative w-full h-64 sm:h-72 overflow-hidden">
-            <img
-              class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-              :src="listing.cover"
-              :alt="listing.title"
-              loading="lazy"
-            />
-            <span
-              class="absolute top-4 left-4 rounded-full bg-white/90 backdrop-blur px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-gray-800"
-            >
-              {{ listing.category }}
-            </span>
-            <span
-              v-if="listing.emergencyService"
-              class="absolute top-4 right-4 rounded-full bg-[#fff3d3] px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-[#a16207]"
-            >
-              24/7
-            </span>
-          </div>
-
-          <div class="flex flex-col gap-5 p-6 text-left">
-            <div class="flex flex-col gap-3">
-              <h3 class="text-xl font-semibold leading-snug capitalize text-[#212121]">
-                {{ listing.title }}
-              </h3>
-              <p class="text-sm text-gray-600 leading-relaxed">
-                {{ listing.description }}
-              </p>
+              <span
+                class="absolute left-5 top-5 rounded-full bg-white/90 px-4 py-1 text-xs font-semibold uppercase tracking-wide text-[#212121]"
+              >
+                {{ listing.category }}
+              </span>
+              <span
+                v-if="listing.emergencyService"
+                class="absolute right-5 top-5 rounded-full bg-[#fff3cd] px-4 py-1 text-xs font-semibold uppercase tracking-wide text-[#a16207]"
+              >
+                24/7
+              </span>
+              <button
+                type="button"
+                class="absolute bottom-5 right-5 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-gray-500 shadow-md transition hover:scale-105"
+                :class="isListingFavorited(listing) ? 'text-red-500' : 'text-gray-500'"
+                :aria-pressed="isListingFavorited(listing)"
+                aria-label="Toggle favourite"
+                @click.stop="toggleFavorite(listing)"
+              >
+                <Heart
+                  class="h-4 w-4"
+                  :class="isListingFavorited(listing) ? 'fill-red-500 text-red-500' : 'text-gray-500'"
+                />
+              </button>
             </div>
 
-            <div class="flex flex-wrap items-center gap-2 text-xs font-medium text-gray-600">
-              <span
-                v-if="listing.serviceType"
-                class="inline-flex items-center rounded-full bg-gray-50 px-3 py-1 border border-gray-200"
-              >
-                {{ listing.serviceType }}
-              </span>
-              <span
-                v-if="listing.revenue"
-                class="inline-flex items-center rounded-full bg-gray-50 px-3 py-1 border border-gray-200"
-              >
-                {{ listing.revenue }}
-              </span>
-              <span
-                v-if="listing.price"
-                class="inline-flex items-center rounded-full bg-gray-50 px-3 py-1 border border-gray-200"
-              >
-                {{ formatPrice(listing.price) }} avg
-              </span>
-            </div>
+            <div class="flex flex-1 flex-col gap-4 p-6 text-left">
+              <div class="space-y-2">
+                <h3 class="text-xl font-semibold text-[#212121]">
+                  {{ listing.title }}
+                </h3>
+                <p class="text-sm leading-relaxed text-gray-600">
+                  {{ listing.description }}
+                </p>
+              </div>
 
-            <div class="flex items-center justify-between flex-wrap gap-4">
-              <RatingStars
-                :rating="listing.rating"
-                :count="listing.reviews"
-                :show-count="true"
-                :show-value="true"
-                size="sm"
-                color="#fbbf24"
-                empty-color="#f1f5f9"
-                aria-label="Company rating"
-              />
-              <div class="flex items-center gap-2 text-sm text-gray-500">
-                <MapPin class="w-4 h-4 text-[#f97316]" aria-hidden="true" />
-                <span class="font-medium capitalize">{{ listing.location }}</span>
+              <div class="flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                <span v-if="listing.serviceType" class="rounded-full bg-[#fff9e6] px-3 py-1 text-[#ad6800]">
+                  {{ listing.serviceType }}
+                </span>
+                <span v-if="listing.revenue" class="rounded-full bg-[#f3f4f6] px-3 py-1 text-gray-600">
+                  {{ listing.revenue }}
+                </span>
+                <span v-if="listing.price" class="rounded-full bg-[#f3f4f6] px-3 py-1 text-gray-600">
+                  {{ formatPrice(listing.price) }} avg
+                </span>
+              </div>
+
+              <div class="mt-auto flex flex-wrap items-center justify-between gap-4">
+                <RatingStars
+                  :rating="listing.rating"
+                  :count="listing.reviews"
+                  :show-count="true"
+                  :show-value="true"
+                  size="sm"
+                  color="#fbbf24"
+                  empty-color="#f1f5f9"
+                  aria-label="Company rating"
+                />
+                <div class="inline-flex items-center gap-2 text-sm font-medium text-gray-600">
+                  <MapPin class="h-4 w-4 text-[#f97316]" aria-hidden="true" />
+                  <span class="capitalize">{{ listing.location }}</span>
+                </div>
               </div>
             </div>
-          </div>
-        </article>
-      </div>
+          </article>
+        </div>
 
-      <div
-        v-else
-        class="w-full max-w-3xl text-center bg-white border border-dashed border-gray-200 rounded-3xl p-10 flex flex-col gap-4"
-      >
-        <h3 class="text-xl font-semibold text-gray-900">We couldn’t find anything</h3>
-        <p class="text-sm text-gray-500">
-          Try adjusting your search keywords or explore another service category to discover more agencies.
-        </p>
-      </div>
-    </template>
+        <div
+          v-else
+          class="flex w-full max-w-3xl flex-col items-center gap-4 rounded-3xl border border-dashed border-gray-200 bg-white p-10 text-center"
+        >
+          <h3 class="text-xl font-semibold text-gray-900">We couldn’t find anything</h3>
+          <p class="text-sm text-gray-500">
+            Try adjusting your search keywords or explore another service category to discover more agencies.
+          </p>
+        </div>
+      </template>
 
-    <Pagination
-      v-if="shouldShowPagination && !isLoading && filteredListings.length"
-      v-model="currentPage"
-      :total-pages="totalPages"
-      :max-visible="4"
-      class="w-full flex justify-center pt-4"
-    />
+      <Pagination
+        v-if="shouldShowPagination && !isLoading && filteredListings.length"
+        v-model="currentPage"
+        :total-pages="totalPages"
+        :max-visible="5"
+        class="mt-2 w-full justify-center"
+      />
+    </div>
   </section>
 </template>
 

@@ -3,12 +3,6 @@ import PopularList from '~/components/common/popularList.vue';
 
 definePageMeta({
   layout: 'info-page',
-  infoNav: {
-    eyebrow: 'Discover top-rated partners',
-    title: 'Popular list',
-    description:
-      'Explore high-performing companies across industries. Filter by category, city, or service to find the right fit for your next project.',
-  },
 });
 
 useHead({
