@@ -51,24 +51,52 @@ const hasHeroContent = computed(() => Boolean(props.eyebrow || props.title || pr
 
 <template>
   <section class="w-full">
-    <div class="border-b border-[#e0e0e0] bg-white">
-      <div class="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-4 sm:px-6 lg:px-8">
-        <div class="flex flex-col gap-4">
-          <div class="flex items-center justify-between gap-3">
+      <div class="border-b border-[#ededed] bg-white">
+        <div class="mx-auto flex w-full max-w-6xl flex-col px-4 sm:px-6 lg:px-8">
+          <div class="flex h-20 items-center gap-3">
             <NuxtLink to="/" class="flex items-center gap-3 text-[#212121]" aria-label="Navigate to home">
-              <span
-                class="flex h-8 w-8 items-center justify-center rounded bg-[#ffd335] text-sm font-semibold text-[#212121]"
-              >
+              <span class="flex h-9 w-9 items-center justify-center rounded bg-[#ffd335] text-sm font-semibold text-[#212121]">
                 Y
               </span>
-              <span class="text-xl font-semibold tracking-wide">
+              <span class="text-[22px] font-semibold tracking-wide">
                 Yello<span class="text-base font-normal text-[#9e9e9e]">.mn</span>
               </span>
             </NuxtLink>
 
+            <nav
+              class="ml-6 hidden flex-1 items-center gap-8 text-[15px] font-medium text-[#9e9e9e] md:flex"
+              aria-label="Page navigation"
+            >
+              <NuxtLink
+                v-for="item in navItems"
+                :key="item.to"
+                :to="item.to"
+                class="relative pb-2 transition-colors duration-200"
+                :class="activePath === item.to ? 'text-[#212121]' : 'hover:text-[#212121]'"
+              >
+                {{ item.label }}
+                <span
+                  class="pointer-events-none absolute bottom-0 left-1/2 h-[2px] w-6 -translate-x-1/2 rounded-full bg-[#212121] transition-opacity duration-200"
+                  :class="activePath === item.to ? 'opacity-100' : 'opacity-0'"
+                ></span>
+              </NuxtLink>
+            </nav>
+
+            <div class="hidden items-center gap-4 text-sm font-semibold text-[#212121] md:flex">
+              <NuxtLink to="/auth/login" class="font-medium text-[#4a4a4a] transition-colors hover:text-[#212121]">
+                Login
+              </NuxtLink>
+              <NuxtLink
+                to="/agency"
+                class="rounded border border-[#212121] px-5 py-2 text-center text-sm font-semibold uppercase tracking-wide transition-all hover:bg-[#212121] hover:text-white"
+              >
+                List Your Agency
+              </NuxtLink>
+            </div>
+
             <button
               type="button"
-              class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#e5e5e5] text-[#212121] shadow-sm transition hover:border-[#212121] hover:text-[#212121] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#212121] md:hidden"
+              class="ml-auto inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#e5e5e5] text-[#212121] shadow-sm transition hover:border-[#212121] hover:text-[#212121] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#212121] md:hidden"
               :aria-expanded="isMenuOpen"
               aria-controls="info-mobile-nav"
               @click="toggleMenu"
@@ -79,51 +107,18 @@ const hasHeroContent = computed(() => Boolean(props.eyebrow || props.title || pr
             </button>
           </div>
 
-          <div class="hidden flex-col gap-4 md:flex md:flex-row md:items-center md:justify-between">
-            <nav
-              class="flex flex-1 flex-wrap items-center justify-center gap-6 text-sm font-medium text-[#9e9e9e]"
-              aria-label="Page navigation"
-            >
-              <NuxtLink
-                v-for="item in navItems"
-                :key="item.to"
-                :to="item.to"
-                class="relative pb-2 text-[15px] transition-colors duration-200 sm:text-base"
-                :class="activePath === item.to ? 'text-[#212121]' : 'text-[#9e9e9e] hover:text-[#212121]'"
-              >
-                {{ item.label }}
-                <span
-                  class="pointer-events-none absolute bottom-0 left-0 right-0 mx-auto h-[2px] w-6 rounded-full bg-[#212121] transition-opacity duration-200"
-                  :class="activePath === item.to ? 'opacity-100' : 'opacity-0'"
-                ></span>
-              </NuxtLink>
-            </nav>
-
-            <div class="flex items-center gap-3 text-sm font-semibold text-[#212121]">
-              <NuxtLink to="/auth/login" class="font-medium text-[#4a4a4a] transition-colors hover:text-[#212121]">
-                Login
-              </NuxtLink>
-              <NuxtLink
-                to="/agency"
-                class="rounded border border-[#212121] px-4 py-2 text-center text-sm font-semibold uppercase tracking-wide transition-all hover:bg-[#212121] hover:text-white"
-              >
-                List Your Agency
-              </NuxtLink>
-            </div>
-          </div>
-
           <div
             v-if="isMenuOpen"
             id="info-mobile-nav"
-            class="flex flex-col gap-4 rounded-2xl border border-[#f1f1f1] bg-white p-4 text-center shadow-md md:hidden"
+            class="flex flex-col gap-4 border-t border-[#f1f1f1] py-4 text-center md:hidden"
           >
             <nav class="flex flex-col gap-3 text-base font-medium text-[#212121]" aria-label="Page navigation">
               <NuxtLink
                 v-for="item in navItems"
                 :key="item.to"
                 :to="item.to"
-                class="rounded-full border border-transparent px-4 py-2 transition-colors duration-200"
-                :class="activePath === item.to ? 'border-[#212121] text-[#212121]' : 'text-[#9e9e9e] hover:text-[#212121]'"
+                class="rounded-full px-4 py-2 transition-colors duration-200"
+                :class="activePath === item.to ? 'bg-[#212121]/5 text-[#212121]' : 'text-[#9e9e9e] hover:text-[#212121]'"
                 @click="closeMenu"
               >
                 {{ item.label }}
@@ -146,7 +141,6 @@ const hasHeroContent = computed(() => Boolean(props.eyebrow || props.title || pr
               </NuxtLink>
             </div>
           </div>
-        </div>
       </div>
     </div>
 
