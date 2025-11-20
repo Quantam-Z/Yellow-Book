@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
+import { Menu, X } from 'lucide-vue-next';
 
 type NavItem = {
   label: string;
@@ -28,6 +29,22 @@ const navItems: NavItem[] = [
 ];
 
 const activePath = computed(() => route.path);
+const isMenuOpen = ref(false);
+
+const toggleMenu = () => {
+  isMenuOpen.value = !isMenuOpen.value;
+};
+
+const closeMenu = () => {
+  isMenuOpen.value = false;
+};
+
+watch(
+  () => route.path,
+  () => {
+    isMenuOpen.value = false;
+  },
+);
 
 const hasHeroContent = computed(() => Boolean(props.eyebrow || props.title || props.description));
 </script>
@@ -36,21 +53,35 @@ const hasHeroContent = computed(() => Boolean(props.eyebrow || props.title || pr
   <section class="w-full">
     <div class="border-b border-[#e0e0e0] bg-white">
       <div class="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-4 sm:px-6 lg:px-8">
-        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <NuxtLink to="/" class="flex items-center gap-3 text-[#212121]" aria-label="Navigate to home">
-            <span
-              class="flex h-8 w-8 items-center justify-center rounded bg-[#ffd335] text-sm font-semibold text-[#212121]"
-            >
-              Y
-            </span>
-            <span class="text-xl font-semibold tracking-wide">
-              Yello<span class="text-base font-normal text-[#9e9e9e]">.mn</span>
-            </span>
-          </NuxtLink>
+        <div class="flex flex-col gap-4">
+          <div class="flex items-center justify-between gap-3">
+            <NuxtLink to="/" class="flex items-center gap-3 text-[#212121]" aria-label="Navigate to home">
+              <span
+                class="flex h-8 w-8 items-center justify-center rounded bg-[#ffd335] text-sm font-semibold text-[#212121]"
+              >
+                Y
+              </span>
+              <span class="text-xl font-semibold tracking-wide">
+                Yello<span class="text-base font-normal text-[#9e9e9e]">.mn</span>
+              </span>
+            </NuxtLink>
 
-          <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-end md:gap-8 md:flex-1">
+            <button
+              type="button"
+              class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#e5e5e5] text-[#212121] shadow-sm transition hover:border-[#212121] hover:text-[#212121] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#212121] md:hidden"
+              :aria-expanded="isMenuOpen"
+              aria-controls="info-mobile-nav"
+              @click="toggleMenu"
+            >
+              <span class="sr-only">Toggle navigation menu</span>
+              <Menu v-if="!isMenuOpen" class="h-5 w-5" aria-hidden="true" />
+              <X v-else class="h-5 w-5" aria-hidden="true" />
+            </button>
+          </div>
+
+          <div class="hidden flex-col gap-4 md:flex md:flex-row md:items-center md:justify-between">
             <nav
-              class="flex flex-wrap items-center justify-center gap-6 text-sm font-medium text-[#9e9e9e] md:flex-1 md:justify-center"
+              class="flex flex-1 flex-wrap items-center justify-center gap-6 text-sm font-medium text-[#9e9e9e]"
               aria-label="Page navigation"
             >
               <NuxtLink
@@ -68,16 +99,48 @@ const hasHeroContent = computed(() => Boolean(props.eyebrow || props.title || pr
               </NuxtLink>
             </nav>
 
-            <div class="flex flex-col items-center gap-3 text-sm font-semibold text-[#212121] sm:flex-row">
+            <div class="flex items-center gap-3 text-sm font-semibold text-[#212121]">
+              <NuxtLink to="/auth/login" class="font-medium text-[#4a4a4a] transition-colors hover:text-[#212121]">
+                Login
+              </NuxtLink>
+              <NuxtLink
+                to="/agency"
+                class="rounded border border-[#212121] px-4 py-2 text-center text-sm font-semibold uppercase tracking-wide transition-all hover:bg-[#212121] hover:text-white"
+              >
+                List Your Agency
+              </NuxtLink>
+            </div>
+          </div>
+
+          <div
+            v-if="isMenuOpen"
+            id="info-mobile-nav"
+            class="flex flex-col gap-4 rounded-2xl border border-[#f1f1f1] bg-white p-4 text-center shadow-md md:hidden"
+          >
+            <nav class="flex flex-col gap-3 text-base font-medium text-[#212121]" aria-label="Page navigation">
+              <NuxtLink
+                v-for="item in navItems"
+                :key="item.to"
+                :to="item.to"
+                class="rounded-full border border-transparent px-4 py-2 transition-colors duration-200"
+                :class="activePath === item.to ? 'border-[#212121] text-[#212121]' : 'text-[#9e9e9e] hover:text-[#212121]'"
+                @click="closeMenu"
+              >
+                {{ item.label }}
+              </NuxtLink>
+            </nav>
+            <div class="flex flex-col gap-3 text-sm font-semibold text-[#212121]">
               <NuxtLink
                 to="/auth/login"
-                class="font-medium text-[#4a4a4a] transition-colors hover:text-[#212121]"
+                class="rounded-full border border-[#e5e5e5] px-4 py-2 font-medium text-[#4a4a4a] transition hover:border-[#212121] hover:text-[#212121]"
+                @click="closeMenu"
               >
                 Login
               </NuxtLink>
               <NuxtLink
                 to="/agency"
-                class="w-full rounded border border-[#212121] px-4 py-2 text-center text-sm font-semibold uppercase tracking-wide transition-all hover:bg-[#212121] hover:text-white sm:w-auto"
+                class="rounded-full border border-[#212121] px-4 py-2 uppercase tracking-wide transition hover:bg-[#212121] hover:text-white"
+                @click="closeMenu"
               >
                 List Your Agency
               </NuxtLink>
@@ -103,4 +166,3 @@ const hasHeroContent = computed(() => Boolean(props.eyebrow || props.title || pr
     </div>
   </section>
 </template>
-

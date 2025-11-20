@@ -224,7 +224,7 @@ const toggleFavorite = async (listing: ListingCard) => {
 </script>
 
 <template>
-  <section class="w-full px-4 py-10 font-plus-jakarta-sans text-gray-900 sm:py-12 lg:py-16">
+  <section class="w-full bg-white px-4 py-10 font-plus-jakarta-sans text-gray-900 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
     <div class="mx-auto flex w-full max-w-6xl flex-col gap-10">
       <div
         class="relative overflow-hidden rounded-[32px] bg-white shadow-[0_35px_70px_rgba(15,23,42,0.08)] ring-1 ring-black/5"
@@ -248,7 +248,7 @@ const toggleFavorite = async (listing: ListingCard) => {
       </header>
 
       <form
-        class="mx-auto flex w-full max-w-3xl items-center gap-3 rounded-full border border-[#ececec] bg-white px-4 py-2 shadow-[0_20px_60px_rgba(15,23,42,0.08)]"
+        class="mx-auto flex w-full max-w-3xl flex-col gap-3 rounded-3xl border border-[#ececec] bg-white px-4 py-3 shadow-[0_20px_60px_rgba(15,23,42,0.08)] sm:flex-row sm:items-center sm:rounded-full sm:py-2"
         @submit.prevent="onSearchSubmit"
       >
         <label class="sr-only" for="popular-search">Search popular listings</label>
@@ -263,7 +263,7 @@ const toggleFavorite = async (listing: ListingCard) => {
         />
         <button
           type="submit"
-          class="inline-flex h-12 min-w-[120px] items-center justify-center rounded-full bg-[#212121] px-6 text-sm font-semibold uppercase tracking-wider text-white transition hover:bg-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#fcd34d]"
+          class="inline-flex h-12 w-full min-w-[120px] items-center justify-center rounded-full bg-[#212121] px-6 text-sm font-semibold uppercase tracking-wider text-white transition hover:bg-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#fcd34d] sm:w-auto"
         >
           Search
         </button>

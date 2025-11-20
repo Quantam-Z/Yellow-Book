@@ -17,7 +17,7 @@ useHead({
 </script>
 
 <template>
-  <section class="bg-transparent">
+  <section class="min-h-screen w-full bg-white">
     <PopularList />
   </section>
 </template>
