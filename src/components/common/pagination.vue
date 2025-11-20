@@ -1,32 +1,38 @@
 <template>
-  <nav class="flex items-center justify-center gap-2 select-none" role="navigation" aria-label="Pagination">
+  <nav class="flex select-none items-center gap-3 text-sm" role="navigation" aria-label="Pagination">
     <button
-      class="px-3 py-1 rounded border text-sm disabled:opacity-50"
+      class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 text-gray-500 transition hover:border-gray-400 hover:text-gray-700 disabled:cursor-not-allowed disabled:border-gray-100 disabled:text-gray-300"
       :disabled="modelValue <= 1"
       @click="$emit('update:modelValue', modelValue - 1)"
       aria-label="Previous page"
     >
-      Prev
+      ‹
     </button>
 
-    <button
-      v-for="n in visiblePages"
-      :key="n"
-      class="px-3 py-1 rounded border text-sm"
-      :class="n === modelValue ? 'bg-[#fcc207] border-[#e5b106] text-[#212121]' : 'bg-white border-gray-300 text-gray-700'"
-      @click="$emit('update:modelValue', n)"
-      :aria-current="n === modelValue ? 'page' : undefined"
-    >
-      {{ n }}
-    </button>
+    <div class="flex items-center gap-2">
+      <button
+        v-for="n in visiblePages"
+        :key="n"
+        class="inline-flex h-10 w-10 items-center justify-center rounded-full border text-sm font-medium transition"
+        :class="
+          n === modelValue
+            ? 'border-transparent bg-[#facc15] text-[#212121] shadow-[0_12px_24px_rgba(250,204,21,0.4)]'
+            : 'border-gray-200 bg-white text-gray-600 hover:border-gray-400'
+        "
+        @click="$emit('update:modelValue', n)"
+        :aria-current="n === modelValue ? 'page' : undefined"
+      >
+        {{ n }}
+      </button>
+    </div>
 
     <button
-      class="px-3 py-1 rounded border text-sm disabled:opacity-50"
+      class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 text-gray-500 transition hover:border-gray-400 hover:text-gray-700 disabled:cursor-not-allowed disabled:border-gray-100 disabled:text-gray-300"
       :disabled="modelValue >= totalPages"
       @click="$emit('update:modelValue', modelValue + 1)"
       aria-label="Next page"
     >
-      Next
+      ›
     </button>
   </nav>
 </template>
