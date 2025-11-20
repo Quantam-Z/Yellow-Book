@@ -224,14 +224,14 @@ const toggleFavorite = async (listing: ListingCard) => {
 </script>
 
 <template>
-  <section class="w-full bg-[#f5f5f5] px-4 py-10 font-plus-jakarta-sans text-gray-900 sm:py-12 lg:py-16">
+  <section class="w-full px-4 py-10 font-plus-jakarta-sans text-gray-900 sm:py-12 lg:py-16">
     <div class="mx-auto flex w-full max-w-6xl flex-col gap-10">
       <div
         class="relative overflow-hidden rounded-[32px] bg-white shadow-[0_35px_70px_rgba(15,23,42,0.08)] ring-1 ring-black/5"
         aria-hidden="true"
       >
         <img
-          src="/Frame(10).svg"
+          src="/logo/Cat.jpeg"
           alt="Trusted help banner"
           class="h-full w-full object-cover"
           loading="lazy"
