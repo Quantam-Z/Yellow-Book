@@ -30,6 +30,7 @@ const navItems: NavItem[] = [
 
 const activePath = computed(() => route.path);
 const isMenuOpen = ref(false);
+const isPopularListRoute = computed(() => route.path === '/popular-list');
 
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
@@ -52,6 +53,7 @@ const hasHeroContent = computed(() => Boolean(props.eyebrow || props.title || pr
 <template>
   <section
     class="info-nav-shell relative isolate w-full overflow-hidden bg-[#fff9e6] text-[#212121] shadow-[0_35px_70px_rgba(15,23,42,0.08)]"
+    :class="{ 'no-curve': isPopularListRoute }"
   >
     <div class="info-nav-accent" aria-hidden="true"></div>
     <div class="relative mx-auto flex w-full max-w-6xl flex-col px-4 pb-8 pt-6 sm:px-6 lg:px-8 lg:pb-12">
@@ -77,10 +79,6 @@ const hasHeroContent = computed(() => Boolean(props.eyebrow || props.title || pr
             :class="activePath === item.to ? 'text-[#212121]' : 'hover:text-[#212121]'"
           >
             {{ item.label }}
-            <span
-              class="mt-1 h-[2px] w-6 rounded-full bg-[#212121] transition duration-200"
-              :class="activePath === item.to ? 'opacity-100' : 'opacity-0'"
-            ></span>
           </NuxtLink>
         </nav>
 
@@ -109,40 +107,51 @@ const hasHeroContent = computed(() => Boolean(props.eyebrow || props.title || pr
         </button>
       </div>
 
-      <div
-        v-if="isMenuOpen"
-        id="info-mobile-nav"
-        class="mt-4 flex flex-col gap-4 rounded-2xl border border-[#ffe9af] bg-white/95 p-4 text-center shadow-lg backdrop-blur md:hidden"
-      >
-        <nav class="flex flex-col gap-2 text-base font-semibold text-[#212121]" aria-label="Page navigation">
-          <NuxtLink
-            v-for="item in navItems"
-            :key="item.to"
-            :to="item.to"
-            class="rounded-xl px-4 py-3 transition-colors duration-200"
-            :class="activePath === item.to ? 'bg-[#fff6d0] text-[#212121]' : 'text-[#7a7a7a] hover:bg-[#fdf4c3]'"
-            @click="closeMenu"
-          >
-            {{ item.label }}
-          </NuxtLink>
-        </nav>
-        <div class="flex flex-col gap-3 text-sm font-semibold text-[#212121]">
-          <NuxtLink
-            to="/auth/login"
-            class="rounded-full border border-[#ece0b1] px-4 py-2 font-medium text-[#4a4a4a] transition hover:border-[#212121] hover:text-[#212121]"
-            @click="closeMenu"
-          >
-            Login
-          </NuxtLink>
-          <NuxtLink
-            to="/agency"
-            class="rounded-full border border-[#212121] px-4 py-2 uppercase tracking-wide transition hover:bg-[#212121] hover:text-white"
-            @click="closeMenu"
-          >
-            List Your Agency
-          </NuxtLink>
-        </div>
-      </div>
+        <Teleport to="body">
+          <Transition name="mobile-nav-overlay">
+            <div v-if="isMenuOpen" class="info-mobile-overlay md:hidden" aria-hidden="true" @click="closeMenu" />
+          </Transition>
+          <Transition name="mobile-nav-drawer">
+            <div
+              v-if="isMenuOpen"
+              id="info-mobile-nav"
+              class="info-mobile-drawer md:hidden"
+              role="dialog"
+              aria-modal="true"
+            >
+              <div class="flex flex-col gap-4">
+                <nav class="flex flex-col gap-2 text-base font-semibold text-[#212121]" aria-label="Page navigation">
+                  <NuxtLink
+                    v-for="item in navItems"
+                    :key="item.to"
+                    :to="item.to"
+                    class="rounded-xl px-4 py-3 transition-colors duration-200"
+                    :class="activePath === item.to ? 'bg-[#fff6d0] text-[#212121]' : 'text-[#7a7a7a] hover:bg-[#fdf4c3]'"
+                    @click="closeMenu"
+                  >
+                    {{ item.label }}
+                  </NuxtLink>
+                </nav>
+                <div class="flex flex-col gap-3 text-sm font-semibold text-[#212121]">
+                  <NuxtLink
+                    to="/auth/login"
+                    class="rounded-full border border-[#ece0b1] px-4 py-2 font-medium text-[#4a4a4a] transition hover:border-[#212121] hover:text-[#212121]"
+                    @click="closeMenu"
+                  >
+                    Login
+                  </NuxtLink>
+                  <NuxtLink
+                    to="/agency"
+                    class="rounded-full border border-[#212121] px-4 py-2 uppercase tracking-wide transition hover:bg-[#212121] hover:text-white"
+                    @click="closeMenu"
+                  >
+                    List Your Agency
+                  </NuxtLink>
+                </div>
+              </div>
+            </div>
+          </Transition>
+        </Teleport>
 
       <div v-if="hasHeroContent" class="mt-10 flex flex-col items-center gap-3 pb-4 text-center sm:mt-12">
         <p v-if="props.eyebrow" class="text-xs uppercase tracking-[0.35em] text-[#a67c00]">
@@ -161,6 +170,11 @@ const hasHeroContent = computed(() => Boolean(props.eyebrow || props.title || pr
 .info-nav-shell {
   border-bottom-left-radius: 50% 32px;
   border-bottom-right-radius: 50% 32px;
+}
+
+.info-nav-shell.no-curve {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
 }
 
 @media (min-width: 640px) {
@@ -186,5 +200,55 @@ const hasHeroContent = computed(() => Boolean(props.eyebrow || props.title || pr
   filter: blur(12px);
   opacity: 0.8;
   pointer-events: none;
+}
+
+.info-mobile-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.35);
+  backdrop-filter: blur(2px);
+  z-index: 40;
+}
+
+.info-mobile-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(85vw, 360px);
+  background: #fffdf5;
+  border-top-left-radius: 28px;
+  border-bottom-left-radius: 28px;
+  box-shadow: -10px 0 45px rgba(15, 23, 42, 0.2);
+  padding: 28px 24px;
+  z-index: 50;
+  overflow-y: auto;
+}
+
+.mobile-nav-overlay-enter-active,
+.mobile-nav-overlay-leave-active {
+  transition: opacity 0.25s ease;
+}
+
+.mobile-nav-overlay-enter-from,
+.mobile-nav-overlay-leave-to {
+  opacity: 0;
+}
+
+.mobile-nav-drawer-enter-active,
+.mobile-nav-drawer-leave-active {
+  transition: transform 0.35s ease, opacity 0.35s ease;
+}
+
+.mobile-nav-drawer-enter-from,
+.mobile-nav-drawer-leave-to {
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+.mobile-nav-drawer-enter-to,
+.mobile-nav-drawer-leave-from {
+  transform: translateX(0);
+  opacity: 1;
 }
 </style>
