@@ -452,7 +452,9 @@ onBeforeUnmount(() => {
         </p>
       </div>
     </div>
-    <LoginModal :isOpen="showLoginModal" @close="closeLoginModal" />
+      <Teleport to="body">
+        <LoginModal :isOpen="showLoginModal" @close="closeLoginModal" />
+      </Teleport>
   </section>
 </template>
 

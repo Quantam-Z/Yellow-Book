@@ -253,8 +253,9 @@
         </div>
       </div>
     </div>
-
-    <LoginModal :isOpen="showLoginModal" @close="closeLoginModal" />
+    <Teleport to="body">
+      <LoginModal :isOpen="showLoginModal" @close="closeLoginModal" />
+    </Teleport>
   </div>
 </template>
 
