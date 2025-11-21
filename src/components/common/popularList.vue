@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { MapPin, Search, Heart } from 'lucide-vue-next';
 import { storeToRefs } from 'pinia';
 
@@ -32,8 +32,16 @@ const PAGE_SIZE = 6;
 const SKELETON_CARD_COUNT = 6;
 
 const router = useRouter();
+const route = useRoute();
 const searchTerm = ref('');
-const currentPage = ref(1);
+
+const getRoutePage = () => {
+  const pageParam = Array.isArray(route.query.page) ? route.query.page[0] : route.query.page;
+  const parsed = Number(pageParam);
+  return Number.isFinite(parsed) && parsed > 0 ? Math.floor(parsed) : 1;
+};
+
+const currentPage = ref(getRoutePage());
 
 const { listings: directoryListings, ensureLoaded, pending, ready } = useDirectoryListings();
 const stubClient = useStubClient();
@@ -103,6 +111,32 @@ const filteredListings = computed(() => {
 
 const totalPages = computed(() => Math.max(1, Math.ceil(filteredListings.value.length / PAGE_SIZE)));
 
+const clampPage = (page: number) => {
+  const total = totalPages.value || 1;
+  if (!Number.isFinite(page)) return 1;
+  return Math.min(Math.max(1, Math.floor(page)), total);
+};
+
+const syncPageQuery = (page: number) => {
+  if (!import.meta.client) return;
+  const normalized = clampPage(page);
+  const routePage = getRoutePage();
+  if (routePage === normalized) return;
+
+  const nextQuery = { ...route.query } as Record<string, any>;
+  if (normalized <= 1) {
+    delete nextQuery.page;
+  } else {
+    nextQuery.page = String(normalized);
+  }
+
+  router.replace({
+    path: route.path,
+    query: nextQuery,
+    hash: route.hash,
+  });
+};
+
 const paginatedListings = computed(() => {
   const start = (currentPage.value - 1) * PAGE_SIZE;
   return filteredListings.value.slice(start, start + PAGE_SIZE);
@@ -134,11 +168,32 @@ watch(
   () => resetToFirstPage(),
 );
 
-watch(totalPages, (newTotal) => {
-  if (currentPage.value > newTotal) {
-    currentPage.value = Math.max(1, newTotal);
+watch(totalPages, () => {
+  const normalized = clampPage(currentPage.value);
+  if (normalized !== currentPage.value) {
+    currentPage.value = normalized;
   }
 });
+
+watch(
+  () => route.query.page,
+  () => {
+    const routePage = clampPage(getRoutePage());
+    if (routePage !== currentPage.value) {
+      currentPage.value = routePage;
+    }
+  },
+);
+
+if (import.meta.client) {
+  watch(
+    () => currentPage.value,
+    (page, previous) => {
+      if (page === previous) return;
+      syncPageQuery(page);
+    },
+  );
+}
 
 const onSearchSubmit = () => {
   resetToFirstPage();

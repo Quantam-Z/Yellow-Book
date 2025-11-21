@@ -36,7 +36,8 @@ const navItems: NavItem[] = [
 
 const activePath = computed(() => route.path);
 const isMenuOpen = ref(false);
-const isPopularListRoute = computed(() => route.path === '/popular-list');
+const minimalNavRoutes = ['/popular-list', '/faq'];
+const isMinimalNavRoute = computed(() => minimalNavRoutes.includes(route.path));
 
 const authStore = useAuthStore();
 if (import.meta.client) {
@@ -172,16 +173,16 @@ onBeforeUnmount(() => {
   <section
     class="info-nav-shell relative isolate w-full text-[#212121]"
     :class="
-      isPopularListRoute
+      isMinimalNavRoute
         ? 'bg-transparent shadow-none'
         : 'info-nav-shell--rounded overflow-hidden bg-[#fff9e6] shadow-[0_35px_70px_rgba(15,23,42,0.08)]'
     "
   >
-    <div v-if="!isPopularListRoute" class="info-nav-accent" aria-hidden="true"></div>
+    <div v-if="!isMinimalNavRoute" class="info-nav-accent" aria-hidden="true"></div>
     <div
       :class="[
         'relative w-full flex flex-col',
-        isPopularListRoute
+        isMinimalNavRoute
           ? 'z-10 px-4 sm:px-6 md:px-12 lg:px-[120px] py-4 sm:py-6'
           : 'mx-auto max-w-6xl px-4 pb-8 pt-6 sm:px-6 lg:px-8 lg:pb-12',
       ]"
@@ -189,15 +190,15 @@ onBeforeUnmount(() => {
       <div
         :class="[
           'w-full items-center gap-4',
-          isPopularListRoute ? 'flex justify-between mb-6 sm:mb-12 md:mb-16' : 'flex min-h-[72px]',
+          isMinimalNavRoute ? 'flex justify-between mb-6 sm:mb-12 md:mb-16' : 'flex min-h-[72px]',
         ]"
       >
         <NuxtLink
           to="/"
-          :class="isPopularListRoute ? 'w-[120px] rounded-[4px] flex flex-col items-start p-2 box-border' : 'flex items-center gap-3'"
+          :class="isMinimalNavRoute ? 'w-[120px] rounded-[4px] flex flex-col items-start p-2 box-border' : 'flex items-center gap-3'"
           aria-label="Navigate to home"
         >
-          <template v-if="isPopularListRoute">
+          <template v-if="isMinimalNavRoute">
             <img
               class="self-stretch max-w-full overflow-hidden h-[34px] sm:h-[30px] md:h-[30px] flex-shrink-0 object-cover"
               src="/logo/logo.png"
@@ -214,7 +215,7 @@ onBeforeUnmount(() => {
           </template>
         </NuxtLink>
 
-        <template v-if="isPopularListRoute">
+        <template v-if="isMinimalNavRoute">
           <div class="hidden lg:flex items-center gap-8">
             <NuxtLink
               v-for="item in navItems"
@@ -347,7 +348,7 @@ onBeforeUnmount(() => {
           type="button"
           :class="[
             'inline-flex h-11 w-11 items-center justify-center rounded-full border-2 border-[#ffd335] bg-white/90 text-[#212121] shadow-sm transition hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#212121]',
-            isPopularListRoute ? 'lg:hidden' : 'md:hidden',
+            isMinimalNavRoute ? 'lg:hidden' : 'md:hidden',
           ]"
           :aria-expanded="isMenuOpen"
           aria-controls="info-mobile-nav"
@@ -364,7 +365,7 @@ onBeforeUnmount(() => {
           <div
             v-if="isMenuOpen"
             class="info-mobile-overlay"
-            :class="isPopularListRoute ? 'lg:hidden' : 'md:hidden'"
+              :class="isMinimalNavRoute ? 'lg:hidden' : 'md:hidden'"
             aria-hidden="true"
             @click="closeMenu"
           />
@@ -374,7 +375,7 @@ onBeforeUnmount(() => {
             v-if="isMenuOpen"
             id="info-mobile-nav"
             class="info-mobile-drawer"
-            :class="isPopularListRoute ? 'lg:hidden' : 'md:hidden'"
+              :class="isMinimalNavRoute ? 'lg:hidden' : 'md:hidden'"
             role="dialog"
             aria-modal="true"
           >
