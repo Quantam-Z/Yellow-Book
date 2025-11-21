@@ -34,6 +34,7 @@ const SKELETON_CARD_COUNT = 6;
 const router = useRouter();
 const route = useRoute();
 const searchTerm = ref('');
+const quickSearches = ['Brand strategy', 'Logistics', 'Interior design', 'Retail support'];
 
 const getRoutePage = () => {
   const pageParam = Array.isArray(route.query.page) ? route.query.page[0] : route.query.page;
@@ -199,6 +200,11 @@ const onSearchSubmit = () => {
   resetToFirstPage();
 };
 
+const applyQuickSearch = (term: string) => {
+  searchTerm.value = term;
+  resetToFirstPage();
+};
+
 const buildAgencyLink = (listing: ListingCard) => {
   const query: Record<string, string> = {};
   if (listing.slug) {
@@ -299,31 +305,52 @@ const toggleFavorite = async (listing: ListingCard) => {
         </p>
       </header>
 
-      <form class="mx-auto w-full max-w-4xl" @submit.prevent="onSearchSubmit">
-        <label class="sr-only" for="popular-search">Search popular listings</label>
-        <div
-          class="flex flex-col overflow-hidden rounded-2xl border border-[#e5e5e5] bg-white shadow-[0_20px_60px_rgba(15,23,42,0.12)] sm:flex-row"
-        >
-          <div class="flex flex-1 items-center gap-3 px-4 py-3 text-sm text-gray-500 sm:px-6 sm:py-4">
-            <Search class="h-5 w-5 text-[#9e9e9e]" aria-hidden="true" />
-            <input
-              id="popular-search"
-              v-model="searchTerm"
-              type="search"
-              placeholder="Search by company, service, or city"
-              class="flex-1 border-0 bg-transparent text-base text-[#212121] placeholder:text-[#9e9e9e] focus:outline-none"
-              aria-label="Search popular listings"
-            />
-          </div>
-          <button
-            type="submit"
-            class="flex items-center justify-center gap-2 border-t border-[#e5e5e5] px-5 py-3 text-sm font-semibold uppercase tracking-[0.25em] text-[#212121] transition hover:bg-[#fff9e6] sm:min-w-[200px] sm:border-l sm:border-t-0"
+        <form class="mx-auto w-full max-w-4xl" @submit.prevent="onSearchSubmit">
+          <label class="sr-only" for="popular-search">Search popular listings</label>
+          <div
+            class="rounded-[32px] border border-[#ffe0a3] bg-gradient-to-r from-[#fff6db] via-[#fffbe8] to-[#fffef6] shadow-[0_30px_90px_rgba(249,186,46,0.25)]"
           >
-            <span class="hidden sm:inline">Search</span>
-            <Search class="h-5 w-5 text-[#212121]" aria-hidden="true" />
-          </button>
-        </div>
-      </form>
+            <div class="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:gap-4">
+              <div class="flex-1 space-y-2">
+                <p class="text-[11px] font-semibold uppercase tracking-[0.4em] text-[#b07900]">
+                  Search directory
+                </p>
+                <div
+                  class="flex items-center gap-3 rounded-2xl border border-[#ffe0a3] bg-white/95 px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] focus-within:border-[#fcd34d] focus-within:ring-2 focus-within:ring-[#fcd34d]/60"
+                >
+                  <Search class="h-5 w-5 text-[#f59e0b]" aria-hidden="true" />
+                  <input
+                    id="popular-search"
+                    v-model="searchTerm"
+                    type="search"
+                    placeholder="Search by company, service, or city"
+                    class="flex-1 border-0 bg-transparent text-base text-[#212121] placeholder:text-[#b2a07c] focus:outline-none"
+                    aria-label="Search popular listings"
+                  />
+                </div>
+              </div>
+              <button
+                type="submit"
+                class="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#212121] px-6 py-3 text-base font-semibold text-white shadow-lg shadow-[#fcd34d]/40 transition hover:bg-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#212121]"
+              >
+                <span>Search</span>
+                <Search class="h-5 w-5 text-white" aria-hidden="true" />
+              </button>
+            </div>
+            <div class="flex flex-wrap items-center gap-2 border-t border-white/70 px-4 py-3 text-xs text-[#b07900]">
+              <span class="font-semibold uppercase tracking-[0.35em] text-[#d97706]">Trending:</span>
+              <button
+                v-for="chip in quickSearches"
+                :key="chip"
+                type="button"
+                class="rounded-full bg-white/80 px-3 py-1 text-[12px] font-medium text-[#a16207] transition hover:bg-white"
+                @click="applyQuickSearch(chip)"
+              >
+                {{ chip }}
+              </button>
+            </div>
+          </div>
+        </form>
 
       <div
         class="flex flex-col items-center gap-2 text-sm text-gray-500 sm:flex-row sm:items-center sm:justify-between"
@@ -375,30 +402,32 @@ const toggleFavorite = async (listing: ListingCard) => {
                 :alt="listing.title"
                 loading="lazy"
               />
-              <span
-                class="absolute left-5 top-5 rounded-full bg-white/90 px-4 py-1 text-xs font-semibold uppercase tracking-wide text-[#212121]"
-              >
-                {{ listing.category }}
-              </span>
-              <span
-                v-if="listing.emergencyService"
-                class="absolute right-5 top-5 rounded-full bg-[#fff3cd] px-4 py-1 text-xs font-semibold uppercase tracking-wide text-[#a16207]"
-              >
-                24/7
-              </span>
-              <button
-                type="button"
-                class="absolute bottom-5 right-5 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-gray-500 shadow-md transition hover:scale-105"
-                :class="isListingFavorited(listing) ? 'text-red-500' : 'text-gray-500'"
-                :aria-pressed="isListingFavorited(listing)"
-                aria-label="Toggle favourite"
-                @click.stop="toggleFavorite(listing)"
-              >
-                <Heart
-                  class="h-4 w-4"
-                  :class="isListingFavorited(listing) ? 'fill-red-500 text-red-500' : 'text-gray-500'"
-                />
-              </button>
+                <span
+                  class="absolute left-5 top-5 rounded-full bg-white/90 px-4 py-1 text-xs font-semibold uppercase tracking-wide text-[#212121]"
+                >
+                  {{ listing.category }}
+                </span>
+                <div class="absolute top-5 right-5 flex flex-col items-end gap-2">
+                  <button
+                    type="button"
+                    class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/95 text-gray-500 shadow-md transition hover:scale-105"
+                    :class="isListingFavorited(listing) ? 'text-red-500' : 'text-gray-500'"
+                    :aria-pressed="isListingFavorited(listing)"
+                    aria-label="Toggle favourite"
+                    @click.stop="toggleFavorite(listing)"
+                  >
+                    <Heart
+                      class="h-4 w-4"
+                      :class="isListingFavorited(listing) ? 'fill-red-500 text-red-500' : 'text-gray-500'"
+                    />
+                  </button>
+                  <span
+                    v-if="listing.emergencyService"
+                    class="rounded-full bg-[#fff3cd] px-4 py-1 text-xs font-semibold uppercase tracking-wide text-[#a16207]"
+                  >
+                    24/7
+                  </span>
+                </div>
             </div>
 
             <div class="flex flex-1 flex-col gap-4 p-6 text-left">

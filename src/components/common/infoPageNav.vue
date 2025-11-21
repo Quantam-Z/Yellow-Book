@@ -29,7 +29,7 @@ const route = useRoute();
 const router = useRouter();
 
 const navItems: NavItem[] = [
-  { label: 'Category', to: '/catagory', variant: 'primary' },
+  { label: 'Category', to: '/catagory' },
   { label: 'Popular Listing', to: '/popular-list' },
   { label: 'FAQ', to: '/faq' },
 ];
@@ -139,6 +139,14 @@ const toggleUserMenu = () => {
   showUserMenu.value = !showUserMenu.value;
 };
 
+const isRouteActive = (target: string) => activePath.value === target;
+const navLinkClasses = (target: string) =>
+  isRouteActive(target) ? 'text-[#212121] font-medium' : 'text-[#616161] font-normal';
+const mobileNavItemClasses = (target: string) =>
+  isRouteActive(target)
+    ? 'bg-[#fff9e6] text-[#212121] font-semibold border-[#ffe08f]'
+    : 'text-[#616161] hover:bg-[#fff9e6]';
+
 const goToUserDashboard = () => {
   showUserMenu.value = false;
   isMenuOpen.value = false;
@@ -215,32 +223,22 @@ onBeforeUnmount(() => {
           </template>
         </NuxtLink>
 
-        <template v-if="isMinimalNavRoute">
-          <div class="hidden lg:flex items-center gap-8">
-            <NuxtLink
-              v-for="item in navItems"
-              :key="item.to"
-              :to="item.to"
-              class="cursor-pointer no-underline transition-colors duration-200"
-            >
-              <template v-if="item.variant === 'primary'">
-                <div class="flex flex-col items-center gap-[4px] text-[#212121]">
-                  <div class="relative leading-[160%] font-medium text-base">
+          <template v-if="isMinimalNavRoute">
+            <div class="hidden lg:flex items-center gap-8">
+              <NuxtLink
+                v-for="item in navItems"
+                :key="item.to"
+                :to="item.to"
+                class="cursor-pointer no-underline transition-colors duration-200"
+              >
+                <div class="flex flex-col items-center gap-[4px]">
+                  <div class="relative leading-[160%] text-base" :class="navLinkClasses(item.to)">
                     {{ item.label }}
                   </div>
-                  <div class="w-[30px] bg-[#212121] h-[2px]" />
+                  <div v-if="isRouteActive(item.to)" class="w-[30px] bg-[#212121] h-[2px]" />
                 </div>
-              </template>
-              <template v-else>
-                <div
-                  class="relative leading-[160%] font-normal text-base"
-                  :class="activePath === item.to ? 'text-[#212121]' : 'text-[#616161]'"
-                >
-                  {{ item.label }}
-                </div>
-              </template>
-            </NuxtLink>
-          </div>
+              </NuxtLink>
+            </div>
 
           <div class="hidden lg:flex items-center gap-6 text-[#212121]">
             <button
@@ -285,21 +283,27 @@ onBeforeUnmount(() => {
           </div>
         </template>
 
-        <template v-else>
-          <nav
-            class="ml-2 hidden flex-1 items-center justify-center gap-8 text-sm font-semibold text-[#797979] md:flex"
-            aria-label="Page navigation"
-          >
-            <NuxtLink
-              v-for="item in navItems"
-              :key="item.to"
-              :to="item.to"
-              class="relative flex flex-col items-center text-base transition-colors duration-200 no-underline"
-              :class="activePath === item.to ? 'text-[#212121]' : 'hover:text-[#212121]'"
+          <template v-else>
+            <nav
+              class="ml-2 hidden flex-1 items-center justify-center gap-8 text-sm font-semibold text-[#797979] md:flex"
+              aria-label="Page navigation"
             >
-              {{ item.label }}
-            </NuxtLink>
-          </nav>
+              <NuxtLink
+                v-for="item in navItems"
+                :key="item.to"
+                :to="item.to"
+                class="relative flex flex-col items-center text-base transition-colors duration-200 no-underline"
+              >
+                <span class="leading-[160%]" :class="navLinkClasses(item.to)">
+                  {{ item.label }}
+                </span>
+                <span
+                  v-if="isRouteActive(item.to)"
+                  class="mt-1 h-[2px] w-6 rounded-full bg-[#212121]"
+                  aria-hidden="true"
+                />
+              </NuxtLink>
+            </nav>
 
           <div class="hidden items-center gap-3 text-sm font-semibold md:flex">
             <button
@@ -396,40 +400,40 @@ onBeforeUnmount(() => {
                   v-for="item in navItems"
                   :key="item.to"
                   :to="item.to"
-                  class="py-4 px-4 text-[#616161] hover:bg-[#fff9e6] rounded-lg transition-colors border border-transparent no-underline"
-                  :class="activePath === item.to ? 'bg-[#fff9e6] text-[#212121] font-semibold border-[#ffe08f]' : ''"
+                    class="py-4 px-4 rounded-lg transition-colors border border-transparent no-underline"
+                    :class="mobileNavItemClasses(item.to)"
                   @click="closeMenu"
                 >
                   {{ item.label }}
                 </NuxtLink>
               </nav>
 
-              <div class="space-y-3 mt-auto pt-6 border-t border-gray-200">
-                <template v-if="!isAuthenticated">
-                  <button
-                    type="button"
-                    class="w-full py-3 px-6 text-[#212121] font-semibold text-lg border-2 border-[#212121] rounded-lg hover:bg-[#212121] hover:text-white transition-all"
-                    @click="openLoginModal"
-                  >
-                    Login
-                  </button>
-                </template>
-                <template v-else>
-                  <button
-                    type="button"
-                    class="w-full py-3 px-6 text-[#212121] font-semibold text-lg border-2 border-[#212121] rounded-lg hover:bg-[#212121] hover:text-white transition-all"
-                    @click="goToUserDashboard"
-                  >
-                    My Dashboard
-                  </button>
-                  <button
-                    type="button"
-                    class="w-full py-3 px-6 text-red-600 font-semibold text-lg border-2 border-red-200 rounded-lg hover:bg-red-50 transition-all"
-                    @click="handleUserLogout"
-                  >
-                    Logout
-                  </button>
-                </template>
+                <div class="space-y-3 mt-auto pt-6 border-t border-gray-200">
+                  <template v-if="!isAuthenticated">
+                    <button
+                      type="button"
+                      class="w-full text-left text-[#212121] font-medium text-lg py-2 px-1 hover:text-[#f59e0b] transition-colors"
+                      @click="openLoginModal"
+                    >
+                      Login
+                    </button>
+                  </template>
+                  <template v-else>
+                    <button
+                      type="button"
+                      class="w-full text-left text-[#212121] font-medium text-lg py-2 px-1 hover:text-[#f59e0b] transition-colors"
+                      @click="goToUserDashboard"
+                    >
+                      My Dashboard
+                    </button>
+                    <button
+                      type="button"
+                      class="w-full text-left text-red-500 font-medium text-lg py-2 px-1 hover:text-red-600 transition-colors"
+                      @click="handleUserLogout"
+                    >
+                      Logout
+                    </button>
+                  </template>
                 <NuxtLink
                   to="/agency"
                   class="w-full py-3 px-6 bg-[#fcc207] text-[#212121] font-semibold text-lg rounded-lg border-b-2 border-[#e5b106] hover:bg-[#e5b106] transition-all text-center no-underline block"

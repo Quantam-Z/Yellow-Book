@@ -61,6 +61,14 @@ const categories = computed(() => {
 })
 
 const goToCategory = (categoryName: string) => {
+  const normalized = categoryName?.toLowerCase().trim()
+  if (!normalized) return
+
+  if (normalized === 'more') {
+    router.push('/catagory')
+    return
+  }
+
   router.push({ path: '/catagory', query: { name: categoryName } })
 }
 </script>

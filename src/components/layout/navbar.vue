@@ -13,31 +13,57 @@
           />
         </nuxt-link>
 
-        <div class="hidden lg:flex items-center gap-8">
-          <nuxt-link
-            to="/catagory"
-            class="flex flex-col items-center gap-[4px] text-[#212121] cursor-pointer no-underline"
-          >
-            <div class="relative leading-[160%] font-medium text-base">Category</div>
-            <div class="w-[30px] bg-[#212121] h-[2px]"></div>
-          </nuxt-link>
+          <div class="hidden lg:flex items-center gap-8">
+            <nuxt-link
+              to="/catagory"
+              class="flex flex-col items-center gap-[4px] cursor-pointer no-underline transition-colors"
+            >
+              <div
+                class="relative leading-[160%] text-base"
+                :class="navTextClass('/catagory')"
+              >
+                Category
+              </div>
+              <div
+                v-if="isRouteActive('/catagory')"
+                class="w-[30px] bg-[#212121] h-[2px]"
+              ></div>
+            </nuxt-link>
 
             <nuxt-link
               :to="popularListingLink"
-              class="flex items-center justify-center cursor-pointer no-underline"
+              class="flex flex-col items-center gap-[4px] cursor-pointer no-underline transition-colors"
             >
-            <div class="relative leading-[160%] font-normal text-base text-[#616161]">Popular Listing</div>
-          </nuxt-link>
+              <div
+                class="relative leading-[160%] text-base"
+                :class="navTextClass(popularListingLink)"
+              >
+                Popular Listing
+              </div>
+              <div
+                v-if="isRouteActive(popularListingLink)"
+                class="w-[30px] bg-[#212121] h-[2px]"
+              ></div>
+            </nuxt-link>
 
-          <nuxt-link
-            to="/faq"
-            class="flex items-center justify-center cursor-pointer no-underline"
-          >
-            <div class="relative leading-[160%] font-normal text-base text-[#616161]">FAQ</div>
-          </nuxt-link>
-        </div>
+            <nuxt-link
+              to="/faq"
+              class="flex flex-col items-center gap-[4px] cursor-pointer no-underline transition-colors"
+            >
+              <div
+                class="relative leading-[160%] text-base"
+                :class="navTextClass('/faq')"
+              >
+                FAQ
+              </div>
+              <div
+                v-if="isRouteActive('/faq')"
+                class="w-[30px] bg-[#212121] h-[2px]"
+              ></div>
+            </nuxt-link>
+          </div>
 
-        <div class="hidden lg:flex items-center gap-6 text-[#212121]">
+          <div class="hidden lg:flex items-center gap-6 text-[#212121]">
           <template v-if="!isAuthenticated">
             <div class="flex items-center justify-center cursor-pointer" @click="openLoginModal">
               <div class="relative leading-[160%] font-normal text-base">Login</div>
@@ -107,51 +133,54 @@
               </button>
             </div>
 
-            <nav class="flex-1 flex flex-col space-y-2 text-lg">
-              <nuxt-link
-                to="/catagory"
-                class="py-4 px-4 text-[#212121] font-semibold hover:bg-[#fff9e6] rounded-lg transition-colors border-b border-gray-100 no-underline"
-                @click.native="closeMobileMenu"
-              >
-                Category
-              </nuxt-link>
+              <nav class="flex-1 flex flex-col space-y-2 text-lg">
+                <nuxt-link
+                  to="/catagory"
+                  class="py-4 px-4 rounded-lg transition-colors border-b border-gray-100 no-underline"
+                  :class="mobileNavClasses('/catagory')"
+                  @click.native="closeMobileMenu"
+                >
+                  Category
+                </nuxt-link>
 
                 <nuxt-link
                   :to="popularListingLink"
-                  class="py-4 px-4 text-[#616161] hover:bg-[#fff9e6] rounded-lg transition-colors border-b border-gray-100 no-underline"
+                  class="py-4 px-4 rounded-lg transition-colors border-b border-gray-100 no-underline"
+                  :class="mobileNavClasses(popularListingLink)"
                   @click.native="closeMobileMenu"
                 >
-                Popular Listing
-              </nuxt-link>
+                  Popular Listing
+                </nuxt-link>
 
-              <nuxt-link
-                to="/faq"
-                class="py-4 px-4 text-[#616161] hover:bg-[#fff9e6] rounded-lg transition-colors border-b border-gray-100 no-underline"
-                @click.native="closeMobileMenu"
-              >
-                FAQ
-              </nuxt-link>
-            </nav>
+                <nuxt-link
+                  to="/faq"
+                  class="py-4 px-4 rounded-lg transition-colors border-b border-gray-100 no-underline"
+                  :class="mobileNavClasses('/faq')"
+                  @click.native="closeMobileMenu"
+                >
+                  FAQ
+                </nuxt-link>
+              </nav>
 
             <div class="space-y-3 mt-auto pt-6 border-t border-gray-200">
-                <template v-if="!isAuthenticated">
-                  <button
-                    @click="openLoginModal"
-                    class="w-full py-3 px-6 text-[#212121] font-semibold text-lg border-2 border-[#212121] rounded-lg hover:bg-[#212121] hover:text-white transition-all"
-                  >
-                    Login
-                  </button>
-                </template>
+                  <template v-if="!isAuthenticated">
+                    <button
+                      @click="openLoginModal"
+                      class="w-full text-left text-[#212121] font-medium text-lg py-2 px-1 hover:text-[#f59e0b] transition-colors"
+                    >
+                      Login
+                    </button>
+                  </template>
                 <template v-else>
                   <button
                     @click="goToUserDashboard"
-                    class="w-full py-3 px-6 text-[#212121] font-semibold text-lg border-2 border-[#212121] rounded-lg hover:bg-[#212121] hover:text-white transition-all"
+                      class="w-full text-left text-[#212121] font-medium text-lg py-2 px-1 hover:text-[#f59e0b] transition-colors"
                   >
                     My Dashboard
                   </button>
                   <button
                     @click="handleUserLogout"
-                    class="w-full py-3 px-6 text-red-600 font-semibold text-lg border-2 border-red-200 rounded-lg hover:bg-red-50 transition-all"
+                      class="w-full text-left text-red-500 font-medium text-lg py-2 px-1 hover:text-red-600 transition-colors"
                   >
                     Logout
                   </button>
@@ -354,6 +383,9 @@ export default {
             }
             return `${parts[0][0]}${parts[1][0]}`.toUpperCase()
           },
+            activePath() {
+              return this.$route?.path || ''
+            },
     },
   methods: {
     async initializeSearchDirectory() {
@@ -445,7 +477,7 @@ export default {
     closeMobileMenu() {
       this.isMobileMenuOpen = false
     },
-    handleClickOutside(e) {
+      handleClickOutside(e) {
       const searchContainer = this.$refs.searchContainer
       if (searchContainer && !searchContainer.contains(e.target)) {
         if (this.showDropdown) {
@@ -455,10 +487,25 @@ export default {
           }
         }
       }
-    if (this.showUserMenu) {
-      this.showUserMenu = false
-    }
-    },
+      if (this.showUserMenu) {
+        this.showUserMenu = false
+      }
+      },
+        isRouteActive(target) {
+          const path = typeof target === 'string' ? target : target?.path
+          if (!path) {
+            return false
+          }
+          return this.activePath === path
+        },
+        navTextClass(target) {
+          return this.isRouteActive(target) ? 'text-[#212121] font-medium' : 'text-[#616161] font-normal'
+        },
+        mobileNavClasses(target) {
+          return this.isRouteActive(target)
+            ? 'bg-[#fff9e6] text-[#212121] font-semibold border-[#ffe08f]'
+            : 'text-[#616161] hover:bg-[#fff9e6]'
+        },
       findAgencyRecord(value) {
         const normalized = this.normalizeTitle(value)
         if (!normalized) return null
