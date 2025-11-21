@@ -274,8 +274,8 @@ onBeforeUnmount(() => {
                 </div>
               </Transition>
             </div>
-            <NuxtLink
-              to="/agency"
+              <NuxtLink
+                to="/popular-list"
               class="relative rounded border-gray border-solid border-[1px] box-border h-12 flex items-center justify-center py-[18px] px-9 text-center text-base text-[#212121] font-plus-jakarta-sans no-underline"
             >
               <div class="relative leading-[130%] capitalize font-semibold">List Your Agency</div>
@@ -339,8 +339,8 @@ onBeforeUnmount(() => {
                 </div>
               </Transition>
             </div>
-            <NuxtLink
-              to="/agency"
+              <NuxtLink
+                to="/popular-list"
               class="rounded-full border border-[#212121] px-5 py-2 text-xs uppercase tracking-[0.2em] text-[#212121] transition-all hover:bg-[#212121] hover:text-white no-underline"
             >
               List Your Agency
@@ -434,8 +434,8 @@ onBeforeUnmount(() => {
                       Logout
                     </button>
                   </template>
-                <NuxtLink
-                  to="/agency"
+                  <NuxtLink
+                    to="/popular-list"
                   class="w-full py-3 px-6 bg-[#fcc207] text-[#212121] font-semibold text-lg rounded-lg border-b-2 border-[#e5b106] hover:bg-[#e5b106] transition-all text-center no-underline block"
                   @click="closeMenu"
                 >

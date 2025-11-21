@@ -362,11 +362,11 @@ export default {
         return this.directoryMatchSearch(query, this.dropdownResultLimit)
       },
         popularListingLink() {
-          return '/popular-list'
-        },
-        listYourAgencyLink() {
-          return '/agency'
+            return { path: '/', hash: `#${this.popularSectionId}` }
           },
+          listYourAgencyLink() {
+            return '/popular-list'
+            },
           userInitials() {
             const source = (this.authUser && (this.authUser.name || this.authUser.email)) || ''
             const parts = source.trim().split(/\s+/).filter(Boolean)
@@ -484,19 +484,19 @@ export default {
         this.showUserMenu = false
       }
       },
-        handlePopularListingClick(event, shouldCloseMenu = false) {
-          if (shouldCloseMenu) {
-            this.closeMobileMenu()
-          }
-          const isHomeRoute = this.activePath === '/'
-          if (!isHomeRoute) {
-            return
-          }
-          if (event && typeof event.preventDefault === 'function') {
-            event.preventDefault()
-          }
-          this.scrollToPopularListings()
-        },
+          handlePopularListingClick(event, shouldCloseMenu = false) {
+            if (shouldCloseMenu) {
+              this.closeMobileMenu()
+            }
+            const isHomeRoute = this.activePath === '/'
+            if (!isHomeRoute) {
+              return
+            }
+            if (event && typeof event.preventDefault === 'function') {
+              event.preventDefault()
+            }
+            this.scrollToPopularListings()
+          },
         scrollToPopularListings() {
           if (typeof window === 'undefined') {
             return
