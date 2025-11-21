@@ -100,9 +100,11 @@ const sortedLimitedAgencies = computed(() => {
 });
 </script>
 
-
 <template>
-  <div class="w-full max-w-[1200px] mx-auto mt-16 px-5 flex flex-col items-center gap-10 text-center font-plus-jakarta-sans">
+  <div
+    id="home-popular-listings"
+    class="w-full max-w-[1200px] mx-auto mt-16 px-5 flex flex-col items-center gap-10 text-center font-plus-jakarta-sans"
+  >
     <div class="text-3xl sm:text-4xl lg:text-[30px] font-semibold capitalize leading-[130%]">
       {{ props.heading }}
     </div>

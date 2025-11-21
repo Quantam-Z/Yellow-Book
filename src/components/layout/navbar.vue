@@ -30,9 +30,10 @@
               ></div>
             </nuxt-link>
 
-            <nuxt-link
+              <nuxt-link
               :to="popularListingLink"
-              class="flex flex-col items-center gap-[4px] cursor-pointer no-underline transition-colors"
+                class="flex flex-col items-center gap-[4px] cursor-pointer no-underline transition-colors"
+                @click="handlePopularListingClick"
             >
               <div
                 class="relative leading-[160%] text-base"
@@ -94,9 +95,10 @@
               </div>
             </transition>
           </div>
-            <nuxt-link
+              <nuxt-link
               :to="listYourAgencyLink"
-              class="relative rounded border-gray border-solid border-[1px] box-border h-12 flex items-center justify-center py-[18px] px-9 text-center text-base text-[#212121] font-plus-jakarta-sans no-underline"
+                class="relative rounded border-gray border-solid border-[1px] box-border h-12 flex items-center justify-center py-[18px] px-9 text-center text-base text-[#212121] font-plus-jakarta-sans no-underline"
+                @click="handleListYourAgencyClick"
             >
             <div class="relative leading-[130%] capitalize font-semibold">List Your Agency</div>
           </nuxt-link>
@@ -143,11 +145,11 @@
                   Category
                 </nuxt-link>
 
-                <nuxt-link
+                  <nuxt-link
                   :to="popularListingLink"
                   class="py-4 px-4 rounded-lg transition-colors border-b border-gray-100 no-underline"
                   :class="mobileNavClasses(popularListingLink)"
-                  @click.native="closeMobileMenu"
+                    @click="handlePopularListingClick($event, true)"
                 >
                   Popular Listing
                 </nuxt-link>
@@ -185,10 +187,10 @@
                     Logout
                   </button>
                 </template>
-                <nuxt-link
+                  <nuxt-link
                   :to="listYourAgencyLink"
                   class="w-full py-3 px-6 bg-[#fcc207] text-[#212121] font-semibold text-lg rounded-lg border-b-2 border-[#e5b106] hover:bg-[#e5b106] transition-all text-center no-underline block"
-                  @click.native="closeMobileMenu"
+                    @click="handleListYourAgencyClick($event, true)"
                 >
                 List Your Agency
               </nuxt-link>
@@ -345,6 +347,7 @@ export default {
         defaultSearchPlaceholder,
         dropdownResultLimit: 12,
         directoryInitialized: false,
+          popularSectionId: 'home-popular-listings',
       }
     },
     computed: {
@@ -358,20 +361,10 @@ export default {
         const query = this.searchQuery.trim()
         return this.directoryMatchSearch(query, this.dropdownResultLimit)
       },
-        defaultAgencyQuery() {
-          const record = this.getFirstDirectoryRecord()
-          if (!record) {
-            return null
-          }
-          return this.buildAgencyQuery(record)
-        },
         popularListingLink() {
           return '/popular-list'
         },
         listYourAgencyLink() {
-          if (this.defaultAgencyQuery) {
-            return { path: '/agency', query: this.defaultAgencyQuery }
-          }
           return '/agency'
           },
           userInitials() {
@@ -491,6 +484,39 @@ export default {
         this.showUserMenu = false
       }
       },
+        handlePopularListingClick(event, shouldCloseMenu = false) {
+          if (shouldCloseMenu) {
+            this.closeMobileMenu()
+          }
+          const isHomeRoute = this.activePath === '/'
+          if (!isHomeRoute) {
+            return
+          }
+          if (event && typeof event.preventDefault === 'function') {
+            event.preventDefault()
+          }
+          this.scrollToPopularListings()
+        },
+        scrollToPopularListings() {
+          if (typeof window === 'undefined') {
+            return
+          }
+          this.$nextTick(() => {
+            const target = document.getElementById(this.popularSectionId)
+            if (target) {
+              target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+            }
+          })
+        },
+        handleListYourAgencyClick(event, shouldCloseMenu = false) {
+          if (shouldCloseMenu) {
+            this.closeMobileMenu()
+          }
+          if (event && typeof event.stopPropagation === 'function') {
+            event.stopPropagation()
+          }
+          this.showUserMenu = false
+        },
         isRouteActive(target) {
           const path = typeof target === 'string' ? target : target?.path
           if (!path) {
