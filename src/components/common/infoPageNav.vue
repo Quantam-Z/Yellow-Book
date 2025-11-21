@@ -52,12 +52,17 @@ const hasHeroContent = computed(() => Boolean(props.eyebrow || props.title || pr
 
 <template>
   <section
-    class="info-nav-shell relative isolate w-full overflow-hidden bg-[#fff9e6] text-[#212121] shadow-[0_35px_70px_rgba(15,23,42,0.08)]"
-    :class="{ 'no-curve': isPopularListRoute }"
+    class="info-nav-shell relative isolate w-full overflow-hidden text-[#212121]"
+    :class="[
+      isPopularListRoute
+        ? 'bg-transparent shadow-none border-b border-[#efefef]'
+        : 'bg-[#fff9e6] shadow-[0_35px_70px_rgba(15,23,42,0.08)]',
+      { 'no-curve': isPopularListRoute },
+    ]"
   >
-    <div class="info-nav-accent" aria-hidden="true"></div>
+    <div v-if="!isPopularListRoute" class="info-nav-accent" aria-hidden="true"></div>
     <div class="relative mx-auto flex w-full max-w-6xl flex-col px-4 pb-8 pt-6 sm:px-6 lg:px-8 lg:pb-12">
-      <div class="flex min-h-[72px] items-center gap-4">
+        <div class="flex min-h-[72px] items-center gap-4">
         <NuxtLink to="/" class="flex items-center gap-3" aria-label="Navigate to home">
           <span class="flex h-10 w-10 items-center justify-center rounded-full bg-[#ffd335] text-base font-semibold">
             Y
@@ -119,30 +124,42 @@ const hasHeroContent = computed(() => Boolean(props.eyebrow || props.title || pr
               role="dialog"
               aria-modal="true"
             >
-              <div class="flex flex-col gap-4">
-                <nav class="flex flex-col gap-2 text-base font-semibold text-[#212121]" aria-label="Page navigation">
+              <div class="p-6 h-full flex flex-col">
+                <div class="flex justify-end mb-8">
+                  <button
+                    type="button"
+                    class="p-2 rounded-full hover:bg-gray-100 transition-colors"
+                    aria-label="Close navigation menu"
+                    @click="closeMenu"
+                  >
+                    <X class="h-6 w-6" />
+                  </button>
+                </div>
+
+                <nav class="flex-1 flex flex-col space-y-2 text-lg" aria-label="Page navigation">
                   <NuxtLink
                     v-for="item in navItems"
                     :key="item.to"
                     :to="item.to"
-                    class="rounded-xl px-4 py-3 transition-colors duration-200"
-                    :class="activePath === item.to ? 'bg-[#fff6d0] text-[#212121]' : 'text-[#7a7a7a] hover:bg-[#fdf4c3]'"
+                    class="py-4 px-4 text-[#616161] hover:bg-[#fff9e6] rounded-lg transition-colors border border-transparent no-underline"
+                    :class="activePath === item.to ? 'bg-[#fff9e6] text-[#212121] font-semibold border-[#ffe08f]' : ''"
                     @click="closeMenu"
                   >
                     {{ item.label }}
                   </NuxtLink>
                 </nav>
-                <div class="flex flex-col gap-3 text-sm font-semibold text-[#212121]">
+
+                <div class="space-y-3 mt-auto pt-6 border-t border-gray-200">
                   <NuxtLink
                     to="/auth/login"
-                    class="rounded-full border border-[#ece0b1] px-4 py-2 font-medium text-[#4a4a4a] transition hover:border-[#212121] hover:text-[#212121]"
+                    class="w-full py-3 px-6 text-[#212121] font-semibold text-lg border-2 border-[#212121] rounded-lg hover:bg-[#212121] hover:text-white transition-all text-center no-underline"
                     @click="closeMenu"
                   >
                     Login
                   </NuxtLink>
                   <NuxtLink
                     to="/agency"
-                    class="rounded-full border border-[#212121] px-4 py-2 uppercase tracking-wide transition hover:bg-[#212121] hover:text-white"
+                    class="w-full py-3 px-6 bg-[#fcc207] text-[#212121] font-semibold text-lg rounded-lg border-b-2 border-[#e5b106] hover:bg-[#e5b106] transition-all text-center no-underline block"
                     @click="closeMenu"
                   >
                     List Your Agency
@@ -205,8 +222,8 @@ const hasHeroContent = computed(() => Boolean(props.eyebrow || props.title || pr
 .info-mobile-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.35);
-  backdrop-filter: blur(2px);
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
   z-index: 40;
 }
 
@@ -215,14 +232,15 @@ const hasHeroContent = computed(() => Boolean(props.eyebrow || props.title || pr
   top: 0;
   right: 0;
   bottom: 0;
-  width: min(85vw, 360px);
-  background: #fffdf5;
+  width: min(80vw, 400px);
+  background: #ffffff;
   border-top-left-radius: 28px;
   border-bottom-left-radius: 28px;
-  box-shadow: -10px 0 45px rgba(15, 23, 42, 0.2);
-  padding: 28px 24px;
+  box-shadow: -12px 0 45px rgba(15, 23, 42, 0.2);
+  padding: 24px;
   z-index: 50;
   overflow-y: auto;
+  height: 100vh;
 }
 
 .mobile-nav-overlay-enter-active,
