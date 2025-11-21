@@ -1,7 +1,11 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { Menu, X } from 'lucide-vue-next';
+import { storeToRefs } from 'pinia';
+
+import LoginModal from '@/components/common/loginModal.vue';
+import { useAuthStore } from '~/stores/auth';
 
 type NavItem = {
   label: string;
@@ -21,6 +25,7 @@ const props = withDefaults(
 );
 
 const route = useRoute();
+const router = useRouter();
 
 const navItems: NavItem[] = [
   { label: 'Category', to: '/catagory' },
@@ -31,6 +36,17 @@ const navItems: NavItem[] = [
 const activePath = computed(() => route.path);
 const isMenuOpen = ref(false);
 const isPopularListRoute = computed(() => route.path === '/popular-list');
+
+const authStore = useAuthStore();
+if (import.meta.client) {
+  authStore.hydrateFromStorage();
+}
+
+const { isAuthenticated, user } = storeToRefs(authStore);
+
+const showLoginModal = ref(false);
+const showUserMenu = ref(false);
+const userMenuRef = ref<HTMLElement | null>(null);
 
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
@@ -44,10 +60,65 @@ watch(
   () => route.path,
   () => {
     isMenuOpen.value = false;
+    showUserMenu.value = false;
   },
 );
 
 const hasHeroContent = computed(() => Boolean(props.eyebrow || props.title || props.description));
+
+const authUserDisplay = computed(() => user.value?.name || user.value?.email || '');
+
+const userInitials = computed(() => {
+  const source = authUserDisplay.value?.trim() ?? '';
+  if (!source) return 'U';
+  const parts = source.split(/\s+/).filter(Boolean);
+  if (!parts.length) return 'U';
+  if (parts.length === 1) {
+    return parts[0].slice(0, 2).toUpperCase();
+  }
+  return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+});
+
+const openLoginModal = () => {
+  showLoginModal.value = true;
+  isMenuOpen.value = false;
+};
+
+const closeLoginModal = () => {
+  showLoginModal.value = false;
+};
+
+const toggleUserMenu = () => {
+  showUserMenu.value = !showUserMenu.value;
+};
+
+const goToUserDashboard = () => {
+  showUserMenu.value = false;
+  isMenuOpen.value = false;
+  router.push('/user/my-profile');
+};
+
+const handleUserLogout = async () => {
+  await authStore.logout();
+  showUserMenu.value = false;
+  isMenuOpen.value = false;
+};
+
+const handleDocumentClick = (event: MouseEvent) => {
+  if (!showUserMenu.value) return;
+  const target = event.target as Node | null;
+  if (userMenuRef.value && target && !userMenuRef.value.contains(target)) {
+    showUserMenu.value = false;
+  }
+};
+
+onMounted(() => {
+  document.addEventListener('click', handleDocumentClick);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleDocumentClick);
+});
 </script>
 
 <template>
@@ -55,7 +126,7 @@ const hasHeroContent = computed(() => Boolean(props.eyebrow || props.title || pr
     class="info-nav-shell relative isolate w-full overflow-hidden text-[#212121]"
     :class="[
       isPopularListRoute
-        ? 'bg-transparent shadow-none border-b border-[#efefef]'
+        ? 'bg-white shadow-[0_18px_35px_rgba(15,23,42,0.06)] border-b border-[#efefef]'
         : 'bg-[#fff9e6] shadow-[0_35px_70px_rgba(15,23,42,0.08)]',
       { 'no-curve': isPopularListRoute },
     ]"
@@ -80,7 +151,7 @@ const hasHeroContent = computed(() => Boolean(props.eyebrow || props.title || pr
             v-for="item in navItems"
             :key="item.to"
             :to="item.to"
-            class="relative flex flex-col items-center text-base transition-colors duration-200"
+            class="relative flex flex-col items-center text-base transition-colors duration-200 no-underline"
             :class="activePath === item.to ? 'text-[#212121]' : 'hover:text-[#212121]'"
           >
             {{ item.label }}
@@ -88,12 +159,42 @@ const hasHeroContent = computed(() => Boolean(props.eyebrow || props.title || pr
         </nav>
 
         <div class="hidden items-center gap-3 text-sm font-semibold md:flex">
-          <NuxtLink to="/auth/login" class="text-[#4a4a4a] transition-colors hover:text-[#212121]">
+          <button
+            v-if="!isAuthenticated"
+            type="button"
+            class="text-[#4a4a4a] transition-colors hover:text-[#212121]"
+            @click="openLoginModal"
+          >
             Login
-          </NuxtLink>
+          </button>
+          <div v-else ref="userMenuRef" class="relative">
+            <button
+              type="button"
+              class="flex items-center gap-3 rounded-full border border-[#dbe7ff] bg-white px-3 py-2 shadow-sm hover:shadow-md transition"
+              @click="toggleUserMenu"
+            >
+              <span class="w-8 h-8 rounded-full bg-[#212121] text-white flex items-center justify-center font-semibold text-sm">
+                {{ userInitials }}
+              </span>
+              <span class="text-sm font-medium text-[#212121]">{{ authUserDisplay }}</span>
+            </button>
+            <Transition name="fade">
+              <div
+                v-if="showUserMenu"
+                class="absolute right-0 mt-3 w-48 rounded-xl border border-[#dbe7ff] bg-white shadow-lg py-2 text-sm z-50"
+              >
+                <button class="w-full text-left px-4 py-2 hover:bg-[#fff9e6] transition-colors" @click="goToUserDashboard">
+                  My Dashboard
+                </button>
+                <button class="w-full text-left px-4 py-2 text-red-500 hover:bg-red-50 transition-colors" @click="handleUserLogout">
+                  Logout
+                </button>
+              </div>
+            </Transition>
+          </div>
           <NuxtLink
             to="/agency"
-            class="rounded-full border border-[#212121] px-5 py-2 text-xs uppercase tracking-[0.2em] text-[#212121] transition-all hover:bg-[#212121] hover:text-white"
+            class="rounded-full border border-[#212121] px-5 py-2 text-xs uppercase tracking-[0.2em] text-[#212121] transition-all hover:bg-[#212121] hover:text-white no-underline"
           >
             List Your Agency
           </NuxtLink>
@@ -149,28 +250,46 @@ const hasHeroContent = computed(() => Boolean(props.eyebrow || props.title || pr
                   </NuxtLink>
                 </nav>
 
-                <div class="space-y-3 mt-auto pt-6 border-t border-gray-200">
-                  <NuxtLink
-                    to="/auth/login"
-                    class="w-full py-3 px-6 text-[#212121] font-semibold text-lg border-2 border-[#212121] rounded-lg hover:bg-[#212121] hover:text-white transition-all text-center no-underline"
-                    @click="closeMenu"
-                  >
-                    Login
-                  </NuxtLink>
-                  <NuxtLink
-                    to="/agency"
-                    class="w-full py-3 px-6 bg-[#fcc207] text-[#212121] font-semibold text-lg rounded-lg border-b-2 border-[#e5b106] hover:bg-[#e5b106] transition-all text-center no-underline block"
-                    @click="closeMenu"
-                  >
-                    List Your Agency
-                  </NuxtLink>
-                </div>
+                  <div class="space-y-3 mt-auto pt-6 border-t border-gray-200">
+                    <template v-if="!isAuthenticated">
+                      <button
+                        type="button"
+                        class="w-full py-3 px-6 text-[#212121] font-semibold text-lg border-2 border-[#212121] rounded-lg hover:bg-[#212121] hover:text-white transition-all"
+                        @click="openLoginModal"
+                      >
+                        Login
+                      </button>
+                    </template>
+                    <template v-else>
+                      <button
+                        type="button"
+                        class="w-full py-3 px-6 text-[#212121] font-semibold text-lg border-2 border-[#212121] rounded-lg hover:bg-[#212121] hover:text-white transition-all"
+                        @click="goToUserDashboard"
+                      >
+                        My Dashboard
+                      </button>
+                      <button
+                        type="button"
+                        class="w-full py-3 px-6 text-red-600 font-semibold text-lg border-2 border-red-200 rounded-lg hover:bg-red-50 transition-all"
+                        @click="handleUserLogout"
+                      >
+                        Logout
+                      </button>
+                    </template>
+                    <NuxtLink
+                      to="/agency"
+                      class="w-full py-3 px-6 bg-[#fcc207] text-[#212121] font-semibold text-lg rounded-lg border-b-2 border-[#e5b106] hover:bg-[#e5b106] transition-all text-center no-underline block"
+                      @click="closeMenu"
+                    >
+                      List Your Agency
+                    </NuxtLink>
+                  </div>
               </div>
             </div>
           </Transition>
         </Teleport>
 
-      <div v-if="hasHeroContent" class="mt-10 flex flex-col items-center gap-3 pb-4 text-center sm:mt-12">
+        <div v-if="hasHeroContent" class="mt-10 flex flex-col items-center gap-3 pb-4 text-center sm:mt-12">
         <p v-if="props.eyebrow" class="text-xs uppercase tracking-[0.35em] text-[#a67c00]">
           {{ props.eyebrow }}
         </p>
@@ -180,6 +299,7 @@ const hasHeroContent = computed(() => Boolean(props.eyebrow || props.title || pr
         </p>
       </div>
     </div>
+      <LoginModal :isOpen="showLoginModal" @close="closeLoginModal" />
   </section>
 </template>
 
