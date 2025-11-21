@@ -24,7 +24,7 @@ type InfoNavMeta = {
 };
 
 const route = useRoute();
-const flatNavRoutes = ['/popular-list', '/faq'];
+const flatNavRoutes = ['/popular-list', '/faq', '/catagory'];
 const usesFlatShell = computed(() => flatNavRoutes.includes(route.path));
 
 const infoNav = computed<InfoNavMeta>(() => {

@@ -36,7 +36,7 @@ const navItems: NavItem[] = [
 
 const activePath = computed(() => route.path);
 const isMenuOpen = ref(false);
-const minimalNavRoutes = ['/popular-list', '/faq'];
+const minimalNavRoutes = ['/popular-list', '/faq', '/catagory'];
 const isMinimalNavRoute = computed(() => minimalNavRoutes.includes(route.path));
 
 const authStore = useAuthStore();

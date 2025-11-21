@@ -5,7 +5,7 @@ import { MapPin, Search, Heart } from 'lucide-vue-next';
 import { storeToRefs } from 'pinia';
 
 import Pagination from '@/components/common/pagination.vue';
-import RatingStars from '@/components/common/RatingStars.vue';
+import StarRatingBox from '@/components/common/starRatingBox.vue';
 import { useDirectoryListings } from '@/composables/useDirectoryListings';
 import type { DirectoryListing } from '@/types/directory';
 import { useStubClient, useStubResource } from '~/services/stubClient';
@@ -279,12 +279,9 @@ const toggleFavorite = async (listing: ListingCard) => {
 </script>
 
 <template>
-  <section class="w-full bg-white px-4 py-10 font-plus-jakarta-sans text-gray-900 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
-    <div class="mx-auto flex w-full max-w-6xl flex-col gap-10">
-      <div
-        class="relative overflow-hidden rounded-[32px] bg-white shadow-[0_35px_70px_rgba(15,23,42,0.08)] ring-1 ring-black/5"
-        aria-hidden="true"
-      >
+  <section class="w-full bg-white px-4 pb-16 pt-0 font-plus-jakarta-sans text-gray-900 sm:px-6 sm:pb-20 lg:px-8">
+    <div class="mx-auto flex w-full max-w-6xl flex-col gap-10 sm:gap-12">
+      <div class="relative overflow-hidden bg-white shadow-[0_35px_70px_rgba(15,23,42,0.08)] ring-1 ring-black/5" aria-hidden="true">
         <img
           src="/logo/Cat.jpeg"
           alt="Trusted help banner"
@@ -302,26 +299,30 @@ const toggleFavorite = async (listing: ListingCard) => {
         </p>
       </header>
 
-      <form
-        class="mx-auto flex w-full max-w-3xl flex-col gap-3 rounded-3xl border border-[#ececec] bg-white px-4 py-3 shadow-[0_20px_60px_rgba(15,23,42,0.08)] sm:flex-row sm:items-center sm:rounded-full sm:py-2"
-        @submit.prevent="onSearchSubmit"
-      >
+      <form class="mx-auto w-full max-w-4xl" @submit.prevent="onSearchSubmit">
         <label class="sr-only" for="popular-search">Search popular listings</label>
-        <Search class="h-5 w-5 text-gray-400" aria-hidden="true" />
-        <input
-          id="popular-search"
-          v-model="searchTerm"
-          type="search"
-          placeholder="Search by company, service, or city"
-          class="flex-1 bg-transparent text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none sm:text-base"
-          aria-label="Search popular listings"
-        />
-        <button
-          type="submit"
-          class="inline-flex h-12 w-full min-w-[120px] items-center justify-center rounded-full bg-[#212121] px-6 text-sm font-semibold uppercase tracking-wider text-white transition hover:bg-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#fcd34d] sm:w-auto"
+        <div
+          class="flex flex-col overflow-hidden rounded-2xl border border-[#e5e5e5] bg-white shadow-[0_20px_60px_rgba(15,23,42,0.12)] sm:flex-row"
         >
-          Search
-        </button>
+          <div class="flex flex-1 items-center gap-3 px-4 py-3 text-sm text-gray-500 sm:px-6 sm:py-4">
+            <Search class="h-5 w-5 text-[#9e9e9e]" aria-hidden="true" />
+            <input
+              id="popular-search"
+              v-model="searchTerm"
+              type="search"
+              placeholder="Search by company, service, or city"
+              class="flex-1 border-0 bg-transparent text-base text-[#212121] placeholder:text-[#9e9e9e] focus:outline-none"
+              aria-label="Search popular listings"
+            />
+          </div>
+          <button
+            type="submit"
+            class="flex items-center justify-center gap-2 border-t border-[#e5e5e5] px-5 py-3 text-sm font-semibold uppercase tracking-[0.25em] text-[#212121] transition hover:bg-[#fff9e6] sm:min-w-[200px] sm:border-l sm:border-t-0"
+          >
+            <span class="hidden sm:inline">Search</span>
+            <Search class="h-5 w-5 text-[#212121]" aria-hidden="true" />
+          </button>
+        </div>
       </form>
 
       <div
@@ -422,18 +423,25 @@ const toggleFavorite = async (listing: ListingCard) => {
                 </span>
               </div>
 
-              <div class="mt-auto flex flex-wrap items-center justify-between gap-4">
-                <RatingStars
-                  :rating="listing.rating"
-                  :count="listing.reviews"
-                  :show-count="true"
-                  :show-value="true"
-                  size="sm"
-                  color="#fbbf24"
-                  empty-color="#f1f5f9"
-                  aria-label="Company rating"
-                />
-                <div class="inline-flex items-center gap-2 text-sm font-medium text-gray-600">
+                <div class="mt-auto flex w-full flex-wrap items-center justify-between gap-4">
+                  <div class="flex flex-col gap-2">
+                    <StarRatingBox
+                      :model-value="Math.round(Number(listing.rating ?? 0))"
+                      :readonly="true"
+                      :box-size="44"
+                      :icon-size="24"
+                      filled-bg="#fffaf0"
+                      filled-color="#fbbf24"
+                      empty-color="#d4d4d4"
+                      border-color="#fbbf24"
+                      class="popular-list-rating"
+                    />
+                    <p class="text-sm font-semibold text-[#212121]">
+                      {{ Number(listing.rating ?? 0).toFixed(1) }}
+                      <span class="font-normal text-gray-500">({{ listing.reviews }} reviews)</span>
+                    </p>
+                  </div>
+                  <div class="inline-flex items-center gap-2 text-sm font-medium text-gray-600">
                   <MapPin class="h-4 w-4 text-[#f97316]" aria-hidden="true" />
                   <span class="capitalize">{{ listing.location }}</span>
                 </div>
