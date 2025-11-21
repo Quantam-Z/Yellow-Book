@@ -296,7 +296,7 @@ const toggleFavorite = async (listing: ListingCard) => {
         />
       </div>
 
-      <header class="text-center">
+        <header class="text-center">
         <p class="text-sm font-semibold uppercase tracking-[0.35em] text-[#f59e0b]">Curated picks</p>
         <h1 class="mt-2 text-3xl font-bold text-[#212121] sm:text-[40px]">Popular List</h1>
         <p class="mx-auto mt-3 max-w-3xl text-base text-[#616161] sm:text-lg">
@@ -308,47 +308,43 @@ const toggleFavorite = async (listing: ListingCard) => {
         <form class="mx-auto w-full max-w-4xl" @submit.prevent="onSearchSubmit">
           <label class="sr-only" for="popular-search">Search popular listings</label>
           <div
-            class="rounded-[32px] border border-[#ffe0a3] bg-gradient-to-r from-[#fff6db] via-[#fffbe8] to-[#fffef6] shadow-[0_30px_90px_rgba(249,186,46,0.25)]"
+            class="w-full max-w-[800px] self-center rounded-[4px] border border-[#e0e0e0] flex flex-col sm:flex-row items-stretch sm:items-center justify-between px-[6px] sm:px-[10px] gap-2 sm:gap-0 text-[14px] text-[#9e9e9e]"
           >
-            <div class="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:gap-4">
-              <div class="flex-1 space-y-2">
-                <p class="text-[11px] font-semibold uppercase tracking-[0.4em] text-[#b07900]">
-                  Search directory
-                </p>
-                <div
-                  class="flex items-center gap-3 rounded-2xl border border-[#ffe0a3] bg-white/95 px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] focus-within:border-[#fcd34d] focus-within:ring-2 focus-within:ring-[#fcd34d]/60"
-                >
-                  <Search class="h-5 w-5 text-[#f59e0b]" aria-hidden="true" />
-                  <input
-                    id="popular-search"
-                    v-model="searchTerm"
-                    type="search"
-                    placeholder="Search by company, service, or city"
-                    class="flex-1 border-0 bg-transparent text-base text-[#212121] placeholder:text-[#b2a07c] focus:outline-none"
-                    aria-label="Search popular listings"
-                  />
-                </div>
+            <div
+              class="w-full relative rounded border-gainsboro border-solid border-[1px] box-border flex items-center justify-between py-1.5 sm:py-0 pl-2 sm:pl-2.5 pr-0 gap-3 sm:gap-5 text-center text-sm text-darkgray font-plus-jakarta-sans"
+            >
+              <div class="flex items-center gap-2 flex-1">
+                <Search class="h-5 w-5 text-[#9e9e9e]" aria-hidden="true" />
+                <input
+                  id="popular-search"
+                  v-model="searchTerm"
+                  type="search"
+                  placeholder="Search by company, service, or city"
+                  class="flex-1 bg-transparent outline-none border-0 focus:ring-0 relative leading-[170%] capitalize placeholder-[#9e9e9e] text-[#212121] text-sm sm:text-base"
+                  aria-label="Search popular listings"
+                />
               </div>
+
               <button
                 type="submit"
-                class="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#212121] px-6 py-3 text-base font-semibold text-white shadow-lg shadow-[#fcd34d]/40 transition hover:bg-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#212121]"
+                class="rounded-tl-none sm:rounded-tr rounded-br sm:rounded-bl-none bg-white border-gainsboro border-solid border-[1px] flex items-center justify-center py-2 sm:py-3.5 px-3 sm:px-[18px] gap-1.5 sm:gap-2 text-[14px] sm:text-lg text-dimgray hover:bg-[#f9f9f9] transition"
               >
-                <span>Search</span>
-                <Search class="h-5 w-5 text-white" aria-hidden="true" />
+                <span class="hidden sm:block relative leading-[160%] capitalize font-medium">Search</span>
+                <Search class="h-6 w-6 sm:h-7 sm:w-7 text-[#9e9e9e]" aria-hidden="true" />
               </button>
             </div>
-            <div class="flex flex-wrap items-center gap-2 border-t border-white/70 px-4 py-3 text-xs text-[#b07900]">
-              <span class="font-semibold uppercase tracking-[0.35em] text-[#d97706]">Trending:</span>
-              <button
-                v-for="chip in quickSearches"
-                :key="chip"
-                type="button"
-                class="rounded-full bg-white/80 px-3 py-1 text-[12px] font-medium text-[#a16207] transition hover:bg-white"
-                @click="applyQuickSearch(chip)"
-              >
-                {{ chip }}
-              </button>
-            </div>
+          </div>
+          <div class="mx-auto mt-2 flex flex-wrap items-center gap-2 text-xs text-[#9e9e9e] sm:justify-center">
+            <span class="font-semibold uppercase tracking-[0.35em] text-[#28aed8]">Trending:</span>
+            <button
+              v-for="chip in quickSearches"
+              :key="chip"
+              type="button"
+              class="rounded-full border border-[#e0e0e0] bg-white px-3 py-1 text-[12px] font-medium text-[#616161] transition hover:border-[#28aed8] hover:text-[#28aed8]"
+              @click="applyQuickSearch(chip)"
+            >
+              {{ chip }}
+            </button>
           </div>
         </form>
 

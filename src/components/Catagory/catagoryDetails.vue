@@ -489,6 +489,7 @@
 
 <script>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import Pagination from '~/components/common/pagination.vue';
   import { categoryService } from '@/services/categoryService';
   import { resolveCategoryDirectory } from '@/services/directoryMapper';
