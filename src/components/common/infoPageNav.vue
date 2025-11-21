@@ -67,8 +67,40 @@ watch(
 
 const SCROLL_LOCK_CLASS = 'scroll-locked';
 
+let originalBodyPaddingRight = '';
+let originalHtmlPaddingRight = '';
+let hasScrollCompensation = false;
+
+const applyScrollCompensation = () => {
+  if (!import.meta.client || hasScrollCompensation) return;
+  const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
+  if (scrollBarWidth <= 0) return;
+
+  originalBodyPaddingRight = document.body.style.paddingRight;
+  originalHtmlPaddingRight = document.documentElement.style.paddingRight;
+
+  const bodyPadding = parseFloat(window.getComputedStyle(document.body).paddingRight || '0') || 0;
+  const htmlPadding = parseFloat(window.getComputedStyle(document.documentElement).paddingRight || '0') || 0;
+
+  document.body.style.paddingRight = `${bodyPadding + scrollBarWidth}px`;
+  document.documentElement.style.paddingRight = `${htmlPadding + scrollBarWidth}px`;
+  hasScrollCompensation = true;
+};
+
+const releaseScrollCompensation = () => {
+  if (!import.meta.client || !hasScrollCompensation) return;
+  document.body.style.paddingRight = originalBodyPaddingRight;
+  document.documentElement.style.paddingRight = originalHtmlPaddingRight;
+  hasScrollCompensation = false;
+};
+
 const toggleScrollLock = (shouldLock: boolean) => {
   if (!import.meta.client) return;
+  if (shouldLock) {
+    applyScrollCompensation();
+  } else {
+    releaseScrollCompensation();
+  }
   const action = shouldLock ? 'add' : 'remove';
   document.documentElement.classList[action](SCROLL_LOCK_CLASS);
   document.body.classList[action](SCROLL_LOCK_CLASS);
@@ -138,11 +170,11 @@ onBeforeUnmount(() => {
 
 <template>
   <section
-    class="info-nav-shell relative isolate w-full overflow-hidden text-[#212121]"
+    class="info-nav-shell relative isolate w-full text-[#212121]"
     :class="
       isPopularListRoute
-        ? 'bg-[#fff9e6] shadow-[0_35px_70px_rgba(15,23,42,0.08)]'
-        : 'bg-[#fff9e6] shadow-[0_35px_70px_rgba(15,23,42,0.08)]'
+        ? 'bg-transparent shadow-none'
+        : 'info-nav-shell--rounded overflow-hidden bg-[#fff9e6] shadow-[0_35px_70px_rgba(15,23,42,0.08)]'
     "
   >
     <div v-if="!isPopularListRoute" class="info-nav-accent" aria-hidden="true"></div>
@@ -426,19 +458,23 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .info-nav-shell {
+  transition: background-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.info-nav-shell--rounded {
   border-bottom-left-radius: 50% 32px;
   border-bottom-right-radius: 50% 32px;
 }
 
 @media (min-width: 640px) {
-  .info-nav-shell {
+  .info-nav-shell--rounded {
     border-bottom-left-radius: 50% 48px;
     border-bottom-right-radius: 50% 48px;
   }
 }
 
 @media (min-width: 1024px) {
-  .info-nav-shell {
+  .info-nav-shell--rounded {
     border-bottom-left-radius: 50% 70px;
     border-bottom-right-radius: 50% 70px;
   }

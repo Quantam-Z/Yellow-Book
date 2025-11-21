@@ -162,9 +162,40 @@ const isEmailValid = computed(() => /\S+@\S+\.\S+/.test(email.value.trim()))
 const isCodeValid = computed(() => verificationCode.value.trim().length === 6)
 
 const scrollLockClass = 'scroll-locked'
+let originalBodyPaddingRight = ''
+let originalHtmlPaddingRight = ''
+let hasScrollCompensation = false
+
+const applyScrollCompensation = () => {
+  if (!import.meta.client || hasScrollCompensation) return
+  const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth
+  if (scrollBarWidth <= 0) return
+
+  originalBodyPaddingRight = document.body.style.paddingRight
+  originalHtmlPaddingRight = document.documentElement.style.paddingRight
+
+  const bodyPadding = parseFloat(window.getComputedStyle(document.body).paddingRight || '0') || 0
+  const htmlPadding = parseFloat(window.getComputedStyle(document.documentElement).paddingRight || '0') || 0
+
+  document.body.style.paddingRight = `${bodyPadding + scrollBarWidth}px`
+  document.documentElement.style.paddingRight = `${htmlPadding + scrollBarWidth}px`
+  hasScrollCompensation = true
+}
+
+const releaseScrollCompensation = () => {
+  if (!import.meta.client || !hasScrollCompensation) return
+  document.body.style.paddingRight = originalBodyPaddingRight
+  document.documentElement.style.paddingRight = originalHtmlPaddingRight
+  hasScrollCompensation = false
+}
 
 const toggleBodyScroll = (shouldLock) => {
   if (!import.meta.client) return
+  if (shouldLock) {
+    applyScrollCompensation()
+  } else {
+    releaseScrollCompensation()
+  }
   const action = shouldLock ? 'add' : 'remove'
   document.documentElement.classList[action](scrollLockClass)
   document.body.classList[action](scrollLockClass)
