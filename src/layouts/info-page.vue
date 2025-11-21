@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-[#fffdf5] text-gray-800 flex flex-col">
+  <div class="min-h-screen text-gray-800 flex flex-col" :class="isPopularListRoute ? 'bg-white' : 'bg-[#fffdf5]'">
     <InfoPageNav v-bind="infoNav" />
 
     <main class="flex-1 w-full">
@@ -24,6 +24,7 @@ type InfoNavMeta = {
 };
 
 const route = useRoute();
+const isPopularListRoute = computed(() => route.path === '/popular-list');
 
 const infoNav = computed<InfoNavMeta>(() => {
   const meta = (route.meta?.infoNav ?? {}) as Partial<InfoNavMeta>;
