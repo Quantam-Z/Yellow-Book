@@ -131,7 +131,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { User, Building, X } from 'lucide-vue-next'
@@ -161,6 +161,15 @@ const step = ref('email')
 const isEmailValid = computed(() => /\S+@\S+\.\S+/.test(email.value.trim()))
 const isCodeValid = computed(() => verificationCode.value.trim().length === 6)
 
+const scrollLockClass = 'scroll-locked'
+
+const toggleBodyScroll = (shouldLock) => {
+  if (!import.meta.client) return
+  const action = shouldLock ? 'add' : 'remove'
+  document.documentElement.classList[action](scrollLockClass)
+  document.body.classList[action](scrollLockClass)
+}
+
 const resetForm = (preserveChallenge = true) => {
   statusMessage.value = null
   debugCode.value = null
@@ -177,6 +186,7 @@ const resetForm = (preserveChallenge = true) => {
 watch(
   () => props.isOpen,
   (open) => {
+    toggleBodyScroll(open)
     if (open) {
       if (pendingChallenge.value?.email) {
         email.value = pendingChallenge.value.email
@@ -187,6 +197,10 @@ watch(
     }
   },
 )
+
+onBeforeUnmount(() => {
+  toggleBodyScroll(false)
+})
 
 watch(isAuthenticated, (authed) => {
   if (authed && props.isOpen) {
@@ -981,6 +995,11 @@ padding: 16px 24px;
 
 }
 
+}
+
+:global(body.scroll-locked),
+:global(html.scroll-locked) {
+  overflow: hidden;
 }
 
 </style>
