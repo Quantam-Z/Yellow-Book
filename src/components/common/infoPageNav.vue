@@ -10,6 +10,7 @@ import { useAuthStore } from '~/stores/auth';
 type NavItem = {
   label: string;
   to: string;
+  variant?: 'primary' | 'secondary';
 };
 
 const props = withDefaults(
@@ -28,8 +29,8 @@ const route = useRoute();
 const router = useRouter();
 
 const navItems: NavItem[] = [
-  { label: 'Category', to: '/catagory' },
-  { label: 'Popular List', to: '/popular-list' },
+  { label: 'Category', to: '/catagory', variant: 'primary' },
+  { label: 'Popular Listing', to: '/popular-list' },
   { label: 'FAQ', to: '/faq' },
 ];
 
@@ -63,6 +64,19 @@ watch(
     showUserMenu.value = false;
   },
 );
+
+const SCROLL_LOCK_CLASS = 'scroll-locked';
+
+const toggleScrollLock = (shouldLock: boolean) => {
+  if (!import.meta.client) return;
+  const action = shouldLock ? 'add' : 'remove';
+  document.documentElement.classList[action](SCROLL_LOCK_CLASS);
+  document.body.classList[action](SCROLL_LOCK_CLASS);
+};
+
+watch(isMenuOpen, (open) => {
+  toggleScrollLock(open);
+});
 
 const hasHeroContent = computed(() => Boolean(props.eyebrow || props.title || props.description));
 
@@ -118,91 +132,191 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   document.removeEventListener('click', handleDocumentClick);
+  toggleScrollLock(false);
 });
 </script>
 
 <template>
   <section
     class="info-nav-shell relative isolate w-full overflow-hidden text-[#212121]"
-    :class="[
+    :class="
       isPopularListRoute
-        ? 'bg-white shadow-[0_18px_35px_rgba(15,23,42,0.06)] border-b border-[#efefef]'
-        : 'bg-[#fff9e6] shadow-[0_35px_70px_rgba(15,23,42,0.08)]',
-      { 'no-curve': isPopularListRoute },
-    ]"
+        ? 'bg-[#fff9e6] shadow-[0_35px_70px_rgba(15,23,42,0.08)]'
+        : 'bg-[#fff9e6] shadow-[0_35px_70px_rgba(15,23,42,0.08)]'
+    "
   >
     <div v-if="!isPopularListRoute" class="info-nav-accent" aria-hidden="true"></div>
-    <div class="relative mx-auto flex w-full max-w-6xl flex-col px-4 pb-8 pt-6 sm:px-6 lg:px-8 lg:pb-12">
-        <div class="flex min-h-[72px] items-center gap-4">
-        <NuxtLink to="/" class="flex items-center gap-3" aria-label="Navigate to home">
-          <span class="flex h-10 w-10 items-center justify-center rounded-full bg-[#ffd335] text-base font-semibold">
-            Y
-          </span>
-          <span class="text-[22px] font-semibold tracking-wide">
-            Yello<span class="text-base font-normal text-[#9e9e9e]">.mn</span>
-          </span>
+    <div
+      :class="[
+        'relative w-full flex flex-col',
+        isPopularListRoute
+          ? 'z-10 px-4 sm:px-6 md:px-12 lg:px-[120px] py-4 sm:py-6'
+          : 'mx-auto max-w-6xl px-4 pb-8 pt-6 sm:px-6 lg:px-8 lg:pb-12',
+      ]"
+    >
+      <div
+        :class="[
+          'w-full items-center gap-4',
+          isPopularListRoute ? 'flex justify-between mb-6 sm:mb-12 md:mb-16' : 'flex min-h-[72px]',
+        ]"
+      >
+        <NuxtLink
+          to="/"
+          :class="isPopularListRoute ? 'w-[120px] rounded-[4px] flex flex-col items-start p-2 box-border' : 'flex items-center gap-3'"
+          aria-label="Navigate to home"
+        >
+          <template v-if="isPopularListRoute">
+            <img
+              class="self-stretch max-w-full overflow-hidden h-[34px] sm:h-[30px] md:h-[30px] flex-shrink-0 object-cover"
+              src="/logo/logo.png"
+              alt="Logo"
+            />
+          </template>
+          <template v-else>
+            <span class="flex h-10 w-10 items-center justify-center rounded-full bg-[#ffd335] text-base font-semibold">
+              Y
+            </span>
+            <span class="text-[22px] font-semibold tracking-wide">
+              Yello<span class="text-base font-normal text-[#9e9e9e]">.mn</span>
+            </span>
+          </template>
         </NuxtLink>
 
-        <nav
-          class="ml-2 hidden flex-1 items-center justify-center gap-8 text-sm font-semibold text-[#797979] md:flex"
-          aria-label="Page navigation"
-        >
-          <NuxtLink
-            v-for="item in navItems"
-            :key="item.to"
-            :to="item.to"
-            class="relative flex flex-col items-center text-base transition-colors duration-200 no-underline"
-            :class="activePath === item.to ? 'text-[#212121]' : 'hover:text-[#212121]'"
-          >
-            {{ item.label }}
-          </NuxtLink>
-        </nav>
-
-        <div class="hidden items-center gap-3 text-sm font-semibold md:flex">
-          <button
-            v-if="!isAuthenticated"
-            type="button"
-            class="text-[#4a4a4a] transition-colors hover:text-[#212121]"
-            @click="openLoginModal"
-          >
-            Login
-          </button>
-          <div v-else ref="userMenuRef" class="relative">
-            <button
-              type="button"
-              class="flex items-center gap-3 rounded-full border border-[#dbe7ff] bg-white px-3 py-2 shadow-sm hover:shadow-md transition"
-              @click="toggleUserMenu"
+        <template v-if="isPopularListRoute">
+          <div class="hidden lg:flex items-center gap-8">
+            <NuxtLink
+              v-for="item in navItems"
+              :key="item.to"
+              :to="item.to"
+              class="cursor-pointer no-underline transition-colors duration-200"
             >
-              <span class="w-8 h-8 rounded-full bg-[#212121] text-white flex items-center justify-center font-semibold text-sm">
-                {{ userInitials }}
-              </span>
-              <span class="text-sm font-medium text-[#212121]">{{ authUserDisplay }}</span>
-            </button>
-            <Transition name="fade">
-              <div
-                v-if="showUserMenu"
-                class="absolute right-0 mt-3 w-48 rounded-xl border border-[#dbe7ff] bg-white shadow-lg py-2 text-sm z-50"
-              >
-                <button class="w-full text-left px-4 py-2 hover:bg-[#fff9e6] transition-colors" @click="goToUserDashboard">
-                  My Dashboard
-                </button>
-                <button class="w-full text-left px-4 py-2 text-red-500 hover:bg-red-50 transition-colors" @click="handleUserLogout">
-                  Logout
-                </button>
-              </div>
-            </Transition>
+              <template v-if="item.variant === 'primary'">
+                <div class="flex flex-col items-center gap-[4px] text-[#212121]">
+                  <div class="relative leading-[160%] font-medium text-base">
+                    {{ item.label }}
+                  </div>
+                  <div class="w-[30px] bg-[#212121] h-[2px]" />
+                </div>
+              </template>
+              <template v-else>
+                <div
+                  class="relative leading-[160%] font-normal text-base"
+                  :class="activePath === item.to ? 'text-[#212121]' : 'text-[#616161]'"
+                >
+                  {{ item.label }}
+                </div>
+              </template>
+            </NuxtLink>
           </div>
-          <NuxtLink
-            to="/agency"
-            class="rounded-full border border-[#212121] px-5 py-2 text-xs uppercase tracking-[0.2em] text-[#212121] transition-all hover:bg-[#212121] hover:text-white no-underline"
+
+          <div class="hidden lg:flex items-center gap-6 text-[#212121]">
+            <button
+              v-if="!isAuthenticated"
+              type="button"
+              class="flex items-center justify-center cursor-pointer relative leading-[160%] font-normal text-base"
+              @click="openLoginModal"
+            >
+              Login
+            </button>
+            <div v-else ref="userMenuRef" class="relative">
+              <button
+                type="button"
+                class="flex items-center gap-3 rounded-full border border-[#dbe7ff] bg-white px-3 py-2 shadow-sm hover:shadow-md transition"
+                @click="toggleUserMenu"
+              >
+                <span class="w-8 h-8 rounded-full bg-[#212121] text-white flex items-center justify-center font-semibold text-sm">
+                  {{ userInitials }}
+                </span>
+                <span class="hidden sm:block text-sm font-medium">{{ authUserDisplay }}</span>
+              </button>
+              <Transition name="fade">
+                <div
+                  v-if="showUserMenu"
+                  class="absolute right-0 mt-3 w-48 rounded-xl border border-[#dbe7ff] bg-white shadow-lg py-2 text-sm z-50"
+                >
+                  <button class="w-full text-left px-4 py-2 hover:bg-[#fff9e6] transition-colors" @click="goToUserDashboard">
+                    My Dashboard
+                  </button>
+                  <button class="w-full text-left px-4 py-2 text-red-500 hover:bg-red-50 transition-colors" @click="handleUserLogout">
+                    Logout
+                  </button>
+                </div>
+              </Transition>
+            </div>
+            <NuxtLink
+              to="/agency"
+              class="relative rounded border-gray border-solid border-[1px] box-border h-12 flex items-center justify-center py-[18px] px-9 text-center text-base text-[#212121] font-plus-jakarta-sans no-underline"
+            >
+              <div class="relative leading-[130%] capitalize font-semibold">List Your Agency</div>
+            </NuxtLink>
+          </div>
+        </template>
+
+        <template v-else>
+          <nav
+            class="ml-2 hidden flex-1 items-center justify-center gap-8 text-sm font-semibold text-[#797979] md:flex"
+            aria-label="Page navigation"
           >
-            List Your Agency
-          </NuxtLink>
-        </div>
+            <NuxtLink
+              v-for="item in navItems"
+              :key="item.to"
+              :to="item.to"
+              class="relative flex flex-col items-center text-base transition-colors duration-200 no-underline"
+              :class="activePath === item.to ? 'text-[#212121]' : 'hover:text-[#212121]'"
+            >
+              {{ item.label }}
+            </NuxtLink>
+          </nav>
+
+          <div class="hidden items-center gap-3 text-sm font-semibold md:flex">
+            <button
+              v-if="!isAuthenticated"
+              type="button"
+              class="text-[#4a4a4a] transition-colors hover:text-[#212121]"
+              @click="openLoginModal"
+            >
+              Login
+            </button>
+            <div v-else ref="userMenuRef" class="relative">
+              <button
+                type="button"
+                class="flex items-center gap-3 rounded-full border border-[#dbe7ff] bg-white px-3 py-2 shadow-sm hover:shadow-md transition"
+                @click="toggleUserMenu"
+              >
+                <span class="w-8 h-8 rounded-full bg-[#212121] text-white flex items-center justify-center font-semibold text-sm">
+                  {{ userInitials }}
+                </span>
+                <span class="text-sm font-medium text-[#212121]">{{ authUserDisplay }}</span>
+              </button>
+              <Transition name="fade">
+                <div
+                  v-if="showUserMenu"
+                  class="absolute right-0 mt-3 w-48 rounded-xl border border-[#dbe7ff] bg-white shadow-lg py-2 text-sm z-50"
+                >
+                  <button class="w-full text-left px-4 py-2 hover:bg-[#fff9e6] transition-colors" @click="goToUserDashboard">
+                    My Dashboard
+                  </button>
+                  <button class="w-full text-left px-4 py-2 text-red-500 hover:bg-red-50 transition-colors" @click="handleUserLogout">
+                    Logout
+                  </button>
+                </div>
+              </Transition>
+            </div>
+            <NuxtLink
+              to="/agency"
+              class="rounded-full border border-[#212121] px-5 py-2 text-xs uppercase tracking-[0.2em] text-[#212121] transition-all hover:bg-[#212121] hover:text-white no-underline"
+            >
+              List Your Agency
+            </NuxtLink>
+          </div>
+        </template>
 
         <button
           type="button"
-          class="ml-auto inline-flex h-11 w-11 items-center justify-center rounded-full border-2 border-[#ffd335] bg-white/90 text-[#212121] shadow-sm transition hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#212121] md:hidden"
+          :class="[
+            'inline-flex h-11 w-11 items-center justify-center rounded-full border-2 border-[#ffd335] bg-white/90 text-[#212121] shadow-sm transition hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#212121]',
+            isPopularListRoute ? 'lg:hidden' : 'md:hidden',
+          ]"
           :aria-expanded="isMenuOpen"
           aria-controls="info-mobile-nav"
           @click="toggleMenu"
@@ -213,83 +327,90 @@ onBeforeUnmount(() => {
         </button>
       </div>
 
-        <Teleport to="body">
-          <Transition name="mobile-nav-overlay">
-            <div v-if="isMenuOpen" class="info-mobile-overlay md:hidden" aria-hidden="true" @click="closeMenu" />
-          </Transition>
-          <Transition name="mobile-nav-drawer">
-            <div
-              v-if="isMenuOpen"
-              id="info-mobile-nav"
-              class="info-mobile-drawer md:hidden"
-              role="dialog"
-              aria-modal="true"
-            >
-              <div class="p-6 h-full flex flex-col">
-                <div class="flex justify-end mb-8">
+      <Teleport to="body">
+        <Transition name="mobile-nav-overlay">
+          <div
+            v-if="isMenuOpen"
+            class="info-mobile-overlay"
+            :class="isPopularListRoute ? 'lg:hidden' : 'md:hidden'"
+            aria-hidden="true"
+            @click="closeMenu"
+          />
+        </Transition>
+        <Transition name="mobile-nav-drawer">
+          <div
+            v-if="isMenuOpen"
+            id="info-mobile-nav"
+            class="info-mobile-drawer"
+            :class="isPopularListRoute ? 'lg:hidden' : 'md:hidden'"
+            role="dialog"
+            aria-modal="true"
+          >
+            <div class="p-6 h-full flex flex-col">
+              <div class="flex justify-end mb-8">
+                <button
+                  type="button"
+                  class="p-2 rounded-full hover:bg-gray-100 transition-colors"
+                  aria-label="Close navigation menu"
+                  @click="closeMenu"
+                >
+                  <X class="h-6 w-6" />
+                </button>
+              </div>
+
+              <nav class="flex-1 flex flex-col space-y-2 text-lg" aria-label="Page navigation">
+                <NuxtLink
+                  v-for="item in navItems"
+                  :key="item.to"
+                  :to="item.to"
+                  class="py-4 px-4 text-[#616161] hover:bg-[#fff9e6] rounded-lg transition-colors border border-transparent no-underline"
+                  :class="activePath === item.to ? 'bg-[#fff9e6] text-[#212121] font-semibold border-[#ffe08f]' : ''"
+                  @click="closeMenu"
+                >
+                  {{ item.label }}
+                </NuxtLink>
+              </nav>
+
+              <div class="space-y-3 mt-auto pt-6 border-t border-gray-200">
+                <template v-if="!isAuthenticated">
                   <button
                     type="button"
-                    class="p-2 rounded-full hover:bg-gray-100 transition-colors"
-                    aria-label="Close navigation menu"
-                    @click="closeMenu"
+                    class="w-full py-3 px-6 text-[#212121] font-semibold text-lg border-2 border-[#212121] rounded-lg hover:bg-[#212121] hover:text-white transition-all"
+                    @click="openLoginModal"
                   >
-                    <X class="h-6 w-6" />
+                    Login
                   </button>
-                </div>
-
-                <nav class="flex-1 flex flex-col space-y-2 text-lg" aria-label="Page navigation">
-                  <NuxtLink
-                    v-for="item in navItems"
-                    :key="item.to"
-                    :to="item.to"
-                    class="py-4 px-4 text-[#616161] hover:bg-[#fff9e6] rounded-lg transition-colors border border-transparent no-underline"
-                    :class="activePath === item.to ? 'bg-[#fff9e6] text-[#212121] font-semibold border-[#ffe08f]' : ''"
-                    @click="closeMenu"
+                </template>
+                <template v-else>
+                  <button
+                    type="button"
+                    class="w-full py-3 px-6 text-[#212121] font-semibold text-lg border-2 border-[#212121] rounded-lg hover:bg-[#212121] hover:text-white transition-all"
+                    @click="goToUserDashboard"
                   >
-                    {{ item.label }}
-                  </NuxtLink>
-                </nav>
-
-                  <div class="space-y-3 mt-auto pt-6 border-t border-gray-200">
-                    <template v-if="!isAuthenticated">
-                      <button
-                        type="button"
-                        class="w-full py-3 px-6 text-[#212121] font-semibold text-lg border-2 border-[#212121] rounded-lg hover:bg-[#212121] hover:text-white transition-all"
-                        @click="openLoginModal"
-                      >
-                        Login
-                      </button>
-                    </template>
-                    <template v-else>
-                      <button
-                        type="button"
-                        class="w-full py-3 px-6 text-[#212121] font-semibold text-lg border-2 border-[#212121] rounded-lg hover:bg-[#212121] hover:text-white transition-all"
-                        @click="goToUserDashboard"
-                      >
-                        My Dashboard
-                      </button>
-                      <button
-                        type="button"
-                        class="w-full py-3 px-6 text-red-600 font-semibold text-lg border-2 border-red-200 rounded-lg hover:bg-red-50 transition-all"
-                        @click="handleUserLogout"
-                      >
-                        Logout
-                      </button>
-                    </template>
-                    <NuxtLink
-                      to="/agency"
-                      class="w-full py-3 px-6 bg-[#fcc207] text-[#212121] font-semibold text-lg rounded-lg border-b-2 border-[#e5b106] hover:bg-[#e5b106] transition-all text-center no-underline block"
-                      @click="closeMenu"
-                    >
-                      List Your Agency
-                    </NuxtLink>
-                  </div>
+                    My Dashboard
+                  </button>
+                  <button
+                    type="button"
+                    class="w-full py-3 px-6 text-red-600 font-semibold text-lg border-2 border-red-200 rounded-lg hover:bg-red-50 transition-all"
+                    @click="handleUserLogout"
+                  >
+                    Logout
+                  </button>
+                </template>
+                <NuxtLink
+                  to="/agency"
+                  class="w-full py-3 px-6 bg-[#fcc207] text-[#212121] font-semibold text-lg rounded-lg border-b-2 border-[#e5b106] hover:bg-[#e5b106] transition-all text-center no-underline block"
+                  @click="closeMenu"
+                >
+                  List Your Agency
+                </NuxtLink>
               </div>
             </div>
-          </Transition>
-        </Teleport>
+          </div>
+        </Transition>
+      </Teleport>
 
-        <div v-if="hasHeroContent" class="mt-10 flex flex-col items-center gap-3 pb-4 text-center sm:mt-12">
+      <div v-if="hasHeroContent" class="mt-10 flex flex-col items-center gap-3 pb-4 text-center sm:mt-12">
         <p v-if="props.eyebrow" class="text-xs uppercase tracking-[0.35em] text-[#a67c00]">
           {{ props.eyebrow }}
         </p>
@@ -299,7 +420,7 @@ onBeforeUnmount(() => {
         </p>
       </div>
     </div>
-      <LoginModal :isOpen="showLoginModal" @close="closeLoginModal" />
+    <LoginModal :isOpen="showLoginModal" @close="closeLoginModal" />
   </section>
 </template>
 
@@ -307,11 +428,6 @@ onBeforeUnmount(() => {
 .info-nav-shell {
   border-bottom-left-radius: 50% 32px;
   border-bottom-right-radius: 50% 32px;
-}
-
-.info-nav-shell.no-curve {
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
 }
 
 @media (min-width: 640px) {
