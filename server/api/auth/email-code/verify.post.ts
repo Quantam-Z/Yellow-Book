@@ -1,7 +1,7 @@
 import { defineEventHandler, readBody, createError } from 'h3';
 import { executeStubRequest } from '~/services/stubClient';
 import { normalizeEmail, buildStubToken } from '~/utils/authTokens';
-import { verifyCode } from '~/server/utils/emailCodeStore';
+import { verifyCode } from '../../../utils/emailCodeStore';
 
 export default defineEventHandler(async (event) => {
   const body = await readBody<{ email?: string; code?: string }>(event);

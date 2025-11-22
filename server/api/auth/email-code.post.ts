@@ -1,7 +1,7 @@
 import { defineEventHandler, readBody, createError } from 'h3';
 import { executeStubRequest } from '~/services/stubClient';
 import { normalizeEmail } from '~/utils/authTokens';
-import { issueCode, getDefaultTtl } from '~/server/utils/emailCodeStore';
+import { issueCode, getDefaultTtl } from '../../utils/emailCodeStore';
 
 const ensureUserExists = async (email: string) => {
   const normalized = normalizeEmail(email);
