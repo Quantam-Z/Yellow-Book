@@ -284,24 +284,38 @@ const toggleStatus = (row) => {
 };
 
 
-const simulateDelete = (row) => {
+const simulateDelete = async (row) => {
+  if (!row?.id) {
+    editingIndex.value = null;
+    return;
+  }
 
-// Remove the row directly
-allRows.value = allRows.value.filter(r => r.id !== row.id);
+  const confirmed = confirm(`Are you sure you want to delete ${row.name}?`);
+  if (!confirmed) {
+    editingIndex.value = null;
+    return;
+  }
 
-// Fix pagination if needed
-const newTotalPages = Math.ceil(allRows.value.length / pageSize.value);
-if (currentPage.value > newTotalPages && currentPage.value > 1) {
-  currentPage.value = newTotalPages;
-}
+  try {
+    await stubClient.remove('recentCompanies', row.id, { delay: 160 });
+    allRows.value = allRows.value.filter(r => r.id !== row.id);
 
-// Optional success toast
-if (import.meta.client) {
-  nuxtApp.$awn?.success(`The company ${row.name} has been successfully deleted.`);
-}
+    const newTotalPages = Math.max(1, Math.ceil(allRows.value.length / pageSize.value));
+    if (currentPage.value > newTotalPages) {
+      currentPage.value = newTotalPages;
+    }
 
-// Close edit mode
-editingIndex.value = null;
+    if (import.meta.client) {
+      nuxtApp.$awn?.success(`The company ${row.name} has been successfully deleted.`);
+    }
+  } catch (error) {
+    console.error('Failed to delete recent company:', error);
+    if (import.meta.client) {
+      nuxtApp.$awn?.alert(`Failed to delete ${row.name}. Please try again.`);
+    }
+  } finally {
+    editingIndex.value = null;
+  }
 };
 
 

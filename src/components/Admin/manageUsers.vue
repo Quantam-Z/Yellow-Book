@@ -291,7 +291,7 @@
                     {{ user.signupMethod }}
                   </div>
                 </div>
-                <div class="flex items-center gap-2 shrink-0 relative">
+                  <div class="flex items-center gap-2 shrink-0 relative">
                   <span 
                     class="text-xs font-medium px-2 py-1 rounded-full whitespace-nowrap cursor-pointer transition-opacity" 
                     :class="getStatusClass(user.status, 'soft') + ' bg-opacity-10'" 
@@ -299,20 +299,32 @@
                   >
                     {{ user.status }}
                   </span>
-                  <button
-                    v-if="mobileActionsIndex === index"
-                    type="button"
-                    class="text-amber-500 hover:text-amber-600 transition-colors flex items-center justify-center"
-                    @click.stop="viewUser(user)"
-                    title="Quick view"
-                  >
-                    <EyeIcon class="w-5 h-5" />
-                  </button>
-                  <MoreHorizontal 
-                    v-else
-                    class="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer" 
-                    @click.stop="toggleMobileActions(index)"
-                  />
+                    <div
+                      v-if="mobileActionsIndex === index"
+                      class="flex items-center gap-2"
+                    >
+                      <button
+                        type="button"
+                        class="text-amber-500 hover:text-amber-600 transition-colors flex items-center justify-center"
+                        @click.stop="viewUser(user)"
+                        title="Quick view"
+                      >
+                        <EyeIcon class="w-5 h-5" />
+                      </button>
+                      <button
+                        type="button"
+                        class="text-red-500 hover:text-red-600 transition-colors flex items-center justify-center"
+                        @click.stop="deleteUser(user)"
+                        title="Delete user"
+                      >
+                        <Trash2Icon class="w-5 h-5" />
+                      </button>
+                    </div>
+                    <MoreHorizontal 
+                      v-else
+                      class="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer" 
+                      @click.stop="toggleMobileActions(index)"
+                    />
                 </div>
               </div>
 
@@ -439,12 +451,20 @@
                     <ChevronDownIcon class="w-3 h-3 flex-shrink-0" aria-hidden="true" />
                   </div>
                 </td>
-                <td class="px-4 py-3 whitespace-nowrap">
-                  <EyeIcon 
-                    @click="viewUser(user)"
-                    class="w-5 h-5 text-yellow-500 cursor-pointer hover:text-yellow-600 active:text-yellow-700 transition touch-manipulation" 
-                  />
-                </td>
+                  <td class="px-4 py-3 whitespace-nowrap">
+                    <div class="flex items-center gap-2">
+                      <EyeIcon 
+                        @click="viewUser(user)"
+                        class="w-5 h-5 text-yellow-500 cursor-pointer hover:text-yellow-600 active:text-yellow-700 transition touch-manipulation" 
+                        title="View user"
+                      />
+                      <Trash2Icon
+                        @click="deleteUser(user)"
+                        class="w-5 h-5 text-red-500 cursor-pointer hover:text-red-600 active:text-red-700 transition touch-manipulation"
+                        title="Delete user"
+                      />
+                    </div>
+                  </td>
               </tr>
             </tbody>
           </table>
@@ -526,6 +546,7 @@ import {
   Share2 as Share2Icon,
   Mail as MailIcon,
   UserPlus as UserPlusIcon,
+  Trash2 as Trash2Icon,
   MoreHorizontal
 } from 'lucide-vue-next';
 import { getStatusClass, getStatusShort, getSignupMethodClass } from '~/composables/useStatusClass'
@@ -670,6 +691,36 @@ const viewUser = (user) => {
 const closeUserDetails = () => {
   isDetailModalOpen.value = false;
   selectedUser.value = null;
+};
+
+const deleteUser = async (user) => {
+  if (!user?.id) {
+    mobileActionsIndex.value = null;
+    return;
+  }
+
+  const confirmed = confirm(`Are you sure you want to delete ${user.name}?`);
+  if (!confirmed) {
+    mobileActionsIndex.value = null;
+    return;
+  }
+
+  try {
+    await stubClient.remove('users', user.id, { delay: 160 });
+    await refresh();
+    toast('success', `${user.name} removed`);
+  } catch (error) {
+    console.error('Failed to delete user', error);
+    toast('error', `Failed to delete ${user.name}`);
+  } finally {
+    mobileActionsIndex.value = null;
+    if (expandedUserId.value === user.id) {
+      expandedUserId.value = null;
+    }
+    if (selectedUser.value?.id === user.id) {
+      closeUserDetails();
+    }
+  }
 };
 
 const changeStatus = async (user) => {

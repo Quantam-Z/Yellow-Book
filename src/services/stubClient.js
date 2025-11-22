@@ -12,7 +12,7 @@ export const STUB_REGISTRY = {
   directoryCategories: { file: "categories.json", type: "singleton", mutable: false },
   directoryListings: { file: "listings.json", type: "singleton", mutable: false },
   recentActivities: { file: "recentActivities.json", type: "collection", mutable: false },
-  recentCompanies: { file: "recentCompanies.json", type: "collection", mutable: false },
+  recentCompanies: { file: "recentCompanies.json", type: "collection", primaryKey: "id", mutable: true },
   recentReviews: { file: "recentReviews.json", type: "collection", primaryKey: "id", mutable: true },
   subadminAssignedCompanies: {
     file: "subadminAssignedCompanies.json",
