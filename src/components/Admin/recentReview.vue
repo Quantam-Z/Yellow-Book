@@ -248,23 +248,38 @@ const toggleStatus = (row) => {
   editingIndex.value = null; 
 };
 
-const simulateDelete = (review) => {
-  if (import.meta.client) {
-    
-    // 1. Perform Deletion Instantly
+const simulateDelete = async (review) => {
+  if (!review?.id) {
+    editingIndex.value = null;
+    return;
+  }
+
+  const confirmed = confirm(`Are you sure you want to delete the review by ${review.reviewer}?`);
+  if (!confirmed) {
+    editingIndex.value = null;
+    return;
+  }
+
+  try {
+    await stubClient.remove('recentReviews', review.id, { delay: 160 });
     allReviews.value = allReviews.value.filter(r => r.id !== review.id);
-    
-    // 2. Adjust Pagination
-    const newTotalPages = Math.ceil(allReviews.value.length / pageSize.value);
-    if (currentPage.value > newTotalPages && currentPage.value > 1) {
-        currentPage.value = newTotalPages;
+
+    const newTotalPages = Math.max(1, Math.ceil(allReviews.value.length / pageSize.value));
+    if (currentPage.value > newTotalPages) {
+      currentPage.value = newTotalPages;
     }
 
-    // 3. Show Error/Danger Notification immediately after state update.
-    nuxtApp.$awn?.error(`Review by ${review.reviewer} has been permanently deleted.`);
+    if (import.meta.client) {
+      nuxtApp.$awn?.error(`Review by ${review.reviewer} has been permanently deleted.`);
+    }
+  } catch (error) {
+    console.error('Failed to delete recent review:', error);
+    if (import.meta.client) {
+      nuxtApp.$awn?.alert(`Failed to delete the review by ${review.reviewer}.`);
+    }
+  } finally {
+    editingIndex.value = null;
   }
-  
-  editingIndex.value = null;
 };
 
 onMounted(() => {

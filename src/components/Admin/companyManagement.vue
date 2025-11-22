@@ -250,7 +250,7 @@
                   </div>
                   <span class="text-sm text-gray-600 mt-1 truncate">{{ company.category }}</span>
                 </div>
-                <div class="flex items-center gap-2 shrink-0 relative">
+                  <div class="flex items-center gap-2 shrink-0 relative">
                   <span 
                     class="text-xs font-medium px-2 py-1 rounded-full whitespace-nowrap cursor-pointer transition-opacity" 
                     :class="getStatusClass(company.status, 'soft') + ' bg-opacity-10'"
@@ -258,20 +258,32 @@
                   >
                     {{ company.status }}
                   </span>
-                  <button
-                    v-if="mobileActionsIndex === index"
-                    type="button"
-                    class="text-amber-500 hover:text-amber-600 transition-colors flex items-center justify-center"
-                    @click.stop="viewCompany(company)"
-                    title="Quick view"
-                  >
-                    <EyeIcon class="w-5 h-5" />
-                  </button>
-                  <MoreHorizontal 
-                    v-else
-                    class="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer" 
-                    @click.stop="toggleMobileActions(index)"
-                  />
+                    <div
+                      v-if="mobileActionsIndex === index"
+                      class="flex items-center gap-2"
+                    >
+                      <button
+                        type="button"
+                        class="text-amber-500 hover:text-amber-600 transition-colors flex items-center justify-center"
+                        @click.stop="viewCompany(company)"
+                        title="Quick view"
+                      >
+                        <EyeIcon class="w-5 h-5" />
+                      </button>
+                      <button
+                        type="button"
+                        class="text-red-500 hover:text-red-600 transition-colors flex items-center justify-center"
+                        @click.stop="deleteCompany(company)"
+                        title="Delete company"
+                      >
+                        <Trash2Icon class="w-5 h-5" />
+                      </button>
+                    </div>
+                    <MoreHorizontal 
+                      v-else
+                      class="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer" 
+                      @click.stop="toggleMobileActions(index)"
+                    />
                 </div>
               </div>
 
@@ -393,12 +405,20 @@
                     <ChevronDownIcon class="w-3 h-3 flex-shrink-0" aria-hidden="true" />
                   </div>
                 </td>
-                <td class="px-4 py-3 whitespace-nowrap">
-                  <EyeIcon 
-                    @click="viewCompany(company)"
-                    class="w-5 h-5 text-yellow-500 cursor-pointer hover:text-yellow-600 active:text-yellow-700 transition touch-manipulation" 
-                  />
-                </td>
+                  <td class="px-4 py-3 whitespace-nowrap">
+                    <div class="flex items-center gap-2">
+                      <EyeIcon 
+                        @click="viewCompany(company)"
+                        class="w-5 h-5 text-yellow-500 cursor-pointer hover:text-yellow-600 active:text-yellow-700 transition touch-manipulation" 
+                        title="View company"
+                      />
+                      <Trash2Icon
+                        @click="deleteCompany(company)"
+                        class="w-5 h-5 text-red-500 cursor-pointer hover:text-red-600 active:text-red-700 transition touch-manipulation"
+                        title="Delete company"
+                      />
+                    </div>
+                  </td>
               </tr>
             </tbody>
           </table>
@@ -471,7 +491,7 @@
 <script setup>
 import { ref, computed, defineAsyncComponent, watchEffect, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { Search as SearchIcon, Eye as EyeIcon, CheckCircle as CheckCircleIcon, ChevronDown as ChevronDownIcon, ChevronLeft as ChevronLeftIcon, ChevronRight as ChevronRightIcon, Filter as FilterIcon, Phone as PhoneIcon, Globe as GlobeIcon, MoreHorizontal } from "lucide-vue-next";
+import { Search as SearchIcon, Eye as EyeIcon, CheckCircle as CheckCircleIcon, ChevronDown as ChevronDownIcon, ChevronLeft as ChevronLeftIcon, ChevronRight as ChevronRightIcon, Filter as FilterIcon, Phone as PhoneIcon, Globe as GlobeIcon, Trash2 as Trash2Icon, MoreHorizontal } from "lucide-vue-next";
 import { getStatusClass } from '~/composables/useStatusClass'
 import { useSelection } from '~/composables/useSelection'
 import { useStubClient } from '~/services/stubClient'
@@ -687,6 +707,36 @@ const viewCompany = (company) => {
 const closeCompanyDetails = () => {
   isDetailModalOpen.value = false;
   selectedCompany.value = null;
+};
+
+const deleteCompany = async (company) => {
+  if (!company?.id) {
+    mobileActionsIndex.value = null;
+    return;
+  }
+
+  const confirmed = confirm(`Are you sure you want to delete ${company.name}?`);
+  if (!confirmed) {
+    mobileActionsIndex.value = null;
+    return;
+  }
+
+  try {
+    await stubClient.remove('companies', company.id, { delay: 160 });
+    await refresh();
+    toast('success', `${company.name} removed`);
+  } catch (error) {
+    console.error('Failed to delete company', error);
+    toast('error', `Failed to delete ${company.name}`);
+  } finally {
+    mobileActionsIndex.value = null;
+    if (expandedCompanyId.value === company.id) {
+      expandedCompanyId.value = null;
+    }
+    if (selectedCompany.value?.id === company.id) {
+      closeCompanyDetails();
+    }
+  }
 };
 
 const toggleMobileActions = (index) => {
