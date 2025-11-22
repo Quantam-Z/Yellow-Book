@@ -3,6 +3,8 @@ import { metaInfo } from "./metaTag";
 export default defineNuxtConfig({
   // ✅ Source directory for all app code
   srcDir: "./src/",
+  // ✅ Tell Nuxt where the server routes live (they remain at the project root)
+  serverDir: "./server",
 
   // ✅ Enable SSR (recommended for SEO and Nuxt features)
   ssr: true,
