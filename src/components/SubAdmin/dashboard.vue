@@ -199,7 +199,8 @@ import { ref, computed, watchEffect } from 'vue';
 import RatingStars from '~/components/common/RatingStars.vue'
 import CompanyVerificationModal from '~/components/modal/verifyReview.vue';
 import ReviewModal from '~/components/modal/reviewModal.vue';
-import { useStubClient, useStubResource } from '~/services/stubClient';
+import { useStubClient } from '~/services/stubClient';
+import { useStubResource } from '~/composables/useStubResource';
 
 // Modal states
 const selectedCompany = ref(null);

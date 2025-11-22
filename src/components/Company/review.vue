@@ -372,7 +372,8 @@
 <script setup>
 import { ref, computed, watch, watchEffect } from 'vue'
 import { CheckCircle, Trash2, Plus, Star, ChevronDown, Loader2, Calendar, X } from 'lucide-vue-next'
-import { useStubClient, useStubResource } from '~/services/stubClient'
+import { useStubClient } from '~/services/stubClient'
+import { useStubResource } from '~/composables/useStubResource'
 
 const reviews = ref([])
 const selectedRating = ref('')

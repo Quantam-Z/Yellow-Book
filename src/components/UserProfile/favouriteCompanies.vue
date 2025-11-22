@@ -101,7 +101,8 @@ import { Building2, Star, Heart } from 'lucide-vue-next'
 import { computed, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 
-import { useStubClient, useStubResource } from '~/services/stubClient'
+import { useStubClient } from '~/services/stubClient'
+import { useStubResource } from '~/composables/useStubResource'
 import type { Ref } from 'vue'
 import { useAuthStore } from '~/stores/auth'
 

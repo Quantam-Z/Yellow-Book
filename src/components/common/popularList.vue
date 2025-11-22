@@ -8,7 +8,8 @@ import Pagination from '@/components/common/pagination.vue';
 import StarRatingBox from '@/components/common/starRatingBox.vue';
 import { useDirectoryListings } from '@/composables/useDirectoryListings';
 import type { DirectoryListing } from '@/types/directory';
-import { useStubClient, useStubResource } from '~/services/stubClient';
+import { useStubClient } from '~/services/stubClient';
+import { useStubResource } from '~/composables/useStubResource';
 import { useAuthStore } from '~/stores/auth';
 
 type ListingCard = {

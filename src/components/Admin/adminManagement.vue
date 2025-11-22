@@ -555,7 +555,8 @@ import {
 } from 'lucide-vue-next';
 import { getStatusClass, getRoleClass } from '~/composables/useStatusClass'
 import { useSelection } from '~/composables/useSelection'
-import { useStubClient, useStubResource } from '~/services/stubClient'
+import { useStubClient } from '~/services/stubClient'
+import { useStubResource } from '~/composables/useStubResource'
 import DetailModal from '~/components/common/DetailModal.vue'
 import { useClientEventListener } from '@/composables/useClientEventListener';
 

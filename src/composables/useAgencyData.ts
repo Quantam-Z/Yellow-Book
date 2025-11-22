@@ -10,7 +10,7 @@ import {
   type StubCompany,
 } from '@/services/directoryMapper';
 import type { AgencyRecord } from '@/types/directory';
-import { useStubResource } from '~/services/stubClient';
+import { useStubResource } from '~/composables/useStubResource';
 
 const toStringQuery = (value: unknown) => (typeof value === 'string' ? value : '');
 

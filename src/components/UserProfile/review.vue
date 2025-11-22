@@ -87,7 +87,8 @@
 import { Star, Edit3, Trash2 } from 'lucide-vue-next'
 import { computed, watch } from 'vue'
 import type { Ref } from 'vue'
-import { useStubClient, useStubResource } from '~/services/stubClient'
+import { useStubClient } from '~/services/stubClient'
+import { useStubResource } from '~/composables/useStubResource'
 
 const nuxtApp = useNuxtApp()
 const stubClient = useStubClient()
