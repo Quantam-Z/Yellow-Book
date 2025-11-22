@@ -382,9 +382,10 @@
             </div>
           </div>
 
-        <!-- Desktop Table View -->
-        <div class="hidden lg:block overflow-x-auto scrollbar-thin">
-          <table class="w-full table-auto min-w-[800px]">
+          <!-- Desktop Table View -->
+          <div class="hidden lg:block">
+            <div class="panel-scroll panel-scroll--padded scrollbar-thin">
+              <table class="w-full table-auto min-w-[800px]">
             <thead class="bg-gray-50 border-b border-gray-200">
               <tr>
                 <th class="px-4 py-3 text-left" style="width: 40px;">
@@ -470,7 +471,8 @@
                 </td>
               </tr>
             </tbody>
-          </table>
+              </table>
+            </div>
         </div>
 
         <!-- Empty State -->

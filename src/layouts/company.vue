@@ -6,8 +6,10 @@
       <!-- Below header: sidebar + main content -->
       <div class="flex flex-1">
         <Sidebar />
-        <main class="flex-1 p-6">
-          <slot />
+        <main class="flex-1 w-full overflow-x-hidden">
+          <div class="mx-auto w-full max-w-7xl px-4 py-6 sm:px-8">
+            <slot />
+          </div>
         </main>
       </div>
     </div>

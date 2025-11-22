@@ -14,8 +14,9 @@
       
     </div>
 
-    <div class="hidden lg:block w-full overflow-x-auto">
-      <table class="w-full table-auto min-w-[800px]">
+      <div class="hidden lg:block w-full">
+        <div class="panel-scroll panel-scroll--padded scrollbar-thin">
+          <table class="w-full table-auto min-w-[800px]">
         <thead class="bg-gray-50 border-b border-gray-200 sticky top-0 bg-white z-10">
           <tr>
             <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 whitespace-nowrap">Reviewer</th>
@@ -67,7 +68,8 @@
             </td>
           </tr>
         </tbody>
-      </table>
+          </table>
+        </div>
     </div>
 
     <div class="lg:hidden w-full flex flex-col gap-4">
