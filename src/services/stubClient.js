@@ -41,6 +41,8 @@ const HTTP_STATUS_TEXT = {
 
 const DEFAULT_COLLECTION_PRIMARY_KEY = "id";
 const STUB_STATE_KEY = "__NUXT_STUB_STATE__";
+const isClientRuntime = typeof globalThis !== "undefined" && typeof globalThis.window !== "undefined";
+const isServerRuntime = !isClientRuntime;
 
 const globalState = (() => {
   if (!globalThis[STUB_STATE_KEY]) {
@@ -89,7 +91,7 @@ const summarizeTransportError = (error) => {
 };
 
 const markHttpTransportUnavailable = (error) => {
-  if (!import.meta.client) return;
+  if (!isClientRuntime) return;
   if (httpTransportState.unavailable) {
     if (error && !httpTransportState.lastError) {
       httpTransportState.lastError = error;
@@ -219,7 +221,7 @@ const loadStubFromDisk = async (file, type) => {
     }
   };
 
-  if (import.meta.server) {
+  if (isServerRuntime) {
     let rawFromStorage;
 
     try {
@@ -377,7 +379,7 @@ const buildStubUrl = ({ resource, id, query, delay }) => {
 };
 
 const shouldUseHttpTransport = (options = {}) => {
-  if (import.meta.server) return false;
+  if (isServerRuntime) return false;
 
   const preference = resolveTransportPreference(options);
   if (preference === "local-only") return false;
@@ -687,7 +689,7 @@ const stubClient = {
       } catch (error) {
         const stubError = toStubError(error);
         const preference = resolveTransportPreference(options);
-        const allowFallback = import.meta.client && preference !== "remote-only";
+        const allowFallback = isClientRuntime && preference !== "remote-only";
         if (allowFallback && isTransportFailureLikelyPermanent(stubError)) {
           markHttpTransportUnavailable(stubError);
           return processStubRequest(options);
