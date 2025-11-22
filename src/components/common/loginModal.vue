@@ -53,68 +53,17 @@
         <div :class="$style.emailCodeLoginParent">
           <div :class="$style.emailCodeLogin">Email Code Login</div>
           <div class="w-full flex flex-col gap-4">
-            <div v-if="isAuthenticated" class="w-full rounded-xl border border-[#dbe7ff] bg-[#f6fafd] p-4 text-center">
-              <p class="text-sm text-[#424242] font-medium">You're signed in as</p>
-              <p class="text-lg font-semibold text-[#212121] mt-1">{{ user?.name || user?.email }}</p>
-              <div class="mt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
-                <button type="button" class="px-4 py-2 rounded-lg bg-[#212121] text-white text-sm font-semibold w-full sm:w-auto" @click="goToDashboard">
-                  Go to Dashboard
-                </button>
-                <button type="button" class="px-4 py-2 rounded-lg border border-[#dbe7ff] text-sm text-[#424242] w-full sm:w-auto" @click="logout">
-                  Logout
-                </button>
-              </div>
-            </div>
-            <template v-else>
-              <div class="flex flex-col gap-2">
-                <label class="text-sm font-semibold text-[#424242]">Work email</label>
-                <input
-                  v-model="email"
-                  type="email"
-                  inputmode="email"
-                  autocomplete="email"
-                  placeholder="you@example.com"
-                  :disabled="sendingCode || verifyingCode"
-                  class="w-full h-12 px-4 rounded-lg border border-[#dbe7ff] focus:outline-none focus:ring-2 focus:ring-[#fcc207] text-sm"
-                />
-              </div>
-              <button
-                type="button"
-                class="w-full h-12 rounded-lg bg-[#fcc207] text-[#212121] font-semibold flex items-center justify-center gap-2 disabled:opacity-60"
-                :disabled="sendingCode || !isEmailValid"
-                @click="sendCode"
-              >
-                <span>{{ sendingCode ? 'Sending...' : 'Send Code' }}</span>
-              </button>
-
-              <div v-if="step === 'code'" class="flex flex-col gap-2">
-                <label class="text-sm font-semibold text-[#424242]">Verification code</label>
-                <input
-                  v-model="verificationCode"
-                  type="text"
-                  inputmode="numeric"
-                  maxlength="6"
-                  placeholder="Enter 6-digit code"
-                  :disabled="verifyingCode"
-                  class="w-full h-12 px-4 rounded-lg border border-[#dbe7ff] focus:outline-none focus:ring-2 focus:ring-[#fcc207] tracking-[0.4em] text-center text-lg"
-                />
-                <button
-                  type="button"
-                  class="w-full h-12 rounded-lg bg-[#212121] text-white font-semibold flex items-center justify-center gap-2 disabled:opacity-60"
-                  :disabled="verifyingCode || !isCodeValid"
-                  @click="verifyCode"
-                >
-                  <span>{{ verifyingCode ? 'Verifying...' : 'Verify & Login' }}</span>
-                </button>
-                <p v-if="debugCode" class="text-xs text-[#616161] text-center">
-                  Test code: <span class="font-mono font-semibold">{{ debugCode }}</span>
-                </p>
-              </div>
-
-              <p v-if="statusMessage" :class="[statusMessage.type === 'error' ? 'text-red-500' : 'text-green-600', 'text-sm text-center']">
-                {{ statusMessage.text }}
-              </p>
-            </template>
+            <AuthUserSummary
+              v-if="isAuthenticated"
+              :user="user"
+              @primary="goToDashboard"
+              @secondary="logout"
+            />
+            <EmailCodeLoginForm
+              v-else
+              :key="formInstanceKey"
+              class="w-full flex flex-col gap-4"
+            />
           </div>
         </div>
         <div :class="$style.frameParent4">
@@ -131,11 +80,13 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onBeforeUnmount } from 'vue'
+import { ref, watch, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { User, Building, X } from 'lucide-vue-next'
 import { useAuthStore } from '~/stores/auth'
+import EmailCodeLoginForm from '~/components/auth/EmailCodeLoginForm.vue'
+import AuthUserSummary from '~/components/auth/AuthUserSummary.vue'
 
 const props = defineProps({
   isOpen: {
@@ -148,18 +99,9 @@ const emit = defineEmits(['close'])
 
 const router = useRouter()
 const authStore = useAuthStore()
-const { isAuthenticated, user, pendingChallenge } = storeToRefs(authStore)
+const { isAuthenticated, user } = storeToRefs(authStore)
 
-const email = ref('')
-const verificationCode = ref('')
-const sendingCode = ref(false)
-const verifyingCode = ref(false)
-const statusMessage = ref(null)
-const debugCode = ref(null)
-const step = ref('email')
-
-const isEmailValid = computed(() => /\S+@\S+\.\S+/.test(email.value.trim()))
-const isCodeValid = computed(() => verificationCode.value.trim().length === 6)
+const formInstanceKey = ref(0)
 
 const scrollLockClass = 'scroll-locked'
 let originalBodyPaddingRight = ''
@@ -201,30 +143,12 @@ const toggleBodyScroll = (shouldLock) => {
   document.body.classList[action](scrollLockClass)
 }
 
-const resetForm = (preserveChallenge = true) => {
-  statusMessage.value = null
-  debugCode.value = null
-  verificationCode.value = ''
-  if (preserveChallenge && pendingChallenge.value?.email) {
-    email.value = pendingChallenge.value.email
-    step.value = 'code'
-  } else {
-    email.value = ''
-    step.value = 'email'
-  }
-}
-
 watch(
   () => props.isOpen,
   (open) => {
     toggleBodyScroll(open)
-    if (open) {
-      if (pendingChallenge.value?.email) {
-        email.value = pendingChallenge.value.email
-        step.value = 'code'
-      }
-    } else {
-      resetForm(true)
+    if (!open) {
+      formInstanceKey.value += 1
     }
   },
 )
@@ -235,49 +159,9 @@ onBeforeUnmount(() => {
 
 watch(isAuthenticated, (authed) => {
   if (authed && props.isOpen) {
-    resetForm(false)
     emit('close')
   }
 })
-
-const sendCode = async () => {
-  if (!isEmailValid.value) return
-  sendingCode.value = true
-  statusMessage.value = null
-  debugCode.value = null
-  try {
-    const response = await authStore.requestEmailCode({ email: email.value })
-    step.value = 'code'
-    verificationCode.value = ''
-    debugCode.value = response?.debug?.code ?? null
-  } catch (error) {
-    statusMessage.value = {
-      type: 'error',
-      text: error?.statusMessage || error?.message || 'Failed to send code',
-    }
-  } finally {
-    sendingCode.value = false
-  }
-}
-
-const verifyCode = async () => {
-  if (!isCodeValid.value) return
-  verifyingCode.value = true
-  statusMessage.value = null
-  try {
-    await authStore.verifyEmailCode({
-      email: email.value,
-      code: verificationCode.value,
-    })
-  } catch (error) {
-    statusMessage.value = {
-      type: 'error',
-      text: error?.statusMessage || error?.message || 'Invalid verification code',
-    }
-  } finally {
-    verifyingCode.value = false
-  }
-}
 
 const closeModal = () => {
   emit('close')
