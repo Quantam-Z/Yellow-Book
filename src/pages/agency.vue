@@ -1,6 +1,6 @@
 <template>
-  <div class="w-full">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+    <div class="w-full py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
         <AgencyHead :agency-name="agencyDisplayName" />
       <CommonAgencyProfile
           :agency-name="agencyDisplayName"
@@ -26,8 +26,7 @@
         :owner-bio="ownerBio"
       />
         <AgencyReview :website="contactWebsite" />
-    </div>
-    <Footer />
+      </div>
   </div>
  </template>
 
@@ -38,11 +37,10 @@ import AgencyHead from '~/components/Agency/agencyHead.vue';
 import AgencyDetails from '~/components/Agency/agencyDetails.vue';
 import AgencyContact from '~/components/Agency/agencyContact.vue';
 import AgencyReview from '~/components/Agency/agencyReview.vue';
-import Footer from '~/components/layout/footer.vue';
 import { useAgencyData } from '@/composables/useAgencyData';
 
 definePageMeta({
-  layout: 'catagory',
+  layout: 'agencyprofile',
 });
 
 const { agency, loading, sources } = await useAgencyData();
