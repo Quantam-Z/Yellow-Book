@@ -10,6 +10,6 @@ import Dashboard from '~/components/SubAdmin/dashboard.vue';
 
 
 definePageMeta({
-  layout: "subadminpanel",
+  layout: "agentpanel",
 });
 </script>
