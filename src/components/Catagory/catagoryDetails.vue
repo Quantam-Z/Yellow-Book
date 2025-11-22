@@ -512,22 +512,63 @@ export default {
       const pageSize = ref(5);
       const currentPage = ref(1);
 
-      const {
-        ensureLoaded,
-        pending: directoryPending,
-        listings: directoryListings,
-      } = useDirectoryListings();
+        const {
+          ensureLoaded,
+          pending: directoryPending,
+          listings: directoryListings,
+        } = useDirectoryListings();
 
-      ensureLoaded();
+        const hydrateDirectoryListings = (options?: { force?: boolean }) =>
+          ensureLoaded(options).catch((error) => {
+            if (import.meta.dev) {
+              console.error('[CategoryPage] Failed to hydrate directory listings', error);
+            }
+          });
+
+        const hadPrefetchedListings = directoryListings.value.length > 0;
+        let shouldForceOnNextSelection = hadPrefetchedListings;
+        const lastHydratedCategory = ref<string | null>(null);
+
+        hydrateDirectoryListings();
 
       const categoryNameParam = computed(() => {
         const raw = route.query.name;
         return typeof raw === 'string' ? decodeURIComponent(raw) : '';
       });
 
-      const normalizedCategoryName = computed(() =>
-        categoryService.normalizeCategoryName(categoryNameParam.value)
-      );
+        const normalizedCategoryName = computed(() =>
+          categoryService.normalizeCategoryName(categoryNameParam.value)
+        );
+
+        watch(
+          normalizedCategoryName,
+          (next) => {
+            const normalized = typeof next === 'string' ? next : '';
+            if (!normalized) {
+              lastHydratedCategory.value = null;
+              shouldForceOnNextSelection = true;
+              return;
+            }
+
+            if (lastHydratedCategory.value === null) {
+              lastHydratedCategory.value = normalized;
+              if (shouldForceOnNextSelection) {
+                hydrateDirectoryListings({ force: true });
+                shouldForceOnNextSelection = false;
+              }
+              return;
+            }
+
+            if (normalized === lastHydratedCategory.value) {
+              return;
+            }
+
+            lastHydratedCategory.value = normalized;
+            hydrateDirectoryListings({ force: true });
+            shouldForceOnNextSelection = false;
+          },
+          { immediate: true }
+        );
 
         const categoryDirectory = computed(() =>
           resolveCategoryDirectory(categoryNameParam.value)
