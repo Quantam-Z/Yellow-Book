@@ -215,13 +215,19 @@
               >
                 Cancel
               </button>
-              <button
-                @click="submitForm"
-                class="px-6 py-3 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold rounded-lg transition-colors flex items-center gap-2"
-              >
-                <Save class="w-4 h-4" />
-                {{ isEditMode ? 'Update Sub-Admin' : 'Create Sub-Admin' }}
-              </button>
+                <button
+                  @click="submitForm"
+                  :disabled="isSubmitting"
+                  :class="[
+                    'px-6 py-3 bg-yellow-500 text-white font-semibold rounded-lg transition-colors flex items-center gap-2',
+                    isSubmitting ? 'opacity-60 cursor-not-allowed' : 'hover:bg-yellow-600'
+                  ]"
+                >
+                  <Save class="w-4 h-4" />
+                  <span>
+                    {{ isSubmitting ? 'Submitting...' : isEditMode ? 'Update Sub-Admin' : 'Create Sub-Admin' }}
+                  </span>
+                </button>
             </div>
           </div>
         </div>
@@ -240,15 +246,20 @@
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { ArrowRight, ArrowLeft, Eye, EyeOff, Save, CheckCircle, X } from 'lucide-vue-next';
+import { useStubClient } from '~/services/stubClient';
 
 const route = useRoute();
 const router = useRouter();
+const stubClient = useStubClient();
+const nuxtApp = useNuxtApp();
 
 // Check if in edit mode
 const isEditMode = ref(false);
 const currentStep = ref(1);
 const showPassword = ref(false);
 const showSuccess = ref(false);
+const isSubmitting = ref(false);
+const existingAdmin = ref(null);
 
 // Form data
 const formData = ref({
@@ -277,24 +288,40 @@ const availablePermissions = ref([
   { id: 'reports_write', name: 'Generate Reports', description: 'Can generate new reports' }
 ]);
 
-// Sample data for edit mode (in real app, this would come from API)
-const sampleAdminData = {
-  id: 1,
-  fullName: 'John Smith',
-  email: 'john.smith@company.com',
-  phone: '+1 (555) 123-4567',
-  role: 'admin',
-  status: 'active',
-  permissions: ['users_read', 'users_write', 'content_read']
+const titleCase = (value = '') => {
+  if (!value) return '';
+  return value
+    .split(' ')
+    .filter(Boolean)
+    .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1).toLowerCase())
+    .join(' ');
 };
 
 // Initialize form based on mode
-onMounted(() => {
+onMounted(async () => {
   const adminId = route.params.id;
   if (adminId) {
     isEditMode.value = true;
-    // In real app, fetch admin data by ID
-    formData.value = { ...sampleAdminData };
+    try {
+      const admin = await stubClient.get('admins', adminId, { delay: 120 });
+      if (admin) {
+        existingAdmin.value = admin;
+        formData.value = {
+          ...formData.value,
+          fullName: admin.name || '',
+          email: admin.email || '',
+          phone: admin.phone || '',
+          role: admin.role ? admin.role.toLowerCase() : '',
+          status: admin.status ? admin.status.toLowerCase() : 'active',
+          permissions: Array.isArray(admin.permissions) ? admin.permissions : [],
+        };
+      }
+    } catch (error) {
+      console.error('Failed to load admin details:', error);
+      if (import.meta.client) {
+        nuxtApp.$awn?.alert('Failed to load admin details. Please try again.');
+      }
+    }
   }
 });
 
@@ -356,21 +383,53 @@ const isValidEmail = (email) => {
   return emailRegex.test(email);
 };
 
+const buildPayload = () => {
+  const now = new Date().toISOString().split('T')[0];
+  return {
+    name: formData.value.fullName.trim(),
+    email: formData.value.email.trim(),
+    phone: formData.value.phone?.trim() || '',
+    role: titleCase(formData.value.role || 'Admin'),
+    status: titleCase(formData.value.status || 'Active'),
+    verified: true,
+    permissions: [...formData.value.permissions],
+    createdOn: existingAdmin.value?.createdOn || now,
+    lastLogin: existingAdmin.value?.lastLogin || now,
+  };
+};
+
 // Submit form
 const submitForm = async () => {
-  if (validateStep2()) {
-    try {
-      // Simulate API call
-      // Show success message
-      showSuccess.value = true;
-        setTimeout(() => {
-          showSuccess.value = false;
-          router.push('/admin/admin-management'); // Redirect to admin list
-        }, 2000);
-      
-    } catch (error) {
-      alert('An error occurred. Please try again.');
+  if (!validateStep2() || isSubmitting.value) {
+    return;
+  }
+
+  isSubmitting.value = true;
+
+  try {
+    const payload = buildPayload();
+    if (isEditMode.value) {
+      await stubClient.update('admins', route.params.id, payload, { delay: 220 });
+    } else {
+      await stubClient.create('admins', payload, { delay: 220 });
     }
+
+    showSuccess.value = true;
+    if (import.meta.client) {
+      nuxtApp.$awn?.success(isEditMode.value ? 'Sub-admin updated' : 'Sub-admin created');
+    }
+
+    setTimeout(() => {
+      showSuccess.value = false;
+      router.push('/admin/admin-management');
+    }, 2000);
+  } catch (error) {
+    console.error('Failed to submit sub-admin form:', error);
+    if (import.meta.client) {
+      nuxtApp.$awn?.alert('An error occurred. Please try again.');
+    }
+  } finally {
+    isSubmitting.value = false;
   }
 };
 

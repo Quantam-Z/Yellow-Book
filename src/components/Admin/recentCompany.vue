@@ -199,6 +199,7 @@ const stubClient = useStubClient();
 const nuxtApp = useNuxtApp();
 
 let nextId = 1;
+const STATUS_SEQUENCE = ['Pending', 'Approved', 'Rejected'];
 
 const fetchData = async () => {
   try {
@@ -261,26 +262,38 @@ const findRowIndexById = (rowId) => {
   return allRows.value.findIndex(row => row.id === rowId);
 };
 
-const toggleStatus = (row) => {
-    const actualIndex = findRowIndexById(row.id);
-    if (actualIndex !== -1) {
-        const currentStatus = allRows.value[actualIndex].status;
-        let newStatus;
-        if (currentStatus === 'Pending') {
-            newStatus = 'Approved';
-        } else if (currentStatus === 'Approved') {
-            newStatus = 'Rejected';
-        } else {
-            newStatus = 'Pending';
-        }
-        allRows.value[actualIndex].status = newStatus;
-        
-        // AWN: Notification for status change
-        if (import.meta.client) {
-            nuxtApp.$awn?.info(`Company ${row.name} status changed to ${newStatus}.`);
-        }
+const toggleStatus = async (row) => {
+    if (!row?.id) {
+        editingIndex.value = null;
+        return;
     }
-    editingIndex.value = null; 
+
+    const actualIndex = findRowIndexById(row.id);
+    if (actualIndex === -1) {
+        editingIndex.value = null;
+        return;
+    }
+
+    const currentStatus = allRows.value[actualIndex].status || 'Pending';
+    const currentIndex = Math.max(0, STATUS_SEQUENCE.indexOf(currentStatus));
+    const nextStatus = STATUS_SEQUENCE[(currentIndex + 1) % STATUS_SEQUENCE.length];
+
+    allRows.value[actualIndex].status = nextStatus;
+
+    try {
+        await stubClient.update('recentCompanies', row.id, { status: nextStatus }, { delay: 140 });
+        if (import.meta.client) {
+            nuxtApp.$awn?.success(`Company ${row.name} status changed to ${nextStatus}.`);
+        }
+    } catch (error) {
+        console.error('Failed to update company status:', error);
+        allRows.value[actualIndex].status = currentStatus;
+        if (import.meta.client) {
+            nuxtApp.$awn?.alert(`Failed to update status for ${row.name}. Please try again.`);
+        }
+    } finally {
+        editingIndex.value = null;
+    }
 };
 
 

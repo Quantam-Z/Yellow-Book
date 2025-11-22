@@ -274,25 +274,33 @@
       </div>
       
       <!-- Submit Button -->
-      <div class="flex justify-end pt-4 border-t border-gainsboro">
-        <button
-          type="submit"
-          class="w-full sm:w-[250px] bg-[#1877F2] text-white py-3 font-medium flex items-center justify-center gap-2 hover:bg-[#166FE0] transition-colors rounded-none border-none text-sm sm:text-base"
-        >
-          <Save class="w-4 h-4" />
-          Save & Apply Changes
-        </button>
-      </div>
+        <div class="flex justify-end pt-4 border-t border-gainsboro">
+          <button
+            type="submit"
+            :disabled="isSaving"
+            :class="[
+              'w-full sm:w-[250px] bg-[#1877F2] text-white py-3 font-medium flex items-center justify-center gap-2 transition-colors rounded-none border-none text-sm sm:text-base',
+              isSaving ? 'opacity-60 cursor-not-allowed' : 'hover:bg-[#166FE0]'
+            ]"
+          >
+            <Save class="w-4 h-4" />
+            <span>{{ isSaving ? 'Saving...' : 'Save & Apply Changes' }}</span>
+          </button>
+        </div>
     </form>
   </div>
 </template>
 
 <script setup>
 import { Upload, Image, Monitor, Pencil, Save, ChevronDown } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { reactive, ref, watchEffect } from 'vue';
+import { useStubResource } from '~/composables/useStubResource';
+import { useStubClient } from '~/services/stubClient';
 
-// --- Form Data State ---
-const companyData = ref({
+const stubClient = useStubClient();
+const nuxtApp = useNuxtApp();
+
+const defaultCompanyState = () => ({
   name: '',
   website: '',
   employees: '',
@@ -310,14 +318,42 @@ const companyData = ref({
   services: '',
 });
 
+const companyData = reactive(defaultCompanyState());
 const isEditing = ref(false);
+const isSaving = ref(false);
 
-// --- Form Submission Handler ---
-const saveChanges = () => {
-    // In a real application, you would send companyData.value to an API endpoint here.
-    alert('Profile changes simulated.');
-    // Optional: set isEditing to false after save
-    isEditing.value = false; 
+const { data: agencyCompanyData, refresh: refreshAgencyCompany } = await useStubResource('agencyCompany', {
+  default: () => defaultCompanyState(),
+});
+
+watchEffect(() => {
+  const payload = agencyCompanyData.value || {};
+  const defaults = defaultCompanyState();
+  for (const key of Object.keys(defaults)) {
+    companyData[key] = payload?.[key] ?? defaults[key];
+  }
+});
+
+const saveChanges = async () => {
+  if (isSaving.value) return;
+  isSaving.value = true;
+
+  try {
+    const payload = JSON.parse(JSON.stringify(companyData));
+    await stubClient.update('agencyCompany', undefined, payload, { delay: 200 });
+    await refreshAgencyCompany();
+    isEditing.value = false;
+    if (import.meta.client) {
+      nuxtApp.$awn?.success('Company profile updated.');
+    }
+  } catch (error) {
+    console.error('Failed to update company profile:', error);
+    if (import.meta.client) {
+      nuxtApp.$awn?.alert('Failed to save changes. Please try again.');
+    }
+  } finally {
+    isSaving.value = false;
+  }
 };
 </script>
 

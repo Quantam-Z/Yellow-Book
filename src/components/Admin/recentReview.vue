@@ -185,6 +185,7 @@ const stubClient = useStubClient();
 const nuxtApp = useNuxtApp();
 
 let nextId = 1; 
+const REVIEW_STATUSES = ['Pending', 'Approved', 'Rejected'];
 
 const fetchData = async () => {
   try {
@@ -234,18 +235,38 @@ const toggleActions = (index) => {
 
 const findReviewIndexById = (reviewId) => allReviews.value.findIndex(review => review.id === reviewId);
 
-const toggleStatus = (row) => {
-  const actualIndex = findReviewIndexById(row.id);
-  if (actualIndex !== -1) {
-    const currentStatus = allReviews.value[actualIndex].status;
-    allReviews.value[actualIndex].status = (currentStatus === 'Approved') ? 'Rejected' : 'Approved';
-
-    if (import.meta.client) {
-      const newStatus = allReviews.value[actualIndex].status;
-      nuxtApp.$awn?.success(`Review status updated to ${newStatus}.`);
-    }
+const toggleStatus = async (row) => {
+  if (!row?.id) {
+    editingIndex.value = null;
+    return;
   }
-  editingIndex.value = null; 
+
+  const actualIndex = findReviewIndexById(row.id);
+  if (actualIndex === -1) {
+    editingIndex.value = null;
+    return;
+  }
+
+  const currentStatus = allReviews.value[actualIndex].status || 'Pending';
+  const currentIndex = Math.max(0, REVIEW_STATUSES.indexOf(currentStatus));
+  const nextStatus = REVIEW_STATUSES[(currentIndex + 1) % REVIEW_STATUSES.length];
+
+  allReviews.value[actualIndex].status = nextStatus;
+
+  try {
+    await stubClient.update('recentReviews', row.id, { status: nextStatus }, { delay: 140 });
+    if (import.meta.client) {
+      nuxtApp.$awn?.success(`Review status updated to ${nextStatus}.`);
+    }
+  } catch (error) {
+    console.error('Failed to update review status:', error);
+    allReviews.value[actualIndex].status = currentStatus;
+    if (import.meta.client) {
+      nuxtApp.$awn?.alert(`Failed to update the status for ${row.reviewer}.`);
+    }
+  } finally {
+    editingIndex.value = null;
+  }
 };
 
 const simulateDelete = async (review) => {
