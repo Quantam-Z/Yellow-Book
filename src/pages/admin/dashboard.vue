@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full space-y-6">
+  <div class="panel-stack w-full">
     <WelcomeComponent />
     <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 items-stretch">
       

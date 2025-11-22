@@ -47,7 +47,7 @@ const SelectedComponent = computed(() => {
 </script>
 
 <template>
-  <div class="w-full space-y-6">
+  <div class="panel-stack w-full">
     <component v-if="SelectedComponent" :is="SelectedComponent" />
     <div v-else class="p-6">
       <h1 class="text-2xl font-semibold">Page not found</h1>

@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full space-y-6">
+  <div class="panel-stack w-full">
    <Dashboard />
   </div>
 </template>
