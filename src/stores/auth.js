@@ -1,6 +1,6 @@
 // src/stores/auth.js
 import { defineStore } from 'pinia'
-import { useNuxtApp, navigateTo } from '#imports'
+import { useNuxtApp, navigateTo } from 'nuxt/app'
 import { useStubClient } from '~/services/stubClient'
 import { normalizeEmail, buildStubToken, parseStubToken } from '~/utils/authTokens'
 import { setToken as setAuthToken, removeToken as clearAuthToken, getUser as getSavedUser, getToken as getSavedToken } from '~/composables/useAuth'

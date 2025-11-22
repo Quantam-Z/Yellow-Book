@@ -1,4 +1,3 @@
-import { useAsyncData } from "#imports";
 import { STUB_REGISTRY, DEFAULT_STUB_DELAY } from "~/services/stubRegistry";
 
 const HTTP_STATUS_TEXT = {
@@ -103,6 +102,31 @@ const structuredCloneSafe = (value) => {
   return JSON.parse(JSON.stringify(value));
 };
 
+let cachedUseAsyncData = null;
+
+const resolveUseAsyncData = async () => {
+  if (cachedUseAsyncData) {
+    return cachedUseAsyncData;
+  }
+
+  if (typeof globalThis !== "undefined" && typeof globalThis.useAsyncData === "function") {
+    cachedUseAsyncData = globalThis.useAsyncData;
+    return cachedUseAsyncData;
+  }
+
+  try {
+    const mod = await import("#imports");
+    if (typeof mod.useAsyncData === "function") {
+      cachedUseAsyncData = mod.useAsyncData;
+      return cachedUseAsyncData;
+    }
+  } catch (error) {
+    throw new StubApiError(500, "useAsyncData is not available in this runtime", { cause: error });
+  }
+
+  throw new StubApiError(500, "useAsyncData is not available in this runtime");
+};
+
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const getStatusText = (status) => HTTP_STATUS_TEXT[status] || "OK";
@@ -198,9 +222,10 @@ const loadStubFromDisk = async (file, type) => {
     let rawFromStorage;
 
     try {
-      const { useStorage } = await import("#imports");
-      const storage = typeof useStorage === "function" ? useStorage("assets:public") : null;
-      if (storage) {
+      const runtime = await import("nitropack/runtime");
+      const storageFactory = runtime?.useStorage;
+      const storage = typeof storageFactory === "function" ? storageFactory("assets:public") : null;
+      if (storage && typeof storage.getItem === "function") {
         const stored = await storage.getItem(`stubs/${file}`);
         if (stored !== null && stored !== undefined) {
           if (typeof stored === "string") {
@@ -214,7 +239,7 @@ const loadStubFromDisk = async (file, type) => {
       }
     } catch (error) {
       // Ignore storage lookup errors, we'll fall back to filesystem access
-      if (typeof process !== "undefined" && process.dev) {
+      if (typeof process !== "undefined" && process?.dev) {
         console.warn(`[stub] Failed to read "${file}" from assets storage`, error);
       }
     }
@@ -247,15 +272,15 @@ const loadStubFromDisk = async (file, type) => {
     }
 
     throw new StubApiError(404, `Stub file "${file}" not found`);
-  } else {
-    const response = await fetch(`/stubs/${file}`);
-    if (!response.ok) {
-      throw new StubApiError(response.status, `Failed to load stub file "${file}"`);
-    }
-    const json = await response.json();
-    validateType(json, type, file);
-    return json;
   }
+
+  const response = await fetch(`/stubs/${file}`);
+  if (!response.ok) {
+    throw new StubApiError(response.status, `Failed to load stub file "${file}"`);
+  }
+  const json = await response.json();
+  validateType(json, type, file);
+  return json;
 };
 
 const validateType = (payload, type, file) => {
@@ -691,9 +716,11 @@ export const useStubResource = (resource, options = {}) => {
     return typeof transform === "function" ? transform(data, response) : data;
   };
 
-  return useAsyncData(dataKey, handler, {
-    default: () => structuredCloneSafe(defaultValue ?? null),
-  });
+  return resolveUseAsyncData().then((useAsyncDataFn) =>
+    useAsyncDataFn(dataKey, handler, {
+      default: () => structuredCloneSafe(defaultValue ?? null),
+    }),
+  );
 };
 
 export const executeStubRequest = (options) => processStubRequest(options);

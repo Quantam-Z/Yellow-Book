@@ -1,5 +1,5 @@
 import { computed } from 'vue';
-import { useRoute } from '#imports';
+import { useRoute } from 'nuxt/app';
 import { useDirectoryListings } from '@/composables/useDirectoryListings';
 import {
   mapAgencyRecord,
