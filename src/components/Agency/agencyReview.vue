@@ -320,7 +320,8 @@
   import StarRatingBox from '@/components/common/starRatingBox.vue';
   import CompanyReview from '@/components/modal/companyReview.vue'; 
   import RatingStars from '@/components/common/RatingStars.vue';
-  import { useStubClient, useStubResource } from '~/services/stubClient';
+  import { useStubClient } from '~/services/stubClient';
+  import { useStubResource } from '~/composables/useStubResource';
   import { useClientEventListener } from '@/composables/useClientEventListener';
 
   interface CompanyResponse {

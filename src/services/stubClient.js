@@ -1,5 +1,3 @@
-import { useAsyncData } from '#imports';
-
 export const STUB_REGISTRY = {
   admins: { file: "admins.json", type: "collection", primaryKey: "id", mutable: true },
   adminStats: { file: "adminStats.json", type: "singleton", mutable: false },
@@ -703,26 +701,6 @@ const stubClient = {
 };
 
 export const useStubClient = () => stubClient;
-
-export const useStubResource = (resource, options = {}) => {
-  const { key, params, transform, default: defaultValue } = options;
-
-  const dataKey = key || `stub:${resource}${params?.id ? `:${params.id}` : ""}`;
-
-  const handler = async () => {
-    const response = await stubClient.request({
-      resource,
-      method: "GET",
-      id: params?.id,
-    });
-    const data = response.data ?? defaultValue ?? null;
-    return typeof transform === "function" ? transform(data, response) : data;
-  };
-
-  return useAsyncData(dataKey, handler, {
-    default: () => structuredCloneSafe(defaultValue ?? null),
-  });
-};
 
 export const executeStubRequest = (options) => processStubRequest(options);
 

@@ -313,7 +313,7 @@ import {
 } from "chart.js";
 import { Line } from "vue-chartjs";
 import { computed, watchEffect, ref, onMounted, onBeforeUnmount } from 'vue';
-import { useStubResource } from '~/services/stubClient';
+import { useStubResource } from '~/composables/useStubResource';
 
 // Register Chart.js modules
 ChartJS.register(Title, Tooltip, Legend, LineElement, PointElement, LinearScale, CategoryScale);

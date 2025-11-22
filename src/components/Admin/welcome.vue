@@ -75,7 +75,7 @@
 import { ref, computed, watch } from 'vue';
 import { Search, Building, Clock, XCircle, Star, Hourglass, Users } from "lucide-vue-next";
 import { useRouter } from 'vue-router';
-import { useStubResource } from '~/services/stubClient'
+import { useStubResource } from '~/composables/useStubResource'
 
 const defaultStats = {
   welcomeName: 'User',

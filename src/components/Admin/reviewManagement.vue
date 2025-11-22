@@ -487,7 +487,8 @@ import {
 } from 'lucide-vue-next'
 import RatingStars from '~/components/common/RatingStars.vue'
 import { getStatusClass } from '~/composables/useStatusClass'
-import { useStubClient, useStubResource } from '~/services/stubClient'
+import { useStubClient } from '~/services/stubClient'
+import { useStubResource } from '~/composables/useStubResource'
 
 const ViewReview = defineAsyncComponent(() => import('~/components/modal/viewReview.vue'))
 

@@ -73,7 +73,8 @@ import {
   DollarSign
 } from 'lucide-vue-next';
 import { ref, watchEffect } from 'vue';
-import { useStubClient, useStubResource } from '~/services/stubClient';
+import { useStubClient } from '~/services/stubClient';
+import { useStubResource } from '~/composables/useStubResource';
 
 // Map icon names from stub to actual components
 const iconMap = { Star, BadgeCheck, AlertCircle, Megaphone, MessageCircle, DollarSign };
