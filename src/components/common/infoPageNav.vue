@@ -241,14 +241,14 @@ onBeforeUnmount(() => {
             </div>
 
           <div class="hidden lg:flex items-center gap-6 text-[#212121]">
-            <button
-              v-if="!isAuthenticated"
-              type="button"
-              class="flex items-center justify-center cursor-pointer relative leading-[160%] font-normal text-base"
-              @click="openLoginModal"
-            >
-              Login
-            </button>
+            <div
+  v-if="!isAuthenticated"
+  class="flex items-center justify-center cursor-pointer relative leading-[160%] font-normal text-base"
+  @click="openLoginModal"
+>
+  Login
+</div>
+
             <div v-else ref="userMenuRef" class="relative">
               <button
                 type="button"
