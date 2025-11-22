@@ -44,6 +44,10 @@ type NormalizingResult = {
   titleIndex: Map<string, NormalizedListing>;
 };
 
+type DirectoryLoadOptions = {
+  force?: boolean;
+};
+
 const normalizeString = (value: string) =>
   value
     .toLowerCase()
@@ -52,8 +56,8 @@ const normalizeString = (value: string) =>
 
 const normalizeCategory = (value: string) => categoryService.normalizeCategoryName(value);
 
-async function loadDirectoryListings(): Promise<NormalizingResult> {
-  await categoryService.ensureHydrated();
+async function loadDirectoryListings(options?: DirectoryLoadOptions): Promise<NormalizingResult> {
+  await categoryService.ensureHydrated({ force: options?.force });
   const rawListings = categoryService.getEnrichedListings();
 
   const listings: NormalizedListing[] = rawListings.map((entry) => ({
@@ -87,18 +91,20 @@ async function loadDirectoryListings(): Promise<NormalizingResult> {
   return { listings, searchEntries, slugIndex, idIndex, titleIndex };
 }
 
-async function ensureDirectoryLoaded() {
-  if (directoryState.listings.length > 0 || ensurePromise) {
-    if (ensurePromise) {
-      await ensurePromise;
+async function ensureDirectoryLoaded(options?: DirectoryLoadOptions) {
+  if (ensurePromise) {
+    await ensurePromise;
+    if (!options?.force) {
+      return;
     }
+  } else if (!options?.force && directoryState.listings.length > 0) {
     return;
   }
 
   directoryState.pending = true;
   directoryState.error = null;
 
-  ensurePromise = loadDirectoryListings()
+  ensurePromise = loadDirectoryListings(options)
     .then((result) => {
       directoryState.listings = result.listings;
       directoryState.searchEntries = result.searchEntries;
