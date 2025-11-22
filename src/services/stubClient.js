@@ -1,4 +1,4 @@
-import { STUB_REGISTRY, DEFAULT_STUB_DELAY } from "./stubRegistry";
+import { STUB_REGISTRY, DEFAULT_STUB_DELAY } from "./stubRegistry.js";
 
 const HTTP_STATUS_TEXT = {
   200: "OK",
