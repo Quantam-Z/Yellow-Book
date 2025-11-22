@@ -518,7 +518,7 @@ export default {
           listings: directoryListings,
         } = useDirectoryListings();
 
-        const hydrateDirectoryListings = (options?: { force?: boolean }) =>
+        const hydrateDirectoryListings = (options = {}) =>
           ensureLoaded(options).catch((error) => {
             if (import.meta.dev) {
               console.error('[CategoryPage] Failed to hydrate directory listings', error);
@@ -527,7 +527,7 @@ export default {
 
         const hadPrefetchedListings = directoryListings.value.length > 0;
         let shouldForceOnNextSelection = hadPrefetchedListings;
-        const lastHydratedCategory = ref<string | null>(null);
+        const lastHydratedCategory = ref(null);
 
         hydrateDirectoryListings();
 
