@@ -53,6 +53,7 @@ const normalizeString = (value: string) =>
 const normalizeCategory = (value: string) => categoryService.normalizeCategoryName(value);
 
 async function loadDirectoryListings(): Promise<NormalizingResult> {
+  await categoryService.ensureHydrated();
   const rawListings = categoryService.getEnrichedListings();
 
   const listings: NormalizedListing[] = rawListings.map((entry) => ({
