@@ -9,13 +9,15 @@ type StubRequestResponse<TData> = {
   duration?: number;
 };
 
+type DefaultValue<T> = T | null | undefined | (() => T | null | undefined);
+
 type UseStubResourceOptions<TData = unknown> = {
   key?: string;
   params?: {
     id?: string | number;
   };
   transform?: (data: TData | null, response: StubRequestResponse<TData>) => TData;
-  default?: TData | null;
+  default?: DefaultValue<TData>;
 };
 
 const structuredCloneSafe = <T>(value: T): T => {
@@ -26,6 +28,11 @@ const structuredCloneSafe = <T>(value: T): T => {
     return structuredClone(value);
   }
   return JSON.parse(JSON.stringify(value));
+};
+
+const resolveDefaultValue = <T>(value: DefaultValue<T>): T | null => {
+  const resolved = typeof value === "function" ? (value as () => T | null | undefined)() : value;
+  return (resolved ?? null) as T | null;
 };
 
 export const useStubResource = <TData = unknown>(
@@ -43,11 +50,12 @@ export const useStubResource = <TData = unknown>(
       id: params?.id,
     })) as StubRequestResponse<TData>;
 
-    const data = response.data ?? (defaultValue ?? null);
+    const fallback = resolveDefaultValue(defaultValue);
+    const data = response.data ?? fallback;
     return typeof transform === "function" ? transform(data, response) : data;
   };
 
   return useAsyncData<TData | null>(dataKey, handler, {
-    default: () => structuredCloneSafe(defaultValue ?? null),
+    default: () => structuredCloneSafe(resolveDefaultValue(defaultValue)),
   });
 };
