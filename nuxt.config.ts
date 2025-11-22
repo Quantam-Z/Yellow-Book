@@ -1,10 +1,22 @@
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { metaInfo } from "./metaTag";
+
+const projectRoot = dirname(fileURLToPath(import.meta.url));
+const srcRoot = resolve(projectRoot, "src");
 
 export default defineNuxtConfig({
   // ✅ Source directory for all app code
   srcDir: "./src/",
   // ✅ Tell Nuxt where the server routes live (they remain at the project root)
   serverDir: "./server",
+  // ✅ Ensure the classic Nuxt aliases resolve from Node runtimes too
+  alias: {
+    "~": srcRoot,
+    "@": srcRoot,
+    "~~": projectRoot,
+    "@@": projectRoot,
+  },
 
   // ✅ Enable SSR (recommended for SEO and Nuxt features)
   ssr: true,
