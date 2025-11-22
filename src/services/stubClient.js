@@ -1,3 +1,5 @@
+import { useAsyncData } from '#imports';
+
 export const STUB_REGISTRY = {
   admins: { file: "admins.json", type: "collection", primaryKey: "id", mutable: true },
   adminStats: { file: "adminStats.json", type: "singleton", mutable: false },
@@ -126,31 +128,6 @@ const structuredCloneSafe = (value) => {
   if (value === null || value === undefined) return value;
   if (typeof structuredClone === "function") return structuredClone(value);
   return JSON.parse(JSON.stringify(value));
-};
-
-let cachedUseAsyncData = null;
-
-const resolveUseAsyncData = async () => {
-  if (cachedUseAsyncData) {
-    return cachedUseAsyncData;
-  }
-
-  if (typeof globalThis !== "undefined" && typeof globalThis.useAsyncData === "function") {
-    cachedUseAsyncData = globalThis.useAsyncData;
-    return cachedUseAsyncData;
-  }
-
-  try {
-    const mod = await import("#imports");
-    if (typeof mod.useAsyncData === "function") {
-      cachedUseAsyncData = mod.useAsyncData;
-      return cachedUseAsyncData;
-    }
-  } catch (error) {
-    throw new StubApiError(500, "useAsyncData is not available in this runtime", { cause: error });
-  }
-
-  throw new StubApiError(500, "useAsyncData is not available in this runtime");
 };
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -742,11 +719,9 @@ export const useStubResource = (resource, options = {}) => {
     return typeof transform === "function" ? transform(data, response) : data;
   };
 
-  return resolveUseAsyncData().then((useAsyncDataFn) =>
-    useAsyncDataFn(dataKey, handler, {
-      default: () => structuredCloneSafe(defaultValue ?? null),
-    }),
-  );
+  return useAsyncData(dataKey, handler, {
+    default: () => structuredCloneSafe(defaultValue ?? null),
+  });
 };
 
 export const executeStubRequest = (options) => processStubRequest(options);
