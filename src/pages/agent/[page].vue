@@ -3,7 +3,7 @@ import { defineAsyncComponent, computed } from 'vue';
 import { useRoute } from 'vue-router';
 
 definePageMeta({
-  layout: 'agentpanel',
+  layout: 'subadminpanel',
 });
 
 function generateNameCandidates(slug: string): string[] {
