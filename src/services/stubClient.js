@@ -1,4 +1,4 @@
-import { useAsyncData } from "#app";
+import { useAsyncData } from "#imports";
 import { STUB_REGISTRY, DEFAULT_STUB_DELAY } from "~/services/stubRegistry";
 
 const HTTP_STATUS_TEXT = {
