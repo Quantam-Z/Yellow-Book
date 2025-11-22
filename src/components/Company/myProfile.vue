@@ -127,14 +127,21 @@
             </div>
           </div>
 
-          <!-- Update Profile Button -->
-          <div 
-            class="w-full sm:w-[223px] h-12 sm:h-[52px] rounded bg-forestgreen flex items-center justify-center py-3 sm:py-4 md:py-5 px-4 sm:px-6 md:px-8 box-border gap-2.5 text-center text-white cursor-pointer hover:bg-green-700 transition-colors mt-2"
-            @click="updateProfile"
-          >
-            <Save class="h-5 w-5 sm:h-6 sm:w-6" />
-            <div class="relative leading-[130%] capitalize font-semibold text-sm sm:text-base">Update Profile</div>
-          </div>
+            <!-- Update Profile Button -->
+            <button 
+              type="button"
+              :disabled="isSaving"
+              :class="[
+                'w-full sm:w-[223px] h-12 sm:h-[52px] rounded bg-forestgreen flex items-center justify-center py-3 sm:py-4 md:py-5 px-4 sm:px-6 md:px-8 box-border gap-2.5 text-center text-white transition-colors mt-2',
+                isSaving ? 'opacity-60 cursor-not-allowed' : 'hover:bg-green-700'
+              ]"
+              @click="updateProfile"
+            >
+              <Save class="h-5 w-5 sm:h-6 sm:w-6" />
+              <div class="relative leading-[130%] capitalize font-semibold text-sm sm:text-base">
+                {{ isSaving ? 'Saving...' : 'Update Profile' }}
+              </div>
+            </button>
         </div>
       </div>
     </div>
@@ -178,52 +185,77 @@
 
 <script setup>
 import { Upload, Image, Save, CheckCircle } from 'lucide-vue-next';
-import { ref, reactive } from 'vue';
+import { reactive, ref, watchEffect } from 'vue';
+import { useStubResource } from '~/composables/useStubResource';
+import { useStubClient } from '~/services/stubClient';
 
-// Profile data
-const profileData = reactive({
-  fullName: 'Tech Solutions Inc.',
-  phoneNumber: '+1 (555) 123-4567',
-  email: 'contact@techsolutions.com',
-  location: 'San Francisco, CA',
+const stubClient = useStubClient();
+const nuxtApp = useNuxtApp();
+
+const defaultProfileState = () => ({
+  fullName: '',
+  phoneNumber: '',
+  email: '',
+  location: '',
   about: '',
-  logo: null
+  logo: null,
 });
 
-// Refs
+const profileData = reactive(defaultProfileState());
+
 const logoInput = ref(null);
 const showTextareaModal = ref(false);
 const showSuccess = ref(false);
+const isSaving = ref(false);
 
-// Methods
+const { data: profileStubData, refresh: refreshCompanyProfile } = await useStubResource('companyProfile', {
+  default: () => ({}),
+});
+
+watchEffect(() => {
+  const payload = profileStubData.value || {};
+  const defaults = defaultProfileState();
+  for (const key of Object.keys(defaults)) {
+    if (key === 'logo') {
+      profileData.logo = payload?.avatar ?? defaults.logo;
+    } else {
+      profileData[key] = payload?.[key] ?? defaults[key];
+    }
+  }
+});
+
 const triggerFileInput = (type) => {
-  if (type === 'logo') {
+  if (type === 'logo' && logoInput.value) {
     logoInput.value.click();
   }
 };
 
 const handleLogoUpload = (event) => {
-  const file = event.target.files[0];
-  if (file) {
-    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
-    const maxSize = 2 * 1024 * 1024;
-    
-    if (!validTypes.includes(file.type)) {
-      alert('Please upload a valid image file (JPG, PNG, GIF)');
-      return;
-    }
-    
-    if (file.size > maxSize) {
-      alert('File size must be less than 2MB');
-      return;
-    }
+  const file = event.target.files?.[0];
+  if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      profileData.logo = e.target.result;
-    };
-    reader.readAsDataURL(file);
+  const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+  const maxSize = 2 * 1024 * 1024;
+
+  if (!validTypes.includes(file.type)) {
+    if (import.meta.client) {
+      nuxtApp.$awn?.alert('Please upload a valid image file (JPG, PNG, GIF).');
+    }
+    return;
   }
+
+  if (file.size > maxSize) {
+    if (import.meta.client) {
+      nuxtApp.$awn?.alert('File size must be less than 2MB.');
+    }
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    profileData.logo = e.target?.result || null;
+  };
+  reader.readAsDataURL(file);
 };
 
 const focusTextarea = () => {
@@ -238,15 +270,36 @@ const validateWordCount = () => {
 };
 
 const updateProfile = async () => {
+  if (isSaving.value) return;
+  isSaving.value = true;
+
   try {
-    console.log('Updating profile:', profileData);
+    const payload = {
+      fullName: profileData.fullName,
+      phoneNumber: profileData.phoneNumber,
+      email: profileData.email,
+      location: profileData.location,
+      about: profileData.about,
+      avatar: profileData.logo,
+    };
+
+    await stubClient.update('companyProfile', undefined, payload, { delay: 200 });
+    await refreshCompanyProfile();
+
     showSuccess.value = true;
+    if (import.meta.client) {
+      nuxtApp.$awn?.success('Profile updated successfully!');
+    }
     setTimeout(() => {
       showSuccess.value = false;
     }, 3000);
   } catch (error) {
     console.error('Error updating profile:', error);
-    alert('Error updating profile. Please try again.');
+    if (import.meta.client) {
+      nuxtApp.$awn?.alert('Error updating profile. Please try again.');
+    }
+  } finally {
+    isSaving.value = false;
   }
 };
 </script>

@@ -447,36 +447,38 @@ const goToPage = (page) => {
   }
 };
 
-const changeStatus = (company) => {
-  const statuses = ['Pending', 'Verified', 'Rejected'];
-  const currentStatus = company.status;
-  const companyIndex = companies.value.findIndex(c => c.id === company.id);
+const STATUS_VALUES = ['Pending', 'Verified', 'Rejected'];
 
-  if (companyIndex !== -1) {
-    const currentIndex = statuses.indexOf(currentStatus);
-    const nextIndex = (currentIndex + 1) % statuses.length;
-    const newStatus = statuses[nextIndex];
-    
-    companies.value[companyIndex].status = newStatus;
-    
+const changeStatus = async (company) => {
+  if (!company?.id || !stubClient) {
+    return;
+  }
+
+  const companyIndex = companies.value.findIndex(c => c.id === company.id);
+  if (companyIndex === -1) {
+    return;
+  }
+
+  const currentStatus = companies.value[companyIndex].status || 'Pending';
+  const currentIndex = Math.max(0, STATUS_VALUES.indexOf(currentStatus));
+  const newStatus = STATUS_VALUES[(currentIndex + 1) % STATUS_VALUES.length];
+  const previousStatus = companies.value[companyIndex].status;
+
+  companies.value[companyIndex].status = newStatus;
+
+  try {
+    await stubClient.update('subadminAssignedCompanies', company.id, { status: newStatus }, { delay: 140 });
     if (nuxtApp.$awn) {
-      nuxtApp.$awn.info(`Status for ${company.name} updated to ${newStatus}.`);
-    } else {
-      console.log(`Status for ${company.name} updated to ${newStatus}.`);
+      nuxtApp.$awn.success(`Status for ${company.name} updated to ${newStatus}.`);
+    }
+  } catch (error) {
+    console.error('Failed to update company status:', error);
+    companies.value[companyIndex].status = previousStatus;
+    if (nuxtApp.$awn) {
+      nuxtApp.$awn.alert(`Unable to update status for ${company.name}.`);
     }
   }
 };
-
-// Method called by the Detail Modal
-const changeStatusFromModal = (company) => {
-    changeStatus(company);
-    // Refresh the selected company object in the modal
-    const updatedCompany = companies.value.find(c => c.id === company.id);
-    if(updatedCompany) {
-        selectedCompany.value = updatedCompany;
-    }
-}
-
 
 const viewDetails = (company) => {
   selectedCompany.value = company;
