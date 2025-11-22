@@ -160,8 +160,9 @@
           </div>
       </div>
 
-      <div class="hidden sm:block overflow-x-auto scrollbar-thin">
-        <table class="w-full table-auto" style="min-width: 700px;">
+      <div class="hidden sm:block">
+        <div class="panel-scroll panel-scroll--padded scrollbar-thin">
+          <table class="w-full table-auto" style="min-width: 700px;">
           <thead class="bg-gray-50 border-b border-gray-200">
             <tr>
               <th class="px-2 sm:px-3 md:px-4 py-2.5 sm:py-3 text-left w-12 border-r border-gray-100">
@@ -226,7 +227,8 @@
               </td>
             </tr>
           </tbody>
-        </table>
+          </table>
+        </div>
       </div>
 
       <div v-if="filteredCompanies.length === 0" class="text-center py-8 sm:py-12">

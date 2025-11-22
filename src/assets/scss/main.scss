@@ -79,6 +79,33 @@ button:focus {
   background: #94a3b8;
 }
 
+.panel-scroll {
+  width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 0.5rem;
+}
+
+.panel-scroll--padded {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+  .panel-scroll--padded {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .panel-scroll--padded {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
 /* Simple two-line clamp utility for places without the Tailwind plugin */
 .line-clamp-2 {
   display: -webkit-box;
