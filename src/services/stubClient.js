@@ -351,15 +351,16 @@ const buildStubUrl = ({ resource, id, query, delay }) => {
 };
 
 const shouldUseHttpTransport = (options = {}) => {
-  const preference = resolveTransportPreference(options);
+  if (import.meta.server) return false;
 
-  if (preference === "remote-only" && typeof console !== "undefined" && typeof console.warn === "function") {
-    console.warn(
-      `[stub] HTTP transport requested in remote-only mode for resource "${options?.resource}", but stub server is disabled. Falling back to local data.`,
-    );
+  const preference = resolveTransportPreference(options);
+  if (preference === "local-only") return false;
+
+  if (httpTransportState.unavailable && preference !== "remote-only") {
+    return false;
   }
 
-  return false;
+  return true;
 };
 
 const performHttpStubRequest = async (options) => {
