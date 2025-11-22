@@ -1,253 +1,123 @@
 <template>
-  <div>
-    <BuisnessReg :isOpen="isModalOpen" @close="closeModal" />
+  <div class="min-h-screen bg-[#fff9e6] flex items-center justify-center px-4 py-12">
+    <BuisnessReg
+      :isOpen="isModalOpen"
+      @close="handleClose"
+      @complete="handleRegistration"
+      @switchToLogin="goToLogin"
+    />
+
+    <transition name="fade">
+      <div v-if="submitting" class="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl px-6 py-5 text-center text-[#424242] max-w-sm w-full">
+          <p class="text-lg font-semibold">Creating your workspace…</p>
+          <p class="text-sm text-[#616161] mt-1">Simulating API response with stub data.</p>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 
-<script>
-import BuisnessReg from '~/components/modal/buisnessReg.vue';
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import BuisnessReg from '~/components/modal/buisnessReg.vue'
+import { useStubClient } from '~/services/stubClient'
+import { useAuthStore } from '~/stores/auth'
+import { normalizeEmail } from '~/utils/authTokens'
 
-export default {
-  components: {
-    BuisnessReg,
-  },
-  data() {
-    return {
-      isModalOpen: false,
-    };
-  },
-  mounted() {
-    this.isModalOpen = true;
-  },
-  methods: {
-    closeModal() {
-      this.isModalOpen = false;
-    },
-  },
-};
-</script>
-<!-- 
-<style  module>.frameParent {
-  position: relative;
-  border-radius: 12px;
-  background-color: #fff;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 20px;
-  box-sizing: border-box;
-  gap: 32px;
-  text-align: left;
-  font-size: 20px;
-  color: #424242;
-  font-family: 'Plus Jakarta Sans';
+const router = useRouter()
+const stubClient = useStubClient()
+const authStore = useAuthStore()
+if (process.client) {
+  authStore.hydrateFromStorage()
 }
-  .frameGroup {
-        align-self: stretch;
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-        gap: 0px;
-  }
-  .chooseYourRoleParent {
-        width: 193px;
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 16px;
-  }
-  .chooseYourRole {
-        align-self: stretch;
-        position: relative;
-        line-height: 130%;
-        text-transform: capitalize;
-        font-weight: 600;
-  }
-  .frameContainer {
-        align-self: stretch;
-        display: flex;
-        align-items: center;
-        gap: 18px;
-        font-size: 16px;
-        color: #616161;
-  }
-  .frameDiv {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-  }
-  .frameIcon {
-        width: 24px;
-        position: relative;
-        height: 24px;
-  }
-  .button {
-        position: relative;
-        line-height: 160%;
-        text-transform: capitalize;
-        font-weight: 500;
-  }
-  .frameParent3 {
-        align-self: stretch;
-        box-shadow: 0px 4px 16px rgba(168, 168, 168, 0.24);
-        border-radius: 8px;
-        background-color: #fff;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 16px;
-        gap: 32px;
-        font-size: 16px;
-  }
-  .loginAsATouristParent {
-        width: 376px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 16px;
-        text-align: center;
-        font-size: 24px;
-  }
-  .button3 {
-        align-self: stretch;
-        position: relative;
-        font-size: 16px;
-        line-height: 160%;
-        text-transform: capitalize;
-        font-weight: 500;
-        color: #616161;
-  }
-  .buttonParent {
-        width: 440px;
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 16px;
-  }
-  .button4 {
-        align-self: stretch;
-        border-radius: 4px;
-        background-color: #f6fafd;
-        border: 1px solid #dbe7ff;
-        box-sizing: border-box;
-        height: 46px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 12px 24px;
-        gap: 12px;
-  }
-  .icon {
-        width: 20px;
-        position: relative;
-        max-height: 100%;
-        object-fit: cover;
-  }
-  .lineParent {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 16px;
-        text-align: center;
-        color: #9e9e9e;
-  }
-  .frameChild {
-        width: 173px;
-        position: relative;
-        border-top: 1px solid #dbe7ff;
-        box-sizing: border-box;
-        height: 1px;
-  }
-  .emailCodeLoginParent {
-        align-self: stretch;
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 24px;
-  }
-  .emailCodeLogin {
-        align-self: stretch;
-        position: relative;
-        font-size: 20px;
-        line-height: 130%;
-        text-transform: capitalize;
-        font-weight: 600;
-  }
-  .buttonGroup {
-        align-self: stretch;
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 16px;
-  }
-  .button10 {
-        align-self: stretch;
-        position: relative;
-        line-height: 160%;
-        text-transform: capitalize;
-        font-weight: 500;
-  }
-  .button11 {
-        align-self: stretch;
-        border-radius: 4px;
-        background-color: #eee;
-        border: 1px solid #bdbdbd;
-        box-sizing: border-box;
-        height: 46px;
-        display: flex;
-        align-items: center;
-        padding: 12px 10px;
-        color: #9e9e9e;
-  }
-  .button12 {
-        position: relative;
-        line-height: 160%;
-        text-transform: capitalize;
-        font-weight: 500;
-        white-space: pre-wrap;
-  }
-  .button13 {
-        align-self: stretch;
-        border-radius: 4px;
-        background-color: #fcc207;
-        height: 48px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 18px 36px;
-        box-sizing: border-box;
-        text-align: center;
-        color: #212121;
-  }
-  .button14 {
-        position: relative;
-        line-height: 130%;
-        text-transform: capitalize;
-        font-weight: 600;
-  }
-  .frameParent4 {
-        display: flex;
-        align-items: flex-start;
-        justify-content: center;
-        gap: 32px;
-        font-size: 14px;
-  }
-  .buttonWrapper {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-  }
-  .button15 {
-        position: relative;
-        line-height: 170%;
-        text-transform: capitalize;
-  }
-  .buttonContainer {
-        width: 128px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-  }
+const nuxtApp = useNuxtApp()
 
-</style> -->
+const isModalOpen = ref(false)
+const submitting = ref(false)
+
+onMounted(() => {
+  isModalOpen.value = true
+})
+
+const handleClose = () => {
+  isModalOpen.value = false
+  router.push('/')
+}
+
+const goToLogin = () => {
+  isModalOpen.value = false
+  router.push('/auth/login')
+}
+
+const handleRegistration = async (formData) => {
+  if (submitting.value) return
+  submitting.value = true
+  try {
+    const { userPayload, companyPayload } = buildPayload(formData)
+    await upsertUser(userPayload)
+    await stubClient.create('companies', companyPayload, { delay: 260 })
+    await authStore.login({ email: userPayload.email })
+    try {
+      nuxtApp.$awn?.success('Registration completed with stub data')
+    } catch {}
+    await router.push('/company/dashboard')
+  } catch (error) {
+    console.error('Business registration failed', error)
+    try {
+      nuxtApp.$awn?.alert(error?.statusMessage || error?.message || 'Failed to register business')
+    } catch {}
+  } finally {
+    submitting.value = false
+  }
+}
+
+const buildPayload = (form) => {
+  const email = normalizeEmail(form.email)
+  if (!email) {
+    throw new Error('Please provide a valid work email.')
+  }
+  if ((form.password || '').length < 6) {
+    throw new Error('Password must be at least 6 characters.')
+  }
+  if (form.password !== form.confirmPassword) {
+    throw new Error('Passwords do not match.')
+  }
+  const fullName = [form.firstName, form.lastName].filter(Boolean).join(' ').trim() || 'Business Owner'
+  const today = new Date().toISOString().slice(0, 10)
+  const userPayload = {
+    name: fullName,
+    email,
+    signupMethod: 'BusinessRegistration',
+    signupDate: today,
+    status: 'Pending',
+    verified: false,
+  }
+  const companyPayload = {
+    name: form.companyName?.trim() || `${fullName}'s Agency`,
+    website: form.website?.trim() || '',
+    category: form.category || 'General',
+    service: form.service || '',
+    destination: form.destination || '',
+    employees: form.employees || '',
+    revenue: form.revenue || '',
+    status: 'Pending',
+    verified: false,
+    mobile: form.phoneNumber ? `${form.countryCode || ''} ${form.phoneNumber}`.trim() : '',
+    ownerName: fullName,
+    contactEmail: email,
+    signupChannel: 'Business Portal',
+  }
+  return { userPayload, companyPayload }
+}
+
+const upsertUser = async (payload) => {
+  const users = await stubClient.list('users', { delay: 0 })
+  const match = users.find((entry) => normalizeEmail(entry.email) === payload.email)
+  if (match) {
+    return stubClient.update('users', match.id, { ...match, ...payload }, { delay: 220 })
+  }
+  return stubClient.create('users', payload, { delay: 220 })
+}
+</script>
