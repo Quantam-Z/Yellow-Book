@@ -1,7 +1,7 @@
 <template>
   <header class="w-full border-b border-gray-200 bg-white shadow-sm">
-    <div class="flex flex-wrap items-center gap-3 px-4 py-3 sm:px-8">
-      <div class="flex min-w-0 flex-1 items-center gap-3">
+      <div class="flex flex-wrap items-center gap-3 px-4 py-3 sm:px-8">
+        <div class="flex min-w-0 flex-1 items-center gap-3 pl-10 sm:pl-0">
         <img
           src="/logo/logo.png"
           alt="Logo"

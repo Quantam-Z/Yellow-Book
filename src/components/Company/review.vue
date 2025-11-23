@@ -15,7 +15,7 @@
       </div>
     </div>
 
-    <!-- Overall Rating Card -->
+      <!-- Overall Rating Card -->
     <div class="w-full bg-white rounded-lg border border-darkgray border-solid box-border p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
       <div class="font-semibold text-xl text-gray-800">Overall Rating</div>
       <div class="text-center sm:text-right">
@@ -34,7 +34,7 @@
     </div>
 
       <!-- FILTER CONTROLS -->
-      <div class="w-full relative border border-darkgray border-solid box-border flex flex-col items-stretch p-5 gap-4 text-center text-base text-darkgray font-plus-jakarta-sans bg-white rounded-lg md:flex-row md:flex-wrap lg:flex-nowrap md:items-center">
+        <div class="w-full relative border border-darkgray border-solid box-border flex flex-col items-stretch p-5 gap-4 text-center text-base text-darkgray font-plus-jakarta-sans bg-white rounded-lg md:flex-row md:flex-wrap xl:flex-nowrap md:items-center">
         <!-- Rating Select Dropdown -->
         <div class="relative w-full md:w-[173px] flex-shrink-0">
           <select 
@@ -309,21 +309,24 @@
               </div>
             </div>
 
-            <!-- Load more button -->
-            <div v-if="filteredReviewsCount > 0" class="flex justify-center py-4 border-t border-table-border w-full">
-              <button
-                v-if="hasMoreReviews"
-                class="px-6 py-2 border border-table-border rounded-lg text-gray-700 hover:bg-gray-100 transition flex items-center gap-2 min-h-[44px] touch-manipulation outline-none"
-                @click="loadMoreReviews"
-                aria-label="Load more reviews"
+              <!-- Pagination -->
+              <div
+                v-if="filteredReviewsCount > 0"
+                class="flex flex-col gap-3 py-4 border-t border-table-border w-full sm:flex-row sm:items-center sm:justify-between"
               >
-                <Plus class="w-4 h-4" />
-                Load More Reviews
-              </button>
-              <div v-else class="text-gray-500 text-sm py-2">
-                Showing all {{ filteredReviewsCount }} reviews.
+                <p class="text-sm text-gray-500 text-center sm:text-left">
+                  Showing
+                  <span class="font-semibold text-gray-900">{{ pageRangeLabel }}</span>
+                  of {{ filteredReviewsCount }} reviews
+                </p>
+                <div class="flex justify-center sm:justify-end">
+                  <Pagination
+                    v-model="currentPage"
+                    :total-pages="totalPages"
+                    :max-visible="5"
+                  />
+                </div>
               </div>
-            </div>
         </div>
       </div>
     </div>
@@ -370,7 +373,8 @@
 
 <script setup>
 import { ref, computed, watch, watchEffect } from 'vue'
-import { CheckCircle, Trash2, Plus, Star, ChevronDown, Loader2, Calendar, X } from 'lucide-vue-next'
+import { CheckCircle, Trash2, Star, ChevronDown, Loader2, Calendar, X } from 'lucide-vue-next'
+import Pagination from '~/components/common/pagination.vue'
 import { useStubClient } from '~/services/stubClient'
 import { useStubResource } from '~/composables/useStubResource'
 
@@ -465,45 +469,23 @@ const filteredReviews = computed(() => {
     filtered = filtered.filter(r => formatDateForComparison(r.date) <= toDate)
   }
 
-  return filtered.slice(0, currentPage.value * reviewsPerPage)
+  return filtered
 })
 
-const filteredReviewsCount = computed(() => {
-  let filtered = [...reviews.value]
-  
-  if (selectedRating.value) {
-    filtered = filtered.filter(r => r.rating === parseInt(selectedRating.value))
-  }
-  if (dateFrom.value) {
-    const fromDate = formatDateForComparison(dateFrom.value)
-    filtered = filtered.filter(r => formatDateForComparison(r.date) >= fromDate)
-  }
-  if (dateTo.value) {
-    const toDate = formatDateForComparison(dateTo.value)
-    filtered = filtered.filter(r => formatDateForComparison(r.date) <= toDate)
-  }
-  
-  return filtered.length
+const filteredReviewsCount = computed(() => filteredReviews.value.length)
+
+const totalPages = computed(() => Math.max(1, Math.ceil(filteredReviewsCount.value / reviewsPerPage)))
+
+const paginatedReviews = computed(() => {
+  const start = (currentPage.value - 1) * reviewsPerPage
+  return filteredReviews.value.slice(start, start + reviewsPerPage)
 })
 
-const paginatedReviews = computed(() => filteredReviews.value)
-
-const hasMoreReviews = computed(() => {
-  let filtered = [...reviews.value]
-  
-  if (selectedRating.value) {
-    filtered = filtered.filter(r => r.rating === parseInt(selectedRating.value))
-  }
-  if (dateFrom.value) {
-    const fromDate = formatDateForComparison(dateFrom.value)
-    filtered = filtered.filter(r => formatDateForComparison(r.date) >= fromDate)
-  }
-  if (dateTo.value) {
-    const toDate = formatDateForComparison(dateTo.value)
-    filtered = filtered.filter(r => formatDateForComparison(r.date) <= toDate)
-  }
-  
-  return filteredReviews.value.length < filtered.length
+const pageRangeLabel = computed(() => {
+  if (!filteredReviewsCount.value) return ''
+  const start = (currentPage.value - 1) * reviewsPerPage + 1
+  const end = Math.min(start + reviewsPerPage - 1, filteredReviewsCount.value)
+  return `${start}-${end}`
 })
 
 // Methods
@@ -568,13 +550,16 @@ const viewFullReview = (review) => {
   selectedReview.value = review
 }
 
-const loadMoreReviews = () => { 
-  currentPage.value++ 
-}
-
 // Watch for filter changes to reset pagination
 watch([selectedRating, dateFrom, dateTo], () => {
   currentPage.value = 1
+})
+
+watch(filteredReviewsCount, () => {
+  const maxPage = totalPages.value
+  if (currentPage.value > maxPage) {
+    currentPage.value = maxPage
+  }
 })
 
 </script>
