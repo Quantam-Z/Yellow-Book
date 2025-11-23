@@ -16,7 +16,7 @@
     </div>
 
     <!-- Overall Rating Card -->
-    <div class="w-full bg-white rounded-lg border border-darkgray border-solid box-border p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div class="w-full bg-white rounded-lg border border-darkgray border-solid box-border p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
       <div class="font-semibold text-xl text-gray-800">Overall Rating</div>
       <div class="text-center sm:text-right">
         <div v-if="isLoading" class="text-3xl font-bold text-gray-900 animate-pulse bg-gray-200 w-16 h-8 rounded"></div>
@@ -34,71 +34,70 @@
     </div>
 
     <!-- FILTER CONTROLS -->
-    <div class="w-full border border-darkgray border-solid box-border rounded-lg bg-white p-5 font-plus-jakarta-sans">
-      <div class="grid w-full gap-4 text-base text-darkgray grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-[180px_minmax(0,1fr)_minmax(0,1fr)_150px_auto]">
-        <!-- Rating Select Dropdown -->
-        <div class="relative w-full">
-          <select
-            v-model="selectedRating"
-            class="h-[52px] w-full rounded border-darkgray border-solid border-[1px] box-border py-3 px-4 text-darkslategray cursor-pointer bg-white appearance-none focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-          >
-            <option value="">All ratings</option>
-            <option value="5">5 Stars</option>
-            <option value="4">4 Stars</option>
-            <option value="3">3 Stars</option>
-            <option value="2">2 Stars</option>
-            <option value="1">1 Star</option>
-          </select>
-          <ChevronDown class="pointer-events-none absolute right-3 top-1/2 h-6 w-6 -translate-y-1/2 transform text-darkslategray" />
-        </div>
-
-        <!-- Date From -->
-        <div class="relative w-full">
-          <div class="flex h-[52px] items-center rounded border border-darkgray border-solid bg-white">
-            <span class="px-3 text-darkslategray whitespace-nowrap">From</span>
-            <input
-              type="date"
-              v-model="dateFrom"
-              class="flex-1 h-full bg-transparent px-2 text-darkslategray outline-none cursor-pointer"
-              @change="applyFilters"
-            >
-            <Calendar class="mx-3 h-6 w-6 flex-shrink-0 text-darkslategray" />
-          </div>
-        </div>
-
-        <!-- Date To -->
-        <div class="relative w-full">
-          <div class="flex h-[52px] items-center rounded border border-darkgray border-solid bg-white">
-            <span class="px-3 text-darkslategray whitespace-nowrap">To</span>
-            <input
-              type="date"
-              v-model="dateTo"
-              class="flex-1 h-full bg-transparent px-2 text-darkslategray outline-none cursor-pointer"
-              @change="applyFilters"
-            >
-            <Calendar class="mx-3 h-6 w-6 flex-shrink-0 text-darkslategray" />
-          </div>
-        </div>
-
-        <!-- Apply Filter Button -->
-        <button
-          type="button"
-          class="w-full rounded bg-forestgreen py-3 px-6 text-sm font-semibold uppercase tracking-wide text-white transition-colors hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-300"
-          @click="applyFilters"
+    <div class="w-full relative border border-darkgray border-solid box-border flex flex-col md:flex-row items-center p-5 gap-4 text-center text-base text-darkgray font-plus-jakarta-sans bg-white rounded-lg">
+      
+      <!-- Rating Select Dropdown -->
+      <div class="relative w-full md:w-[173px]">
+        <select 
+          v-model="selectedRating"
+          class="h-[52px] w-full rounded border-darkgray border-solid border-[1px] box-border py-3 px-4 text-darkslategray cursor-pointer bg-white appearance-none focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
         >
-          Apply filter
-        </button>
-
-        <!-- Clear Filters Button -->
-        <button
-          v-if="hasActiveFilters"
-          type="button"
-          class="w-full rounded bg-gray-500 py-3 px-4 text-sm font-semibold uppercase tracking-wide text-white transition-colors hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-300"
-          @click="resetFilters"
-        >
-          Clear Filters
-        </button>
+          <option value="">All ratings</option>
+          <option value="5">5 Stars</option>
+          <option value="4">4 Stars</option>
+          <option value="3">3 Stars</option>
+          <option value="2">2 Stars</option>
+          <option value="1">1 Star</option>
+        </select>
+        <ChevronDown class="absolute right-3 top-1/2 transform -translate-y-1/2 h-6 w-6 text-darkslategray pointer-events-none" />
       </div>
+
+      <!-- Date From -->
+      <div class="relative w-full md:w-auto">
+        <div class="flex items-center h-[52px] rounded border-darkgray border-solid border-[1px] box-border bg-white overflow-hidden">
+          <span class="px-3 text-darkslategray whitespace-nowrap">From</span>
+          <input
+            type="date"
+            v-model="dateFrom"
+            class="flex-1 h-full px-2 border-none outline-none text-darkslategray bg-transparent cursor-pointer"
+            @change="applyFilters"
+          >
+          <Calendar class="h-6 w-6 text-darkslategray mx-3 flex-shrink-0" />
+        </div>
+      </div>
+
+      <!-- Date To -->
+      <div class="relative w-full md:w-auto">
+        <div class="flex items-center h-[52px] rounded border-darkgray border-solid border-[1px] box-border bg-white overflow-hidden">
+          <span class="px-3 text-darkslategray whitespace-nowrap">To</span>
+          <input
+            type="date"
+            v-model="dateTo"
+            class="flex-1 h-full px-2 border-none outline-none text-darkslategray bg-transparent cursor-pointer"
+            @change="applyFilters"
+          >
+          <Calendar class="h-6 w-6 text-darkslategray mx-3 flex-shrink-0" />
+        </div>
+      </div>
+
+      <!-- Apply Filter Button -->
+      <button 
+        class="w-full md:w-[132px] rounded bg-forestgreen flex items-center justify-center py-3 px-8 box-border text-white cursor-pointer hover:bg-green-700 transition-colors min-h-[52px] border-0 outline-none focus:outline-none focus:ring-2 focus:ring-green-300"
+        @click="applyFilters"
+      >
+      <div class="relative leading-[130%] capitalize font-semibold text-black whitespace-nowrap">
+  Apply filter
+</div>
+      </button>
+
+      <!-- Clear Filters Button -->
+      <button 
+        v-if="hasActiveFilters"
+        class="w-full md:w-auto rounded bg-gray-500 flex items-center justify-center py-3 px-4 box-border text-white cursor-pointer hover:bg-gray-600 transition-colors min-h-[52px] border-0 outline-none focus:outline-none focus:ring-2 focus:ring-gray-300 text-sm"
+        @click="resetFilters"
+      >
+        Clear Filters
+      </button>
     </div>
     <!-- END FILTER CONTROLS -->
     
@@ -113,102 +112,113 @@
         <div class="self-stretch flex flex-col items-start text-base text-gray-600 w-full">
             
             <!-- Desktop Table (visible >= lg) -->
-            <div class="hidden lg:block w-full">
-              <div class="border border-table-border rounded-lg bg-white shadow-sm">
-                <div class="overflow-x-auto">
-                  <div class="min-w-[960px]">
-                    <!-- Table Header -->
-                    <div class="review-table-grid border-b border-table-border bg-table-header px-4 py-3 text-left text-sm font-plus-jakarta-sans uppercase tracking-wide text-table-header-text">
-                      <div class="font-semibold">Reviewer</div>
-                      <div class="text-center font-semibold">Rating</div>
-                      <div class="text-center font-semibold">Date & Time</div>
-                      <div class="text-center font-semibold">Review</div>
-                      <div class="text-center font-semibold">Actions</div>
-                    </div>
+            <div class="hidden lg:block w-full border border-table-border rounded-lg overflow-hidden">
+                <!-- Table Header - Using exact spacing and colors from reference -->
+                <div class="self-stretch bg-table-header flex items-center justify-between p-num-10 gap-5 text-left text-num-16 text-table-header-text font-plus-jakarta-sans border-b border-table-border">
+                  <div class="w-num-230 flex items-center p-num-10 box-border">
+                    <div class="relative leading-[160%] uppercase font-medium">Reviewer</div>
+                  </div>
+                  <div class="w-num-200 flex items-center justify-center p-num-10 box-border">
+                    <div class="relative leading-[160%] uppercase font-medium">Rating</div>
+                  </div>
+                  <div class="w-num-200 flex items-center justify-center p-num-10 box-border">
+                    <div class="relative leading-[160%] uppercase font-medium">Date & Time</div>
+                  </div>
+                  <div class="w-[379px] flex items-center justify-center p-num-10 box-border">
+                    <div class="relative leading-[160%] uppercase font-medium">Review</div>
+                  </div>
+                  <div class="w-num-100 flex items-center justify-center p-num-10 box-border">
+                    <div class="relative leading-[160%] uppercase font-medium">Actions</div>
+                  </div>
+                </div>
 
-                    <!-- Table Body -->
-                    <div v-if="filteredReviewsCount > 0" class="bg-white">
-                      <div
-                        v-for="review in paginatedReviews"
-                        :key="review.id"
-                        class="review-table-grid items-center gap-4 border-b border-table-border px-4 py-5 text-base last:border-b-0 hover:bg-gray-50 transition-colors"
-                      >
-                        <!-- Reviewer Column -->
-                        <div class="flex items-center gap-3 min-w-0">
-                          <div class="h-11 w-11 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0">
-                            <span class="text-white font-bold text-sm">{{ getInitials(review.reviewerName) }}</span>
-                          </div>
-                          <div class="min-w-0">
-                            <p class="truncate text-gray-900 font-medium">{{ review.reviewerName }}</p>
-                            <p class="text-sm text-gray-500 truncate">{{ review.agency }}</p>
-                          </div>
-                        </div>
-
-                        <!-- Rating Column -->
-                        <div class="flex flex-col items-center justify-center gap-1">
-                          <div class="flex items-center gap-px">
-                            <Star
-                              v-for="i in 5"
-                              :key="i"
-                              :class="i <= review.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'"
-                              class="w-5 h-5"
-                            />
-                          </div>
-                          <div class="text-xs text-gray-500">{{ review.rating }} Star{{ review.rating > 1 ? 's' : '' }}</div>
-                        </div>
-
-                        <!-- Date & Time Column -->
-                        <div class="text-center text-gray-900">
-                          <p class="m-0 font-medium">{{ formatDate(review.date) }}</p>
-                          <p class="m-0 text-sm text-gray-500">{{ review.time }}</p>
-                        </div>
-
-                        <!-- Review Column -->
-                        <div class="flex flex-col items-center justify-center gap-2 text-darkslategray text-sm">
-                          <p class="text-center leading-relaxed italic">"{{ truncateReview(review.content) }}"</p>
-                          <button
-                            type="button"
-                            class="text-deepskyblue hover:text-blue-600 font-semibold text-xs"
-                            @click="viewFullReview(review)"
-                          >
-                            Full view
-                          </button>
-                        </div>
-
-                        <!-- Actions Column -->
-                        <div class="flex items-center justify-center gap-2">
-                          <button
-                            type="button"
-                            @click="approveReview(review.id)"
-                            class="p-2 text-green-600 hover:bg-green-50 rounded transition touch-manipulation border-0 outline-none"
-                            title="Approve review"
-                          >
-                            <CheckCircle class="w-5 h-5" />
-                          </button>
-                          <button
-                            type="button"
-                            @click="deleteReview(review.id)"
-                            class="p-2 text-red-600 hover:bg-red-50 rounded transition touch-manipulation border-0 outline-none"
-                            title="Delete review"
-                          >
-                            <Trash2 class="w-5 h-5" />
-                          </button>
-                        </div>
+                <!-- Table Body with minimal border styling -->
+                <div v-if="filteredReviewsCount > 0" class="self-stretch flex flex-col items-start bg-white">
+                  <div 
+                    v-for="review in paginatedReviews" 
+                    :key="review.id"
+                    class="self-stretch border-b border-table-border flex items-center justify-between p-num-10 gap-5 hover:bg-gray-50 transition-colors last:border-b-0"
+                  >
+                    <!-- Reviewer Column -->
+                    <div class="w-num-230 flex items-center gap-2.5">
+                      <div class="h-11 w-11 relative rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0">
+                        <span class="text-white font-bold text-sm">{{ getInitials(review.reviewerName) }}</span>
+                      </div>
+                      <div class="w-num-250 flex items-center py-num-10 px-num-0 box-border shrink-0">
+                        <div class="h-3 w-num-187 relative leading-[160%] capitalize inline-block shrink-0 text-gray-900 font-medium">{{ review.reviewerName }}</div>
                       </div>
                     </div>
 
-                    <!-- Empty State within table -->
-                    <div v-else class="p-8 text-center">
-                      <div class="mx-auto max-w-md">
-                        <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
-                          <Star class="h-8 w-8 text-gray-400" />
+                    <!-- Rating Column -->
+                    <div class="w-num-200 flex items-center justify-center p-num-10 box-border">
+                      <div class="flex flex-col items-center gap-1">
+                        <div class="flex items-center gap-px">
+                          <Star
+                            v-for="i in 5"
+                            :key="i"
+                            :class="i <= review.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'"
+                            class="w-6 h-6"
+                          />
                         </div>
-                        <h3 class="mb-2 text-lg font-semibold text-gray-900">No reviews match your filters</h3>
-                        <p class="mb-4 text-gray-600">Try adjusting your search criteria or clear filters.</p>
+                        <div class="text-xs text-gray-500">{{ review.rating }} Star{{ review.rating > 1 ? 's' : '' }}</div>
+                      </div>
+                    </div>
+
+                    <!-- Date & Time Column -->
+                    <div class="w-num-200 flex items-center justify-center p-num-10 box-border">
+                      <div class="relative leading-[160%] capitalize text-center">
+                        <p class="m-0 text-gray-900">{{ formatDate(review.date) }}</p>
+                        <p class="m-0 text-gray-500 text-sm">{{ review.time }}</p>
+                      </div>
+                    </div>
+
+                    <!-- Review Column -->
+                    <div class="flex items-center justify-center p-num-10 gap-1 text-darkslategray">
+                      <div class="relative leading-[160%] capitalize">"{{ truncateReview(review.content) }}"</div>
+                      <span 
+  @click="viewFullReview(review)" 
+  class="text-deepskyblue hover:text-blue-600 cursor-pointer"
+>
+  Full view
+</span>
+
+                    </div>
+
+                    <!-- Actions Column -->
+                    <div class="w-num-100 flex items-center justify-center p-num-10 box-border">
+                      <div class="flex items-center gap-2">
+                        <button 
+                          @click="approveReview(review.id)"
+                          class="p-2 text-green-600 hover:bg-green-50 rounded transition touch-manipulation border-0 outline-none"
+                          title="Approve review"
+                        >
+                          <CheckCircle class="w-5 h-5" />
+                        </button>
+                        <button 
+                          @click="deleteReview(review.id)"
+                          class="p-2 text-red-600 hover:bg-red-50 rounded transition touch-manipulation border-0 outline-none"
+                          title="Delete review"
+                        >
+                          <Trash2 class="w-5 h-5" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Empty State within table -->
+                <div v-else class="self-stretch flex flex-col items-start bg-white">
+                  <div class="self-stretch flex items-center justify-between p-num-10 gap-5">
+                    <div class="w-full bg-white p-8 text-center">
+                      <div class="max-w-md mx-auto">
+                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                          <Star class="w-8 h-8 text-gray-400" />
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">No reviews match your filters</h3>
+                        <p class="text-gray-600 mb-4">Try adjusting your search criteria or clear filters.</p>
                         <button
-                          type="button"
                           @click="resetFilters"
-                          class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition min-h-[44px] touch-manipulation border-0 outline-none focus:ring-2 focus:ring-green-300"
+                          class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition min-h-[44px] touch-manipulation border-0 outline-none"
                         >
                           Clear Filters
                         </button>
@@ -216,7 +226,6 @@
                     </div>
                   </div>
                 </div>
-              </div>
             </div>
 
             <!-- Mobile Cards (visible < lg) -->
@@ -252,14 +261,14 @@
 
                 <!-- Review Content -->
                 <div class="mb-4">
-                  <p class="text-gray-700 text-sm leading-relaxed italic">"{{ review.content }}"</p>
-                  <button
-                    type="button"
-                    class="text-deepskyblue hover:text-blue-600 font-semibold text-xs mt-2"
-                    @click="viewFullReview(review)"
-                  >
-                    Full view
-                  </button>
+                  <p class="text-gray-700 text-sm leading-relaxed italic line-clamp-3">"{{ review.content }}"</p>
+                  <span 
+  @click="viewFullReview(review)" 
+  class="text-deepskyblue hover:text-blue-600 cursor-pointer"
+>
+  Full view
+</span>
+
                 </div>
 
                 <!-- Actions -->
@@ -627,10 +636,31 @@ select {
   color: #2F4F4F;
 }
 
-.review-table-grid {
-  display: grid;
-  grid-template-columns: minmax(190px, 1.4fr) minmax(120px, 1fr) minmax(150px, 1fr) minmax(260px, 2fr) minmax(100px, 0.6fr);
-  gap: 1rem;
-  align-items: center;
+/* Custom number values for spacing consistency */
+.p-num-10 {
+  padding: 10px;
+}
+.w-num-230 {
+  width: 230px;
+}
+.w-num-200 {
+  width: 200px;
+}
+.w-num-250 {
+  width: 250px;
+}
+.w-num-187 {
+  width: 187px;
+}
+.w-num-100 {
+  width: 100px;
+}
+.rounded-num-22 {
+  border-radius: 22px;
+}
+
+/* Text size utility */
+.text-num-16 {
+  font-size: 16px;
 }
 </style>
