@@ -92,6 +92,53 @@ button:focus {
   padding-right: 1rem;
 }
 
+/* Shared responsive layout for dashboard-style panels */
+.panel-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-shell__body {
+  flex: 1 1 auto;
+  display: flex;
+  min-height: 0;
+  min-width: 0;
+}
+
+.panel-shell__sidebar {
+  position: relative;
+  flex: 0 0 auto;
+  min-width: 0;
+  display: flex;
+}
+
+.panel-shell__main {
+  flex: 1 1 auto;
+  min-width: 0;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.panel-shell__content {
+  width: 100%;
+  max-width: 80rem; /* 1280px, roughly Tailwind's max-w-7xl */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.panel-shell__content > * {
+  min-width: 0;
+}
+
+.panel-stack {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.25rem, 2vw, 2rem);
+  width: 100%;
+  min-width: 0;
+}
+
 @media (min-width: 640px) {
   .panel-scroll--padded {
     padding-left: 1.5rem;
