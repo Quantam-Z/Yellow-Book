@@ -1,5 +1,5 @@
-<template>
-  <div class="w-full min-h-screen bg-white p-3 sm:p-4 md:p-6">
+  <template>
+    <div class="dashboard-panel w-full min-h-screen bg-white p-3 sm:p-4 md:p-6">
     <div class="w-full rounded-lg bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 p-3 sm:p-4 md:p-6 mb-4 sm:mb-6">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <h1 class="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">My Assigned Tasks</h1>
@@ -12,7 +12,7 @@
       </div>
     </div>
 
-    <div class="w-full grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
+      <div class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
       <div class="rounded border-gainsboro border-solid border-[1px] bg-white flex items-center p-3 sm:p-4 gap-3">
         <div class="flex-1 flex flex-col items-start gap-2">
           <div class="text-xs sm:text-sm font-medium text-gray-700 capitalize leading-[130%]">Total Reviews</div>
@@ -58,83 +58,89 @@
     <div class="w-full bg-white">
       <div class="text-lg sm:text-xl font-bold text-gray-900 capitalize mb-4">Latest Reviews</div>
       
-      <div class="hidden lg:block w-full border border-gainsboro border-solid rounded-lg overflow-hidden">
-        <div class="w-full bg-ghostwhite flex items-center p-3 gap-4 text-sm">
-          <div class="w-20 flex items-center justify-center p-2">
-            <div class="font-medium text-gray-700 capitalize">Profile</div>
-          </div>
-          <div class="w-48 flex items-center justify-start p-2">
-            <div class="font-medium text-gray-700 capitalize">Name</div>
-          </div>
-          <div class="w-20 flex items-center justify-center p-2">
-            <div class="font-medium text-gray-700 capitalize">Rating</div>
-          </div>
-          <div class="w-24 flex items-center justify-center p-2">
-            <div class="font-medium text-gray-700 capitalize whitespace-nowrap">Review Liked</div>
-          </div>
-          <div class="w-28 flex items-center justify-center p-2">
-            <div class="font-medium text-gray-700 capitalize whitespace-nowrap">Review Shared</div>
-          </div>
-          <div class="w-24 flex items-center justify-start p-2">
-            <div class="font-medium text-gray-700 capitalize">Date</div>
-          </div>
-          <div class="flex-1 flex items-center justify-start p-2">
-            <div class="font-medium text-gray-700 capitalize">User Review</div>
-          </div>
-        </div>
-
-          <div class="w-full">
-            <div
-              v-for="(review, index) in reviews"
-              :key="index"
-              class="w-full border-b border-gainsboro border-solid border-[1px] flex items-center p-3 gap-4 hover:bg-gray-50 transition-colors last:border-b-0"
-            >
-              <div class="w-20 flex items-center justify-center p-2">
-                <div class="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                  <span class="text-white font-bold text-xs">{{ getInitials(review.reviewer) }}</span>
+        <div class="hidden lg:block w-full">
+          <div class="rounded-lg border border-gainsboro border-solid bg-white">
+            <div class="overflow-x-auto rounded-lg scrollbar-thin">
+              <div class="min-w-[960px]">
+                <div class="w-full bg-ghostwhite flex items-center p-3 gap-4 text-sm">
+                  <div class="w-20 flex items-center justify-center p-2">
+                    <div class="font-medium text-gray-700 capitalize">Profile</div>
+                  </div>
+                  <div class="w-48 flex items-center justify-start p-2">
+                    <div class="font-medium text-gray-700 capitalize">Name</div>
+                  </div>
+                  <div class="w-20 flex items-center justify-center p-2">
+                    <div class="font-medium text-gray-700 capitalize">Rating</div>
+                  </div>
+                  <div class="w-24 flex items-center justify-center p-2">
+                    <div class="font-medium text-gray-700 capitalize whitespace-nowrap">Review Liked</div>
+                  </div>
+                  <div class="w-28 flex items-center justify-center p-2">
+                    <div class="font-medium text-gray-700 capitalize whitespace-nowrap">Review Shared</div>
+                  </div>
+                  <div class="w-24 flex items-center justify-start p-2">
+                    <div class="font-medium text-gray-700 capitalize">Date</div>
+                  </div>
+                  <div class="flex-1 flex items-center justify-start p-2">
+                    <div class="font-medium text-gray-700 capitalize">User Review</div>
+                  </div>
                 </div>
-              </div>
 
-              <div class="w-48 flex items-center justify-start p-2">
-                <div class="text-gray-800 text-sm capitalize truncate text-left">{{ review.reviewer }}</div>
-              </div>
+                <div class="w-full">
+                  <div
+                    v-for="(review, index) in reviews"
+                    :key="index"
+                    class="w-full border-b border-gainsboro border-solid border-[1px] flex items-center p-3 gap-4 hover:bg-gray-50 transition-colors last:border-b-0"
+                  >
+                    <div class="w-20 flex items-center justify-center p-2">
+                      <div class="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                        <span class="text-white font-bold text-xs">{{ getInitials(review.reviewer) }}</span>
+                      </div>
+                    </div>
 
-              <div class="w-20 flex items-center justify-center p-2">
-                <div class="flex items-center gap-1">
-                  <Star
-                    v-for="i in 5"
-                    :key="i"
-                    class="h-4 w-4"
-                    :class="i <= review.rating ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300'"
-                  />
+                    <div class="w-48 flex items-center justify-start p-2">
+                      <div class="text-gray-800 text-sm capitalize truncate text-left">{{ review.reviewer }}</div>
+                    </div>
+
+                    <div class="w-20 flex items-center justify-center p-2">
+                      <div class="flex items-center gap-1">
+                        <Star
+                          v-for="i in 5"
+                          :key="i"
+                          class="h-4 w-4"
+                          :class="i <= review.rating ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300'"
+                        />
+                      </div>
+                    </div>
+
+                    <div class="w-24 flex items-center justify-center p-2">
+                      <div class="text-gray-600 text-sm">{{ review.likes || '0' }}</div>
+                    </div>
+
+                    <div class="w-28 flex items-center justify-center p-2">
+                      <div class="text-gray-600 text-sm">{{ review.shares || '0' }}</div>
+                    </div>
+
+                    <div class="w-24 flex items-center justify-start p-2">
+                      <div class="text-gray-500 text-sm text-left">{{ formatDate(review.date) }}</div>
+                    </div>
+
+                    <div class="flex-1 flex items-center justify-between p-2 gap-2 min-w-0">
+                      <div class="text-gray-600 text-sm text-left line-clamp-2 pr-2">"{{ review.comment }}"</div>
+                      <button
+                        type="button"
+                        class="text-deepskyblue font-semibold text-sm hover:text-blue-600 transition-colors cursor-pointer whitespace-nowrap flex-shrink-0 bg-transparent border-0 p-0"
+                        @click="viewFullReview(review)"
+                      >
+                        Full view
+                      </button>
+                    </div>
+                  </div>
                 </div>
-              </div>
-
-              <div class="w-24 flex items-center justify-center p-2">
-                <div class="text-gray-600 text-sm">{{ review.likes || '0' }}</div>
-              </div>
-
-              <div class="w-28 flex items-center justify-center p-2">
-                <div class="text-gray-600 text-sm">{{ review.shares || '0' }}</div>
-              </div>
-
-              <div class="w-24 flex items-center justify-start p-2">
-                <div class="text-gray-500 text-sm text-left">{{ formatDate(review.date) }}</div>
-              </div>
-
-              <div class="flex-1 flex items-center justify-between p-2 gap-2">
-                <div class="text-gray-600 text-sm text-left line-clamp-2 pr-2">"{{ review.comment }}"</div>
-                <button
-                  type="button"
-                  class="text-deepskyblue font-semibold text-sm hover:text-blue-600 transition-colors cursor-pointer whitespace-nowrap flex-shrink-0 bg-transparent border-0 p-0"
-                  @click="viewFullReview(review)"
-                >
-                  Full view
-                </button>
               </div>
             </div>
           </div>
-      </div>
+        </div>
 
         <div class="hidden md:block lg:hidden w-full">
           <div class="space-y-3">
@@ -470,13 +476,6 @@ const chartOptions = {
   overflow: hidden;
 }
 
-/* Enhanced responsive breakpoints */
-@media (max-width: 475px) {
-  .xs\:grid-cols-2 {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
-}
-
 /* Better touch targets for mobile */
 button, [role="button"] {
   touch-action: manipulation;
@@ -491,8 +490,8 @@ span:focus-visible {
   outline-offset: 2px;
 }
 
-/* Ensure no horizontal overflow */
-.w-full {
+/* Ensure the dashboard wrapper contains its children */
+.dashboard-panel {
   max-width: 100%;
   overflow-x: hidden;
 }
