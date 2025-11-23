@@ -283,19 +283,19 @@ const simulateDelete = async (review) => {
     return;
   }
 
-  try {
-    await stubClient.remove('recentReviews', review.id, { delay: 160 });
-    allReviews.value = allReviews.value.filter(r => r.id !== review.id);
+    try {
+      await stubClient.remove('recentReviews', review.id, { delay: 160 });
+      allReviews.value = allReviews.value.filter(r => r.id !== review.id);
 
-    const newTotalPages = Math.max(1, Math.ceil(allReviews.value.length / pageSize.value));
-    if (currentPage.value > newTotalPages) {
-      currentPage.value = newTotalPages;
-    }
+      const newTotalPages = Math.max(1, Math.ceil(allReviews.value.length / pageSize.value));
+      if (currentPage.value > newTotalPages) {
+        currentPage.value = newTotalPages;
+      }
 
-    if (import.meta.client) {
-      nuxtApp.$awn?.error(`Review by ${review.reviewer} has been permanently deleted.`);
-    }
-  } catch (error) {
+      if (import.meta.client) {
+        nuxtApp.$awn?.success(`Review by ${review.reviewer} has been permanently deleted.`);
+      }
+    } catch (error) {
     console.error('Failed to delete recent review:', error);
     if (import.meta.client) {
       nuxtApp.$awn?.alert(`Failed to delete the review by ${review.reviewer}.`);
