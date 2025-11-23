@@ -1,6 +1,6 @@
 import { shallowRef } from 'vue';
-import categoriesData from '@/public/stubs/categories.json';
-import listingsData from '@/public/stubs/listings.json';
+import categoriesData from '~~/public/stubs/categories.json';
+import listingsData from '~~/public/stubs/listings.json';
 import { useStubClient } from '@/services/stubClient';
 import type {
   CategoryDefinition,
