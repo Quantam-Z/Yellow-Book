@@ -1,0 +1,82 @@
+[
+  {
+    "id": 1,
+    "reviewer": "Wade Warren",
+    "rating": 4.5,
+    "date": "12-June-2025",
+    "review": "Great service and quick response time. Very satisfied with the overall experience.",
+    "status": "Pending"
+  },
+  {
+    "id": 2,
+    "reviewer": "Esther Howard",
+    "rating": 5,
+    "date": "11-June-2025",
+    "review": "Excellent experience, highly recommend their services to everyone.",
+    "status": "Approved"
+  },
+  {
+    "id": 3,
+    "reviewer": "Cameron Williamson",
+    "rating": 3.5,
+    "date": "10-June-2025",
+    "review": "Good overall but could improve communication and response time.",
+    "status": "Pending"
+  },
+  {
+    "id": 4,
+    "reviewer": "Brooklyn Simmons",
+    "rating": 4,
+    "date": "09-June-2025",
+    "review": "Very professional and courteous staff. Will use again.",
+    "status": "Approved"
+  },
+  {
+    "id": 5,
+    "reviewer": "Savannah Nguyen",
+    "rating": 2.5,
+    "date": "08-June-2025",
+    "review": "Not satisfied with the service quality and pricing.",
+    "status": "Rejected"
+  },
+  {
+    "id": 6,
+    "reviewer": "Leslie Alexander",
+    "rating": 4.2,
+    "date": "07-June-2025",
+    "review": "Solid team with attention to detail and friendly support.",
+    "status": "Approved"
+  },
+  {
+    "id": 7,
+    "reviewer": "Darlene Robertson",
+    "rating": 3.8,
+    "date": "06-June-2025",
+    "review": "Project delivered on time, though onboarding felt rushed.",
+    "status": "Pending"
+  },
+  {
+    "id": 8,
+    "reviewer": "Courtney Henry",
+    "rating": 4.9,
+    "date": "05-June-2025",
+    "review": "Top-notch service with very responsive account managers.",
+    "status": "Approved"
+  },
+  {
+    "id": 9,
+    "reviewer": "Devon Lane",
+    "rating": 3.2,
+    "date": "04-June-2025",
+    "review": "Reasonable results but communication gaps caused delays.",
+    "status": "Pending"
+  },
+  {
+    "id": 10,
+    "reviewer": "Guy Hawkins",
+    "rating": 2.8,
+    "date": "03-June-2025",
+    "review": "Scope was misunderstood and revisions took longer than expected.",
+    "status": "Rejected"
+  }
+]

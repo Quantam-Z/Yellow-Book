@@ -1,0 +1,90 @@
+[
+  { 
+    "id": 1, 
+    "name": "Innovate Solutions", 
+    "category": "Software", 
+    "assignedDate": "2024-10-22", 
+    "status": "Verified", 
+    "mobile": "123-456-7890", 
+    "verified": true, 
+    "email": "innovate@tech.com", 
+    "address": "789 Pine St, Silicon Valley" 
+  },
+  { 
+    "id": 2, 
+    "name": "Global Enterprises", 
+    "category": "Finance", 
+    "assignedDate": "2024-10-21", 
+    "status": "Pending", 
+    "mobile": "987-654-3210", 
+    "verified": false, 
+    "email": "global@corp.com", 
+    "address": "10 Wall St, Financial District" 
+  },
+  { 
+    "id": 3, 
+    "name": "Tech Startup Inc", 
+    "category": "Technology", 
+    "assignedDate": "2024-10-20", 
+    "status": "Rejected", 
+    "mobile": "555-123-4567", 
+    "verified": true, 
+    "email": "info@startup.net", 
+    "address": "202 Beta Ave, Innovation Hub" 
+  },
+  { 
+    "id": 4, 
+    "name": "Creative Agency Co", 
+    "category": "Marketing", 
+    "assignedDate": "2024-10-19", 
+    "status": "Verified", 
+    "mobile": "111-222-3333", 
+    "verified": false, 
+    "email": "hello@creative.co", 
+    "address": "303 Art Gallery Ln, Design City" 
+  },
+  { 
+    "id": 5, 
+    "name": "Future Commerce Ltd", 
+    "category": "Retail", 
+    "assignedDate": "2024-10-18", 
+    "status": "Pending", 
+    "mobile": "444-555-6666", 
+    "verified": true, 
+    "email": "support@future.com", 
+    "address": "404 Retail Park Rd, Shopville" 
+  },
+  { 
+    "id": 6, 
+    "name": "Logistics Master", 
+    "category": "Shipping", 
+    "assignedDate": "2024-10-17", 
+    "status": "Verified", 
+    "mobile": "777-888-9999", 
+    "verified": true, 
+    "email": "contact@logimaster.com", 
+    "address": "505 Port St, Maritime Center" 
+  },
+  { 
+    "id": 7, 
+    "name": "Health First Clinic", 
+    "category": "Health", 
+    "assignedDate": "2024-10-16", 
+    "status": "Pending", 
+    "mobile": "111-999-0000", 
+    "verified": false, 
+    "email": "clinic@healthfirst.org", 
+    "address": "606 Wellness Blvd, Caretown" 
+  },
+  { 
+    "id": 8, 
+    "name": "Construction Pros", 
+    "category": "Construction", 
+    "assignedDate": "2024-10-15", 
+    "status": "Rejected", 
+    "mobile": "222-333-4444", 
+    "verified": true, 
+    "email": "build@conpros.com", 
+    "address": "707 Heavy Equipment Way, Builder City" 
+  }
+]
