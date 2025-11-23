@@ -464,7 +464,12 @@
     </div>
 
     <!-- Modals -->
-    <ViewReview v-if="isViewOpen" :review="selectedReview" @close="closeViewModal" />
+    <ViewReview
+      v-if="isViewOpen"
+      :review="selectedReview"
+      @close="closeViewModal"
+      @update-status="handleModalStatusUpdate"
+    />
   </div>
 </template>
 
@@ -673,6 +678,34 @@ const deleteReview = async (review) => {
   }
 }
 
+const actionMessageMap = {
+  Approved: 'Review approved',
+  Rejected: 'Review rejected',
+  'On Hold': 'Review put on hold',
+  Banned: 'Reviewer banned',
+}
+
+const handleModalStatusUpdate = async (payload) => {
+  const review = payload?.review
+  const status = payload?.status
+
+  if (!review?.id || !status) {
+    toast('error', 'Unable to process review action')
+    return
+  }
+
+  try {
+    await stubClient.update('agencyReviews', review.id, { status }, { delay: 160 })
+    await refresh()
+    toast('success', actionMessageMap[status] || `Review marked as ${status}`)
+  } catch (error) {
+    console.error('Failed to update review status from modal', error)
+    toast('error', 'Failed to update review status')
+  } finally {
+    closeViewModal()
+  }
+}
+
 const updateStats = () => {
   const base = reviews.value
   stats.value.totalReviews = base.length
@@ -680,7 +713,8 @@ const updateStats = () => {
   stats.value.approved = base.filter(r => r.status === 'Approved').length
   stats.value.rejected = base.filter(r => r.status === 'Rejected').length
   stats.value.onHold = base.filter(r => r.status === 'On Hold').length
-  stats.value.bannedUsers = base.filter(r => Number(r.rating) <= 2).length
+  const bannedByStatus = base.filter(r => (r.status || '').toLowerCase() === 'banned').length
+  stats.value.bannedUsers = bannedByStatus || base.filter(r => Number(r.rating) <= 2).length
 }
 
 const nextPage = () => { if (currentPage.value < totalPages.value) currentPage.value++ }
