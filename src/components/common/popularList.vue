@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { MapPin, Search, Heart } from 'lucide-vue-next';
+import { MapPin, Search, Heart, ChevronLeft, ChevronRight } from 'lucide-vue-next';
 import { storeToRefs } from 'pinia';
 
-import Pagination from '@/components/common/pagination.vue';
 import StarRatingBox from '@/components/common/starRatingBox.vue';
 import { useDirectoryListings } from '@/composables/useDirectoryListings';
 import type { DirectoryListing } from '@/types/directory';
@@ -30,6 +29,7 @@ type ListingCard = {
 };
 
 const PAGE_SIZE = 6;
+const MAX_VISIBLE_PAGES = 5;
 const SKELETON_CARD_COUNT = 6;
 
 const router = useRouter();
@@ -153,6 +153,27 @@ const resultsMeta = computed(() => {
 });
 
 const shouldShowPagination = computed(() => filteredListings.value.length > PAGE_SIZE);
+const visiblePages = computed(() => {
+  const pages: number[] = [];
+  const total = totalPages.value;
+  const half = Math.floor(MAX_VISIBLE_PAGES / 2);
+
+  let start = currentPage.value - half;
+  let end = currentPage.value + half;
+
+  if (start < 1) {
+    start = 1;
+    end = Math.min(total, start + MAX_VISIBLE_PAGES - 1);
+  }
+
+  if (end > total) {
+    end = total;
+    start = Math.max(1, end - MAX_VISIBLE_PAGES + 1);
+  }
+
+  for (let page = start; page <= end; page += 1) pages.push(page);
+  return pages;
+});
 
 const skeletonCards = Array.from({ length: SKELETON_CARD_COUNT }, (_, index) => index);
 
@@ -222,6 +243,18 @@ const buildAgencyLink = (listing: ListingCard) => {
 
 const handleNavigate = (listing: ListingCard) => {
   router.push(buildAgencyLink(listing));
+};
+
+const goToPage = (page: number) => {
+  currentPage.value = clampPage(page);
+};
+
+const goToPreviousPage = () => {
+  if (currentPage.value > 1) goToPage(currentPage.value - 1);
+};
+
+const goToNextPage = () => {
+  if (currentPage.value < totalPages.value) goToPage(currentPage.value + 1);
 };
 
 const formatPrice = (value?: number) => {
@@ -487,13 +520,58 @@ const toggleFavorite = async (listing: ListingCard) => {
         </div>
       </template>
 
-      <Pagination
-        v-if="shouldShowPagination && !isLoading && filteredListings.length"
-        v-model="currentPage"
-        :total-pages="totalPages"
-        :max-visible="5"
-        class="mt-2 w-full justify-center"
-      />
+        <div
+          v-if="shouldShowPagination && !isLoading && filteredListings.length"
+          class="mt-6 flex flex-col items-center gap-4 sm:mt-8 sm:flex-row sm:justify-between"
+        >
+          <p class="text-sm text-gray-600 text-center sm:text-left">
+            Showing
+            <span class="font-semibold text-gray-900">{{ resultsMeta.start }}</span>
+            –
+            <span class="font-semibold text-gray-900">{{ resultsMeta.end }}</span>
+            of
+            <span class="font-semibold text-gray-900">{{ resultsMeta.total }}</span>
+            companies (Page {{ currentPage }} of {{ totalPages }})
+          </p>
+
+          <div class="flex flex-wrap items-center justify-center gap-2">
+            <button
+              type="button"
+              class="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-gray-50 active:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
+              :disabled="currentPage === 1"
+              @click="goToPreviousPage"
+            >
+              <ChevronLeft class="h-4 w-4" aria-hidden="true" />
+              Previous
+            </button>
+
+            <button
+              v-for="page in visiblePages"
+              :key="page"
+              type="button"
+              class="min-w-[44px] rounded-lg px-4 py-2.5 text-sm font-semibold transition"
+              :class="[
+                page === currentPage
+                  ? 'bg-yellow-400 text-gray-900 shadow-sm hover:bg-yellow-500 active:bg-yellow-500'
+                  : 'border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 active:bg-gray-100'
+              ]"
+              :aria-current="page === currentPage ? 'page' : undefined"
+              @click="goToPage(page)"
+            >
+              {{ page }}
+            </button>
+
+            <button
+              type="button"
+              class="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-gray-50 active:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
+              :disabled="currentPage === totalPages"
+              @click="goToNextPage"
+            >
+              Next
+              <ChevronRight class="h-4 w-4" aria-hidden="true" />
+            </button>
+          </div>
+        </div>
     </div>
   </section>
 </template>
