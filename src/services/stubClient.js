@@ -14,6 +14,7 @@ export const STUB_REGISTRY = {
   recentActivities: { file: "recentActivities.json", type: "collection", mutable: false },
   recentCompanies: { file: "recentCompanies.json", type: "collection", primaryKey: "id", mutable: true },
   recentReviews: { file: "recentReviews.json", type: "collection", primaryKey: "id", mutable: true },
+  subadminProfile: { file: "subadminProfile.json", type: "singleton", mutable: true },
   subadminAssignedCompanies: {
     file: "subadminAssignedCompanies.json",
     type: "collection",

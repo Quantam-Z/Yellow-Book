@@ -1,0 +1,19 @@
+{
+  "fullName": "Wade Warren",
+  "email": "curtis.weaver@example.com",
+  "mobile": "+524164532",
+  "phone": "+524164532",
+  "role": "Senior Verification Specialist",
+  "location": "San Francisco, CA",
+  "timezone": "UTC-8 (PST)",
+  "bio": "Detail-oriented verifier ensuring every company listing stays accurate and trustworthy.",
+  "avatar": "/profile.png",
+  "preferences": {
+    "notifications": true,
+    "weeklyDigest": true
+  },
+  "security": {
+    "lastPasswordChange": "2024-11-01T09:30:00.000Z"
+  },
+  "updatedAt": "2024-11-12T10:15:00.000Z"
+}
