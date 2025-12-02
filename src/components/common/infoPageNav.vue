@@ -203,12 +203,14 @@ onBeforeUnmount(() => {
       >
         <NuxtLink
           to="/"
-          :class="isMinimalNavRoute ? 'w-[120px] rounded-[4px] flex flex-col items-start p-2 box-border' : 'flex items-center gap-3'"
+          :class="isMinimalNavRoute ? 'w-[140px] rounded-[4px] flex flex-col items-start p-2 box-border' : 'flex items-center gap-3'"
           aria-label="Navigate to home"
         >
           <template v-if="isMinimalNavRoute">
             <img
-              class="self-stretch max-w-full overflow-hidden h-[34px] sm:h-[30px] md:h-[30px] flex-shrink-0 object-cover"
+              class="block w-[140px] h-auto object-contain"
+              width="140"
+              height="34"
               src="/logo/logo.png"
               alt="Logo"
             />

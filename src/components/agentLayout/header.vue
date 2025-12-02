@@ -5,7 +5,9 @@
         <img
           src="/logo/logo.png"
           alt="Logo"
-          class="h-7 w-auto max-w-[160px] object-contain sm:h-8"
+          width="140"
+          height="34"
+          class="w-[140px] h-auto object-contain"
         />
         <p class="text-xs font-medium uppercase tracking-wide text-gray-500 sm:hidden">
           Sub Admin
