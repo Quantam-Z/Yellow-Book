@@ -496,6 +496,8 @@ import RatingStars from '~/components/common/RatingStars.vue'
 import { getStatusClass } from '~/composables/useStatusClass'
 import { useStubClient } from '~/services/stubClient'
 import { useStubResource } from '~/composables/useStubResource'
+import { useClientEventListener } from '@/composables/useClientEventListener'
+import { useBodyScrollLock } from '~/composables/useBodyScrollLock'
 
 const ViewReview = defineAsyncComponent(() => import('~/components/modal/viewReview.vue'))
 
@@ -505,6 +507,7 @@ const searchQuery = ref('')
 const reviews = ref([])
 const isViewOpen = ref(false)
 const selectedReview = ref(null)
+const isMobileView = ref(false)
 
 // Stats data
 const stats = ref({
@@ -532,6 +535,7 @@ const filters = ref({
 // --- Services ---
 const stubClient = useStubClient()
 const nuxtApp = useNuxtApp()
+const { lockScroll, unlockScroll } = useBodyScrollLock('review-management-filters')
 
 const toast = (type, message) => {
   if (!import.meta.client) return
@@ -747,6 +751,27 @@ watch(reviewsError, (err) => {
   if (err) {
     console.error('Failed to load reviews', err)
     toast('error', err?.message || 'Failed to load reviews')
+  }
+})
+
+const updateViewport = () => {
+  if (!import.meta.client) return
+  isMobileView.value = window.innerWidth < 1024
+}
+
+useClientEventListener<Event>(() => window, 'resize', updateViewport, { passive: true, immediate: true })
+
+watch(isMobileView, (isMobile) => {
+  if (!isMobile) {
+    showMobileFilters.value = false
+  }
+})
+
+watch(showMobileFilters, (isOpen) => {
+  if (isOpen) {
+    lockScroll()
+  } else {
+    unlockScroll()
   }
 })
 </script>

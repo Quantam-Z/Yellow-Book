@@ -561,6 +561,7 @@ import { useStubClient } from '~/services/stubClient'
 import { useStubResource } from '~/composables/useStubResource'
 import DetailModal from '~/components/common/DetailModal.vue'
 import { useClientEventListener } from '@/composables/useClientEventListener';
+import { useBodyScrollLock } from '~/composables/useBodyScrollLock';
 
 // --- State ---
 const showMobileFilters = ref(false);
@@ -597,6 +598,7 @@ const stats = ref({
 const { allSelected, toggleSelection, toggleAll } = useSelection(admins);
 const stubClient = useStubClient()
 const nuxtApp = useNuxtApp()
+const { lockScroll, unlockScroll } = useBodyScrollLock('admin-management-filters');
 
 const notifyError = (message) => {
   if (!import.meta.client) return
@@ -810,6 +812,14 @@ watch(adminsError, (err) => {
   }
 })
 
+watch(showMobileFilters, (isOpen) => {
+  if (isOpen) {
+    lockScroll();
+  } else {
+    unlockScroll();
+  }
+});
+
 const updateViewport = () => {
   if (!import.meta.client) return;
   isMobileView.value = window.innerWidth < 1024;
@@ -820,6 +830,7 @@ useClientEventListener<Event>(() => window, 'resize', updateViewport, { passive:
 watch(isMobileView, (isMobile) => {
   if (!isMobile) {
     expandedAdminId.value = null;
+    showMobileFilters.value = false;
   } else {
     isDetailModalOpen.value = false;
   }

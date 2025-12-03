@@ -499,6 +499,7 @@ import { useSelection } from '~/composables/useSelection'
 import { useStubClient } from '~/services/stubClient'
 import DetailModal from '~/components/common/DetailModal.vue'
 import { useClientEventListener } from '@/composables/useClientEventListener';
+import { useBodyScrollLock } from '~/composables/useBodyScrollLock';
 
 const AddCompany = defineAsyncComponent(() => import('~/components/modal/addCompany.vue'))
 
@@ -532,6 +533,7 @@ const stubClient = useStubClient()
 const nuxtApp = useNuxtApp()
 const route = useRoute()
 const router = useRouter()
+const { lockScroll, unlockScroll } = useBodyScrollLock('company-management-filters');
 const syncingRouteSearch = ref(false)
 
 const normalizeSearchParam = (value) => {
@@ -813,6 +815,14 @@ watch(companiesError, (err) => {
   }
 })
 
+watch(showMobileFilters, (isOpen) => {
+  if (isOpen) {
+    lockScroll();
+  } else {
+    unlockScroll();
+  }
+});
+
 const updateViewport = () => {
   if (!import.meta.client) return;
   isMobileView.value = window.innerWidth < 1024;
@@ -823,6 +833,7 @@ useClientEventListener<Event>(() => window, 'resize', updateViewport, { passive:
 watch(isMobileView, (isMobile) => {
   if (!isMobile) {
     expandedCompanyId.value = null;
+    showMobileFilters.value = false;
   } else {
     isDetailModalOpen.value = false;
   }

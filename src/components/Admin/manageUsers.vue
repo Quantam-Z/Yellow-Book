@@ -557,6 +557,7 @@ import { useStubClient } from '~/services/stubClient'
 import { useStubResource } from '~/composables/useStubResource'
 import DetailModal from '~/components/common/DetailModal.vue'
 import { useClientEventListener } from '@/composables/useClientEventListener';
+import { useBodyScrollLock } from '~/composables/useBodyScrollLock';
 
 // --- State ---
 const showMobileFilters = ref(false);
@@ -593,6 +594,7 @@ const stats = ref({
 const { allSelected, toggleSelection, toggleAll } = useSelection(users);
 const stubClient = useStubClient()
 const nuxtApp = useNuxtApp()
+const { lockScroll, unlockScroll } = useBodyScrollLock('manage-users-filters');
 
 const toast = (type, message) => {
   if (!import.meta.client) return
@@ -813,6 +815,14 @@ watch(usersError, (err) => {
   }
 })
 
+watch(showMobileFilters, (isOpen) => {
+  if (isOpen) {
+    lockScroll();
+  } else {
+    unlockScroll();
+  }
+});
+
 const updateViewport = () => {
   if (!import.meta.client) return;
   isMobileView.value = window.innerWidth < 1024;
@@ -823,6 +833,7 @@ useClientEventListener<Event>(() => window, 'resize', updateViewport, { passive:
 watch(isMobileView, (isMobile) => {
   if (!isMobile) {
     expandedUserId.value = null;
+    showMobileFilters.value = false;
   } else {
     isDetailModalOpen.value = false;
   }
