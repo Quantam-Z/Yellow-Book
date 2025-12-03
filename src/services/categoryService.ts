@@ -1,6 +1,4 @@
 import { shallowRef } from 'vue';
-import categoriesData from '@/public/stubs/categories.json';
-import listingsData from '@/public/stubs/listings.json';
 import { useStubClient } from '@/services/stubClient';
 import type {
   CategoryDefinition,
@@ -22,13 +20,9 @@ type HydrationOptions = {
 
 const stubClient = useStubClient();
 
-const categoriesState = shallowRef<CategoryDefinition[]>(
-  ((categoriesData as CategoriesPayload).categories ?? []).map((entry) => ({ ...entry })),
-);
+const categoriesState = shallowRef<CategoryDefinition[]>([]);
 
-const listingsState = shallowRef<ListingDefinition[]>(
-  ((listingsData as ListingsPayload).listings ?? []).map((entry) => ({ ...entry })),
-);
+const listingsState = shallowRef<ListingDefinition[]>([]);
 
 let hydrationPromise: Promise<void> | null = null;
 let hydratedFromRemote = false;
