@@ -5,7 +5,6 @@ import { MapPin, Search, Heart, ChevronLeft, ChevronRight } from 'lucide-vue-nex
 import { storeToRefs } from 'pinia';
 
 import StarRatingBox from '@/components/common/starRatingBox.vue';
-import { useDirectoryListings } from '@/composables/useDirectoryListings';
 import type { DirectoryListing } from '@/types/directory';
 import { useStubClient } from '~/services/stubClient';
 import { useStubResource } from '~/composables/useStubResource';
@@ -45,45 +44,68 @@ const getRoutePage = () => {
 
 const currentPage = ref(getRoutePage());
 
-const { listings: directoryListings, ensureLoaded, pending, ready } = useDirectoryListings();
 const stubClient = useStubClient();
 const nuxtApp = useNuxtApp();
 const { data: favoritesData, refresh: refreshFavorites } = await useStubResource('favorites');
 const authStore = useAuthStore();
 const { isAuthenticated } = storeToRefs(authStore);
 
-await ensureLoaded();
+const FALLBACK_META = {
+  page: 1,
+  totalPages: 1,
+  total: 0,
+  limit: PAGE_SIZE,
+};
 
-const isLoading = computed(() => pending.value && !ready.value);
+const searchQueryParams = computed(() => ({
+  search: searchTerm.value.trim() || undefined,
+  page: currentPage.value,
+  limit: PAGE_SIZE,
+}));
 
-const normalizedListings = computed<ListingCard[]>(() => {
-  const entries = directoryListings.value || [];
-  return entries.map((entry: DirectoryListing) => {
-    const title = entry.title || entry.name || 'Unnamed agency';
-    const description =
-      entry.description ||
-      `Leading ${(entry.serviceType || 'professional').toLowerCase()} services trusted across ${
-        entry.location || 'your area'
-      }.`;
-    const id = entry.id != null ? String(entry.id) : entry.slug || title;
+const {
+  data: listingsPayload,
+  pending,
+  error: listingsError,
+} = await useFetch('/api/search/listings', {
+  query: searchQueryParams,
+  watch: [currentPage, searchTerm],
+  default: () => ({ items: [], meta: FALLBACK_META }),
+  transform: (response) => ({
+    items: Array.isArray(response?.data) ? response.data : [],
+    meta: { ...FALLBACK_META, ...(response?.meta || {}) },
+  }),
+});
 
-    return {
-      id,
-      slug: entry.slug,
-      title,
-      description,
-      location: entry.location || 'Inquire for location',
-      cover: entry.image || '/logo/logo.png',
-      rating: Number(entry.rating ?? 0),
-      reviews: Number(entry.ratingCount ?? 0),
-      category: entry.category || 'General Services',
-      serviceType: entry.serviceType,
-      revenue: entry.revenue,
-      price: entry.price,
-      website: entry.website,
-      emergencyService: entry.emergencyService ?? false,
-    };
+if (import.meta.dev) {
+  watch(listingsError, (err) => {
+    if (err) {
+      console.error('Failed to load listings', err);
+    }
   });
+}
+
+const paginationMeta = computed(() => listingsPayload.value?.meta ?? FALLBACK_META);
+const isLoading = computed(() => pending.value);
+
+const paginatedListings = computed<ListingCard[]>(() => {
+  const entries = (listingsPayload.value?.items as DirectoryListing[]) || [];
+  return entries.map((entry: DirectoryListing) => ({
+    id: String(entry.id ?? entry.slug ?? entry.title),
+    slug: entry.slug,
+    title: entry.title ?? entry.name ?? 'Unnamed agency',
+    description: entry.description ?? '',
+    location: entry.location || 'Inquire for location',
+    cover: entry.image || '/logo/logo.png',
+    rating: Number(entry.rating ?? 0),
+    reviews: Number(entry.ratingCount ?? entry.reviews ?? 0),
+    category: entry.category || 'General Services',
+    serviceType: entry.serviceType,
+    revenue: entry.revenue,
+    price: entry.price,
+    website: entry.website,
+    emergencyService: entry.emergencyService ?? false,
+  }));
 });
 
 const favoriteKeyFor = (listing: ListingCard) => String(listing.slug || listing.id);
@@ -100,18 +122,7 @@ const favoriteLookup = computed(() => {
   return map;
 });
 
-const filteredListings = computed(() => {
-  const query = searchTerm.value.trim().toLowerCase();
-  if (!query) return normalizedListings.value;
-
-  return normalizedListings.value.filter((listing) =>
-    `${listing.title} ${listing.description} ${listing.location} ${listing.category} ${listing.serviceType ?? ''}`
-      .toLowerCase()
-      .includes(query),
-  );
-});
-
-const totalPages = computed(() => Math.max(1, Math.ceil(filteredListings.value.length / PAGE_SIZE)));
+const totalPages = computed(() => paginationMeta.value.totalPages || 1);
 
 const clampPage = (page: number) => {
   const total = totalPages.value || 1;
@@ -139,20 +150,16 @@ const syncPageQuery = (page: number) => {
   });
 };
 
-const paginatedListings = computed(() => {
-  const start = (currentPage.value - 1) * PAGE_SIZE;
-  return filteredListings.value.slice(start, start + PAGE_SIZE);
-});
-
 const resultsMeta = computed(() => {
-  const total = filteredListings.value.length;
+  const total = paginationMeta.value.total ?? 0;
   if (!total) return { start: 0, end: 0, total };
-  const start = (currentPage.value - 1) * PAGE_SIZE + 1;
-  const end = Math.min(start + PAGE_SIZE - 1, total);
+  const limit = paginationMeta.value.limit ?? PAGE_SIZE;
+  const start = (paginationMeta.value.page - 1) * limit + 1;
+  const end = Math.min(start + limit - 1, total);
   return { start, end, total };
 });
 
-const shouldShowPagination = computed(() => filteredListings.value.length > PAGE_SIZE);
+const shouldShowPagination = computed(() => (paginationMeta.value.totalPages ?? 1) > 1);
 const visiblePages = computed(() => {
   const pages: number[] = [];
   const total = totalPages.value;
@@ -187,7 +194,7 @@ watch(
 );
 
 watch(
-  () => normalizedListings.value.length,
+  () => paginationMeta.value.total,
   () => resetToFirstPage(),
 );
 
