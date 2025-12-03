@@ -1,5 +1,6 @@
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import { useRoute } from 'nuxt/app';
+import { useDirectoryListings } from '@/composables/useDirectoryListings';
 import {
   mapAgencyRecord,
   normalizeTitle,
@@ -8,7 +9,7 @@ import {
   type CompanyProfileStub,
   type StubCompany,
 } from '@/services/directoryMapper';
-import type { AgencyRecord, DirectoryListing } from '@/types/directory';
+import type { AgencyRecord } from '@/types/directory';
 import { useStubResource } from '~/composables/useStubResource';
 
 const toStringQuery = (value: unknown) => (typeof value === 'string' ? value : '');
@@ -20,34 +21,21 @@ export async function useAgencyData() {
   const slugQuery = computed(() => toStringQuery(route.query.slug || ''));
   const idQuery = computed(() => toStringQuery(route.query.id || ''));
 
-  const directoryListing = ref<DirectoryListing | null>(null);
-  const directoryListingError = ref<Error | null>(null);
-
-  const lookupPayload: Record<string, string> = {};
-  if (slugQuery.value) lookupPayload.slug = slugQuery.value;
-  if (idQuery.value) lookupPayload.id = idQuery.value;
-  if (titleQuery.value) lookupPayload.title = titleQuery.value;
-
-  if (Object.keys(lookupPayload).length > 0) {
-    try {
-      const response = await $fetch<{ data: DirectoryListing | null }>('/api/directory/lookup', {
-        query: lookupPayload,
-      });
-      directoryListing.value = response?.data ?? null;
-    } catch (error) {
-      directoryListingError.value = error instanceof Error ? error : new Error(String(error));
-    }
-  }
+  const { ensureLoaded, getBySlug, getById, getByTitle } = useDirectoryListings();
 
   const companiesResource = useStubResource('companies');
   const companyDetailResource = useStubResource('agencyCompany');
   const profileResource = useStubResource('companyProfile');
+
+  const ensurePromise = ensureLoaded();
 
   const [
     { data: companiesData, pending: companiesPending, error: companiesError },
     { data: companyDetailData, pending: companyDetailPending, error: companyDetailError },
     { data: profileData, pending: profilePending, error: profileError },
   ] = await Promise.all([companiesResource, companyDetailResource, profileResource]);
+
+  await ensurePromise;
 
   const companies = computed<StubCompany[]>(() =>
     Array.isArray(companiesData.value) ? (companiesData.value as StubCompany[]) : [],
@@ -64,7 +52,21 @@ export async function useAgencyData() {
   const normalizedTitleQuery = computed(() => normalizeTitle(titleQuery.value));
   const normalizedSlugQuery = computed(() => slugifyTitle(slugQuery.value));
 
-  const directoryAgency = computed(() => directoryListing.value);
+  const directoryAgency = computed(() => {
+    if (slugQuery.value) {
+      const match = getBySlug(slugQuery.value);
+      if (match) return match;
+    }
+    if (idQuery.value) {
+      const match = getById(idQuery.value);
+      if (match) return match;
+    }
+    if (titleQuery.value) {
+      const match = getByTitle(titleQuery.value);
+      if (match) return match;
+    }
+    return null;
+  });
 
   const stubCompany = computed<StubCompany | null>(() => {
     if (!companies.value.length) return null;
@@ -103,12 +105,7 @@ export async function useAgencyData() {
   );
 
   const error = computed(
-    () =>
-      directoryListingError.value ||
-      companiesError.value ||
-      companyDetailError.value ||
-      profileError.value ||
-      null,
+    () => companiesError.value || companyDetailError.value || profileError.value || null,
   );
 
   return {
