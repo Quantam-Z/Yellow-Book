@@ -34,7 +34,7 @@
                       <div class="w-full h-full border-2 border-gray-300 rounded-sm bg-white flex items-center justify-center">
                         <div class="w-3.5 h-3.5 border border-gray-400 rounded-xs bg-white flex items-center justify-center">
                           <div 
-                            v-if="filters.ratings.has(parseInt(rating))" 
+                            v-if="filters.ratings.includes(parseInt(rating))" 
                             class="w-2 h-2 bg-blue-500 rounded-xs"
                           ></div>
                         </div>
@@ -214,7 +214,7 @@
             <div 
               style="width: 18px; height: 18px; border: 1px solid black; border-radius: 0; background-color: white; display: flex; align-items: center; justify-content: center; transition: background-color 0.15s; margin-top: 1px; margin-left: 1px;"
             >
-              <div v-if="filters.services.has(service)" style="width: 12px; height: 12px; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">
+              <div v-if="filters.services.includes(service)" style="width: 12px; height: 12px; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">
                 <svg viewBox="0 0 24 24" style="width: 12px; height: 12px; color: black;" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M20 6L9 17l-5-5"></path>
                 </svg>
@@ -247,7 +247,7 @@
                 <div 
                   style="width: 18px; height: 18px; border: 1px solid black; border-radius: 0; background-color: white; display: flex; align-items: center; justify-content: center; transition: background-color 0.15s; margin-top: 1px; margin-left: 1px;"
                 >
-                  <div v-if="filters.specializations.has(specialization)" style="width: 12px; height: 12px; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">
+                  <div v-if="filters.specializations.includes(specialization)" style="width: 12px; height: 12px; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">
                     <svg viewBox="0 0 24 24" style="width: 12px; height: 12px; color: black;" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M20 6L9 17l-5-5"></path>
                     </svg>
@@ -330,7 +330,7 @@
               <!-- Radio box with black border -->
               <div class="w-6 h-6 flex items-center justify-center border-2 border-black rounded-sm bg-white relative shrink-0">
                 <div 
-                  v-if="filters.ratings.has(parseInt(rating))" 
+                  v-if="filters.ratings.includes(parseInt(rating))" 
                   class="w-3 h-3 bg-blue-500 rounded-sm transition-all duration-200"
                 ></div>
               </div>
@@ -487,16 +487,14 @@
   </div>
 </template>
 
-<script>
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
+<script lang="ts">
+import { ref, reactive, computed, onMounted, onUnmounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
+import { useAsyncData, navigateTo } from '#imports';
 import Pagination from '~/components/common/pagination.vue';
-  import { categoryService } from '@/services/categoryService';
-  import { resolveCategoryDirectory } from '@/services/directoryMapper';
-import { useListingsFilter } from '@/composables/useListingsFilter';
+import { categoryService } from '@/services/categoryService';
 import { getStatusClass } from '@/utils/filterUtils';
 import starRatingBox from '@/components/common/starRatingBox.vue';
-import { useDirectoryListings } from '@/composables/useDirectoryListings';
 
 export default {
   name: 'CategoryPage',
@@ -507,204 +505,177 @@ export default {
       const showSortOptions = ref(false);
       const showMobileFilters = ref(false);
       const currentPrice = ref(0);
-      
+
       const ratings = ['1', '2', '3', '4', '5'];
       const pageSize = ref(5);
       const currentPage = ref(1);
 
-        const {
-          ensureLoaded,
-          pending: directoryPending,
-          listings: directoryListings,
-        } = useDirectoryListings();
-
-        const hydrateDirectoryListings = (options = {}) =>
-          ensureLoaded(options).catch((error) => {
-            if (import.meta.dev) {
-              console.error('[CategoryPage] Failed to hydrate directory listings', error);
-            }
-          });
-
-        const hadPrefetchedListings = directoryListings.value.length > 0;
-        let shouldForceOnNextSelection = hadPrefetchedListings;
-        const lastHydratedCategory = ref(null);
-
-        hydrateDirectoryListings();
+      const filters = reactive({
+        services: [] as string[],
+        specializations: [] as string[],
+        ratings: [] as number[],
+        emergencyService: null as null | boolean,
+        maxPrice: null as number | null,
+        query: '',
+      });
 
       const categoryNameParam = computed(() => {
         const raw = route.query.name;
         return typeof raw === 'string' ? decodeURIComponent(raw) : '';
       });
 
-        const normalizedCategoryName = computed(() =>
-          categoryService.normalizeCategoryName(categoryNameParam.value)
-        );
-
-        watch(
-          normalizedCategoryName,
-          (next) => {
-            const normalized = typeof next === 'string' ? next : '';
-            if (!normalized) {
-              lastHydratedCategory.value = null;
-              shouldForceOnNextSelection = true;
-              return;
-            }
-
-            if (lastHydratedCategory.value === null) {
-              lastHydratedCategory.value = normalized;
-              if (shouldForceOnNextSelection) {
-                hydrateDirectoryListings({ force: true });
-                shouldForceOnNextSelection = false;
-              }
-              return;
-            }
-
-            if (normalized === lastHydratedCategory.value) {
-              return;
-            }
-
-            lastHydratedCategory.value = normalized;
-            hydrateDirectoryListings({ force: true });
-            shouldForceOnNextSelection = false;
-          },
-          { immediate: true }
-        );
-
-        const categoryDirectory = computed(() =>
-          resolveCategoryDirectory(categoryNameParam.value)
-        );
-
-        const currentCategory = computed(() => categoryDirectory.value.category);
-
-      const categoryListings = computed(() => {
-        const normalized = normalizedCategoryName.value;
-        if (!normalized) return [];
-        return directoryListings.value.filter(
-          (listing) => listing.normalizedCategory === normalized
-        );
-      });
-
-      const { filters, filteredListings, toggleFilter, removeFilter, clearFilters } = useListingsFilter(categoryListings);
-      const hasActiveFilters = computed(() => {
-        const f = filters.value;
-        return f.services.size > 0 ||
-               f.specializations.size > 0 ||
-               f.ratings.size > 0 ||
-               f.emergencyService !== null ||
-               f.maxPrice < Infinity ||
-               !!f.query;
-      });
-
-    const activeFiltersDisplay = computed(() => {
-      const f = filters.value;
-      const activeFilters = [];
-      
-      f.services.forEach(service => {
-        activeFilters.push({ type: 'service', value: service, label: service });
-      });
-      
-      f.specializations.forEach(spec => {
-        activeFilters.push({ type: 'specialization', value: spec, label: spec });
-      });
-      
-      f.ratings.forEach(rating => {
-        activeFilters.push({ type: 'rating', value: rating, label: `${rating} star` });
-      });
-      
-      if (f.emergencyService !== null) {
-        activeFilters.push({ 
-          type: 'emergency', 
-          value: f.emergencyService, 
-          label: `Emergency: ${f.emergencyService ? 'Yes' : 'No'}` 
-        });
-      }
-      
-      if (f.maxPrice < Infinity) {
-        activeFilters.push({ 
-          type: 'price', 
-          value: f.maxPrice, 
-          label: `Max: $${f.maxPrice}` 
-        });
-      }
-      if (f.query) {
-        activeFilters.push({
-          type: 'query',
-          value: f.query,
-          label: `Search: ${f.query}`
-        });
-      }
-      
-      return activeFilters;
-    });
-
-      const displayedListings = computed(() => 
-        hasActiveFilters.value ? filteredListings.value : categoryListings.value
+      const normalizedCategoryName = computed(() =>
+        categoryService.normalizeCategoryName(categoryNameParam.value),
       );
 
-      const totalItems = computed(() => displayedListings.value.length);
-      const totalPages = computed(() => Math.max(1, Math.ceil(totalItems.value / pageSize.value)));
-      const paginatedListings = computed(() => {
-        const start = (currentPage.value - 1) * pageSize.value;
-        return displayedListings.value.slice(start, start + pageSize.value);
+      const fetchQuery = computed(() => {
+        const query: Record<string, any> = {
+          page: currentPage.value,
+          pageSize: pageSize.value,
+        };
+        if (normalizedCategoryName.value) {
+          query.category = normalizedCategoryName.value;
+        }
+        if (filters.query) {
+          query.q = filters.query;
+        }
+        if (filters.services.length) {
+          query.services = filters.services.slice();
+        }
+        if (filters.specializations.length) {
+          query.specializations = filters.specializations.slice();
+        }
+        if (filters.ratings.length) {
+          query.ratings = filters.ratings.slice();
+        }
+        if (filters.emergencyService !== null) {
+          query.emergency = filters.emergencyService;
+        }
+        if (filters.maxPrice !== null) {
+          query.maxPrice = filters.maxPrice;
+        }
+        return query;
       });
-      const loading = computed(() => directoryPending.value);
 
-      const priceBounds = computed(() => {
-        const values = categoryListings.value
-          .map((listing) => Number(listing.price))
-          .filter((value) => Number.isFinite(value));
+      const {
+        data: listingsResponse,
+        pending: listingsPending,
+      } = useAsyncData(
+        () => $fetch('/api/directory/listings', { query: fetchQuery.value }),
+        { watch: [fetchQuery] },
+      );
 
-        if (!values.length) {
-          return { min: 0, max: 0 };
+      const currentCategory = computed(() => categoryService.getCategoryByName(categoryNameParam.value));
+      const displayedListings = computed(() => listingsResponse.value?.data ?? []);
+      const totalItems = computed(() => listingsResponse.value?.meta?.total ?? 0);
+      const totalPages = computed(() => listingsResponse.value?.meta?.totalPages ?? 1);
+      const paginatedListings = displayedListings;
+      const loading = computed(() => listingsPending.value);
+      const priceBounds = computed(() => listingsResponse.value?.meta?.priceRange ?? { min: 0, max: 0 });
+
+      const minPrice = computed(() => {
+        const value = Number(priceBounds.value?.min ?? 0);
+        return Number.isFinite(value) ? value : 0;
+      });
+      const maxPrice = computed(() => {
+        const value = Number(priceBounds.value?.max ?? 0);
+        return Number.isFinite(value) ? value : 0;
+      });
+
+      const priceProgress = computed(() => {
+        const min = minPrice.value;
+        const max = maxPrice.value;
+        const current = Number(currentPrice.value);
+        if (!(max > min) || !Number.isFinite(current)) {
+          return '0%';
+        }
+        const ratio = ((current - min) / (max - min)) * 100;
+        const clamped = Math.max(0, Math.min(100, ratio));
+        return `${clamped}%`;
+      });
+
+      const resetFilters = () => {
+        filters.services.splice(0, filters.services.length);
+        filters.specializations.splice(0, filters.specializations.length);
+        filters.ratings.splice(0, filters.ratings.length);
+        filters.emergencyService = null;
+        filters.maxPrice = null;
+        filters.query = '';
+      };
+
+      watch(
+        priceBounds,
+        (bounds) => {
+          const max = Number(bounds?.max ?? 0);
+          if (Number.isFinite(max) && max > 0) {
+            currentPrice.value = max;
+          } else {
+            const min = Number(bounds?.min ?? 0);
+            currentPrice.value = Number.isFinite(min) ? min : 0;
+          }
+          filters.maxPrice = null;
+        },
+        { immediate: true },
+      );
+
+      const hasActiveFilters = computed(() => {
+        return (
+          filters.services.length > 0 ||
+          filters.specializations.length > 0 ||
+          filters.ratings.length > 0 ||
+          filters.emergencyService !== null ||
+          filters.maxPrice !== null ||
+          !!filters.query
+        );
+      });
+
+      const activeFiltersDisplay = computed(() => {
+        const activeFilters: Array<{ type: string; value: any; label: string }> = [];
+
+        filters.services.forEach((service) => {
+          activeFilters.push({ type: 'service', value: service, label: service });
+        });
+
+        filters.specializations.forEach((spec) => {
+          activeFilters.push({ type: 'specialization', value: spec, label: spec });
+        });
+
+        filters.ratings.forEach((rating) => {
+          activeFilters.push({ type: 'rating', value: rating, label: `${rating} star` });
+        });
+
+        if (filters.emergencyService !== null) {
+          activeFilters.push({
+            type: 'emergency',
+            value: filters.emergencyService,
+            label: `Emergency: ${filters.emergencyService ? 'Yes' : 'No'}`,
+          });
         }
 
-        return {
-          min: Math.min(...values),
-          max: Math.max(...values),
-        };
+        if (filters.maxPrice !== null) {
+          activeFilters.push({
+            type: 'price',
+            value: filters.maxPrice,
+            label: `Max: $${filters.maxPrice}`,
+          });
+        }
+
+        if (filters.query) {
+          activeFilters.push({
+            type: 'query',
+            value: filters.query,
+            label: `Search: ${filters.query}`,
+          });
+        }
+
+        return activeFilters;
       });
 
-        const minPrice = computed(() => {
-          const value = Number(priceBounds.value.min);
-          return Number.isFinite(value) ? value : 0;
-        });
-        const maxPrice = computed(() => {
-          const value = Number(priceBounds.value.max);
-          return Number.isFinite(value) ? value : 0;
-        });
-
-        const priceProgress = computed(() => {
-          const min = minPrice.value;
-          const max = maxPrice.value;
-          const current = Number(currentPrice.value);
-          if (!(max > min) || !Number.isFinite(current)) {
-            return '0%';
-          }
-          const ratio = ((current - min) / (max - min)) * 100;
-          const clamped = Math.max(0, Math.min(100, ratio));
-          return `${clamped}%`;
-        });
-
-        watch(
-          priceBounds,
-          (bounds) => {
-            const max = Number(bounds.max);
-            if (Number.isFinite(max) && max > 0) {
-              currentPrice.value = max;
-            } else {
-              const min = Number(bounds.min);
-              currentPrice.value = Number.isFinite(min) ? min : 0;
-            }
-            toggleFilter('maxPrice', Infinity);
-          },
-          { immediate: true }
-        );
-
       const clampRating = (value) => {
-      const num = Number(value);
-      if (!Number.isFinite(num)) return 0;
-      return Math.min(5, Math.max(0, num));
-    };
+        const num = Number(value);
+        if (!Number.isFinite(num)) return 0;
+        return Math.min(5, Math.max(0, num));
+      };
 
       const formatRating = (value) => {
         const num = Number(value);
@@ -712,115 +683,147 @@ export default {
         return num.toFixed(1);
       };
 
-    // Methods
-        const handlePriceChange = () => {
-          const { min, max } = priceBounds.value;
-          const numericMax = Number(max);
-          const numericMin = Number(min);
-          const sliderValue = Number(currentPrice.value);
+      const handlePriceChange = () => {
+        const { min, max } = priceBounds.value;
+        const numericMax = Number(max);
+        const numericMin = Number(min);
+        const sliderValue = Number(currentPrice.value);
 
-          if (!Number.isFinite(numericMax) || numericMax <= 0) {
-            toggleFilter('maxPrice', Infinity);
-            currentPrice.value = Number.isFinite(sliderValue) ? sliderValue : 0;
-            currentPage.value = 1;
-            return;
-          }
-
-          const lowerBound = Number.isFinite(numericMin) ? numericMin : 0;
-          let nextValue = Number.isFinite(sliderValue) ? sliderValue : numericMax;
-          if (nextValue < lowerBound) nextValue = lowerBound;
-          if (nextValue > numericMax) nextValue = numericMax;
-
-          currentPrice.value = nextValue;
-          if (nextValue >= numericMax) {
-            toggleFilter('maxPrice', Infinity);
-          } else {
-            toggleFilter('maxPrice', nextValue);
-          }
+        if (!Number.isFinite(numericMax) || numericMax <= 0) {
+          filters.maxPrice = null;
+          currentPrice.value = Number.isFinite(sliderValue) ? sliderValue : 0;
           currentPage.value = 1;
-        };
+          return;
+        }
 
-    const setEmergencyService = (value) => {
-      toggleFilter('emergencyService', value);
-      if (showMobileFilters.value) {
-        showMobileFilters.value = false;
-      }
-      currentPage.value = 1;
-    };
+        const lowerBound = Number.isFinite(numericMin) ? numericMin : 0;
+        let nextValue = Number.isFinite(sliderValue) ? sliderValue : numericMax;
+        if (nextValue < lowerBound) nextValue = lowerBound;
+        if (nextValue > numericMax) nextValue = numericMax;
 
-    const toggleService = (service) => {
-      toggleFilter('services', service);
-      if (showMobileFilters.value) {
-        showMobileFilters.value = false;
-      }
-      currentPage.value = 1;
-    };
+        currentPrice.value = nextValue;
+        if (nextValue >= numericMax) {
+          filters.maxPrice = null;
+        } else {
+          filters.maxPrice = nextValue;
+        }
+        currentPage.value = 1;
+      };
 
-    const toggleSpecialization = (specialization) => {
-      toggleFilter('specializations', specialization);
-      if (showMobileFilters.value) {
-        showMobileFilters.value = false;
-      }
-      currentPage.value = 1;
-    };
-
-    const toggleRating = (rating) => {
-      toggleFilter('ratings', parseInt(rating));
-      showSortOptions.value = false;
-      currentPage.value = 1;
-    };
-
-      const removeActiveFilter = (type, value) => {
-        removeFilter(type, value);
-        if (type === 'maxPrice') {
-          const resetValue = Number(maxPrice.value);
-          currentPrice.value = Number.isFinite(resetValue) && resetValue > 0
-            ? resetValue
-            : Number(minPrice.value) || 0;
+      const toggleValue = (collection: string[], value: string) => {
+        const index = collection.indexOf(value);
+        if (index === -1) {
+          collection.push(value);
+        } else {
+          collection.splice(index, 1);
         }
       };
 
-        const clearAllFilters = () => {
-          clearFilters();
-          toggleFilter('maxPrice', Infinity);
-          const resetValue = Number(maxPrice.value);
-          currentPrice.value = Number.isFinite(resetValue) && resetValue > 0
-            ? resetValue
-            : Number(minPrice.value) || 0;
+      const toggleNumberValue = (collection: number[], value: number) => {
+        const index = collection.indexOf(value);
+        if (index === -1) {
+          collection.push(value);
+        } else {
+          collection.splice(index, 1);
+        }
+      };
+
+      const setEmergencyService = (value: boolean) => {
+        filters.emergencyService = filters.emergencyService === value ? null : value;
+        if (showMobileFilters.value) {
           showMobileFilters.value = false;
+        }
+        currentPage.value = 1;
+      };
 
-          const next = { ...route.query };
-          let changed = false;
-          if (next.q) {
-            delete next.q;
-            changed = true;
-          }
-          if (next.page) {
-            delete next.page;
-            changed = true;
-          }
-          if (changed) {
-            navigateTo({ query: next }, { replace: true });
-          }
-        };
+      const toggleService = (service: string) => {
+        toggleValue(filters.services, service);
+        if (showMobileFilters.value) {
+          showMobileFilters.value = false;
+        }
+        currentPage.value = 1;
+      };
 
-    const toggleSortDropdown = (event) => {
-      if (event) event.stopPropagation();
-      showSortOptions.value = !showSortOptions.value;
-    };
+      const toggleSpecialization = (specialization: string) => {
+        toggleValue(filters.specializations, specialization);
+        if (showMobileFilters.value) {
+          showMobileFilters.value = false;
+        }
+        currentPage.value = 1;
+      };
 
-    const applyMobileFilters = () => {
-      showMobileFilters.value = false;
-      currentPage.value = 1;
-    };
+      const toggleRating = (rating: string) => {
+        const numericRating = parseInt(rating, 10);
+        if (Number.isFinite(numericRating)) {
+          toggleNumberValue(filters.ratings, numericRating);
+          showSortOptions.value = false;
+          currentPage.value = 1;
+        }
+      };
 
-    const handleClickOutside = (event) => {
-      if (showSortOptions.value && !event.target.closest('.relative')) {
-        showSortOptions.value = false;
-      }
-    };
+      const removeActiveFilter = (type, value) => {
+        switch (type) {
+          case 'service':
+            toggleValue(filters.services, value);
+            break;
+          case 'specialization':
+            toggleValue(filters.specializations, value);
+            break;
+          case 'rating':
+            toggleNumberValue(filters.ratings, Number(value));
+            break;
+          case 'emergency':
+            filters.emergencyService = null;
+            break;
+          case 'price':
+            filters.maxPrice = null;
+            currentPrice.value = maxPrice.value || 0;
+            break;
+          case 'query':
+            filters.query = '';
+            break;
+          default:
+            break;
+        }
+      };
 
-      // Lifecycle
+      const clearAllFilters = () => {
+        resetFilters();
+        currentPrice.value = maxPrice.value || 0;
+        showMobileFilters.value = false;
+        currentPage.value = 1;
+
+        const next = { ...route.query };
+        let changed = false;
+        if (next.q) {
+          delete next.q;
+          changed = true;
+        }
+        if (next.page) {
+          delete next.page;
+          changed = true;
+        }
+        if (changed) {
+          navigateTo({ query: next }, { replace: true });
+        }
+      };
+
+      const toggleSortDropdown = (event) => {
+        if (event) event.stopPropagation();
+        showSortOptions.value = !showSortOptions.value;
+      };
+
+      const applyMobileFilters = () => {
+        showMobileFilters.value = false;
+        currentPage.value = 1;
+      };
+
+      const handleClickOutside = (event) => {
+        if (showSortOptions.value && !event.target.closest('.relative')) {
+          showSortOptions.value = false;
+        }
+      };
+
       onMounted(() => {
         document.addEventListener('click', handleClickOutside);
       });
@@ -829,16 +832,15 @@ export default {
         document.removeEventListener('click', handleClickOutside);
       });
 
-      // Watch for route changes
       watch(
         () => route.query.q,
         (q) => {
           const queryValue = typeof q === 'string' ? q : '';
-          if (filters.value.query !== queryValue) {
-            toggleFilter('query', queryValue);
+          if (filters.query !== queryValue) {
+            filters.query = queryValue;
           }
         },
-        { immediate: true }
+        { immediate: true },
       );
 
       watch(
@@ -850,18 +852,13 @@ export default {
             currentPage.value = nextPage;
           }
         },
-        { immediate: true }
+        { immediate: true },
       );
 
-        watch(normalizedCategoryName, () => {
-          clearFilters();
-          toggleFilter('maxPrice', Infinity);
-          const resetValue = Number(maxPrice.value);
-          currentPrice.value = Number.isFinite(resetValue) && resetValue > 0
-            ? resetValue
-            : Number(minPrice.value) || 0;
-          currentPage.value = 1;
-        });
+      watch(normalizedCategoryName, () => {
+        resetFilters();
+        currentPage.value = 1;
+      });
 
       watch(totalPages, (total) => {
         if (currentPage.value > total) {
@@ -872,7 +869,6 @@ export default {
         }
       });
 
-      // keep route query.page in sync with currentPage changes
       watch(currentPage, (val) => {
         const nextPage = String(val);
         const nextQuery = { ...route.query };
@@ -917,10 +913,10 @@ export default {
         applyMobileFilters,
         getStatusClass,
         clampRating,
-        formatRating
+        formatRating,
       };
-  }
-};
+    },
+  };
 </script>
 
 <style scoped>
