@@ -487,7 +487,7 @@
     <div class="flex flex-col sm:flex-row justify-between items-center mt-6 gap-4 px-3 lg:px-0">
       <p class="text-sm text-gray-600 text-center sm:text-left">
         Showing <span class="font-semibold">{{ paginatedUsers.length }}</span> of 
-        <span class="font-semibold">{{ filteredUsers.length }}</span> users (Page {{ currentPage }} of {{ totalPages }})
+        <span class="font-semibold">{{ totalResults }}</span> users (Page {{ currentPage }} of {{ totalPages }})
       </p>
       <div class="flex gap-2">
         <button 
@@ -554,7 +554,6 @@ import {
 import { getStatusClass, getStatusShort, getSignupMethodClass } from '~/composables/useStatusClass'
 import { useSelection } from '~/composables/useSelection'
 import { useStubClient } from '~/services/stubClient'
-import { useStubResource } from '~/composables/useStubResource'
 import DetailModal from '~/components/common/DetailModal.vue'
 import { useClientEventListener } from '@/composables/useClientEventListener';
 
@@ -581,14 +580,6 @@ const filters = ref({
   signupMethod: ''
 });
 
-// Stats
-const stats = ref({
-  totalUsers: 0,
-  googleSignups: 0,
-  socialSignups: 0,
-  emailSignups: 0,
-});
-
 // --- Composables ---
 const { allSelected, toggleSelection, toggleAll } = useSelection(users);
 const stubClient = useStubClient()
@@ -603,47 +594,90 @@ const toast = (type, message) => {
 }
 
 // --- Data Fetching (SSR-friendly) ---
-const { data: usersData, pending, error: usersError, refresh } = await useStubResource('users')
-const isLoading = computed(() => pending.value)
+const fallbackMeta = {
+  page: 1,
+  totalPages: 1,
+  total: 0,
+  limit: itemsPerPage,
+};
 
-// --- Computed ---
+const userQueryParams = computed(() => ({
+  search: searchQuery.value.trim() || undefined,
+  page: currentPage.value,
+  limit: itemsPerPage,
+  status: filters.value.status || undefined,
+  signupMethod: filters.value.signupMethod || undefined,
+  dateFrom: filters.value.dateFrom || undefined,
+  dateTo: filters.value.dateTo || undefined,
+}));
+
+const {
+  data: usersPayload,
+  pending,
+  error: usersError,
+  refresh: refreshUsers,
+} = await useFetch('/api/search/users', {
+  query: userQueryParams,
+  watch: [
+    currentPage,
+    searchQuery,
+    () => filters.value.status,
+    () => filters.value.signupMethod,
+    () => filters.value.dateFrom,
+    () => filters.value.dateTo,
+  ],
+  default: () => ({ items: [], meta: fallbackMeta }),
+  transform: (response) => ({
+    items: Array.isArray(response?.data) ? response.data : [],
+    meta: { ...fallbackMeta, ...(response?.meta || {}) },
+  }),
+});
+
+const isLoading = computed(() => pending.value);
+const paginationMeta = computed(() => usersPayload.value?.meta ?? fallbackMeta);
+const totalPages = computed(() => paginationMeta.value.totalPages || 1);
+const totalResults = computed(() => paginationMeta.value.total ?? 0);
+
 const signupMethods = computed(() => {
-  const seen = new Set();
-  for (const u of users.value) seen.add(u.signupMethod);
+  const options = paginationMeta.value.signupMethods;
+  if (Array.isArray(options) && options.length) {
+    return options;
+  }
+  const seen = new Set<string>();
+  for (const entry of users.value) {
+    if (entry.signupMethod) {
+      seen.add(entry.signupMethod);
+    }
+  }
   return Array.from(seen);
 });
 
-const filteredUsers = computed(() => {
-  if (isLoading.value) return [];
-  const query = (searchQuery.value || '').toLowerCase();
-  const { status, signupMethod, dateFrom, dateTo } = filters.value;
+watchEffect(() => {
+  const rows = usersPayload.value?.items ?? [];
+  users.value = rows.map((user) => ({ ...user, selected: false }));
+  mobileActionsIndex.value = null;
+  expandedUserId.value = null;
+});
 
-  const fromDate = dateFrom ? new Date(dateFrom) : null;
-  const toDate = dateTo ? new Date(dateTo) : null;
-
-  return users.value.filter(user => {
-    const searchMatch = !query || user.name.toLowerCase().includes(query) || user.email.toLowerCase().includes(query);
-    const statusMatch = !status || user.status === status;
-    const methodMatch = !signupMethod || user.signupMethod === signupMethod;
-
-    let dateMatch = true;
-    if (fromDate || toDate) {
-      const userDate = new Date(user.signupDate);
-      if (fromDate && userDate < fromDate) dateMatch = false;
-      if (toDate && userDate > toDate) dateMatch = false;
+watch(
+  () => paginationMeta.value.totalPages,
+  (nextTotal) => {
+    const maxPages = nextTotal || 1;
+    if (currentPage.value > maxPages) {
+      currentPage.value = maxPages;
     }
+  },
+);
 
-    return searchMatch && statusMatch && methodMatch && dateMatch;
-  });
-});
+const stats = computed(() => ({
+  totalUsers: 0,
+  googleSignups: 0,
+  socialSignups: 0,
+  emailSignups: 0,
+  ...(paginationMeta.value.stats || {}),
+}));
 
-const totalPages = computed(() => Math.max(1, Math.ceil(filteredUsers.value.length / itemsPerPage)));
-
-const paginatedUsers = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage;
-  const end = start + itemsPerPage;
-  return filteredUsers.value.slice(start, end);
-});
+const paginatedUsers = computed(() => users.value);
 
 const userDetailItems = computed(() => {
   if (!selectedUser.value) return [];
@@ -709,7 +743,7 @@ const deleteUser = async (user) => {
 
   try {
     await stubClient.remove('users', user.id, { delay: 160 });
-    await refresh();
+    await refreshUsers();
     toast('success', `${user.name} removed`);
   } catch (error) {
     console.error('Failed to delete user', error);
@@ -734,7 +768,7 @@ const changeStatus = async (user) => {
 
   try {
     await stubClient.update('users', user.id, { status: nextStatus }, { delay: 150 });
-    await refresh();
+    await refreshUsers();
     toast('success', `${user.name} status -> ${nextStatus}`);
     mobileActionsIndex.value = null;
   } catch (error) {
@@ -768,19 +802,6 @@ const formatDate = (dateString) => {
   });
 };
 
-const updateStats = () => {
-  const total = users.value.length;
-  const google = users.value.filter(u => u.signupMethod === 'Google').length;
-  const social = users.value.filter(u => u.signupMethod === 'Facebook' || u.signupMethod === 'Twitter').length;
-  const email = users.value.filter(u => u.signupMethod === 'Email').length;
-  stats.value = {
-    totalUsers: total,
-    googleSignups: google,
-    socialSignups: social,
-    emailSignups: email,
-  };
-};
-
 const nextPage = () => {
   if (currentPage.value < totalPages.value) {
     currentPage.value++;
@@ -796,15 +817,6 @@ const prevPage = () => {
     expandedUserId.value = null;
   }
 };
-
-// Populate users when fetch completes
-watchEffect(() => {
-  const raw = usersData?.value || []
-  users.value = raw.map(u => ({ ...u, selected: false }))
-  updateStats()
-  mobileActionsIndex.value = null
-  expandedUserId.value = null
-})
 
 watch(usersError, (err) => {
   if (err) {

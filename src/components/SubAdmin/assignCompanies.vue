@@ -231,7 +231,7 @@
         </div>
       </div>
 
-      <div v-if="filteredCompanies.length === 0" class="text-center py-8 sm:py-12">
+      <div v-if="totalResults === 0" class="text-center py-8 sm:py-12">
         <div class="w-12 h-12 mx-auto mb-3 bg-gray-100 rounded-full flex items-center justify-center">
           <Search class="w-6 h-6 text-gray-400" />
         </div>
@@ -243,11 +243,11 @@
     <div class="flex flex-col sm:flex-row justify-between items-center mt-4 gap-3">
       <p class="text-[10px] sm:text-xs text-gray-600 text-center sm:text-left">
         Showing 
-        <span class="font-semibold">{{ Math.min((currentPage - 1) * itemsPerPage + 1, filteredCompanies.length) }}</span> 
+        <span class="font-semibold">{{ rangeStart }}</span> 
         to 
-        <span class="font-semibold">{{ Math.min(currentPage * itemsPerPage, filteredCompanies.length) }}</span> 
+        <span class="font-semibold">{{ rangeEnd }}</span> 
         of 
-        <span class="font-semibold">{{ filteredCompanies.length }}</span> 
+        <span class="font-semibold">{{ totalResults }}</span> 
         companies
       </p>
       <div class="flex gap-1 sm:gap-1.5 flex-wrap justify-center">
@@ -343,72 +343,64 @@ const filters = ref({
   category: ''
 });
 
-let nextId = 1;
-
-// --- DATA FETCHING ---
-const fetchData = async () => {
-  if (!stubClient) {
-    console.error("useStubClient is not available. Using empty data array.");
-    return;
-  }
-
-  try {
-    const endpoint = 'subadminAssignedCompanies';
-    const rowsData = await stubClient.list(endpoint, { delay: 140 });
-
-    companies.value = (rowsData || []).map((row) => ({
-      ...row,
-      id: row.id || nextId++,
-      status: row.status || 'Pending',
-      selected: false,
-      mobile: row.mobile || 'N/A',
-      address: row.address || 'N/A',
-      email: row.email || 'N/A',
-      verified: !!row.verified,
-      assignedDate: row.assignedDate || 'N/A' 
-    }));
-    
-    if (nuxtApp.$awn) {
-      nuxtApp.$awn.success('Company data loaded successfully!');
-    }
-  } catch (error) {
-    console.error('Failed to load assigned companies:', error);
-    
-    if (nuxtApp.$awn) {
-      nuxtApp.$awn.alert('Failed to load assigned companies.');
-    }
-    companies.value = [];
-  }
+const fallbackMeta = {
+  page: 1,
+  totalPages: 1,
+  total: 0,
+  limit: itemsPerPage,
 };
 
-// --- COMPUTED PROPERTIES ---
-const filteredCompanies = computed(() => {
-  const q = (searchQuery.value || '').toLowerCase()
-  const status = filters.value.status
-  
-  const result = companies.value.filter(company => {
-    if (q) {
-      const matches = company.name.toLowerCase().includes(q) || 
-                     company.category.toLowerCase().includes(q) || 
-                     (company.mobile && company.mobile.includes(q))
-      if (!matches) return false
-    }
-    if (status && company.status.toLowerCase() !== status) return false
-    
-    return true
-  })
-  
-  return result
-})
+const companyQueryParams = computed(() => ({
+  search: searchQuery.value.trim() || undefined,
+  page: currentPage.value,
+  limit: itemsPerPage,
+  status: filters.value.status || undefined,
+}));
 
-const totalPages = computed(() => {
-  return Math.ceil(filteredCompanies.value.length / itemsPerPage);
+const {
+  data: companiesPayload,
+} = await useFetch('/api/search/subadmin-assigned-companies', {
+  query: companyQueryParams,
+  watch: [currentPage, searchQuery, () => filters.value.status],
+  default: () => ({ items: [], meta: fallbackMeta }),
+  transform: (response) => ({
+    items: Array.isArray(response?.data) ? response.data : [],
+    meta: { ...fallbackMeta, ...(response?.meta || {}) },
+  }),
 });
 
-const paginatedCompanies = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage;
-  const end = start + itemsPerPage;
-  return filteredCompanies.value.slice(start, end);
+const paginationMeta = computed(() => companiesPayload.value?.meta ?? fallbackMeta);
+const totalPages = computed(() => paginationMeta.value.totalPages || 1);
+const totalResults = computed(() => paginationMeta.value.total ?? 0);
+
+watch(
+  () => paginationMeta.value.totalPages,
+  (nextTotal) => {
+    const maxPages = nextTotal || 1;
+    if (currentPage.value > maxPages) {
+      currentPage.value = maxPages;
+    }
+  },
+);
+
+watchEffect(() => {
+  const rows = companiesPayload.value?.items ?? [];
+  companies.value = rows.map((row) => ({
+    ...row,
+    selected: false,
+    verified: !!row.verified,
+  }));
+  selectAll.value = false;
+});
+
+const paginatedCompanies = computed(() => companies.value);
+const rangeStart = computed(() => {
+  if (!totalResults.value) return 0;
+  return (currentPage.value - 1) * itemsPerPage + 1;
+});
+const rangeEnd = computed(() => {
+  if (!totalResults.value) return 0;
+  return Math.min(currentPage.value * itemsPerPage, totalResults.value);
 });
 
 // --- METHODS ---
@@ -502,10 +494,6 @@ const toggleDetails = (companyId) => {
 watch([searchQuery, filters], () => {
   currentPage.value = 1;
 }, { deep: true });
-
-onMounted(() => {
-  fetchData();
-});
 </script>
 
 <style scoped>

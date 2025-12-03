@@ -490,7 +490,7 @@
     <div class="flex flex-col sm:flex-row justify-between items-center mt-6 gap-4 px-3 lg:px-0">
       <p class="text-sm text-gray-600 text-center sm:text-left">
         Showing <span class="font-semibold">{{ paginatedAdmins.length }}</span> of 
-        <span class="font-semibold">{{ filteredAdmins.length }}</span> admins (Page {{ currentPage }} of {{ totalPages }})
+        <span class="font-semibold">{{ totalResults }}</span> admins (Page {{ currentPage }} of {{ totalPages }})
       </p>
       <div class="flex gap-2">
         <button 
@@ -558,7 +558,6 @@ import {
 import { getStatusClass, getRoleClass } from '~/composables/useStatusClass'
 import { useSelection } from '~/composables/useSelection'
 import { useStubClient } from '~/services/stubClient'
-import { useStubResource } from '~/composables/useStubResource'
 import DetailModal from '~/components/common/DetailModal.vue'
 import { useClientEventListener } from '@/composables/useClientEventListener';
 
@@ -585,14 +584,6 @@ const filters = ref({
   status: ''
 });
 
-// Stats
-const stats = ref({
-  totalAdmins: 0,
-  active: 0,
-  inactive: 0,
-  superAdmins: 0
-});
-
 // --- Composables ---
 const { allSelected, toggleSelection, toggleAll } = useSelection(admins);
 const stubClient = useStubClient()
@@ -613,44 +604,75 @@ const notifySuccess = (message) => {
 }
 
 // --- Data Fetching (SSR-friendly) ---
-const { data: adminsData, pending, error: adminsError, refresh } = await useStubResource('admins')
-const isLoading = computed(() => pending.value)
+const fallbackMeta = {
+  page: 1,
+  totalPages: 1,
+  total: 0,
+  limit: itemsPerPage,
+};
 
-// --- Computed ---
-const filteredAdmins = computed(() => {
-  if (isLoading.value) return [];
-  const query = (searchQuery.value || '').toLowerCase();
-  const { status, role, dateFrom, dateTo } = filters.value;
+const adminQueryParams = computed(() => ({
+  search: searchQuery.value.trim() || undefined,
+  page: currentPage.value,
+  limit: itemsPerPage,
+  status: filters.value.status || undefined,
+  role: filters.value.role || undefined,
+  dateFrom: filters.value.dateFrom || undefined,
+  dateTo: filters.value.dateTo || undefined,
+}));
 
-  const fromDate = dateFrom ? new Date(dateFrom) : null;
-  const toDate = dateTo ? new Date(dateTo) : null;
+const {
+  data: adminsPayload,
+  pending,
+  error: adminsError,
+  refresh: refreshAdmins,
+} = await useFetch('/api/search/admins', {
+  query: adminQueryParams,
+  watch: [
+    currentPage,
+    searchQuery,
+    () => filters.value.status,
+    () => filters.value.role,
+    () => filters.value.dateFrom,
+    () => filters.value.dateTo,
+  ],
+  default: () => ({ items: [], meta: fallbackMeta }),
+  transform: (response) => ({
+    items: Array.isArray(response?.data) ? response.data : [],
+    meta: { ...fallbackMeta, ...(response?.meta || {}) },
+  }),
+});
 
-  return admins.value.filter(admin => {
-    const searchMatch = !query || 
-      admin.name.toLowerCase().includes(query) || 
-      admin.email.toLowerCase().includes(query) ||
-      admin.role.toLowerCase().includes(query);
-    const statusMatch = !status || admin.status === status;
-    const roleMatch = !role || admin.role === role;
+const isLoading = computed(() => pending.value);
+const paginationMeta = computed(() => adminsPayload.value?.meta ?? fallbackMeta);
+const totalPages = computed(() => paginationMeta.value.totalPages || 1);
+const totalResults = computed(() => paginationMeta.value.total ?? 0);
+const stats = computed(() => ({
+  totalAdmins: 0,
+  active: 0,
+  inactive: 0,
+  superAdmins: 0,
+  ...(paginationMeta.value.stats || {}),
+}));
 
-    let dateMatch = true;
-    if (fromDate || toDate) {
-      const adminDate = new Date(admin.createdOn);
-      if (fromDate && adminDate < fromDate) dateMatch = false;
-      if (toDate && adminDate > toDate) dateMatch = false;
+watchEffect(() => {
+  const rows = adminsPayload.value?.items ?? [];
+  admins.value = rows.map((admin) => ({ ...admin, selected: false }));
+  mobileActionsIndex.value = null;
+  expandedAdminId.value = null;
+});
+
+watch(
+  () => paginationMeta.value.totalPages,
+  (nextTotal) => {
+    const maxPages = nextTotal || 1;
+    if (currentPage.value > maxPages) {
+      currentPage.value = maxPages;
     }
+  },
+);
 
-    return searchMatch && statusMatch && roleMatch && dateMatch;
-  });
-});
-
-const totalPages = computed(() => Math.max(1, Math.ceil(filteredAdmins.value.length / itemsPerPage)));
-
-const paginatedAdmins = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage;
-  const end = start + itemsPerPage;
-  return filteredAdmins.value.slice(start, end);
-});
+const paginatedAdmins = computed(() => admins.value);
 
 const adminDetailItems = computed(() => {
   if (!selectedAdmin.value) return [];
@@ -713,7 +735,7 @@ const deleteAdmin = async (admin) => {
   if (!confirm(`Are you sure you want to delete ${admin.name}?`)) return;
   try {
     await stubClient.remove('admins', admin.id, { delay: 180 });
-    await refresh();
+    await refreshAdmins();
     notifySuccess(`${admin.name} removed`);
     mobileActionsIndex.value = null;
   } catch (error) {
@@ -731,7 +753,7 @@ const changeStatus = async (admin) => {
 
   try {
     await stubClient.update('admins', admin.id, { status: nextStatus }, { delay: 160 });
-    await refresh();
+    await refreshAdmins();
     notifySuccess(`${admin.name} marked as ${nextStatus}`);
     mobileActionsIndex.value = null;
   } catch (error) {
@@ -764,20 +786,6 @@ const formatDate = (dateString) => {
   });
 };
 
-const updateStats = () => {
-  const total = admins.value.length;
-  const active = admins.value.filter(u => u.status === 'Active').length;
-  const inactive = admins.value.filter(u => u.status === 'Inactive').length;
-  const superAdmins = admins.value.filter(u => u.role === 'Super Admin').length;
-  
-  stats.value = {
-    totalAdmins: total,
-    active: active,
-    inactive: inactive,
-    superAdmins: superAdmins
-  };
-};
-
 const nextPage = () => {
   if (currentPage.value < totalPages.value) {
     currentPage.value++;
@@ -793,15 +801,6 @@ const prevPage = () => {
     expandedAdminId.value = null;
   }
 };
-
-// Populate admins when fetch completes
-watchEffect(() => {
-  const raw = adminsData?.value || []
-  admins.value = raw.map(u => ({ ...u, selected: false }))
-  updateStats()
-  mobileActionsIndex.value = null
-  expandedAdminId.value = null
-})
 
 watch(adminsError, (err) => {
   if (err) {

@@ -296,7 +296,7 @@
 // IMPORTANT: Ensure this path is correct for your project structure
 import LoginModal from '~/components/common/loginModal.vue'
 import { Menu, X } from 'lucide-vue-next'
-import { useDirectoryListings } from '@/composables/useDirectoryListings'
+import { useRequestFetch } from '#app'
 import { useAuthStore } from '~/stores/auth'
 import { storeToRefs } from 'pinia'
 
@@ -306,34 +306,18 @@ export default {
   components: { LoginModal, Menu, X },
     emits: ['search'],
     setup() {
-      const {
-        ensureLoaded,
-        pending,
-        ready,
-        matchSearch,
-        getBySlug,
-        getById,
-        getByTitle,
-        listings,
-      } = useDirectoryListings()
-        const authStore = useAuthStore()
-        if (process.client) {
-          authStore.hydrateFromStorage()
-        }
-        const { isAuthenticated, user } = storeToRefs(authStore)
+      const requestFetch = useRequestFetch()
+      const authStore = useAuthStore()
+      if (process.client) {
+        authStore.hydrateFromStorage()
+      }
+      const { isAuthenticated, user } = storeToRefs(authStore)
 
       return {
-        directoryEnsureLoaded: ensureLoaded,
-        directoryPending: pending,
-        directoryReady: ready,
-        directoryMatchSearch: matchSearch,
-        directoryGetBySlug: getBySlug,
-        directoryGetById: getById,
-        directoryGetByTitle: getByTitle,
-        directoryListings: listings,
-          authStore,
-          isAuthenticated,
-          authUser: user,
+        requestFetch,
+        authStore,
+        isAuthenticated,
+        authUser: user,
       }
     },
     data() {
@@ -348,20 +332,24 @@ export default {
           showUserMenu: false,
         defaultSearchPlaceholder,
         dropdownResultLimit: 12,
-        directoryInitialized: false,
-          popularSectionId: 'home-popular-listings',
+        popularSectionId: 'home-popular-listings',
+        searchResults: [],
+        searchMeta: {
+          total: 0,
+          page: 1,
+          totalPages: 1,
+        },
+        searchLoading: false,
+        searchError: null,
+        searchDebounceId: null,
       }
     },
     computed: {
       isLoadingSearchData() {
-        return this.directoryPending && !this.directoryReady
+        return this.searchLoading
       },
       filteredSearchEntries() {
-        if (!this.directoryReady) {
-          return []
-        }
-        const query = this.searchQuery.trim()
-        return this.directoryMatchSearch(query, this.dropdownResultLimit)
+        return this.searchResults
       },
         popularListingLink() {
             return { path: '/', hash: `#${this.popularSectionId}` }
@@ -383,14 +371,33 @@ export default {
             },
     },
   methods: {
-    async initializeSearchDirectory() {
-      if (this.directoryInitialized) return
-      this.directoryInitialized = true
+    async fetchSearchEntries(searchText = '') {
+      const query = searchText?.trim() || ''
+      this.searchLoading = true
       try {
-        await this.directoryEnsureLoaded()
+        const response = await this.requestFetch('/api/search/listings', {
+          params: {
+            search: query || undefined,
+            limit: this.dropdownResultLimit,
+          },
+        })
+        this.searchResults = Array.isArray(response?.data) ? response.data : []
+        this.searchMeta = response?.meta ?? {}
+        this.searchError = null
       } catch (error) {
-        console.error('Failed to load directory listings for search:', error)
+        this.searchError = error
+        console.error('Failed to load listings for search:', error)
+      } finally {
+        this.searchLoading = false
       }
+    },
+    queueSearchRequest() {
+      if (this.searchDebounceId) {
+        clearTimeout(this.searchDebounceId)
+      }
+      this.searchDebounceId = setTimeout(() => {
+        this.fetchSearchEntries(this.searchQuery)
+      }, 200)
     },
     toggleUserMenu() {
       this.showUserMenu = !this.showUserMenu
@@ -408,20 +415,20 @@ export default {
       }
     },
     async openDropdown() {
-      await this.initializeSearchDirectory()
       if (!this.showDropdown) {
         this.cachedSearchQuery = this.searchQuery
         if (this.searchQuery.trim() === this.selectedSearch.trim()) {
           this.searchQuery = ''
         }
+        await this.fetchSearchEntries(this.searchQuery)
         this.showDropdown = true
       }
     },
-    async handleInput() {
-      await this.initializeSearchDirectory()
+    handleInput() {
       if (!this.showDropdown) {
         this.showDropdown = true
       }
+      this.queueSearchRequest()
     },
     handleSearchClick() {
       const trimmedQuery = this.searchQuery.trim()
@@ -437,14 +444,14 @@ export default {
       const value = (this.searchQuery || this.selectedSearch).trim()
       if (!value) return
 
-      await this.initializeSearchDirectory()
-
       this.selectedSearch = value
       this.searchQuery = value
       this.cachedSearchQuery = value
       this.showDropdown = false
 
-      const matchedRecord = this.findAgencyRecord(value)
+      await this.fetchSearchEntries(value)
+
+      const matchedRecord = this.findMatchingRecord(value)
       if (this.$emit) {
         this.$emit('search', value)
       }
@@ -534,25 +541,15 @@ export default {
             ? 'bg-[#fff9e6] text-[#212121] font-semibold border-[#ffe08f]'
             : 'text-[#616161] hover:bg-[#fff9e6]'
         },
-      findAgencyRecord(value) {
+      findMatchingRecord(value) {
         const normalized = this.normalizeTitle(value)
-        if (!normalized) return null
-
-        const exactByTitle = this.directoryGetByTitle(value)
-        if (exactByTitle) return exactByTitle
-
-        const suggestions = this.directoryMatchSearch(value, 1)
-        if (suggestions.length) {
-          const bySlug = this.directoryGetBySlug(suggestions[0].slug)
-          if (bySlug) return bySlug
+        if (!normalized) {
+          return this.searchResults[0] || null
         }
-        return null
-      },
-      getFirstDirectoryRecord() {
-        if (!this.directoryReady || !Array.isArray(this.directoryListings) || !this.directoryListings.length) {
-          return null
-        }
-        return this.directoryListings[0]
+        const exact = this.searchResults.find(
+          (entry) => this.normalizeTitle(entry.title || entry.name) === normalized,
+        )
+        return exact || this.searchResults[0] || null
       },
       buildAgencyQuery(record) {
         if (!record) return null
@@ -575,7 +572,7 @@ export default {
       },
       navigateToPopularListing(record) {
         if (!this.$router) return
-        const target = record || this.getFirstDirectoryRecord()
+        const target = record || this.searchResults[0]
         if (!target) {
           this.$router.push({ path: '/agency' })
           return
@@ -590,10 +587,14 @@ export default {
   },
   mounted() {
     document.addEventListener('click', this.handleClickOutside)
-    this.initializeSearchDirectory()
+    this.fetchSearchEntries()
   },
   beforeUnmount() {
     document.removeEventListener('click', this.handleClickOutside)
+    if (this.searchDebounceId) {
+      clearTimeout(this.searchDebounceId)
+      this.searchDebounceId = null
+    }
   }
 }
 </script>

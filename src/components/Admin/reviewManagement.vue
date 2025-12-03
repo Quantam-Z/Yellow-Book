@@ -425,7 +425,7 @@
     <div class="flex flex-col sm:flex-row justify-between items-center mt-6 gap-4 px-3 lg:px-0">
       <p class="text-sm text-gray-600 text-center sm:text-left">
         Showing <span class="font-semibold">{{ paginatedReviews.length }}</span> of 
-        <span class="font-semibold">{{ filteredReviews.length }}</span> reviews (Page {{ currentPage }} of {{ totalPages }})
+        <span class="font-semibold">{{ totalResults }}</span> reviews (Page {{ currentPage }} of {{ totalPages }})
       </p>
       <div class="flex gap-2">
         <button 
@@ -474,7 +474,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watchEffect, watch, defineAsyncComponent } from 'vue'
+import { ref, computed, watch, defineAsyncComponent } from 'vue'
 import { 
   Search as SearchIcon, 
   Filter as FilterIcon,
@@ -495,26 +495,14 @@ import {
 import RatingStars from '~/components/common/RatingStars.vue'
 import { getStatusClass } from '~/composables/useStatusClass'
 import { useStubClient } from '~/services/stubClient'
-import { useStubResource } from '~/composables/useStubResource'
 
 const ViewReview = defineAsyncComponent(() => import('~/components/modal/viewReview.vue'))
 
 // --- State ---
 const showMobileFilters = ref(false)
 const searchQuery = ref('')
-const reviews = ref([])
 const isViewOpen = ref(false)
 const selectedReview = ref(null)
-
-// Stats data
-const stats = ref({
-  totalReviews: 0,
-  pending: 0,
-  approved: 0,
-  rejected: 0,
-  onHold: 0,
-  bannedUsers: 0
-})
 
 // Pagination State
 const currentPage = ref(1)
@@ -542,8 +530,71 @@ const toast = (type, message) => {
 }
 
 // --- Data Fetching (SSR-friendly) ---
-const { data: reviewsData, pending, error: reviewsError, refresh } = await useStubResource('agencyReviews')
+const fallbackMeta = {
+  page: 1,
+  totalPages: 1,
+  total: 0,
+  limit: itemsPerPage,
+};
+
+const reviewQueryParams = computed(() => ({
+  search: searchQuery.value.trim() || undefined,
+  page: currentPage.value,
+  limit: itemsPerPage,
+  rating: filters.value.rating || undefined,
+  status: filters.value.status || undefined,
+  dateFrom: filters.value.dateFrom || undefined,
+  dateTo: filters.value.dateTo || undefined,
+  timeRange: filters.value.timeRange || undefined,
+}));
+
+const {
+  data: reviewsPayload,
+  pending,
+  error: reviewsError,
+  refresh: refreshReviews,
+} = await useFetch('/api/search/reviews', {
+  query: reviewQueryParams,
+  watch: [
+    currentPage,
+    searchQuery,
+    () => filters.value.rating,
+    () => filters.value.status,
+    () => filters.value.dateFrom,
+    () => filters.value.dateTo,
+    () => filters.value.timeRange,
+  ],
+  default: () => ({ items: [], meta: fallbackMeta }),
+  transform: (response) => ({
+    items: Array.isArray(response?.data) ? response.data : [],
+    meta: { ...fallbackMeta, ...(response?.meta || {}) },
+  }),
+});
+
 const isLoading = computed(() => pending.value)
+const paginationMeta = computed(() => reviewsPayload.value?.meta ?? fallbackMeta)
+const totalPages = computed(() => paginationMeta.value.totalPages || 1)
+const totalResults = computed(() => paginationMeta.value.total ?? 0)
+const paginatedReviews = computed(() => reviewsPayload.value?.items ?? [])
+const stats = computed(() => ({
+  totalReviews: 0,
+  pending: 0,
+  approved: 0,
+  rejected: 0,
+  onHold: 0,
+  bannedUsers: 0,
+  ...(paginationMeta.value.stats || {}),
+}))
+
+watch(
+  () => paginationMeta.value.totalPages,
+  (nextTotal) => {
+    const maxPages = nextTotal || 1
+    if (currentPage.value > maxPages) {
+      currentPage.value = maxPages
+    }
+  },
+)
 
 // --- Helpers ---
 const formatDate = (date) => {
@@ -560,75 +611,7 @@ const getInitials = (name) => {
     .toUpperCase()
 }
 
-function isWithinTimeRange(dateStr, range) {
-  const today = new Date()
-  const date = new Date(dateStr)
-  const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate())
-  const startOfDate = new Date(date.getFullYear(), date.getMonth(), date.getDate())
-  const msInDay = 24 * 60 * 60 * 1000
-  const diffDays = Math.floor((startOfToday - startOfDate) / msInDay)
-
-  switch (range) {
-    case '':
-      return diffDays === 0
-    case 'yesterday':
-      return diffDays === 1
-    case 'last7days':
-      return diffDays >= 0 && diffDays < 7
-    case 'last30days':
-      return diffDays >= 0 && diffDays < 30
-    default:
-      return true
-  }
-}
-
 // --- Computed ---
-const filteredReviews = computed(() => {
-  if (isLoading.value) return []
-
-  let list = [...reviews.value]
-
-  const query = (searchQuery.value || '').toLowerCase()
-  if (query) {
-    list = list.filter(r => 
-      String(r.reviewerName || '').toLowerCase().includes(query) || 
-      String(r.content || '').toLowerCase().includes(query)
-    )
-  }
-
-  if (filters.value.rating) {
-    const ratingNum = Number(filters.value.rating)
-    list = list.filter(r => Number(r.rating) === ratingNum)
-  }
-
-  if (filters.value.status) {
-    list = list.filter(r => (r.status || 'Pending') === filters.value.status)
-  }
-
-  if (filters.value.dateFrom) {
-    const from = new Date(filters.value.dateFrom)
-    list = list.filter(r => new Date(r.date) >= from)
-  }
-
-  if (filters.value.dateTo) {
-    const to = new Date(filters.value.dateTo)
-    list = list.filter(r => new Date(r.date) <= to)
-  }
-
-  if (filters.value.timeRange) {
-    list = list.filter(r => isWithinTimeRange(r.date, filters.value.timeRange))
-  }
-
-  return list
-})
-
-const totalPages = computed(() => Math.max(1, Math.ceil(filteredReviews.value.length / itemsPerPage)))
-
-const paginatedReviews = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage
-  const end = start + itemsPerPage
-  return filteredReviews.value.slice(start, end)
-})
 
 // --- Methods ---
 const handleFilterChange = () => { currentPage.value = 1 }
@@ -647,7 +630,7 @@ const changeStatus = async (review) => {
 
   try {
     await stubClient.update('agencyReviews', review.id, { status: nextStatus }, { delay: 160 })
-    await refresh()
+    await refreshReviews()
     toast('success', `Review marked as ${nextStatus}`)
   } catch (error) {
     console.error('Failed to update review status', error)
@@ -658,7 +641,7 @@ const changeStatus = async (review) => {
 const approveReview = async (review) => { 
   try {
     await stubClient.update('agencyReviews', review.id, { status: 'Approved' }, { delay: 150 })
-    await refresh()
+    await refreshReviews()
     toast('success', 'Review approved')
   } catch (error) {
     console.error('Failed to approve review', error)
@@ -670,7 +653,7 @@ const deleteReview = async (review) => {
   if (!confirm(`Delete review from ${review.reviewerName}?`)) return
   try {
     await stubClient.remove('agencyReviews', review.id, { delay: 150 })
-    await refresh()
+    await refreshReviews()
     toast('success', 'Review removed')
   } catch (error) {
     console.error('Failed to delete review', error)
@@ -696,7 +679,7 @@ const handleModalStatusUpdate = async (payload) => {
 
   try {
     await stubClient.update('agencyReviews', review.id, { status }, { delay: 160 })
-    await refresh()
+    await refreshReviews()
     toast('success', actionMessageMap[status] || `Review marked as ${status}`)
   } catch (error) {
     console.error('Failed to update review status from modal', error)
@@ -706,16 +689,6 @@ const handleModalStatusUpdate = async (payload) => {
   }
 }
 
-const updateStats = () => {
-  const base = reviews.value
-  stats.value.totalReviews = base.length
-  stats.value.pending = base.filter(r => (r.status || 'Pending') === 'Pending').length
-  stats.value.approved = base.filter(r => r.status === 'Approved').length
-  stats.value.rejected = base.filter(r => r.status === 'Rejected').length
-  stats.value.onHold = base.filter(r => r.status === 'On Hold').length
-  const bannedByStatus = base.filter(r => (r.status || '').toLowerCase() === 'banned').length
-  stats.value.bannedUsers = bannedByStatus || base.filter(r => Number(r.rating) <= 2).length
-}
 
 const nextPage = () => { if (currentPage.value < totalPages.value) currentPage.value++ }
 const prevPage = () => { if (currentPage.value > 1) currentPage.value-- }
@@ -735,13 +708,6 @@ const closeViewModal = () => {
   isViewOpen.value = false
   selectedReview.value = null
 }
-
-// Populate reviews and stats when fetch completes
-watchEffect(() => {
-  const base = (reviewsData?.value || []).map(r => ({ ...r, status: r.status || 'Pending' }))
-  reviews.value = base
-  updateStats()
-})
 
 watch(reviewsError, (err) => {
   if (err) {
