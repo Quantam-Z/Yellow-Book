@@ -5,7 +5,9 @@
     
     <div class="w-full flex flex-col items-start gap-12 lg:gap-16">
       <img 
-        class="w-32 h-8 lg:w-[118px] lg:h-[30.7px] object-cover" 
+        class="w-[140px] h-auto object-contain" 
+        width="140"
+        height="34"
         src="/logo/logo.png" 
         alt="Yellow Book Logo" 
       />

@@ -4,10 +4,12 @@
         <div class="flex items-center justify-between mb-6 sm:mb-12 md:mb-16">
         <nuxt-link
           to="/"
-          class="w-[120px] sm:w-[118px] md:w-[118px] rounded-[4px] flex flex-col items-start p-2 box-border"
+          class="w-[140px] rounded-[4px] flex flex-col items-start p-2 box-border"
         >
           <img
-            class="self-stretch max-w-full overflow-hidden h-[34px] sm:h-[30px] md:h-[30px] flex-shrink-0 object-cover"
+            class="block w-[140px] h-auto object-contain"
+            width="140"
+            height="34"
             src="/logo/logo.png"
             alt="Logo"
           />
