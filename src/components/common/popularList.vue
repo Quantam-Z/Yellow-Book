@@ -5,7 +5,6 @@ import { MapPin, Search, Heart, ChevronLeft, ChevronRight } from 'lucide-vue-nex
 import { storeToRefs } from 'pinia';
 
 import StarRatingBox from '@/components/common/starRatingBox.vue';
-import { useDirectoryListings } from '@/composables/useDirectoryListings';
 import type { DirectoryListing } from '@/types/directory';
 import { useStubClient } from '~/services/stubClient';
 import { useStubResource } from '~/composables/useStubResource';
@@ -45,19 +44,39 @@ const getRoutePage = () => {
 
 const currentPage = ref(getRoutePage());
 
-const { listings: directoryListings, ensureLoaded, pending, ready } = useDirectoryListings();
 const stubClient = useStubClient();
 const nuxtApp = useNuxtApp();
 const { data: favoritesData, refresh: refreshFavorites } = await useStubResource('favorites');
 const authStore = useAuthStore();
 const { isAuthenticated } = storeToRefs(authStore);
 
-await ensureLoaded();
+const fetchQuery = computed(() => ({
+  q: searchTerm.value.trim() || undefined,
+  page: currentPage.value,
+  pageSize: PAGE_SIZE,
+  sort: 'rating',
+  order: 'desc',
+}));
 
-const isLoading = computed(() => pending.value && !ready.value);
+const {
+  data: listingsResponse,
+  pending: listingsPending,
+  error: listingsError,
+} = await useAsyncData(
+  'popular-list-results',
+  () =>
+    $fetch('/api/directory/listings', {
+      query: fetchQuery.value,
+    }),
+  {
+    watch: [fetchQuery],
+  },
+);
+
+const isLoading = computed(() => listingsPending.value);
 
 const normalizedListings = computed<ListingCard[]>(() => {
-  const entries = directoryListings.value || [];
+  const entries = (listingsResponse.value?.data as DirectoryListing[]) || [];
   return entries.map((entry: DirectoryListing) => {
     const title = entry.title || entry.name || 'Unnamed agency';
     const description =
@@ -100,18 +119,8 @@ const favoriteLookup = computed(() => {
   return map;
 });
 
-const filteredListings = computed(() => {
-  const query = searchTerm.value.trim().toLowerCase();
-  if (!query) return normalizedListings.value;
-
-  return normalizedListings.value.filter((listing) =>
-    `${listing.title} ${listing.description} ${listing.location} ${listing.category} ${listing.serviceType ?? ''}`
-      .toLowerCase()
-      .includes(query),
-  );
-});
-
-const totalPages = computed(() => Math.max(1, Math.ceil(filteredListings.value.length / PAGE_SIZE)));
+const paginatedListings = normalizedListings;
+const totalPages = computed(() => listingsResponse.value?.meta?.totalPages ?? 1);
 
 const clampPage = (page: number) => {
   const total = totalPages.value || 1;
@@ -139,20 +148,15 @@ const syncPageQuery = (page: number) => {
   });
 };
 
-const paginatedListings = computed(() => {
-  const start = (currentPage.value - 1) * PAGE_SIZE;
-  return filteredListings.value.slice(start, start + PAGE_SIZE);
-});
-
 const resultsMeta = computed(() => {
-  const total = filteredListings.value.length;
-  if (!total) return { start: 0, end: 0, total };
-  const start = (currentPage.value - 1) * PAGE_SIZE + 1;
-  const end = Math.min(start + PAGE_SIZE - 1, total);
-  return { start, end, total };
+  const meta = listingsResponse.value?.meta;
+  if (!meta || !meta.total) return { start: 0, end: 0, total: 0 };
+  const start = (meta.page - 1) * meta.pageSize + 1;
+  const end = Math.min(meta.page * meta.pageSize, meta.total);
+  return { start, end, total: meta.total };
 });
 
-const shouldShowPagination = computed(() => filteredListings.value.length > PAGE_SIZE);
+const shouldShowPagination = computed(() => (listingsResponse.value?.meta?.totalPages ?? 1) > 1);
 const visiblePages = computed(() => {
   const pages: number[] = [];
   const total = totalPages.value;
@@ -183,11 +187,6 @@ const resetToFirstPage = () => {
 
 watch(
   () => searchTerm.value,
-  () => resetToFirstPage(),
-);
-
-watch(
-  () => normalizedListings.value.length,
   () => resetToFirstPage(),
 );
 
