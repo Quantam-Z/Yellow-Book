@@ -3,6 +3,7 @@ import { ref, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { MapPin } from 'lucide-vue-next';
 import StarRatingBox from '@/components/common/starRatingBox.vue';
+import { useDirectoryListings } from '@/composables/useDirectoryListings';
 
 type SortKey = 'rating' | 'title' | 'location';
 type SortOrder = 'asc' | 'desc';
@@ -28,25 +29,15 @@ const router = useRouter();
 
 // --- Directory Listings ---
 const {
-  data: listingsResponse,
-  pending: listingsPending,
-  error: listingsError,
-} = await useAsyncData(
-  'popular-listings',
-  () =>
-    $fetch('/api/directory/listings', {
-      query: {
-        pageSize: props.limit,
-        sort: props.sortBy,
-        order: props.order,
-      },
-    }),
-  {
-    watch: [() => props.limit, () => props.sortBy, () => props.order],
-  },
-);
+  ensureLoaded,
+  pending: directoryPending,
+  error: directoryError,
+  listings: directoryListings,
+} = useDirectoryListings();
 
-const loading = computed(() => listingsPending.value);
+await ensureLoaded();
+
+const loading = computed(() => directoryPending.value);
 const error = ref<string | null>(null);
 
 // --- Utility Functions ---
@@ -69,7 +60,7 @@ const goToAgency = (title: string, slug?: string, id?: number | string) => {
   router.push({ path: '/agency', query });
 };
 
-watch(listingsError, (err) => {
+watch(directoryError, (err) => {
   if (err) {
     console.error(err);
     error.value = err.message || 'Failed to load agencies';
@@ -80,7 +71,7 @@ watch(listingsError, (err) => {
 
 // --- Computed: Map & Sort ---
 const mappedAgencies = computed(() =>
-  ((listingsResponse.value?.data as any[]) || []).map((listing: any) => ({
+  (directoryListings.value || []).map((listing: any) => ({
     id: listing.slug || String(listing.id ?? slugify(listing.title)),
     title: listing.title,
     description: listing.description,
