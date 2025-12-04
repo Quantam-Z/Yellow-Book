@@ -67,43 +67,65 @@
           </div>
 
           <div class="hidden lg:flex items-center gap-6 text-[#212121]">
-          <template v-if="!isAuthenticated">
-            <div class="flex items-center justify-center cursor-pointer" @click="openLoginModal">
-              <div class="relative leading-[160%] font-normal text-base">Login</div>
+            <template v-if="!isAuthenticated">
+              <div class="flex items-center justify-center cursor-pointer" @click="openLoginModal">
+                <div class="relative leading-[160%] font-normal text-base">Login</div>
+              </div>
+            </template>
+            <div v-else class="relative" ref="userMenuRef">
+              <button
+                type="button"
+                class="flex items-center gap-3 rounded-full border border-[#dbe7ff] bg-white px-3 py-2 shadow-sm hover:shadow-lg transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#dbe7ff]"
+                @click="toggleUserMenu"
+              >
+                <span class="w-9 h-9 rounded-full bg-[#212121] text-white flex items-center justify-center font-semibold text-sm uppercase">
+                  {{ userInitials }}
+                </span>
+                <div class="hidden sm:flex flex-col text-left leading-tight">
+                  <span class="text-sm font-semibold text-[#212121] truncate">
+                    {{ authUser?.name || authUser?.email }}
+                  </span>
+                  <span class="text-[12px] text-[#616161]">Account</span>
+                </div>
+                <ChevronDown class="w-4 h-4 text-[#616161] hidden sm:block" :class="{ 'rotate-180': showUserMenu }" />
+              </button>
+              <transition name="fade">
+                <div
+                  v-if="showUserMenu"
+                  class="absolute right-0 mt-3 w-56 rounded-2xl border border-[#e4ecff] bg-white shadow-[0_18px_45px_rgba(33,33,33,0.15)] py-2 text-sm z-50"
+                  role="menu"
+                  aria-label="Account menu"
+                >
+                  <div class="px-4 pb-2 border-b border-[#f0f4ff] mb-2">
+                    <p class="text-xs uppercase tracking-wide text-[#9e9e9e]">Signed in as</p>
+                    <p class="text-sm font-semibold text-[#212121] truncate">
+                      {{ authUser?.name || authUser?.email }}
+                    </p>
+                  </div>
+                  <button
+                    class="w-full flex items-center gap-3 px-4 py-2 hover:bg-[#fff9e6] rounded-lg transition-colors"
+                    @click="goToUserDashboard"
+                  >
+                    <LayoutDashboard class="w-4 h-4 text-[#616161]" />
+                    <span class="font-medium text-[#212121]">My Dashboard</span>
+                  </button>
+                  <button
+                    class="w-full flex items-center gap-3 px-4 py-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                    @click="handleUserLogout"
+                  >
+                    <LogOut class="w-4 h-4" />
+                    <span class="font-medium">Logout</span>
+                  </button>
+                </div>
+              </transition>
             </div>
-          </template>
-          <div v-else class="relative">
             <button
               type="button"
-              class="flex items-center gap-3 rounded-full border border-[#dbe7ff] bg-white px-3 py-2 shadow-sm hover:shadow-md transition"
-              @click="toggleUserMenu"
+              class="relative rounded border-gray border-solid border-[1px] box-border h-12 flex items-center justify-center py-[18px] px-9 text-center text-base text-[#212121] font-plus-jakarta-sans"
+              @click="handleListYourAgencyClick"
             >
-              <span class="w-8 h-8 rounded-full bg-[#212121] text-white flex items-center justify-center font-semibold text-sm">
-                {{ userInitials }}
-              </span>
-              <span class="hidden sm:block text-sm font-medium">{{ authUser?.name || authUser?.email }}</span>
+              <div class="relative leading-[130%] capitalize font-semibold">List Your Agency</div>
             </button>
-            <transition name="fade">
-              <div
-                v-if="showUserMenu"
-                class="absolute right-0 mt-3 w-48 rounded-xl border border-[#dbe7ff] bg-white shadow-lg py-2 text-sm z-50"
-              >
-                <button class="w-full text-left px-4 py-2 hover:bg-[#fff9e6] transition-colors" @click="goToUserDashboard">
-                  My Dashboard
-                </button>
-                <button class="w-full text-left px-4 py-2 text-red-500 hover:bg-red-50 transition-colors" @click="handleUserLogout">
-                  Logout
-                </button>
-              </div>
-            </transition>
-          </div>
-              <nuxt-link
-              :to="listYourAgencyLink"
-                class="relative rounded border-gray border-solid border-[1px] box-border h-12 flex items-center justify-center py-[18px] px-9 text-center text-base text-[#212121] font-plus-jakarta-sans no-underline"
-                @click="handleListYourAgencyClick"
-            >
-            <div class="relative leading-[130%] capitalize font-semibold">List Your Agency</div>
-          </nuxt-link>
         </div>
 
         <button
@@ -189,13 +211,13 @@
                     Logout
                   </button>
                 </template>
-                  <nuxt-link
-                  :to="listYourAgencyLink"
-                  class="w-full py-3 px-6 bg-[#fcc207] text-[#212121] font-semibold text-lg rounded-lg border-b-2 border-[#e5b106] hover:bg-[#e5b106] transition-all text-center no-underline block"
+                  <button
+                    type="button"
+                    class="w-full py-3 px-6 bg-[#fcc207] text-[#212121] font-semibold text-lg rounded-lg border-b-2 border-[#e5b106] hover:bg-[#e5b106] transition-all text-center block"
                     @click="handleListYourAgencyClick($event, true)"
-                >
-                List Your Agency
-              </nuxt-link>
+                  >
+                    List Your Agency
+                  </button>
             </div>
           </div>
         </div>
@@ -290,7 +312,7 @@
 </template>
 
 <script>
-import { Menu, X } from 'lucide-vue-next'
+import { Menu, X, ChevronDown, LayoutDashboard, LogOut } from 'lucide-vue-next'
 import { useRequestFetch, useNuxtApp } from '#app'
 import { useAuthStore } from '~/stores/auth'
 import { storeToRefs } from 'pinia'
@@ -298,7 +320,7 @@ import { useLoginModal } from '~/composables/useLoginModal'
 
 export default {
   name: 'ResponsiveLandingPage',
-  components: { Menu, X },
+  components: { Menu, X, ChevronDown, LayoutDashboard, LogOut },
     emits: ['search'],
     setup() {
       const requestFetch = useRequestFetch()
@@ -508,7 +530,9 @@ export default {
           }
         }
       }
-      if (this.showUserMenu) {
+      const userMenu = this.$refs.userMenuRef
+      const clickedInsideUserMenu = userMenu && userMenu.contains(e.target)
+      if (!clickedInsideUserMenu && this.showUserMenu) {
         this.showUserMenu = false
       }
       },
@@ -551,9 +575,6 @@ export default {
             return
           }
 
-          if (event && typeof event.preventDefault === 'function') {
-            event.preventDefault()
-          }
           this.showUserMenu = false
           const targetRoute = this.listYourAgencyLink
           if (targetRoute && this.$router) {

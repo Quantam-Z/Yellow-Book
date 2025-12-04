@@ -23,23 +23,14 @@
           <Bell class="h-5 w-5 sm:h-6 sm:w-6" />
         </button>
 
-        <div class="flex min-w-0 items-center gap-2 sm:gap-3">
-          <UserCircle class="h-8 w-8 rounded-full text-gray-500 sm:h-9 sm:w-9" />
-          <div class="hidden min-[420px]:flex flex-col items-start leading-tight">
-            <b class="truncate text-sm font-semibold capitalize text-gray-900 sm:text-base">
-              Jane Cooper
-            </b>
-            <span class="text-xs capitalize text-gray-500 sm:text-sm">
-              Sub Admin
-            </span>
-          </div>
-        </div>
+        <PanelProfileMenu role-label="Sub Admin" dashboard-to="/agent/dashboard" />
       </div>
     </div>
   </header>
 </template>
 
 <script setup>
-import { Bell, UserCircle } from 'lucide-vue-next'
+import { Bell } from 'lucide-vue-next'
+import PanelProfileMenu from '~/components/common/panelProfileMenu.vue'
 </script>
   
