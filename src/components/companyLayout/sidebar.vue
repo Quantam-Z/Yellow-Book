@@ -39,30 +39,20 @@
         </NuxtLink>
       </nav>
 
-      <div class="h-px w-full border-t border-solid border-white my-4" />
+      <div v-if="bottomMenu.length" class="h-px w-full border-t border-solid border-white my-4" />
 
-      <nav class="flex flex-col gap-2">
-        <template v-for="(item, index) in bottomMenu" :key="index">
-          <NuxtLink
-            v-if="item.to"
-            :to="item.to"
-            class="flex items-center gap-3 py-3 px-4 rounded-lg text-base font-medium text-[#212121] transition-all duration-200 ease-in-out hover:bg-[#fafafa] no-underline"
-            :class="{ 'bg-[#f3f3f3] font-semibold': $route.path === item.to }"
-            @click="closeOnMobile"
-          >
-            <component :is="item.icon" class="w-[22px] h-[22px]" />
-            <span class="leading-[130%] capitalize">{{ item.label }}</span>
-          </NuxtLink>
-          <button
-            v-else
-            type="button"
-            class="flex items-center gap-3 py-3 px-4 rounded-lg text-base font-medium text-[#212121] transition-all duration-200 ease-in-out hover:bg-[#fafafa] text-left bg-transparent border-0 cursor-pointer"
-            @click="handleBottomMenuAction(item)"
-          >
-            <component :is="item.icon" class="w-[22px] h-[22px]" />
-            <span class="leading-[130%] capitalize">{{ item.label }}</span>
-          </button>
-        </template>
+      <nav v-if="bottomMenu.length" class="flex flex-col gap-2">
+        <NuxtLink
+          v-for="(item, index) in bottomMenu"
+          :key="index"
+          :to="item.to"
+          class="flex items-center gap-3 py-3 px-4 rounded-lg text-base font-medium text-[#212121] transition-all duration-200 ease-in-out hover:bg-[#fafafa] no-underline"
+          :class="{ 'bg-[#f3f3f3] font-semibold': $route.path === item.to }"
+          @click="closeOnMobile"
+        >
+          <component :is="item.icon" class="w-[22px] h-[22px]" />
+          <span class="leading-[130%] capitalize">{{ item.label }}</span>
+        </NuxtLink>
       </nav>
     </aside>
   </div>
@@ -75,12 +65,10 @@ import {
   Star,
   Shield,
   Settings,
-  LogOut,
   Menu
 } from "lucide-vue-next";
 import { ref } from "vue";
 import { useClientEventListener } from '@/composables/useClientEventListener';
-import { useAuthStore } from '~/stores/auth';
 
 const isOpen = ref(false);
 // NEW: State to track if the user has scrolled down
@@ -94,15 +82,8 @@ const mainMenu = [
   { label: "Notification", icon: Shield, to: "/company/notification" },
 ];
 
-const authStore = useAuthStore();
-
-const handleLogout = async () => {
-  await authStore.logout();
-};
-
 const bottomMenu = [
   { label: "Settings", icon: Settings, to: "/company/settings" },
-  { label: "Logout", icon: LogOut, action: handleLogout },
 ];
 
 // NEW: Function to handle scroll event
@@ -117,18 +98,6 @@ const closeOnMobile = () => {
   if (!import.meta.client) return;
   if (window.innerWidth < 768) {
     isOpen.value = false;
-  }
-};
-
-const handleBottomMenuAction = async (item) => {
-  try {
-    if (typeof item.action === 'function') {
-      await item.action();
-    }
-  } catch (error) {
-    console.error('Sidebar action failed:', error);
-  } finally {
-    closeOnMobile();
   }
 };
 
