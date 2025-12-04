@@ -103,17 +103,17 @@
                     </p>
                   </div>
                   <button
-                    class="w-full flex items-center gap-3 px-4 py-2 hover:bg-[#fff9e6] rounded-lg transition-colors"
+                    class="w-full flex items-center gap-3 px-4 py-2 rounded-lg transition-colors text-[#212121] hover:text-[#f59e0b]"
                     @click="goToUserDashboard"
                   >
-                    <LayoutDashboard class="w-4 h-4 text-[#616161]" />
+                    <LayoutDashboard class="w-4 h-4 text-current" />
                     <span class="font-medium text-[#212121]">My Dashboard</span>
                   </button>
                   <button
-                    class="w-full flex items-center gap-3 px-4 py-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                    class="w-full flex items-center gap-3 px-4 py-2 text-red-500 rounded-lg transition-colors hover:text-red-600"
                     @click="handleUserLogout"
                   >
-                    <LogOut class="w-4 h-4" />
+                    <LogOut class="w-4 h-4 text-current" />
                     <span class="font-medium">Logout</span>
                   </button>
                 </div>
@@ -213,7 +213,7 @@
                 </template>
                   <button
                     type="button"
-                    class="w-full py-3 px-6 bg-[#fcc207] text-[#212121] font-semibold text-lg rounded-lg border-b-2 border-[#e5b106] hover:bg-[#e5b106] transition-all text-center block"
+                    class="w-full py-3 px-6 text-[#212121] font-semibold text-lg rounded-lg border border-[#e5b106] bg-transparent transition-all text-center block hover:text-[#f59e0b] hover:border-[#f59e0b]"
                     @click="handleListYourAgencyClick($event, true)"
                   >
                     List Your Agency
