@@ -355,7 +355,7 @@ export default {
             return { path: '/', hash: `#${this.popularSectionId}` }
           },
           listYourAgencyLink() {
-            return '/popular-list'
+            return this.isAuthenticated ? '/company/dashboard' : '/auth/register'
             },
           userInitials() {
             const source = (this.authUser && (this.authUser.name || this.authUser.email)) || ''
@@ -521,10 +521,14 @@ export default {
           if (shouldCloseMenu) {
             this.closeMobileMenu()
           }
-          if (event && typeof event.stopPropagation === 'function') {
-            event.stopPropagation()
+          if (event && typeof event.preventDefault === 'function') {
+            event.preventDefault()
           }
           this.showUserMenu = false
+          const targetRoute = this.listYourAgencyLink
+          if (targetRoute && this.$router) {
+            this.$router.push(targetRoute)
+          }
         },
         isRouteActive(target) {
           const path = typeof target === 'string' ? target : target?.path

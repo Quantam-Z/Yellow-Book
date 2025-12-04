@@ -9,7 +9,7 @@ import Star from '~/components/common/star.vue'
   <div class="flex flex-col gap-10">
     <!-- Navbar is included via default layout -->
     <Catagory />
-    <Popular />
+    <Popular :limit="8" />
     <Star />
     <Frequent />
     <!-- Footer is included via default layout -->

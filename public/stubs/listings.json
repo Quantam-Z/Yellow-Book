@@ -89,6 +89,66 @@
       "specialization": "Frontend",
       "emergencyService": true,
       "price": 150
+    },
+    {
+      "id": 7,
+      "category": "Home Services",
+      "name": "BrightNest Home Care",
+      "rating": 4.4,
+      "ratingCount": 142,
+      "website": "brightnestcare.com",
+      "location": "Denver, CO",
+      "revenue": "$750K - $1.2M",
+      "comments": 88,
+      "serviceType": "Cleaning",
+      "specialization": "Eco-Friendly",
+      "emergencyService": true,
+      "price": 110
+    },
+    {
+      "id": 8,
+      "category": "Marketing & Media",
+      "name": "Pulse Creative Studio",
+      "rating": 4.7,
+      "ratingCount": 263,
+      "website": "pulsecreative.co",
+      "location": "Austin, TX",
+      "revenue": "$1M - $3M",
+      "comments": 241,
+      "serviceType": "Branding",
+      "specialization": "Digital Campaigns",
+      "emergencyService": false,
+      "price": 95
+    },
+    {
+      "id": 9,
+      "category": "Education & Training",
+      "name": "NextGen Learning Lab",
+      "rating": 4.5,
+      "ratingCount": 98,
+      "website": "nextgenlab.io",
+      "location": "Seattle, WA",
+      "revenue": "$400K - $800K",
+      "comments": 64,
+      "serviceType": "Corporate Training",
+      "specialization": "Leadership",
+      "emergencyService": false,
+      "price": 180
+    },
+    {
+      "id": 10,
+      "category": "Health & Wellness",
+      "name": "Vitality Wellness Hub",
+      "rating": 4.8,
+      "ratingCount": 205,
+      "website": "vitalityhub.health",
+      "location": "Portland, OR",
+      "revenue": "$900K - $1.5M",
+      "comments": 173,
+      "serviceType": "Wellness Coaching",
+      "specialization": "Holistic Care",
+      "emergencyService": true,
+      "price": 130
     }
   ]
 }

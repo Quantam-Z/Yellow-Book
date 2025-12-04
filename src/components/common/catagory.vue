@@ -1,18 +1,18 @@
 <template>
-  <div class="category-section w-full relative flex flex-col items-center gap-8 text-center text-[#212121]  px-4 sm:px-6 md:px-10 lg:px-20 z-0 mt-7">
+  <div class="category-section w-full relative flex flex-col items-center gap-8 text-center text-[#212121] px-4 sm:px-6 md:px-10 lg:px-20 z-0 mt-7">
     <div class="text-2xl sm:text-3xl lg:text-[30px] leading-[126%] capitalize font-semibold">
       Category's
     </div>
 
-    <div class="w-full max-w-6xl">
-      <div class="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 text-[#757575]">
+    <div class="w-full max-w-[1372px]">
+      <div class="category-grid flex flex-wrap justify-center gap-4 sm:gap-6 md:gap-8 text-[#757575]">
         
         <div 
-  v-for="category in categories"
+  v-for="(category, index) in visibleCategories"
   :key="category.name"
   @click="goToCategory(category.name)"
   class="
-    w-full 
+    category-card
     relative 
     rounded-xl 
     hover:border-[#fcc207] active:border-[#fcc207] focus:border-[#fcc207]
@@ -47,11 +47,33 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { categoryService } from '@/services/categoryService'
-import { PawPrint, Sparkles, Utensils, Plane, Laptop, MoreHorizontal } from 'lucide-vue-next'
+import {
+  PawPrint,
+  Sparkles,
+  Utensils,
+  Plane,
+  Laptop,
+  MoreHorizontal,
+  Home,
+  Megaphone,
+  GraduationCap,
+  Stethoscope,
+} from 'lucide-vue-next'
 
 const router = useRouter()
 
-const iconMap: Record<string, any> = { PawPrint, Sparkles, Utensils, Plane, Laptop, MoreHorizontal }
+const iconMap: Record<string, any> = {
+  PawPrint,
+  Sparkles,
+  Utensils,
+  Plane,
+  Laptop,
+  MoreHorizontal,
+  Home,
+  Megaphone,
+  GraduationCap,
+  Stethoscope,
+}
 
 const categories = computed(() => {
   return categoryService.getCategories().map(cat => ({
@@ -59,6 +81,10 @@ const categories = computed(() => {
     icon: iconMap[cat.icon] || MoreHorizontal
   }))
 })
+
+const MAX_VISIBLE = 8
+
+const visibleCategories = computed(() => categories.value.slice(0, MAX_VISIBLE))
 
 const goToCategory = (categoryName: string) => {
   const normalized = categoryName?.toLowerCase().trim()
@@ -76,5 +102,33 @@ const goToCategory = (categoryName: string) => {
 <style scoped>
 .category-section {
   font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.category-grid {
+  justify-content: center;
+}
+
+.category-card {
+  width: 100%;
+  min-height: 150px;
+}
+
+@media (min-width: 540px) {
+  .category-card {
+    min-height: 170px;
+  }
+}
+
+@media (min-width: 768px) {
+  .category-card {
+    min-height: 190px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .category-card {
+    width: 282px;
+    height: 200px;
+  }
 }
 </style>
