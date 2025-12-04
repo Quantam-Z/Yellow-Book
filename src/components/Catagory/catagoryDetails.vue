@@ -378,7 +378,7 @@
             
             <div class="flex-1 flex flex-col items-start gap-4 lg:gap-[18px] w-full">
               <div class="self-stretch flex flex-col items-start gap-3 lg:gap-[15px]">
-                    <div class="self-stretch flex flex-col lg:flex-row items-start gap-3 lg:gap-[15px]">
+                <div class="self-stretch flex flex-col lg:flex-row items-start gap-3 lg:gap-[15px]">
                   <div class="flex-1 flex flex-col items-start gap-3 lg:gap-[15px]">
                     <div class="self-stretch relative leading-[130%] capitalize font-medium text-lg lg:text-xl">{{ listing.name }}</div>
                     <div class="self-stretch flex items-center gap-2">
@@ -394,9 +394,30 @@
                       <span class="text-sm text-darkslategray font-medium"></span>
                     </div>
                   </div>
-                  <svg class="h-5 w-5 lg:h-6 lg:w-6 text-red-500 cursor-pointer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                  </svg>
+                  <button
+                    type="button"
+                    class="flex items-center justify-center rounded-full border border-gainsboro p-2 transition-colors"
+                    :class="[
+                      isListingFavorited(listing) ? 'bg-red-50 text-red-500 border-red-200' : 'text-gray-500 hover:text-red-500 hover:border-red-200',
+                      isFavoriteBusy(listing) ? 'cursor-wait opacity-60' : 'cursor-pointer'
+                    ]"
+                    :aria-pressed="isListingFavorited(listing)"
+                    :title="isListingFavorited(listing) ? 'Remove from favourites' : 'Save to favourites'"
+                    :disabled="isFavoriteBusy(listing)"
+                    @click.stop="toggleFavorite(listing)"
+                  >
+                    <svg
+                      class="h-5 w-5 lg:h-6 lg:w-6 transition-colors"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      :fill="isListingFavorited(listing) ? 'currentColor' : 'none'"
+                    >
+                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    </svg>
+                  </button>
                 </div>
                 
                 <div class="self-stretch flex flex-col items-start gap-2 lg:gap-1 text-[13px] lg:text-[14px] text-darkgray">
@@ -490,13 +511,16 @@
 <script>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
+import { storeToRefs } from 'pinia';
 import Pagination from '~/components/common/pagination.vue';
-  import { categoryService } from '@/services/categoryService';
-  import { resolveCategoryDirectory } from '@/services/directoryMapper';
+import { categoryService } from '@/services/categoryService';
+import { resolveCategoryDirectory } from '@/services/directoryMapper';
 import { useListingsFilter } from '@/composables/useListingsFilter';
 import { getStatusClass } from '@/utils/filterUtils';
 import starRatingBox from '@/components/common/starRatingBox.vue';
 import { useDirectoryListings } from '@/composables/useDirectoryListings';
+import { useStubClient } from '~/services/stubClient';
+import { useAuthStore } from '~/stores/auth';
 
 export default {
   name: 'CategoryPage',
@@ -511,6 +535,124 @@ export default {
       const ratings = ['1', '2', '3', '4', '5'];
       const pageSize = ref(5);
       const currentPage = ref(1);
+      const stubClient = useStubClient();
+      const authStore = useAuthStore();
+      const { isAuthenticated } = storeToRefs(authStore);
+      const nuxtApp = typeof useNuxtApp === 'function' ? useNuxtApp() : null;
+      const favorites = ref([]);
+      const favoriteBusyKeys = ref(new Set());
+
+      const favoriteKeyFor = (listing = {}) => {
+        if (!listing) return '';
+        const raw = listing.slug || listing.id || listing.name;
+        return raw ? String(raw) : '';
+      };
+
+      const favoriteLookup = computed(() => {
+        const map = new Map();
+        const entries = Array.isArray(favorites.value) ? favorites.value : [];
+        for (const entry of entries) {
+          const key = entry?.slug || entry?.listingId || entry?.id;
+          if (key) {
+            map.set(String(key), entry);
+          }
+        }
+        return map;
+      });
+
+      const setFavoriteBusy = (key, busy) => {
+        if (!key) return;
+        const next = new Set(favoriteBusyKeys.value);
+        if (busy) {
+          next.add(key);
+        } else {
+          next.delete(key);
+        }
+        favoriteBusyKeys.value = next;
+      };
+
+      const isFavoriteBusy = (listing) => {
+        const key = favoriteKeyFor(listing);
+        return key ? favoriteBusyKeys.value.has(key) : false;
+      };
+
+      const fetchFavorites = async () => {
+        try {
+          const data = await stubClient.list('favorites', { delay: 0 });
+          favorites.value = Array.isArray(data) ? data : [];
+        } catch (error) {
+          if (import.meta.dev) {
+            console.error('[CategoryPage] Failed to load favourites', error);
+          }
+        }
+      };
+
+      const notify = (type, message) => {
+        if (!import.meta.client) return;
+        try {
+          nuxtApp?.$awn?.[type]?.(message);
+        } catch (_) {}
+      };
+
+      const ensureLoggedIn = () => {
+        if (isAuthenticated.value) {
+          return true;
+        }
+        notify('alert', 'Please log in to save favourites.');
+        return false;
+      };
+
+      const isListingFavorited = (listing) => {
+        const key = favoriteKeyFor(listing);
+        return key ? favoriteLookup.value.has(key) : false;
+      };
+
+      const toggleFavorite = async (listing) => {
+        if (!listing || !ensureLoggedIn()) {
+          return;
+        }
+
+        const key = favoriteKeyFor(listing);
+        if (!key || isFavoriteBusy(listing)) {
+          return;
+        }
+
+        setFavoriteBusy(key, true);
+        const existing = favoriteLookup.value.get(key);
+
+        try {
+          if (existing) {
+            await stubClient.remove('favorites', existing.id, { delay: 140 });
+            notify('success', 'Removed from favourites');
+          } else {
+            await stubClient.create(
+              'favorites',
+              {
+                name: listing.name || listing.title,
+                slug: listing.slug,
+                listingId: listing.id,
+                category: listing.category || currentCategory.value?.name || '',
+                rating: listing.rating,
+                savedAt: new Date().toISOString(),
+                userId: authStore.user?.id ?? null,
+                website: listing.website || null,
+              },
+              { delay: 150 }
+            );
+            notify('success', 'Saved to favourites');
+          }
+          await fetchFavorites();
+        } catch (error) {
+          if (import.meta.dev) {
+            console.error('[CategoryPage] Failed to update favourites', error);
+          }
+          notify('alert', 'Unable to update favourites right now.');
+        } finally {
+          setFavoriteBusy(key, false);
+        }
+      };
+
+      fetchFavorites();
 
         const {
           ensureLoaded,
@@ -917,7 +1059,10 @@ export default {
         applyMobileFilters,
         getStatusClass,
         clampRating,
-        formatRating
+        formatRating,
+        toggleFavorite,
+        isListingFavorited,
+        isFavoriteBusy
       };
   }
 };
