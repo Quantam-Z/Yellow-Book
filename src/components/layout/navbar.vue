@@ -119,13 +119,14 @@
                 </div>
               </transition>
             </div>
-            <button
-              type="button"
-              class="relative rounded border-gray border-solid border-[1px] box-border h-12 flex items-center justify-center py-[18px] px-9 text-center text-base text-[#212121] font-plus-jakarta-sans"
-              @click="handleListYourAgencyClick"
-            >
-              <div class="relative leading-[130%] capitalize font-semibold">List Your Agency</div>
-            </button>
+      <button
+  type="button"
+  class="relative rounded border-gray border-solid border-[1px] box-border h-12 flex items-center justify-center py-[18px] px-9 text-center text-base text-[#212121] font-plus-jakarta-sans bg-transparent"
+  @click="handleListYourAgencyClick"
+>
+  <div class="relative leading-[130%] capitalize font-semibold">List Your Agency</div>
+</button>
+
         </div>
 
         <button
