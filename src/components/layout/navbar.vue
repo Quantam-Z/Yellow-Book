@@ -478,8 +478,18 @@ export default {
     },
     openLoginModal() {
       this.isMobileMenuOpen = false
-      if (typeof this.triggerOpenLoginModal === 'function') {
-        this.triggerOpenLoginModal('navbar')
+      try {
+        if (typeof this.triggerOpenLoginModal === 'function') {
+          this.triggerOpenLoginModal('navbar')
+          return
+        }
+      } catch (error) {
+        if (import.meta.dev) {
+          console.error('[Navbar] Failed to open login modal', error)
+        }
+      }
+      if (this.$router) {
+        this.$router.push('/auth/login')
       }
     },
     toggleMobileMenu() {

@@ -76,15 +76,39 @@ const iconMap: Record<string, any> = {
 }
 
 const categories = computed(() => {
-  return categoryService.getCategories().map(cat => ({
+  return categoryService.getCategories().map((cat) => ({
     ...cat,
-    icon: iconMap[cat.icon] || MoreHorizontal
+    icon: iconMap[cat.icon] || MoreHorizontal,
   }))
 })
 
 const MAX_VISIBLE = 8
+const normalizeName = (value?: string) => String(value || '').toLowerCase().replace(/\s+/g, '')
 
-const visibleCategories = computed(() => categories.value.slice(0, MAX_VISIBLE))
+const primaryCategories = computed(() =>
+  categories.value.filter((category) => normalizeName(category.name) !== 'more'),
+)
+
+const moreCategory = computed(() => categories.value.find((category) => normalizeName(category.name) === 'more'))
+
+const visibleCategories = computed(() => {
+  if (!categories.value.length) {
+    return []
+  }
+
+  const primarySlots = Math.max(0, MAX_VISIBLE - 1)
+  const primary = primaryCategories.value.slice(0, primarySlots)
+
+  if (moreCategory.value) {
+    return [...primary, moreCategory.value]
+  }
+
+  if (primary.length < MAX_VISIBLE) {
+    return primaryCategories.value.slice(0, MAX_VISIBLE)
+  }
+
+  return primary
+})
 
 const goToCategory = (categoryName: string) => {
   const normalized = categoryName?.toLowerCase().trim()
