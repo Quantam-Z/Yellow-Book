@@ -394,9 +394,27 @@
                       <span class="text-sm text-darkslategray font-medium"></span>
                     </div>
                   </div>
-                  <svg class="h-5 w-5 lg:h-6 lg:w-6 text-red-500 cursor-pointer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                  </svg>
+                  <button
+                    type="button"
+                    class="rounded-full border border-gainsboro border-solid p-2 flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-200"
+                    :class="isListingFavorited(listing) ? 'text-red-500 bg-red-50' : 'text-gray-500 bg-white'"
+                    :aria-pressed="isListingFavorited(listing)"
+                    aria-label="Toggle favourite"
+                    @click.stop="toggleFavorite(listing)"
+                  >
+                    <svg
+                      class="h-5 w-5 lg:h-6 lg:w-6"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      :fill="isListingFavorited(listing) ? 'currentColor' : 'none'"
+                      :class="isListingFavorited(listing) ? 'text-red-500' : 'text-gray-500'"
+                    >
+                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    </svg>
+                  </button>
                 </div>
                 
                 <div class="self-stretch flex flex-col items-start gap-2 lg:gap-1 text-[13px] lg:text-[14px] text-darkgray">
@@ -490,19 +508,24 @@
 <script>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
+import { useNuxtApp } from '#app';
+import { storeToRefs } from 'pinia';
 import Pagination from '~/components/common/pagination.vue';
-  import { categoryService } from '@/services/categoryService';
-  import { resolveCategoryDirectory } from '@/services/directoryMapper';
+import { categoryService } from '@/services/categoryService';
+import { resolveCategoryDirectory } from '@/services/directoryMapper';
 import { useListingsFilter } from '@/composables/useListingsFilter';
 import { getStatusClass } from '@/utils/filterUtils';
 import starRatingBox from '@/components/common/starRatingBox.vue';
 import { useDirectoryListings } from '@/composables/useDirectoryListings';
+import { useStubClient } from '@/services/stubClient';
+import { useStubResource } from '@/composables/useStubResource';
+import { useAuthStore } from '@/stores/auth';
 
 export default {
   name: 'CategoryPage',
   components: { Pagination, starRatingBox },
   
-    setup() {
+    async setup() {
       const route = useRoute();
       const showSortOptions = ref(false);
       const showMobileFilters = ref(false);
@@ -511,6 +534,12 @@ export default {
       const ratings = ['1', '2', '3', '4', '5'];
       const pageSize = ref(5);
       const currentPage = ref(1);
+
+      const stubClient = useStubClient();
+      const nuxtApp = useNuxtApp();
+      const authStore = useAuthStore();
+      const { isAuthenticated } = storeToRefs(authStore);
+      const { data: favoritesData, refresh: refreshFavorites } = await useStubResource('favorites');
 
         const {
           ensureLoaded,
@@ -640,6 +669,78 @@ export default {
       const displayedListings = computed(() => 
         hasActiveFilters.value ? filteredListings.value : categoryListings.value
       );
+
+      const favoriteKeyFor = (listing) => {
+        if (!listing) return '';
+        return String(listing.slug || listing.id || listing.name || listing.title || '');
+      };
+
+      const favoriteLookup = computed(() => {
+        const map = new Map();
+        const raw = Array.isArray(favoritesData.value) ? favoritesData.value : [];
+        for (const entry of raw) {
+          const key = entry?.slug || entry?.listingId || entry?.id;
+          if (key) {
+            map.set(String(key), entry);
+          }
+        }
+        return map;
+      });
+
+      const isListingFavorited = (listing) => favoriteLookup.value.has(favoriteKeyFor(listing));
+
+      const showFavoriteToast = (type, message) => {
+        if (!import.meta.client) return;
+        try {
+          if (type === 'success') {
+            nuxtApp?.$awn?.success(message);
+          } else {
+            nuxtApp?.$awn?.alert(message);
+          }
+        } catch {}
+      };
+
+      const ensureLoggedIn = () => {
+        if (isAuthenticated.value) return true;
+        showFavoriteToast('alert', 'Please log in to save favourites.');
+        return false;
+      };
+
+      const toggleFavorite = async (listing) => {
+        if (!listing || !ensureLoggedIn()) return;
+        const key = favoriteKeyFor(listing);
+        if (!key) return;
+        const existing = favoriteLookup.value.get(key);
+        const listingName = listing.name || listing.title || 'Listing';
+        try {
+          if (existing) {
+            await stubClient.remove('favorites', existing.id, { delay: 140 });
+            await refreshFavorites();
+            showFavoriteToast('success', `${listingName} removed from favourites`);
+          } else {
+            await stubClient.create(
+              'favorites',
+              {
+                name: listing.name || listing.title,
+                slug: listing.slug || null,
+                listingId: listing.id ?? listing.slug ?? listing.name,
+                category: listing.category || currentCategory.value?.name || 'General Services',
+                rating: listing.rating ?? null,
+                savedAt: new Date().toISOString(),
+                userId: authStore.user?.id ?? null,
+              },
+              { delay: 150 }
+            );
+            await refreshFavorites();
+            showFavoriteToast('success', `${listingName} saved to favourites`);
+          }
+        } catch (error) {
+          if (import.meta.dev) {
+            console.error('[CategoryPage] Failed to update favourites', error);
+          }
+          showFavoriteToast('alert', 'Unable to update favourites right now.');
+        }
+      };
 
       const totalItems = computed(() => displayedListings.value.length);
       const totalPages = computed(() => Math.max(1, Math.ceil(totalItems.value / pageSize.value)));
@@ -917,7 +1018,9 @@ export default {
         applyMobileFilters,
         getStatusClass,
         clampRating,
-        formatRating
+        formatRating,
+        isListingFavorited,
+        toggleFavorite
       };
   }
 };
