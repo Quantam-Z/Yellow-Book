@@ -295,12 +295,20 @@ onBeforeUnmount(() => {
                   v-if="showUserMenu"
                   class="absolute right-0 mt-3 w-48 rounded-xl border border-[#dbe7ff] bg-white shadow-lg py-2 text-sm z-50"
                 >
-                  <button class="w-full text-left px-4 py-2 hover:bg-[#fff9e6] transition-colors" @click="goToUserDashboard">
-                    My Dashboard
-                  </button>
-                  <button class="w-full text-left px-4 py-2 text-red-500 hover:bg-red-50 transition-colors" @click="handleUserLogout">
-                    Logout
-                  </button>
+                  <div class="flex items-center gap-2 px-4 py-2">
+                    <button
+                      class="flex-1 inline-flex items-center justify-center rounded-full border border-transparent px-3 py-1 text-sm font-medium text-[#212121] transition-colors hover:text-[#f59e0b] hover:border-[#f59e0b]/40"
+                      @click="goToUserDashboard"
+                    >
+                      My Dashboard
+                    </button>
+                    <button
+                      class="flex-1 inline-flex items-center justify-center rounded-full border border-transparent px-3 py-1 text-sm font-medium text-red-500 transition-colors hover:text-red-600 hover:border-red-200"
+                      @click="handleUserLogout"
+                    >
+                      Logout
+                    </button>
+                  </div>
                 </div>
               </Transition>
             </div>
@@ -361,12 +369,20 @@ onBeforeUnmount(() => {
                   v-if="showUserMenu"
                   class="absolute right-0 mt-3 w-48 rounded-xl border border-[#dbe7ff] bg-white shadow-lg py-2 text-sm z-50"
                 >
-                  <button class="w-full text-left px-4 py-2 hover:bg-[#fff9e6] transition-colors" @click="goToUserDashboard">
-                    My Dashboard
-                  </button>
-                  <button class="w-full text-left px-4 py-2 text-red-500 hover:bg-red-50 transition-colors" @click="handleUserLogout">
-                    Logout
-                  </button>
+                  <div class="flex items-center gap-2 px-4 py-2">
+                    <button
+                      class="flex-1 inline-flex items-center justify-center rounded-full border border-transparent px-3 py-1 text-sm font-medium text-[#212121] transition-colors hover:text-[#f59e0b] hover:border-[#f59e0b]/40"
+                      @click="goToUserDashboard"
+                    >
+                      My Dashboard
+                    </button>
+                    <button
+                      class="flex-1 inline-flex items-center justify-center rounded-full border border-transparent px-3 py-1 text-sm font-medium text-red-500 transition-colors hover:text-red-600 hover:border-red-200"
+                      @click="handleUserLogout"
+                    >
+                      Logout
+                    </button>
+                  </div>
                 </div>
               </Transition>
             </div>

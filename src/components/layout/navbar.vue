@@ -102,20 +102,22 @@
                       {{ authUser?.name || authUser?.email }}
                     </p>
                   </div>
-                  <button
-                    class="w-full flex items-center gap-3 px-4 py-2 rounded-lg transition-colors text-[#212121] hover:text-[#f59e0b]"
-                    @click="goToUserDashboard"
-                  >
-                    <LayoutDashboard class="w-4 h-4 text-current" />
-                    <span class="font-medium text-[#212121]">My Dashboard</span>
-                  </button>
-                  <button
-                    class="w-full flex items-center gap-3 px-4 py-2 text-red-500 rounded-lg transition-colors hover:text-red-600"
-                    @click="handleUserLogout"
-                  >
-                    <LogOut class="w-4 h-4 text-current" />
-                    <span class="font-medium">Logout</span>
-                  </button>
+                  <div class="flex items-center gap-2 px-4 py-2">
+                    <button
+                      class="flex-1 inline-flex items-center justify-center gap-2 rounded-full border border-transparent px-3 py-1 text-sm font-medium text-[#212121] transition-colors hover:text-[#f59e0b] hover:border-[#f59e0b]/40"
+                      @click="goToUserDashboard"
+                    >
+                      <LayoutDashboard class="w-4 h-4 text-current" />
+                      <span>My Dashboard</span>
+                    </button>
+                    <button
+                      class="flex-1 inline-flex items-center justify-center gap-2 rounded-full border border-transparent px-3 py-1 text-sm font-medium text-red-500 transition-colors hover:text-red-600 hover:border-red-200"
+                      @click="handleUserLogout"
+                    >
+                      <LogOut class="w-4 h-4 text-current" />
+                      <span>Logout</span>
+                    </button>
+                  </div>
                 </div>
               </transition>
             </div>
