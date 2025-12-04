@@ -156,34 +156,34 @@ const toStubError = (err, fallbackStatus = 500) => {
   });
 };
 
+const canUseConsoleGroups =
+  isClientRuntime && typeof console !== "undefined" && typeof console.groupCollapsed === "function";
+
 const logStart = (method, resource, meta) => {
+  if (!canUseConsoleGroups) return;
   const label = `[stub] ${method} ${resource}${meta?.id ? ` (${meta.id})` : ""}`;
-  if (typeof console.groupCollapsed === "function") {
-    console.groupCollapsed(`${label} – request`, meta?.payload ? meta.payload : "");
-  } else {
-    console.log(label, "payload:", meta?.payload);
-  }
+  console.groupCollapsed(`${label} – request`, meta?.payload ? meta.payload : "");
 };
 
 const logEnd = (method, resource, response) => {
   const label = `[stub] ${method} ${resource}`;
   const suffix = `${response.status} ${response.statusText} in ${response.duration}ms`;
-  if (typeof console.groupEnd === "function") {
+  if (canUseConsoleGroups) {
     console.log("response:", response.data);
     console.log("meta:", response.meta);
     console.log("status:", suffix);
     console.groupEnd();
-  } else {
-    console.log(`${label} ->`, suffix, { data: response.data, meta: response.meta });
+  } else if (typeof console !== "undefined" && typeof console.log === "function" && import.meta?.dev) {
+    console.log(`${label} -> ${suffix}`);
   }
 };
 
 const logError = (method, resource, error, duration) => {
   const label = `[stub] ${method} ${resource}`;
-  if (typeof console.groupEnd === "function") {
+  if (canUseConsoleGroups) {
     console.error(`${label} failed in ${duration}ms`, error);
     console.groupEnd();
-  } else {
+  } else if (typeof console !== "undefined" && typeof console.error === "function") {
     console.error(`${label} failed in ${duration}ms`, error);
   }
 };
