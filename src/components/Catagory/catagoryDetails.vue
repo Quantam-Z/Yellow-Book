@@ -508,7 +508,7 @@
 <script>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import { useNuxtApp } from '#app';
+import { useNuxtApp, useRequestFetch } from '#app';
 import { storeToRefs } from 'pinia';
 import Pagination from '~/components/common/pagination.vue';
 import { categoryService } from '@/services/categoryService';
@@ -516,7 +516,6 @@ import { resolveCategoryDirectory } from '@/services/directoryMapper';
 import { useListingsFilter } from '@/composables/useListingsFilter';
 import { getStatusClass } from '@/utils/filterUtils';
 import starRatingBox from '@/components/common/starRatingBox.vue';
-import { useDirectoryListings } from '@/composables/useDirectoryListings';
 import { useStubClient } from '@/services/stubClient';
 import { useStubResource } from '@/composables/useStubResource';
 import { useAuthStore } from '@/stores/auth';
@@ -538,80 +537,67 @@ export default {
       const stubClient = useStubClient();
       const nuxtApp = useNuxtApp();
       const authStore = useAuthStore();
+      const requestFetch = useRequestFetch();
       const { isAuthenticated } = storeToRefs(authStore);
       const { data: favoritesData, refresh: refreshFavorites } = await useStubResource('favorites');
-
-        const {
-          ensureLoaded,
-          pending: directoryPending,
-          listings: directoryListings,
-        } = useDirectoryListings();
-
-        const hydrateDirectoryListings = (options = {}) =>
-          ensureLoaded(options).catch((error) => {
-            if (import.meta.dev) {
-              console.error('[CategoryPage] Failed to hydrate directory listings', error);
-            }
-          });
-
-        const hadPrefetchedListings = directoryListings.value.length > 0;
-        let shouldForceOnNextSelection = hadPrefetchedListings;
-        const lastHydratedCategory = ref(null);
-
-        hydrateDirectoryListings();
 
       const categoryNameParam = computed(() => {
         const raw = route.query.name;
         return typeof raw === 'string' ? decodeURIComponent(raw) : '';
       });
 
-        const normalizedCategoryName = computed(() =>
-          categoryService.normalizeCategoryName(categoryNameParam.value)
-        );
+      const normalizedCategoryName = computed(() =>
+        categoryService.normalizeCategoryName(categoryNameParam.value)
+      );
 
-        watch(
-          normalizedCategoryName,
-          (next) => {
-            const normalized = typeof next === 'string' ? next : '';
-            if (!normalized) {
-              lastHydratedCategory.value = null;
-              shouldForceOnNextSelection = true;
-              return;
-            }
-
-            if (lastHydratedCategory.value === null) {
-              lastHydratedCategory.value = normalized;
-              if (shouldForceOnNextSelection) {
-                hydrateDirectoryListings({ force: true });
-                shouldForceOnNextSelection = false;
-              }
-              return;
-            }
-
-            if (normalized === lastHydratedCategory.value) {
-              return;
-            }
-
-            lastHydratedCategory.value = normalized;
-            hydrateDirectoryListings({ force: true });
-            shouldForceOnNextSelection = false;
-          },
-          { immediate: true }
-        );
-
-        const categoryDirectory = computed(() =>
-          resolveCategoryDirectory(categoryNameParam.value)
-        );
-
-        const currentCategory = computed(() => categoryDirectory.value.category);
-
-      const categoryListings = computed(() => {
-        const normalized = normalizedCategoryName.value;
-        if (!normalized) return [];
-        return directoryListings.value.filter(
-          (listing) => listing.normalizedCategory === normalized
-        );
+      const searchQueryParam = computed(() => {
+        const raw = route.query.q;
+        return typeof raw === 'string' ? raw : '';
       });
+
+      const categoryDirectory = computed(() =>
+        resolveCategoryDirectory(categoryNameParam.value)
+      );
+
+      const currentCategory = computed(() => categoryDirectory.value.category);
+
+      const categoryListings = ref([]);
+      const listingsLoading = ref(false);
+
+      const fetchCategoryListings = async () => {
+        const categoryQuery = categoryNameParam.value?.trim();
+        if (!categoryQuery) {
+          categoryListings.value = [];
+          return;
+        }
+
+        listingsLoading.value = true;
+        try {
+          const response = await requestFetch('/api/search/listings', {
+            params: {
+              category: categoryNameParam.value,
+              limit: 60,
+              search: searchQueryParam.value || undefined,
+            },
+          });
+          categoryListings.value = Array.isArray(response?.data) ? response.data : [];
+        } catch (error) {
+          categoryListings.value = [];
+          if (import.meta.dev) {
+            console.error('[CategoryPage] Failed to fetch listings', error);
+          }
+        } finally {
+          listingsLoading.value = false;
+        }
+      };
+
+      watch(
+        [normalizedCategoryName, searchQueryParam],
+        () => {
+          fetchCategoryListings();
+        },
+        { immediate: true }
+      );
 
       const { filters, filteredListings, toggleFilter, removeFilter, clearFilters } = useListingsFilter(categoryListings);
       const hasActiveFilters = computed(() => {
@@ -748,7 +734,7 @@ export default {
         const start = (currentPage.value - 1) * pageSize.value;
         return displayedListings.value.slice(start, start + pageSize.value);
       });
-      const loading = computed(() => directoryPending.value);
+      const loading = computed(() => listingsLoading.value);
 
       const priceBounds = computed(() => {
         const values = categoryListings.value
@@ -759,9 +745,19 @@ export default {
           return { min: 0, max: 0 };
         }
 
+        const min = Math.min(...values);
+        const max = Math.max(...values);
+
+        if (min === max) {
+          return {
+            min: Math.max(0, min - Math.ceil(min * 0.25) || 0),
+            max,
+          };
+        }
+
         return {
-          min: Math.min(...values),
-          max: Math.max(...values),
+          min,
+          max,
         };
       });
 
@@ -932,12 +928,12 @@ export default {
 
       // Watch for route changes
       watch(
-        () => route.query.q,
-        (q) => {
-          const queryValue = typeof q === 'string' ? q : '';
+        searchQueryParam,
+        (queryValue) => {
           if (filters.value.query !== queryValue) {
             toggleFilter('query', queryValue);
           }
+          currentPage.value = 1;
         },
         { immediate: true }
       );
