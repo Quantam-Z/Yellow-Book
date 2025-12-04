@@ -129,6 +129,8 @@ const sortedLimitedAgencies = computed(() => {
             <StarRatingBox
               :model-value="Number(agency.rating)"
               :readonly="true"
+              :box-size="26"
+              :icon-size="14"
               class="star-rating-custom"
             />
           </div>
@@ -149,15 +151,9 @@ const sortedLimitedAgencies = computed(() => {
   font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
-/* Simple scaling to make StarRatingBox smaller but visible */
 .star-rating-custom {
-  transform: scale(0.8);
+  display: inline-flex;
   transform-origin: left center;
-}
-
-/* Alternative: Use smaller size with proper visibility */
-.star-rating-custom {
-  font-size: 14px;
   line-height: 1;
 }
 
@@ -166,23 +162,6 @@ const sortedLimitedAgencies = computed(() => {
   display: inline-block;
   visibility: visible !important;
   opacity: 1 !important;
-}
-
-/* Make sure the container is properly sized */
-.star-rating-custom :deep(.star-rating) {
-  display: flex !important;
-  gap: 2px !important;
-  align-items: center !important;
-}
-
-/* Individual star styling */
-.star-rating-custom :deep(.star) {
-  width: 16px !important;
-  height: 16px !important;
-  min-width: 16px !important;
-  min-height: 16px !important;
-  display: inline-block !important;
-  visibility: visible !important;
 }
 
 .popular-grid {
