@@ -49,6 +49,9 @@ const { isAuthenticated, user } = storeToRefs(authStore);
 const showLoginModal = ref(false);
 const showUserMenu = ref(false);
 const userMenuRef = ref<HTMLElement | null>(null);
+const listYourAgencyLink = computed(() =>
+  isAuthenticated.value ? '/company/dashboard' : '/auth/register',
+);
 
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
@@ -167,6 +170,15 @@ const handleDocumentClick = (event: MouseEvent) => {
   }
 };
 
+const handleListYourAgencyClick = (event?: MouseEvent) => {
+  if (event?.preventDefault) {
+    event.preventDefault();
+  }
+  showUserMenu.value = false;
+  closeMenu();
+  router.push(listYourAgencyLink.value);
+};
+
 onMounted(() => {
   document.addEventListener('click', handleDocumentClick);
 });
@@ -277,8 +289,9 @@ onBeforeUnmount(() => {
               </Transition>
             </div>
               <NuxtLink
-                to="/popular-list"
+                :to="listYourAgencyLink"
               class="relative rounded border-gray border-solid border-[1px] box-border h-12 flex items-center justify-center py-[18px] px-9 text-center text-base text-[#212121] font-plus-jakarta-sans no-underline"
+                @click.prevent="handleListYourAgencyClick"
             >
               <div class="relative leading-[130%] capitalize font-semibold">List Your Agency</div>
             </NuxtLink>
@@ -342,8 +355,9 @@ onBeforeUnmount(() => {
               </Transition>
             </div>
               <NuxtLink
-                to="/popular-list"
+                :to="listYourAgencyLink"
               class="rounded-full border border-[#212121] px-5 py-2 text-xs uppercase tracking-[0.2em] text-[#212121] transition-all hover:bg-[#212121] hover:text-white no-underline"
+                @click.prevent="handleListYourAgencyClick"
             >
               List Your Agency
             </NuxtLink>
@@ -437,9 +451,9 @@ onBeforeUnmount(() => {
                     </button>
                   </template>
                   <NuxtLink
-                    to="/popular-list"
+                    :to="listYourAgencyLink"
                   class="w-full py-3 px-6 bg-[#fcc207] text-[#212121] font-semibold text-lg rounded-lg border-b-2 border-[#e5b106] hover:bg-[#e5b106] transition-all text-center no-underline block"
-                  @click="closeMenu"
+                  @click.prevent="handleListYourAgencyClick"
                 >
                   List Your Agency
                 </NuxtLink>

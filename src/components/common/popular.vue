@@ -17,7 +17,7 @@ const props = withDefaults(
     heading?: string;
   }>(),
   {
-    limit: 6,
+    limit: 8,
     sortBy: 'rating',
     order: 'desc',
     heading: 'Popular listings',
@@ -109,15 +109,15 @@ const sortedLimitedAgencies = computed(() => {
       {{ props.heading }}
     </div>
 
-    <div class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div class="popular-grid w-full flex flex-wrap justify-center gap-6">
       <div
         v-for="(agency, index) in sortedLimitedAgencies"
         :key="agency.id"
-        class="rounded-2xl overflow-hidden flex flex-col cursor-pointer bg-white shadow-xl transition-all duration-500 hover:-translate-y-4 hover:shadow-2xl group"
+        class="popular-card rounded-2xl overflow-hidden flex flex-col cursor-pointer bg-white shadow-xl transition-all duration-500 hover:-translate-y-4 hover:shadow-2xl group"
         @click="goToAgency(agency.title, agency.slug, agency.id)"
       >
         <!-- Agency Image -->
-        <img class="w-full h-[250px] sm:h-[280px] object-cover" :src="agency.image" :alt="agency.title" />
+        <img class="popular-card__image w-full object-cover" :src="agency.image" :alt="agency.title" />
 
         <!-- Agency Info -->
         <div class="p-4 flex flex-col gap-4 text-left">
@@ -183,5 +183,44 @@ const sortedLimitedAgencies = computed(() => {
   min-height: 16px !important;
   display: inline-block !important;
   visibility: visible !important;
+}
+
+.popular-grid {
+  justify-content: center;
+}
+
+.popular-card {
+  width: 100%;
+  min-height: 360px;
+  max-width: 320px;
+}
+
+@media (min-width: 640px) {
+  .popular-card {
+    max-width: 300px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .popular-card {
+    width: 270px;
+    min-height: 405px;
+  }
+}
+
+.popular-card__image {
+  height: 220px;
+}
+
+@media (min-width: 640px) {
+  .popular-card__image {
+    height: 240px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .popular-card__image {
+    height: 260px;
+  }
 }
 </style>

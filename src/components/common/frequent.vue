@@ -40,12 +40,12 @@ const toggleFaq = (faqId) => {
 </script>
 
 <template>
-  <div class="w-full relative flex flex-col items-center gap-[44px] text-center text-[30px] text-[#212121] font-['Plus_Jakarta_Sans'] mt-8 mb-7 px-4 sm:px-6 md:px-8">
-    <div class="w-full max-w-[588px] flex flex-col items-start gap-4 text-[18px] px-2 sm:px-0">
+  <div class="faq-shell w-full flex flex-col items-center gap-6 text-center text-[30px] text-[#212121] font-['Plus_Jakarta_Sans'] mt-8 mb-7 px-4 sm:px-6 md:px-8">
+    <div class="faq-container w-full max-w-[1372px] flex flex-col items-stretch gap-4 text-[18px] px-2 sm:px-0">
       <div 
         v-for="faq in faqs" 
         :key="faq.id" 
-        class="self-stretch rounded-[8px] bg-[#feecb2] flex flex-col items-start transition-all duration-300 cursor-pointer"
+        class="faq-item self-stretch rounded-[8px] bg-[#feecb2] flex flex-col items-start transition-all duration-300 cursor-pointer"
         :class="faq.open ? 'p-[10px_16px] gap-1' : 'p-[10px_16px] gap-0'"
       >
         <div 
@@ -79,90 +79,38 @@ const toggleFaq = (faqId) => {
   </div>
 </template>
 
-<style>
-/* Responsive Media Queries */
-@media (max-width: 1200px) {
-  .w-full\.relative\.flex\.flex-col\.items-center\.gap-\[44px\] {
-    margin-top: 60px;
-  }
-  .w-\[588px\] {
-    width: 100%;
-    max-width: 588px;
+<style scoped>
+.faq-shell {
+  max-width: 1372px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.faq-container {
+  width: 100%;
+}
+
+.faq-item {
+  min-height: 113px;
+}
+
+@media (min-width: 1024px) {
+  .faq-item {
+    height: 113px;
   }
 }
 
-@media (max-width: 992px) {
-  .w-full\.relative\.flex\.flex-col\.items-center\.gap-\[44px\] {
-    gap: 36px;
-    font-size: 28px;
-    margin-top: 50px;
-  }
-  .w-\[588px\] {
-    font-size: 16px;
-  }
-  .w-11\.h-11 {
-    width: 40px;
-    height: 40px;
-  }
+.faq-item svg {
+  min-width: 44px;
+  min-height: 44px;
 }
 
-@media (max-width: 768px) {
-  .w-full\.relative\.flex\.flex-col\.items-center\.gap-\[44px\] {
+@media (max-width: 640px) {
+  .faq-shell {
     gap: 32px;
-    font-size: 24px;
-    margin-top: 40px;
-    padding: 0 20px;
-    box-sizing: border-box;
   }
-  .w-\[588px\] {
-    width: 100%;
-  }
-  .self-stretch\.rounded-\[8px\]\.bg-\[#feecb2\] {
-    padding: 12px 16px;
-  }
-  .w-11\.h-11 {
-    width: 36px;
-    height: 36px;
-  }
-}
-
-@media (max-width: 576px) {
-  .w-full\.relative\.flex\.flex-col\.items-center\.gap-\[44px\] {
-    gap: 28px;
-    font-size: 22px;
-    margin-top: 30px;
-    padding: 0 15px;
-  }
-  .w-\[588px\] {
-    font-size: 16px;
-    gap: 12px;
-  }
-  .self-stretch\.rounded-\[8px\]\.bg-\[#feecb2\] {
-    padding: 10px 14px;
-  }
-  .relative\.leading-\[160\%\]\.capitalize\.font-semibold {
-    font-size: 16px;
-  }
-  .w-11\.h-11 {
-    width: 32px;
-    height: 32px;
-  }
-}
-
-@media (max-width: 480px) {
-  .w-full\.relative\.flex\.flex-col\.items-center\.gap-\[44px\] {
-    font-size: 20px;
-    margin-top: 25px;
-    padding: 0 10px;
-  }
-  .w-\[588px\] {
-    font-size: 15px;
-  }
-  .self-stretch\.relative\.text-\[16px\]\.leading-\[160\%\] {
-    font-size: 14px;
-  }
-  .self-stretch\.flex\.items-center\.py-\[10px\] {
-    font-size: 14px;
+  .faq-item {
+    min-height: auto;
   }
 }
 </style>
