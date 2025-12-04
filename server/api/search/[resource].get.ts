@@ -18,6 +18,7 @@ type NormalizedQuery = {
   dateTo?: Date | null;
   category?: string;
   categoryLc?: string;
+  categoryNormalized?: string;
 };
 
 type FilterFn<T> = (record: T, query: NormalizedQuery) => boolean;
@@ -190,6 +191,7 @@ const normalizeQuery = (query: Record<string, any>, config: SearchResourceConfig
   if (categoryRaw) {
     normalized.category = categoryRaw;
     normalized.categoryLc = categoryRaw.toLowerCase();
+    normalized.categoryNormalized = normalizeCategoryName(categoryRaw);
   }
   if (timeRangeRaw) {
     normalized.timeRange = timeRangeRaw;
@@ -256,6 +258,16 @@ const SEARCH_RESOURCES: Record<string, SearchResourceConfig> = {
     fields: ['title', 'name', 'category', 'serviceType', 'specialization', 'location', 'description', 'website'],
     pick: (payload: { listings?: any[] }) => (Array.isArray(payload?.listings) ? payload.listings : []),
     normalize: normalizeListing,
+    filter: (listing, query) => {
+      if (query.categoryNormalized) {
+        const listingCategory = normalizeCategoryName(listing.category);
+        return listingCategory === query.categoryNormalized;
+      }
+      if (query.categoryLc) {
+        return toLower(listing.category) === query.categoryLc;
+      }
+      return true;
+    },
     sort: (a, b) => {
       const diff = (Number(b.rating) || 0) - (Number(a.rating) || 0);
       if (diff !== 0) return diff;
