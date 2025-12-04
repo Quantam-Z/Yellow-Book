@@ -286,29 +286,25 @@
         </div>
       </div>
     </div>
-    <Teleport to="body">
-      <LoginModal :isOpen="showLoginModal" @close="closeLoginModal" />
-    </Teleport>
   </div>
 </template>
 
 <script>
-// IMPORTANT: Ensure this path is correct for your project structure
-import LoginModal from '~/components/common/loginModal.vue'
 import { Menu, X } from 'lucide-vue-next'
 import { useRequestFetch, useNuxtApp } from '#app'
 import { useAuthStore } from '~/stores/auth'
 import { storeToRefs } from 'pinia'
+import { useLoginModal } from '~/composables/useLoginModal'
 
 export default {
   name: 'ResponsiveLandingPage',
-  // LoginModal component registered here
-  components: { LoginModal, Menu, X },
+  components: { Menu, X },
     emits: ['search'],
     setup() {
       const requestFetch = useRequestFetch()
       const nuxtApp = useNuxtApp()
       const authStore = useAuthStore()
+      const { openLoginModal: triggerOpenLoginModal } = useLoginModal()
       if (process.client) {
         authStore.hydrateFromStorage()
       }
@@ -320,6 +316,7 @@ export default {
         authStore,
         isAuthenticated,
         authUser: user,
+        triggerOpenLoginModal,
       }
     },
     data() {
@@ -329,7 +326,6 @@ export default {
         selectedSearch: defaultSearchPlaceholder,
         searchQuery: '',
         cachedSearchQuery: '',
-        showLoginModal: false,
         isMobileMenuOpen: false,
           showUserMenu: false,
         defaultSearchPlaceholder,
@@ -481,11 +477,10 @@ export default {
       this.showDropdown = false
     },
     openLoginModal() {
-      this.showLoginModal = true
       this.isMobileMenuOpen = false
-    },
-    closeLoginModal() {
-      this.showLoginModal = false
+      if (typeof this.triggerOpenLoginModal === 'function') {
+        this.triggerOpenLoginModal('navbar')
+      }
     },
     toggleMobileMenu() {
       this.isMobileMenuOpen = !this.isMobileMenuOpen

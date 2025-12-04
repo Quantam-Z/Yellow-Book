@@ -4,8 +4,8 @@ import { useRoute, useRouter } from 'vue-router';
 import { Menu, X } from 'lucide-vue-next';
 import { storeToRefs } from 'pinia';
 
-import LoginModal from '@/components/common/loginModal.vue';
 import { useAuthStore } from '~/stores/auth';
+import { useLoginModal } from '@/composables/useLoginModal';
 
 type NavItem = {
   label: string;
@@ -47,7 +47,6 @@ if (import.meta.client) {
 
 const { isAuthenticated, user } = storeToRefs(authStore);
 
-const showLoginModal = ref(false);
 const showUserMenu = ref(false);
 const userMenuRef = ref<HTMLElement | null>(null);
 const listYourAgencyLink = computed(() =>
@@ -143,13 +142,11 @@ const userInitials = computed(() => {
   return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
 });
 
-const openLoginModal = () => {
-  showLoginModal.value = true;
-  isMenuOpen.value = false;
-};
+const { openLoginModal: triggerOpenLoginModal } = useLoginModal();
 
-const closeLoginModal = () => {
-  showLoginModal.value = false;
+const openLoginModal = () => {
+  triggerOpenLoginModal('info-nav');
+  isMenuOpen.value = false;
 };
 
 const toggleUserMenu = () => {
@@ -492,9 +489,6 @@ onBeforeUnmount(() => {
         </p>
       </div>
     </div>
-      <Teleport to="body">
-        <LoginModal :isOpen="showLoginModal" @close="closeLoginModal" />
-      </Teleport>
   </section>
 </template>
 
