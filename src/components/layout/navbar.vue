@@ -296,7 +296,7 @@
 // IMPORTANT: Ensure this path is correct for your project structure
 import LoginModal from '~/components/common/loginModal.vue'
 import { Menu, X } from 'lucide-vue-next'
-import { useRequestFetch } from '#app'
+import { useRequestFetch, useNuxtApp } from '#app'
 import { useAuthStore } from '~/stores/auth'
 import { storeToRefs } from 'pinia'
 
@@ -307,6 +307,7 @@ export default {
     emits: ['search'],
     setup() {
       const requestFetch = useRequestFetch()
+      const nuxtApp = useNuxtApp()
       const authStore = useAuthStore()
       if (process.client) {
         authStore.hydrateFromStorage()
@@ -315,6 +316,7 @@ export default {
 
       return {
         requestFetch,
+        nuxtApp,
         authStore,
         isAuthenticated,
         authUser: user,
@@ -371,6 +373,18 @@ export default {
             },
     },
   methods: {
+    notifyLoginRequired() {
+      const notifier = this.nuxtApp?.$awn
+      if (!notifier) {
+        return
+      }
+      const message = 'Please login to list your agency'
+      if (typeof notifier.info === 'function') {
+        notifier.info(message)
+      } else if (typeof notifier.alert === 'function') {
+        notifier.alert(message)
+      }
+    },
     async fetchSearchEntries(searchText = '') {
       const query = searchText?.trim() || ''
       this.searchLoading = true
@@ -521,6 +535,17 @@ export default {
           if (shouldCloseMenu) {
             this.closeMobileMenu()
           }
+
+          if (!this.isAuthenticated) {
+            if (event && typeof event.preventDefault === 'function') {
+              event.preventDefault()
+            }
+            this.showUserMenu = false
+            this.notifyLoginRequired()
+            this.openLoginModal()
+            return
+          }
+
           if (event && typeof event.preventDefault === 'function') {
             event.preventDefault()
           }

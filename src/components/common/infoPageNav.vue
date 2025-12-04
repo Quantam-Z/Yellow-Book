@@ -27,6 +27,7 @@ const props = withDefaults(
 
 const route = useRoute();
 const router = useRouter();
+const nuxtApp = useNuxtApp();
 
 const navItems: NavItem[] = [
   { label: 'Category', to: '/catagory' },
@@ -52,6 +53,19 @@ const userMenuRef = ref<HTMLElement | null>(null);
 const listYourAgencyLink = computed(() =>
   isAuthenticated.value ? '/company/dashboard' : '/auth/register',
 );
+
+const notifyLoginRequired = () => {
+  const notifier = nuxtApp?.$awn;
+  if (!notifier) return;
+  const message = 'Please login to list your agency';
+  if (typeof notifier.info === 'function') {
+    notifier.info(message);
+    return;
+  }
+  if (typeof notifier.alert === 'function') {
+    notifier.alert(message);
+  }
+};
 
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
@@ -176,6 +190,11 @@ const handleListYourAgencyClick = (event?: MouseEvent) => {
   }
   showUserMenu.value = false;
   closeMenu();
+  if (!isAuthenticated.value) {
+    notifyLoginRequired();
+    openLoginModal();
+    return;
+  }
   router.push(listYourAgencyLink.value);
 };
 
