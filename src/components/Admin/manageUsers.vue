@@ -589,6 +589,8 @@ const mobileActionsIndex = ref(null);
 const selectedUser = ref(null);
 const isDetailModalOpen = ref(false);
 const isMobileView = ref(false);
+const isEditModalOpen = ref(false);
+const editingUser = ref(null);
 
 // Pagination State
 const currentPage = ref(1);
@@ -602,6 +604,8 @@ const filters = ref({
   status: '',
   signupMethod: ''
 });
+
+const userStatusOptions = ['Active', 'Inactive', 'Suspended', 'Pending'];
 
 // --- Composables ---
 const { allSelected, toggleSelection, toggleAll } = useSelection(users);
@@ -752,6 +756,18 @@ const closeUserDetails = () => {
   selectedUser.value = null;
 };
 
+const editUser = (user) => {
+  if (!user) return;
+  editingUser.value = { ...user };
+  isEditModalOpen.value = true;
+  mobileActionsIndex.value = null;
+};
+
+const closeEditUserModal = () => {
+  isEditModalOpen.value = false;
+  editingUser.value = null;
+};
+
 const deleteUser = async (user) => {
   if (!user?.id) {
     mobileActionsIndex.value = null;
@@ -839,6 +855,11 @@ const prevPage = () => {
     mobileActionsIndex.value = null;
     expandedUserId.value = null;
   }
+};
+
+const handleUserUpdated = async () => {
+  await refreshUsers();
+  closeEditUserModal();
 };
 
 watch(usersError, (err) => {
