@@ -50,7 +50,7 @@ const { isAuthenticated, user } = storeToRefs(authStore);
 const showUserMenu = ref(false);
 const userMenuRef = ref<HTMLElement | null>(null);
 const listYourAgencyLink = computed(() =>
-  isAuthenticated.value ? '/company/dashboard' : '/auth/register',
+  isAuthenticated.value ? '/popular-list' : '/auth/register',
 );
 
 const notifyLoginRequired = () => {
