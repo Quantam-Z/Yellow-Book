@@ -21,39 +21,44 @@
     />
 
     <aside
-      class="w-[280px] min-h-screen bg-white border-r border-[#eee] shadow-[4px_12px_23px_rgba(0,0,0,0.08)] py-6 px-4 flex flex-col justify-between
+      class="w-[280px] min-h-screen bg-white border-r border-[#eee] shadow-[4px_12px_23px_rgba(0,0,0,0.08)] py-6 px-4 flex flex-col
              fixed md:static top-0 left-0 h-full z-40 transition-transform duration-300 ease-in-out"
       :class="isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'"
     >
-      <nav class="flex flex-col gap-2">
-        <NuxtLink
-          v-for="(item, index) in mainMenu"
-          :key="index"
-          :to="item.to"
-          class="flex items-center gap-3 py-3 px-4 rounded-lg text-base font-medium text-[#212121] transition-all duration-200 ease-in-out hover:bg-[#fafafa] no-underline"
-          :class="{ 'bg-[#f3f3f3] font-semibold': $route.path === item.to }"
-          @click="closeOnMobile"
-        >
-          <component :is="item.icon" class="w-[22px] h-[22px]" />
-          <span class="leading-[130%] capitalize">{{ item.label }}</span>
-        </NuxtLink>
-      </nav>
+      <div class="flex-1 flex flex-col overflow-y-auto pr-1">
+        <nav class="flex flex-col gap-2">
+          <NuxtLink
+            v-for="(item, index) in mainMenu"
+            :key="index"
+            :to="item.to"
+            class="flex items-center gap-3 py-3 px-4 rounded-lg text-base font-medium text-[#212121] transition-all duration-200 ease-in-out hover:bg-[#fafafa] no-underline"
+            :class="{ 'bg-[#f3f3f3] font-semibold': $route.path === item.to }"
+            @click="closeOnMobile"
+          >
+            <component :is="item.icon" class="w-[22px] h-[22px]" />
+            <span class="leading-[130%] capitalize">{{ item.label }}</span>
+          </NuxtLink>
+        </nav>
+      </div>
 
-      <div v-if="bottomMenu.length" class="h-px w-full border-t border-solid border-white my-4" />
-
-      <nav v-if="bottomMenu.length" class="flex flex-col gap-2">
-        <NuxtLink
-          v-for="(item, index) in bottomMenu"
-          :key="index"
-          :to="item.to"
-          class="flex items-center gap-3 py-3 px-4 rounded-lg text-base font-medium text-[#212121] transition-all duration-200 ease-in-out hover:bg-[#fafafa] no-underline"
-          :class="{ 'bg-[#f3f3f3] font-semibold': $route.path === item.to }"
-          @click="closeOnMobile"
-        >
-          <component :is="item.icon" class="w-[22px] h-[22px]" />
-          <span class="leading-[130%] capitalize">{{ item.label }}</span>
-        </NuxtLink>
-      </nav>
+      <div
+        v-if="bottomMenu.length"
+        class="pt-4 mt-6 border-t border-dashed border-gray-200"
+      >
+        <nav class="flex flex-col gap-2">
+          <NuxtLink
+            v-for="(item, index) in bottomMenu"
+            :key="index"
+            :to="item.to"
+            class="flex items-center gap-3 py-3 px-4 rounded-lg text-base font-medium text-[#212121] transition-all duration-200 ease-in-out hover:bg-[#fafafa] no-underline"
+            :class="{ 'bg-[#f3f3f3] font-semibold': $route.path === item.to }"
+            @click="closeOnMobile"
+          >
+            <component :is="item.icon" class="w-[22px] h-[22px]" />
+            <span class="leading-[130%] capitalize">{{ item.label }}</span>
+          </NuxtLink>
+        </nav>
+      </div>
     </aside>
   </div>
 </template>
