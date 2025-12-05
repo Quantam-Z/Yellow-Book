@@ -1,18 +1,15 @@
 <template>
   <div class="flex">
     <button
-  v-if="!isOpen && !isScrolled" 
-  @click="isOpen = true"
-  class="md:hidden fixed top-2 left-4 z-50 p-2 rounded-lg bg-white 
-         border border-transparent       
-         shadow-md hover:shadow-xl        
-         duration-200 
-         outline-none ring-0 focus:outline-none focus:ring-0
-         "
-  aria-label="Open navigation menu"
->
-  <Menu class="w-5 h-5 text-gray-700" />
-</button>
+      v-if="!isOpen && !isScrolled" 
+      @click="isOpen = true"
+      class="md:hidden fixed top-2 left-4 z-50 p-2 rounded-lg bg-white 
+             border border-transparent shadow-md hover:shadow-xl        
+             duration-200 outline-none ring-0 focus:outline-none focus:ring-0"
+      aria-label="Open navigation menu"
+    >
+      <Menu class="w-5 h-5 text-gray-700" />
+    </button>
 
     <div
       v-if="isOpen"
@@ -29,25 +26,6 @@
         <nav class="flex flex-col gap-2">
           <NuxtLink
             v-for="(item, index) in mainMenu"
-            :key="index"
-            :to="item.to"
-            class="flex items-center gap-3 py-3 px-4 rounded-lg text-base font-medium text-[#212121] transition-all duration-200 ease-in-out hover:bg-[#fafafa] no-underline"
-            :class="{ 'bg-[#f3f3f3] font-semibold': $route.path === item.to }"
-            @click="closeOnMobile"
-          >
-            <component :is="item.icon" class="w-[22px] h-[22px]" />
-            <span class="leading-[130%] capitalize">{{ item.label }}</span>
-          </NuxtLink>
-        </nav>
-      </div>
-
-      <div
-        v-if="bottomMenu.length"
-        class="pt-4 mt-6 border-t border-dashed border-gray-200"
-      >
-        <nav class="flex flex-col gap-2">
-          <NuxtLink
-            v-for="(item, index) in bottomMenu"
             :key="index"
             :to="item.to"
             class="flex items-center gap-3 py-3 px-4 rounded-lg text-base font-medium text-[#212121] transition-all duration-200 ease-in-out hover:bg-[#fafafa] no-underline"
@@ -76,7 +54,6 @@ import { ref } from "vue";
 import { useClientEventListener } from '@/composables/useClientEventListener';
 
 const isOpen = ref(false);
-// NEW: State to track if the user has scrolled down
 const isScrolled = ref(false); 
 
 const mainMenu = [
@@ -85,20 +62,16 @@ const mainMenu = [
   { label: "Review", icon: Star, to: "/company/review" },
   { label: "My Profile", icon: Shield, to: "/company/my-profile" },
   { label: "Notification", icon: Shield, to: "/company/notification" },
-];
-
-const bottomMenu = [
   { label: "Settings", icon: Settings, to: "/company/settings" },
 ];
 
-// NEW: Function to handle scroll event
+// Handle scroll
 const handleScroll = () => {
   if (!import.meta.client) return;
-  // Check if the user has scrolled more than 50 pixels down
   isScrolled.value = window.scrollY > 50; 
 };
 
-// Close sidebar on mobile when clicking menu
+// Close sidebar on mobile
 const closeOnMobile = () => {
   if (!import.meta.client) return;
   if (window.innerWidth < 768) {
@@ -106,7 +79,7 @@ const closeOnMobile = () => {
   }
 };
 
-useClientEventListener<Event>(() => window, 'scroll', handleScroll, { passive: true, immediate: true });
+useClientEventListener(() => window, 'scroll', handleScroll, { passive: true, immediate: true });
 </script>
 
 <style scoped>
@@ -114,7 +87,6 @@ a {
   text-decoration: none !important;
 }
 
-/* OPTIONAL: Add a smooth transition for the opacity change */
 button {
   transition: opacity 0.3s ease-in-out;
 }

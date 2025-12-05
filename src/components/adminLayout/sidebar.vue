@@ -1,19 +1,15 @@
 <template>
   <div class="flex">
     <button
-  v-if="!isOpen && !isScrolled" 
-  @click="isOpen = true"
-  class="md:hidden fixed top-2 left-4 z-50 p-2 rounded-lg bg-white 
-         border border-transparent       
-         shadow-md hover:shadow-xl        
-         duration-200 
-         outline-none ring-0 focus:outline-none focus:ring-0
-         "
-  aria-label="Open navigation menu"
->
-  <Menu class="w-5 h-5 text-gray-700" />
-</button>
-
+      v-if="!isOpen && !isScrolled" 
+      @click="isOpen = true"
+      class="md:hidden fixed top-2 left-4 z-50 p-2 rounded-lg bg-white 
+             border border-transparent shadow-md hover:shadow-xl        
+             duration-200 outline-none ring-0 focus:outline-none focus:ring-0"
+      aria-label="Open navigation menu"
+    >
+      <Menu class="w-5 h-5 text-gray-700" />
+    </button>
 
     <div
       v-if="isOpen"
@@ -33,30 +29,7 @@
             :key="index"
             :to="item.to"
             class="flex items-center gap-3 py-3 px-4 rounded-lg text-base font-medium text-[#212121] transition-all duration-200 ease-in-out hover:bg-[#fafafa] no-underline"
-            :class="{
-              'bg-[#f3f3f3] font-semibold': $route.path === item.to
-            }"
-            @click="closeSidebar"
-          >
-            <component :is="item.icon" class="w-[22px] h-[22px]" />
-            <span class="leading-[130%] capitalize">{{ item.label }}</span>
-          </NuxtLink>
-        </nav>
-      </div>
-
-      <div
-        v-if="bottomMenu.length"
-        class="pt-4 mt-6 border-t border-dashed border-gray-200"
-      >
-        <nav class="flex flex-col gap-2">
-          <NuxtLink
-            v-for="(item, index) in bottomMenu"
-            :key="index"
-            :to="item.to"
-            class="flex items-center gap-3 py-3 px-4 rounded-lg text-base font-medium text-[#212121] transition-all duration-200 ease-in-out hover:bg-[#fafafa] no-underline"
-            :class="{
-              'bg-[#f3f3f3] font-semibold': $route.path === item.to
-            }"
+            :class="{ 'bg-[#f3f3f3] font-semibold': $route.path === item.to }"
             @click="closeSidebar"
           >
             <component :is="item.icon" class="w-[22px] h-[22px]" />
@@ -90,44 +63,31 @@ const mainMenu = [
   { label: "User Management", icon: Users, to: "/admin/manage-users" },
   { label: "Review Management", icon: Star, to: "/admin/manage-review" },
   { label: "Admin Management", icon: Shield, to: "/admin/admin-management" },
-];
-
-const bottomMenu = [
   { label: "Settings", icon: Settings, to: "/admin/settings" },
 ];
 
-// Function to handle scroll event
 const handleScroll = () => {
   if (!import.meta.client) return;
   isScrolled.value = window.scrollY > 100; 
 };
 
-// Close sidebar function
 const closeSidebar = () => {
   if (!import.meta.client) return;
-  if (window.innerWidth < 768) {
-    isOpen.value = false;
-  }
+  if (window.innerWidth < 768) isOpen.value = false;
 };
 
-// Handle escape key press
 const handleEscapeKey = (event) => {
-  if (event.key === 'Escape' && isOpen.value) {
-    closeSidebar();
-  }
+  if (event.key === 'Escape' && isOpen.value) closeSidebar();
 };
 
-// Handle resize
 const handleResize = () => {
   if (!import.meta.client) return;
-  if (window.innerWidth >= 768) {
-    isOpen.value = false;
-  }
+  if (window.innerWidth >= 768) isOpen.value = false;
 };
 
 useClientEventListener(() => document, 'keydown', handleEscapeKey);
 useClientEventListener(() => window, 'resize', handleResize, { passive: true, immediate: true });
-useClientEventListener(() => window, 'scroll', handleScroll, { passive: true, immediate: true }); 
+useClientEventListener(() => window, 'scroll', handleScroll, { passive: true, immediate: true });
 </script>
 
 <style scoped>
