@@ -376,7 +376,7 @@ export default {
             return { path: '/', hash: `#${this.popularSectionId}` }
           },
           listYourAgencyLink() {
-            return this.isAuthenticated ? '/company/dashboard' : '/auth/register'
+            return this.isAuthenticated ? '/popular-list' : '/auth/register'
             },
           userInitials() {
             const source = (this.authUser && (this.authUser.name || this.authUser.email)) || ''

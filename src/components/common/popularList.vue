@@ -528,7 +528,7 @@ const toggleFavorite = async (listing: ListingCard) => {
       </template>
 
         <div
-          v-if="shouldShowPagination && !isLoading && filteredListings.length"
+          v-if="shouldShowPagination && !isLoading && paginatedListings.length"
           class="mt-6 flex flex-col items-center gap-4 sm:mt-8 sm:flex-row sm:justify-between"
         >
           <p class="text-sm text-gray-600 text-center sm:text-left">
