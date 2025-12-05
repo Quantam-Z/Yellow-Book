@@ -299,27 +299,35 @@
                   >
                     {{ user.status }}
                   </span>
-                    <div
-                      v-if="mobileActionsIndex === index"
-                      class="flex items-center gap-2"
+                  <div
+                    v-if="mobileActionsIndex === index"
+                    class="flex items-center gap-2"
+                  >
+                    <button
+                      type="button"
+                      class="text-amber-500 hover:text-amber-600 transition-colors flex items-center justify-center"
+                      @click.stop="viewUser(user)"
+                      title="Quick view"
                     >
-                      <button
-                        type="button"
-                        class="text-amber-500 hover:text-amber-600 transition-colors flex items-center justify-center"
-                        @click.stop="viewUser(user)"
-                        title="Quick view"
-                      >
-                        <EyeIcon class="w-5 h-5" />
-                      </button>
-                      <button
-                        type="button"
-                        class="text-red-500 hover:text-red-600 transition-colors flex items-center justify-center"
-                        @click.stop="deleteUser(user)"
-                        title="Delete user"
-                      >
-                        <Trash2Icon class="w-5 h-5" />
-                      </button>
-                    </div>
+                      <EyeIcon class="w-5 h-5" />
+                    </button>
+                    <button
+                      type="button"
+                      class="text-blue-500 hover:text-blue-600 transition-colors flex items-center justify-center"
+                      @click.stop="editUser(user)"
+                      title="Edit user"
+                    >
+                      <EditIcon class="w-5 h-5" />
+                    </button>
+                    <button
+                      type="button"
+                      class="text-red-500 hover:text-red-600 transition-colors flex items-center justify-center"
+                      @click.stop="deleteUser(user)"
+                      title="Delete user"
+                    >
+                      <Trash2Icon class="w-5 h-5" />
+                    </button>
+                  </div>
                     <MoreHorizontal 
                       v-else
                       class="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer" 
@@ -459,6 +467,11 @@
                         class="w-5 h-5 text-yellow-500 cursor-pointer hover:text-yellow-600 active:text-yellow-700 transition touch-manipulation" 
                         title="View user"
                       />
+                    <EditIcon 
+                      @click="editUser(user)"
+                      class="w-5 h-5 text-blue-500 cursor-pointer hover:text-blue-600 active:text-blue-700 transition touch-manipulation"
+                      title="Edit user"
+                    />
                       <Trash2Icon
                         @click="deleteUser(user)"
                         class="w-5 h-5 text-red-500 cursor-pointer hover:text-red-600 active:text-red-700 transition touch-manipulation"
@@ -531,6 +544,14 @@
       :items="userDetailItems"
       @close="closeUserDetails"
     />
+    <EditUserModal
+      :open="isEditModalOpen"
+      :user="editingUser"
+      :statuses="userStatusOptions"
+      :signup-methods="signupMethods"
+      @close="closeEditUserModal"
+      @saved="handleUserUpdated"
+    />
   </div>
 </template>
 
@@ -548,6 +569,7 @@ import {
   Share2 as Share2Icon,
   Mail as MailIcon,
   UserPlus as UserPlusIcon,
+  Edit as EditIcon,
   Trash2 as Trash2Icon,
   MoreHorizontal
 } from 'lucide-vue-next';
@@ -555,6 +577,7 @@ import { getStatusClass, getStatusShort, getSignupMethodClass } from '~/composab
 import { useSelection } from '~/composables/useSelection'
 import { useStubClient } from '~/services/stubClient'
 import DetailModal from '~/components/common/DetailModal.vue'
+import EditUserModal from '~/components/Admin/EditUserModal.vue'
 import { useClientEventListener } from '@/composables/useClientEventListener';
 
 // --- State ---

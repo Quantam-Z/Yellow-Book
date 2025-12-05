@@ -27,8 +27,7 @@
     </div>
 
     <!-- Mobile Filters Toggle -->
-    <div class="mb-4 flex lg:hidden items-center justify-between px-3 lg:px-0">
-      <h2 class="text-base font-bold text-gray-900">All Company List</h2>
+    <div class="mb-4 flex lg:hidden items-center justify-end px-3 lg:px-0">
       <button 
   @click="showMobileFilters = !showMobileFilters"
   class="h-12 
@@ -50,9 +49,6 @@
     <div class="mb-6 px-3 lg:px-0">
       <!-- Desktop Filters -->
       <div class="hidden lg:flex items-center flex-wrap gap-3 w-full overflow-x-auto scrollbar-thin">
-        <h2 class="text-lg font-bold text-gray-900 whitespace-nowrap">
-          All Company List
-        </h2>
         
         <!-- Date From -->
         <div class="h-12 relative rounded-xl bg-gray-100 border border-gray-200 flex items-center px-4 gap-2 text-sm">
