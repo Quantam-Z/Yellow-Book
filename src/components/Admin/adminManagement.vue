@@ -310,15 +310,27 @@
                   >
                     {{ admin.status }}
                   </span>
-                  <button
+                  <div
                     v-if="mobileActionsIndex === index"
-                    type="button"
-                    class="text-red-500 hover:text-red-600 transition-colors flex items-center justify-center"
-                    @click.stop="deleteAdmin(admin)"
-                    title="Delete admin"
+                    class="flex items-center gap-2"
                   >
-                    <Trash2Icon class="w-5 h-5" />
-                  </button>
+                    <button
+                      type="button"
+                      class="text-blue-500 hover:text-blue-600 transition-colors flex items-center justify-center"
+                      @click.stop="editAdmin(admin)"
+                      title="Edit admin"
+                    >
+                      <EditIcon class="w-5 h-5" />
+                    </button>
+                    <button
+                      type="button"
+                      class="text-red-500 hover:text-red-600 transition-colors flex items-center justify-center"
+                      @click.stop="deleteAdmin(admin)"
+                      title="Delete admin"
+                    >
+                      <Trash2Icon class="w-5 h-5" />
+                    </button>
+                  </div>
                   <MoreHorizontal 
                     v-else
                     class="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer" 
@@ -534,6 +546,14 @@
       :items="adminDetailItems"
       @close="closeAdminDetails"
     />
+    <EditAdminModal
+      :open="isEditModalOpen"
+      :admin="editingAdmin"
+      :roles="roleOptions"
+      :statuses="statusOptions"
+      @close="closeEditModal"
+      @saved="handleAdminUpdated"
+    />
   </div>
 </template>
 
@@ -559,6 +579,7 @@ import { getStatusClass, getRoleClass } from '~/composables/useStatusClass'
 import { useSelection } from '~/composables/useSelection'
 import { useStubClient } from '~/services/stubClient'
 import DetailModal from '~/components/common/DetailModal.vue'
+import EditAdminModal from '~/components/Admin/EditAdminModal.vue'
 import { useClientEventListener } from '@/composables/useClientEventListener';
 
 // --- State ---
@@ -570,6 +591,11 @@ const mobileActionsIndex = ref(null);
 const isDetailModalOpen = ref(false);
 const selectedAdmin = ref(null);
 const isMobileView = ref(false);
+const isEditModalOpen = ref(false);
+const editingAdmin = ref(null);
+
+const roleOptions = ['Super Admin', 'Admin', 'Moderator', 'Support'];
+const statusOptions = ['Active', 'Inactive', 'Suspended'];
 
 // Pagination State
 const currentPage = ref(1);
@@ -725,9 +751,21 @@ const closeAdminDetails = () => {
   selectedAdmin.value = null;
 };
 
-const editAdmin = async (admin) => {
-  // Hook for edit functionality
-  // alert(`Editing: ${admin.name}`)
+const editAdmin = (admin) => {
+  if (!admin) return;
+  editingAdmin.value = { ...admin };
+  isEditModalOpen.value = true;
+  mobileActionsIndex.value = null;
+};
+
+const closeEditModal = () => {
+  isEditModalOpen.value = false;
+  editingAdmin.value = null;
+};
+
+const handleAdminUpdated = async () => {
+  await refreshAdmins();
+  closeEditModal();
 };
 
 const deleteAdmin = async (admin) => {
@@ -745,11 +783,10 @@ const deleteAdmin = async (admin) => {
 };
 
 const changeStatus = async (admin) => {
-  // Cycle through statuses to demo behavior
-  const statuses = ['Active', 'Inactive', 'Suspended'];
-  const currentIndex = statuses.indexOf(admin.status);
-  const nextIndex = (currentIndex + 1) % statuses.length;
-  const nextStatus = statuses[nextIndex];
+  if (!statusOptions.length) return;
+  const currentIndex = statusOptions.indexOf(admin.status);
+  const nextIndex = (currentIndex + 1) % statusOptions.length;
+  const nextStatus = statusOptions[nextIndex];
 
   try {
     await stubClient.update('admins', admin.id, { status: nextStatus }, { delay: 160 });
