@@ -6,12 +6,7 @@
       <h1 class="text-lg sm:text-xl font-semibold text-gray-900">
         My Favorite Company
       </h1>
-      <button
-        type="button"
-        class="bg-amber-400 hover:bg-amber-500 text-gray-900 font-semibold text-sm px-4 py-2 rounded shadow border-0 outline-none focus:outline-none focus:ring-0"
-      >
-        List Your Company
-      </button>
+     
     </div>
 
     <div class="space-y-3">
