@@ -93,7 +93,7 @@
     >
       <div
         v-if="isEditModalOpen"
-        class="fixed inset-0 z-50 flex items-center justify-center px-4"
+        class="fixed inset-0 z-[70] flex items-center justify-center px-4"
         role="dialog"
         aria-modal="true"
         aria-labelledby="edit-review-title"
