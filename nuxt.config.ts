@@ -8,8 +8,6 @@ const srcRoot = resolve(projectRoot, "src");
 export default defineNuxtConfig({
   // ✅ Source directory for all app code
   srcDir: "./src/",
-  // ✅ Tell Nuxt where the server routes live (they remain at the project root)
-  serverDir: "./server",
   // ✅ Ensure the classic Nuxt aliases resolve from Node runtimes too
   alias: {
     "~": srcRoot,
@@ -99,10 +97,9 @@ export default defineNuxtConfig({
         gtagId: "G-HXRZKQV1EN",
         siteName: "Yellow-Book",
         /**
-         * Default to the local Nuxt server handlers so the app works with dummy APIs out of the box.
-         * Supply NUXT_PUBLIC_API_BASE_URL to point at a real backend (ensure it ends with a slash).
+         * Optional API base if integrating with a backend.
          */
-        apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL ?? "/api/",
+        apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL ?? "/",
       },
     },
 

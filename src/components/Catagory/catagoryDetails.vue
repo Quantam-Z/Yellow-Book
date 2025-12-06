@@ -508,7 +508,7 @@
 <script>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import { useNuxtApp, useRequestFetch } from '#app';
+import { useNuxtApp } from '#app';
 import { storeToRefs } from 'pinia';
 import Pagination from '~/components/common/pagination.vue';
 import { categoryService } from '@/services/categoryService';
@@ -517,6 +517,7 @@ import { useListingsFilter } from '@/composables/useListingsFilter';
 import { getStatusClass } from '@/utils/filterUtils';
 import starRatingBox from '@/components/common/starRatingBox.vue';
 import { useStubClient } from '@/services/stubClient';
+import { searchStubResource } from '~/services/stubSearch';
 import { useStubResource } from '@/composables/useStubResource';
 import { useAuthStore } from '@/stores/auth';
 
@@ -537,7 +538,6 @@ export default {
       const stubClient = useStubClient();
       const nuxtApp = useNuxtApp();
       const authStore = useAuthStore();
-      const requestFetch = useRequestFetch();
       const { isAuthenticated } = storeToRefs(authStore);
       const { data: favoritesData, refresh: refreshFavorites } = await useStubResource('favorites');
 
@@ -573,14 +573,12 @@ export default {
 
         listingsLoading.value = true;
         try {
-          const response = await requestFetch('/api/search/listings', {
-            params: {
-              category: categoryNameParam.value,
-              limit: 60,
-              search: searchQueryParam.value || undefined,
-            },
+          const response = await searchStubResource('listings', {
+            category: categoryNameParam.value,
+            limit: 60,
+            search: searchQueryParam.value || undefined,
           });
-          categoryListings.value = Array.isArray(response?.data) ? response.data : [];
+          categoryListings.value = Array.isArray(response?.items) ? response.items : [];
         } catch (error) {
           categoryListings.value = [];
           if (import.meta.dev) {

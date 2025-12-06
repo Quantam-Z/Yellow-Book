@@ -305,6 +305,7 @@ import DetailModal from '@/components/common/DetailModal.vue'
 
 import { getStatusClass } from '~/composables/useStatusClass' 
 import { useStubClient } from '~/services/stubClient'
+import { useStubSearch } from '~/composables/useStubSearch'
 
 const companies = ref([]);
 const searchQuery = ref('');
@@ -359,14 +360,11 @@ const companyQueryParams = computed(() => ({
 
 const {
   data: companiesPayload,
-} = await useFetch('/api/search/subadmin-assigned-companies', {
-  query: companyQueryParams,
+} = await useStubSearch('subadminAssignedCompanies', {
+  key: 'subadmin-assigned-companies',
+  query: () => companyQueryParams.value,
   watch: [currentPage, searchQuery, () => filters.value.status],
   default: () => ({ items: [], meta: fallbackMeta }),
-  transform: (response) => ({
-    items: Array.isArray(response?.data) ? response.data : [],
-    meta: { ...fallbackMeta, ...(response?.meta || {}) },
-  }),
 });
 
 const paginationMeta = computed(() => companiesPayload.value?.meta ?? fallbackMeta);

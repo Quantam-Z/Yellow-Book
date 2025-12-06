@@ -554,6 +554,7 @@ import {
 import { getStatusClass, getStatusShort, getSignupMethodClass } from '~/composables/useStatusClass'
 import { useSelection } from '~/composables/useSelection'
 import { useStubClient } from '~/services/stubClient'
+import { useStubSearch } from '~/composables/useStubSearch'
 import DetailModal from '~/components/common/DetailModal.vue'
 import { useClientEventListener } from '@/composables/useClientEventListener';
 
@@ -616,8 +617,9 @@ const {
   pending,
   error: usersError,
   refresh: refreshUsers,
-} = await useFetch('/api/search/users', {
-  query: userQueryParams,
+} = await useStubSearch('users', {
+  key: 'admin-user-management',
+  query: () => userQueryParams.value,
   watch: [
     currentPage,
     searchQuery,
@@ -627,10 +629,6 @@ const {
     () => filters.value.dateTo,
   ],
   default: () => ({ items: [], meta: fallbackMeta }),
-  transform: (response) => ({
-    items: Array.isArray(response?.data) ? response.data : [],
-    meta: { ...fallbackMeta, ...(response?.meta || {}) },
-  }),
 });
 
 const isLoading = computed(() => pending.value);

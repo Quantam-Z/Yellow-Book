@@ -1,4 +1,3 @@
-import { defineEventHandler, getQuery, createError } from 'h3';
 import { executeStubRequest } from '~/services/stubClient';
 
 type NormalizedQuery = {
@@ -330,6 +329,30 @@ const SEARCH_RESOURCES: Record<string, SearchResourceConfig> = {
     },
     sort: sortByStringField('name'),
   },
+  companies: {
+    key: 'companies',
+    stub: 'companies',
+    fields: ['name', 'website', 'category', 'status', 'mobile', 'email'],
+    filter: (company, query) => {
+      if (query.statusLc && toLower(company.status) !== query.statusLc) return false;
+      if (query.categoryLc && toLower(company.category) !== query.categoryLc) return false;
+      return true;
+    },
+    meta: (records) => {
+      const categories = Array.from(new Set(records.map((entry) => entry.category).filter(Boolean))).sort((a, b) =>
+        toLower(a || '') < toLower(b || '') ? -1 : 1,
+      );
+      const statuses = Array.from(new Set(records.map((entry) => entry.status).filter(Boolean))).sort((a, b) =>
+        toLower(a || '') < toLower(b || '') ? -1 : 1,
+      );
+      return {
+        categories,
+        statuses,
+      };
+    },
+    sort: sortByStringField('name'),
+    defaultLimit: 10,
+  },
   reviews: {
     key: 'reviews',
     stub: 'agencyReviews',
@@ -414,20 +437,26 @@ for (const config of Object.values(SEARCH_RESOURCES)) {
 
 const resolveConfig = (resourceParam?: string) => {
   if (!resourceParam) {
-    throw createError({ statusCode: 400, statusMessage: 'Search resource is required' });
+    throw new Error('Search resource is required');
   }
   const key = resourceParam.toLowerCase();
   const config = resourceRegistry.get(key);
   if (!config) {
-    throw createError({ statusCode: 404, statusMessage: `Unknown search resource "${resourceParam}"` });
+    throw new Error(`Unknown search resource "${resourceParam}"`);
   }
   return config;
 };
 
-export default defineEventHandler(async (event) => {
-  const { resource } = event.context.params || {};
+export type StubSearchResult<T = any> = {
+  items: T[];
+  meta: Record<string, any>;
+};
+
+export const searchStubResource = async <T = any>(
+  resource: string,
+  query: Record<string, any> = {},
+): Promise<StubSearchResult<T>> => {
   const config = resolveConfig(resource);
-  const query = getQuery(event);
   const normalizedQuery = normalizeQuery(query, config);
 
   const response = await executeStubRequest({ resource: config.stub, method: 'GET' });
@@ -440,7 +469,9 @@ export default defineEventHandler(async (event) => {
     return true;
   });
 
-  const sortedRecords = config.sort ? [...filteredRecords].sort((a, b) => config.sort!(a, b, normalizedQuery)) : filteredRecords;
+  const sortedRecords = config.sort
+    ? [...filteredRecords].sort((a, b) => config.sort!(a, b, normalizedQuery))
+    : filteredRecords;
 
   const total = sortedRecords.length;
   const totalPages = Math.max(1, Math.ceil(total / normalizedQuery.limit));
@@ -451,6 +482,7 @@ export default defineEventHandler(async (event) => {
   const meta: Record<string, any> = {
     page: safePage,
     limit: normalizedQuery.limit,
+    pageSize: normalizedQuery.limit,
     total,
     totalPages,
     hasNext: safePage < totalPages,
@@ -466,8 +498,7 @@ export default defineEventHandler(async (event) => {
   }
 
   return {
-    data,
+    items: data as T[],
     meta,
   };
-});
-
+};

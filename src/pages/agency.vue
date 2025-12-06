@@ -25,7 +25,7 @@
         :owner-title="ownerTitle"
         :owner-bio="ownerBio"
       />
-        <AgencyReview :website="contactWebsite" />
+      <AgencyReview :website="contactWebsite" :highlight-review-id="highlightReviewId" />
     </div>
     <Footer />
   </div>
@@ -52,6 +52,13 @@ const agencyNameFromQuery = computed(() => {
   const title = typeof query.title === 'string' ? decodeURIComponent(query.title) : '';
   const slug = typeof query.slug === 'string' ? query.slug : '';
   return title || slug;
+});
+
+const highlightReviewId = computed(() => {
+  const raw = sources.route.query?.reviewId;
+  const value = Array.isArray(raw) ? raw[0] : raw;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
 });
 
 const agencyTagline = computed(() => {
