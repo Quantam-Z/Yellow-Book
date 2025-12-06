@@ -6,7 +6,8 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "sync:stubs": "node ./scripts/sync-stub-data.mjs",
+    "postinstall": "nuxt prepare && node ./scripts/sync-stub-data.mjs"
   },
   "devDependencies": {
     "@kevinmarrec/nuxt-pwa": "^0.17.0",
