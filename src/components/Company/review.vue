@@ -346,6 +346,7 @@ import { Trash2, Star, ChevronDown, Loader2, Calendar, MessageSquare } from 'luc
 import Pagination from '~/components/common/pagination.vue'
 import { useStubClient } from '~/services/stubClient'
 import { useStubResource } from '~/composables/useStubResource'
+import { slugifyTitle } from '@/services/directoryMapper'
 
 const reviews = ref([])
 const selectedRating = ref('')
@@ -359,6 +360,17 @@ const stubClient = useStubClient()
 
 // Load reviews from stub json
 const { data: reviewsData, pending, error: reviewsError, refresh } = await useStubResource('agencyReviews')
+const { data: companyDetailData } = await useStubResource('agencyCompany')
+const defaultCompanyName = 'Tech Solutions Inc'
+const fallbackSlug = slugifyTitle(defaultCompanyName)
+const companyName = computed(() => {
+  const detail = companyDetailData.value
+  if (detail && typeof detail === 'object' && detail.name) {
+    return detail.name
+  }
+  return defaultCompanyName
+})
+const companySlug = computed(() => slugifyTitle(companyName.value) || fallbackSlug)
 const isLoading = computed(() => pending.value)
 
 watchEffect(() => {
@@ -498,7 +510,23 @@ const deleteReview = async (id) => {
 
 const goToReviewDetail = (reviewId) => {
   if (!reviewId) return
-  router.push(`/company/review/${reviewId}`)
+  const slug = companySlug.value
+  const title = companyName.value
+  const query: Record<string, string> = {
+    slug,
+    id: slug,
+    source: 'company-panel',
+  }
+  if (title) {
+    query.title = title
+  }
+  if (reviewId) {
+    query.reviewId = String(reviewId)
+  }
+  router.push({
+    path: '/agency',
+    query,
+  })
 }
 
 // Watch for filter changes to reset pagination
