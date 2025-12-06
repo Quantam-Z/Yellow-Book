@@ -9,10 +9,7 @@
         <ArrowLeft class="w-4 h-4" />
         Back to reviews
       </button>
-      <div class="flex flex-col">
-        <h1 class="text-2xl font-semibold text-gray-900">Review Details</h1>
-        <p class="text-sm text-gray-500">for {{ companyInfo.name }}</p>
-      </div>
+      <h1 class="text-2xl font-semibold text-gray-900">Review Details</h1>
       <span v-if="reviewId" class="text-sm text-gray-500">#{{ reviewId }}</span>
     </div>
 
@@ -40,134 +37,33 @@
     </div>
 
     <div v-else class="space-y-6">
-      <div class="grid gap-6 lg:grid-cols-3">
-        <section class="lg:col-span-2 w-full bg-white border border-gray-200 rounded-2xl shadow-sm p-6 space-y-4">
-          <div class="flex flex-wrap items-start gap-4">
-            <div class="h-14 w-14 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-lg">
-              {{ getInitials(review.reviewerName) }}
-            </div>
-            <div class="flex-1 min-w-[220px]">
-              <p class="text-lg font-semibold text-gray-900">{{ review.reviewerName }}</p>
-              <p class="text-sm text-gray-500">Shared on {{ formattedReviewDate }} at {{ review.time }}</p>
-            </div>
+      <section class="w-full bg-white border border-gray-200 rounded-2xl shadow-sm p-6 space-y-4">
+        <div class="flex flex-wrap items-start gap-4">
+          <div class="h-14 w-14 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-lg">
+            {{ getInitials(review.reviewerName) }}
           </div>
+          <div class="flex-1 min-w-[220px]">
+            <p class="text-lg font-semibold text-gray-900">{{ review.reviewerName }}</p>
+            <p class="text-sm text-gray-500">Shared on {{ formattedReviewDate }} at {{ review.time }}</p>
+          </div>
+        </div>
 
-          <div class="flex items-center gap-2">
-            <div class="flex items-center gap-0.5">
-              <Star
-                v-for="i in 5"
-                :key="i"
-                class="w-5 h-5"
-                :class="i <= review.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'"
-              />
-            </div>
-            <span class="text-sm text-gray-600 font-medium">{{ review.rating }} / 5</span>
+        <div class="flex items-center gap-2">
+          <div class="flex items-center gap-0.5">
+            <Star
+              v-for="i in 5"
+              :key="i"
+              class="w-5 h-5"
+              :class="i <= review.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'"
+            />
           </div>
+          <span class="text-sm text-gray-600 font-medium">{{ review.rating }} / 5</span>
+        </div>
 
-          <div class="border-t border-dashed border-gray-200 pt-4">
-            <p class="text-gray-700 leading-relaxed text-base italic">"{{ review.content }}"</p>
-          </div>
-        </section>
-
-        <aside class="space-y-6">
-          <div class="w-full bg-white border border-gray-200 rounded-2xl shadow-sm p-5 space-y-4">
-            <div>
-              <p class="text-sm uppercase tracking-wide text-gray-500">Company snapshot</p>
-              <p class="text-xl font-semibold text-gray-900">{{ companyInfo.name }}</p>
-              <p class="text-sm text-gray-600">{{ companyInfo.tagline }}</p>
-            </div>
-            <div class="space-y-3 text-sm text-gray-600">
-              <div class="flex items-center gap-2">
-                <MapPin class="w-4 h-4 text-gray-400" />
-                <span>{{ companyInfo.location }}</span>
-              </div>
-              <div class="flex items-center gap-2">
-                <Globe class="w-4 h-4 text-gray-400" />
-                <template v-if="companyInfo.website">
-                  <a
-                    :href="companyInfo.website"
-                    target="_blank"
-                    rel="noopener"
-                    class="text-blue-600 hover:underline"
-                  >
-                    {{ formatWebsite(companyInfo.website) }}
-                  </a>
-                </template>
-                <span v-else>Website coming soon</span>
-              </div>
-              <div class="flex items-center gap-2">
-                <Phone class="w-4 h-4 text-gray-400" />
-                <span>{{ companyInfo.phone }}</span>
-              </div>
-              <div class="flex items-center gap-2">
-                <Mail class="w-4 h-4 text-gray-400" />
-                <span>{{ companyInfo.email }}</span>
-              </div>
-            </div>
-            <div class="grid grid-cols-2 gap-3 text-sm">
-              <div class="rounded-xl bg-gray-50 p-3">
-                <p class="text-xs text-gray-500 uppercase tracking-wide">Industry</p>
-                <p class="text-sm font-semibold text-gray-900">{{ companyInfo.industry }}</p>
-              </div>
-              <div class="rounded-xl bg-gray-50 p-3">
-                <p class="text-xs text-gray-500 uppercase tracking-wide">Team size</p>
-                <p class="text-sm font-semibold text-gray-900">{{ companyInfo.employees }}</p>
-              </div>
-              <div class="rounded-xl bg-gray-50 p-3">
-                <p class="text-xs text-gray-500 uppercase tracking-wide">Revenue</p>
-                <p class="text-sm font-semibold text-gray-900">{{ companyInfo.revenue }}</p>
-              </div>
-              <div class="rounded-xl bg-gray-50 p-3">
-                <p class="text-xs text-gray-500 uppercase tracking-wide">Response status</p>
-                <p class="text-sm font-semibold text-gray-900">
-                  {{ hasExistingResponse ? 'Reply published' : 'Awaiting response' }}
-                </p>
-              </div>
-            </div>
-            <div v-if="companyServiceTags.length" class="pt-4 border-t border-gray-100">
-              <p class="text-xs uppercase tracking-wide text-gray-500 mb-2">Focus areas</p>
-              <div class="flex flex-wrap gap-2">
-                <span
-                  v-for="service in companyServiceTags"
-                  :key="service"
-                  class="px-3 py-1 rounded-full bg-green-50 text-green-700 text-xs font-medium"
-                >
-                  {{ service }}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div class="w-full bg-white border border-gray-200 rounded-2xl shadow-sm p-5 space-y-4">
-            <div class="flex items-center justify-between gap-2">
-              <h3 class="text-lg font-semibold text-gray-900">More reviews</h3>
-              <span class="text-xs uppercase tracking-wide text-gray-400">Stub data</span>
-            </div>
-            <div v-if="moreReviews.length" class="space-y-3">
-              <button
-                v-for="item in moreReviews"
-                :key="item.id"
-                type="button"
-                class="w-full text-left border border-gray-100 rounded-xl p-4 hover:border-green-400 hover:bg-green-50/50 transition focus:outline-none focus:ring-2 focus:ring-green-200"
-                @click="viewAnotherReview(item.id)"
-              >
-                <div class="flex items-center justify-between gap-3">
-                  <span class="font-semibold text-gray-900 truncate">{{ item.reviewerName }}</span>
-                  <span class="text-sm text-gray-500">{{ formatDate(item.date) }}</span>
-                </div>
-                <p class="text-sm text-gray-600 mt-1 line-clamp-2">
-                  "{{ item.content }}"
-                </p>
-                <div class="flex items-center gap-1 text-yellow-500 text-xs font-semibold mt-2">
-                  <Star class="w-4 h-4" />
-                  {{ item.rating }} / 5
-                </div>
-              </button>
-            </div>
-            <p v-else class="text-sm text-gray-500">No additional reviews yet.</p>
-          </div>
-        </aside>
-      </div>
+        <div class="border-t border-dashed border-gray-200 pt-4">
+          <p class="text-gray-700 leading-relaxed text-base italic">"{{ review.content }}"</p>
+        </div>
+      </section>
 
       <section class="w-full bg-white border border-gray-200 rounded-2xl shadow-sm p-6 space-y-5">
         <div class="flex items-center justify-between flex-wrap gap-2">
@@ -263,28 +159,9 @@
 
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue'
-import { ArrowLeft, Loader2, MessageSquare, Star, MapPin, Globe, Mail, Phone } from 'lucide-vue-next'
+import { ArrowLeft, Loader2, MessageSquare, Star } from 'lucide-vue-next'
 
 import { useStubClient } from '~/services/stubClient'
-import { useStubResource } from '~/composables/useStubResource'
-import type { AgencyCompanyStub } from '@/services/directoryMapper'
-
-type AgencyReviewRecord = {
-  id: number
-  reviewerName: string
-  rating: number
-  date: string
-  time: string
-  content: string
-  companyResponse?: {
-    name?: string
-    title?: string
-    text?: string
-    date?: string
-    time?: string
-    avatar?: string
-  } | null
-}
 
 definePageMeta({
   layout: 'company',
@@ -294,10 +171,6 @@ const route = useRoute()
 const router = useRouter()
 const nuxtApp = useNuxtApp()
 const stubClient = useStubClient()
-const { data: companyDetailData } = await useStubResource<AgencyCompanyStub>('agencyCompany')
-const { data: allReviewsData } = await useStubResource<AgencyReviewRecord[]>('agencyReviews', {
-  default: () => [],
-})
 
 const reviewId = computed(() => {
   const raw = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id
@@ -318,44 +191,6 @@ const { data: review, pending, error, refresh } = await useAsyncData(
     default: () => null,
   },
 )
-
-const companyDetail = computed<AgencyCompanyStub | null>(() => {
-  const detail = companyDetailData.value
-  if (detail && typeof detail === 'object') {
-    return detail as AgencyCompanyStub
-  }
-  return null
-})
-
-const defaultCompanyName = 'Tech Solutions Inc.'
-
-const companyInfo = computed(() => {
-  const detail = companyDetail.value
-  const name = detail?.name?.trim() || defaultCompanyName
-  return {
-    name,
-    tagline: detail?.tagline || 'Respond with warmth and clarity to every review.',
-    location: detail?.location || 'Worldwide',
-    website: detail?.website || '',
-    industry: detail?.industry || detail?.category || 'Professional Services',
-    employees: detail?.employees || '10-20',
-    revenue: detail?.revenue || '$1M-$10M',
-    email: detail?.email || 'contact@example.com',
-    phone: detail?.phone || '+1 (555) 123-4567',
-    contact: [detail?.firstName, detail?.lastName].filter(Boolean).join(' ').trim() || name,
-    contactTitle: detail?.jobTitle || 'Customer Success Lead',
-  }
-})
-
-const companyServiceTags = computed(() => {
-  const raw = companyDetail.value?.services
-  if (typeof raw !== 'string') return []
-  return raw
-    .split(',')
-    .map(entry => entry.trim())
-    .filter(Boolean)
-    .slice(0, 4)
-})
 
 const isLoading = computed(() => pending.value)
 const loadError = computed(() => error.value)
@@ -387,22 +222,7 @@ const formatDate = (date?: string) => {
   return new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
 }
 
-const formatWebsite = (url?: string | null) => {
-  if (!url) return ''
-  return url.replace(/^https?:\/\//i, '').replace(/\/$/, '')
-}
-
 const formattedReviewDate = computed(() => formatDate(review.value?.date))
-
-const moreReviews = computed<AgencyReviewRecord[]>(() => {
-  const list = Array.isArray(allReviewsData.value)
-    ? (allReviewsData.value as AgencyReviewRecord[])
-    : []
-  const currentId = reviewId.value
-  return list
-    .filter(entry => entry && entry.id !== currentId)
-    .slice(0, 3)
-})
 
 const getInitials = (name?: string) => {
   if (!name) return '??'
@@ -467,10 +287,5 @@ const resetReplyForm = () => {
 
 const goBack = () => {
   router.push('/company/review')
-}
-
-const viewAnotherReview = (id: number | string) => {
-  if (!id) return
-  router.push(`/company/review/${id}`)
 }
 </script>
