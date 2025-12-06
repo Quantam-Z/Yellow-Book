@@ -30,13 +30,21 @@
           <tr 
             v-for="(row, index) in paginatedRows" 
             :key="row.id || index" 
-            class="hover:bg-gray-50 active:bg-gray-100 transition"
+            class="hover:bg-gray-50 active:bg-gray-100 transition cursor-pointer"
+            @click="openCompanyDetail(row)"
           >
             <td class="px-4 py-3 text-gray-900 font-medium text-sm truncate">{{ row.name }}</td>
             <td class="px-4 py-3 text-gray-700 text-sm whitespace-nowrap">{{ row.date }}</td>
             <td class="px-4 py-3 text-gray-700 text-sm whitespace-nowrap">{{ row.phone }}</td>
             <td class="px-4 py-3 text-amber-500 text-sm truncate">
-                <a :href="'https://' + row.website" target="_blank" class="hover:underline">{{ row.website }}</a>
+                <a
+                  :href="'https://' + row.website"
+                  target="_blank"
+                  class="hover:underline"
+                  @click.stop
+                >
+                  {{ row.website }}
+                </a>
             </td>
             <td class="px-4 py-3 text-gray-700 text-sm whitespace-nowrap">{{ row.category }}</td>
             
@@ -44,7 +52,7 @@
               <span 
                 class="inline-flex items-center gap-1 px-3 py-1.5 rounded-md font-medium text-sm cursor-pointer hover:opacity-80 transition-opacity" 
                 :class="getStatusClass(row.status, 'soft')"
-                @click="toggleStatus(row)"
+                @click.stop="toggleStatus(row)"
               >
                 {{ row.status }}
               </span>
@@ -53,7 +61,7 @@
             <td class="px-4 py-3 whitespace-nowrap relative">
               <span 
                 v-if="editingIndex === index" 
-                @click="simulateDelete(row)" 
+                @click.stop="simulateDelete(row)" 
                 title="Delete Company" 
                 class="text-red-500 hover:text-red-700 transition-colors cursor-pointer inline-flex items-center"
               >
@@ -77,6 +85,7 @@
         v-for="(row, index) in paginatedRows"
         :key="row.id || index"
         class="w-full rounded-xl border border-gray-200 p-3 sm:p-4 bg-white shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.01] cursor-pointer"
+        @click="openCompanyDetail(row)"
       >
         <div class="flex justify-between items-start mb-3">
           <div class="flex flex-col flex-1 min-w-0">
@@ -88,14 +97,14 @@
             <span 
                 class="text-xs font-medium px-2 py-1 rounded-full whitespace-nowrap cursor-pointer hover:opacity-80 transition-opacity" 
                 :class="getStatusClass(row.status, 'soft') + ' bg-opacity-10'"
-                @click="toggleStatus(row)"
+                @click.stop="toggleStatus(row)"
             >
               {{ row.status }}
             </span>
             
             <span 
                 v-if="editingIndex === index" 
-                @click="simulateDelete(row)" 
+                @click.stop="simulateDelete(row)" 
                 title="Delete Company" 
                 class="text-red-500 hover:text-red-700 transition-colors cursor-pointer inline-flex items-center"
             >
@@ -125,7 +134,12 @@
             
             <div v-if="expandedRowId === row.id" class="flex flex-col transition-all duration-300">
               <span class="text-gray-500 text-xs">Website:</span>
-              <a :href="'https://' + row.website" class="text-amber-500 hover:text-amber-600 truncate" target="_blank">
+              <a
+                :href="'https://' + row.website"
+                class="text-amber-500 hover:text-amber-600 truncate"
+                target="_blank"
+                @click.stop
+              >
                 {{ row.website }}
               </a>
             </div>
@@ -134,7 +148,7 @@
 
           <div class="ml-4 flex-shrink-0 self-end">
             <span
-              @click="toggleDetails(row.id)"
+              @click.stop="toggleDetails(row.id)"
               class="text-amber-500 hover:text-amber-600 font-medium text-sm cursor-pointer whitespace-nowrap"
             >
               {{ expandedRowId === row.id ? 'Hide Details' : 'View Details' }}
@@ -183,6 +197,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
+import { useRouter } from 'vue-router';
 // import Swal from 'sweetalert2'; // REMOVED Swal
 import { MoreHorizontal, Trash2, ChevronLeft, ChevronRight } from 'lucide-vue-next'; 
 // Assuming these are locally defined:
@@ -199,6 +214,7 @@ const expandedRowId = ref(null);
 const allRows = ref([]); 
 const stubClient = useStubClient();
 const nuxtApp = useNuxtApp();
+const router = useRouter();
 
 let nextId = 1;
 const STATUS_SEQUENCE = ['Pending', 'Approved', 'Rejected'];
@@ -333,6 +349,24 @@ const simulateDelete = async (row) => {
   }
 };
 
+
+const openCompanyDetail = (row) => {
+  if (!row) return;
+  const query = {};
+  if (row.id) {
+    query.id = String(row.id);
+  }
+  if (row.slug) {
+    query.slug = row.slug;
+  }
+  if (row.name) {
+    query.title = row.name;
+  }
+  router.push({
+    path: '/agency',
+    query,
+  });
+};
 
 onMounted(() => {
   fetchData();
