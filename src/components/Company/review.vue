@@ -1,19 +1,87 @@
 <template>
   <div class="w-full min-h-screen bg-white p-4 sm:p-4 space-y-6">
     <!-- Header -->
-    <div class="w-full rounded-xl bg-gradient-to-br from-indigo-500/10 to-pink-500/10 p-4 sm:p-6 border border-gray-200 shadow-lg mb-4 sm:mb-6">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900">Welcome John</h1>
+  <div class="grid gap-4 lg:grid-cols-[2fr_1fr] mb-4 sm:mb-6">
+    <div class="w-full rounded-2xl bg-gradient-to-br from-indigo-500/10 to-pink-500/10 p-5 sm:p-6 border border-gray-200 shadow-lg">
+      <div class="space-y-4">
+        <div class="space-y-1">
+          <p class="text-sm uppercase tracking-wide text-gray-600">Welcome back, {{ contactFirstName }}</p>
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900">{{ companyName }}</h1>
         </div>
-        <!-- <button
-          class="bg-white/90 hover:bg-white text-gray-800 font-semibold px-4 py-2.5 transition shadow-md whitespace-nowrap text-sm w-full sm:w-auto text-center rounded-none border-none"
-          aria-label="List Company"
-        >
-          List Company
-        </button> -->
+        <p class="text-base text-gray-700 max-w-3xl">
+          {{ companyTagline }}
+        </p>
+        <div class="flex flex-wrap gap-4 text-sm text-gray-700">
+          <div class="flex items-center gap-2">
+            <MapPin class="w-5 h-5 text-rose-500" />
+            <span>{{ companyLocation }}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <Globe class="w-5 h-5 text-sky-500" />
+            <template v-if="companyWebsite">
+              <a
+                :href="companyWebsite"
+                target="_blank"
+                rel="noopener"
+                class="text-blue-600 hover:underline break-all"
+              >
+                {{ formatWebsite(companyWebsite) }}
+              </a>
+            </template>
+            <span v-else>Website coming soon</span>
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-4 text-xs uppercase tracking-wide text-gray-600">
+          <span>
+            Industry:
+            <strong class="font-semibold text-gray-900 normal-case">{{ companyIndustry }}</strong>
+          </span>
+          <span>
+            Team size:
+            <strong class="font-semibold text-gray-900 normal-case">{{ companyEmployees }}</strong>
+          </span>
+          <span>
+            Revenue:
+            <strong class="font-semibold text-gray-900 normal-case">{{ companyRevenue }}</strong>
+          </span>
+        </div>
       </div>
     </div>
+
+    <div class="w-full rounded-2xl bg-white border border-gray-200 shadow-sm p-5 space-y-4">
+      <div>
+        <p class="text-sm uppercase tracking-wide text-gray-500">Primary contact</p>
+        <p class="text-xl font-semibold text-gray-900">{{ contactFullName }}</p>
+        <p class="text-sm text-gray-500">{{ contactTitle }}</p>
+      </div>
+      <div class="space-y-3 text-sm text-gray-600">
+        <div class="flex items-center gap-2">
+          <Mail class="w-4 h-4 text-gray-400" />
+          <span>{{ companyEmail }}</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <Phone class="w-4 h-4 text-gray-400" />
+          <span>{{ companyPhone }}</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <MapPin class="w-4 h-4 text-gray-400" />
+          <span>{{ companyLocation }}</span>
+        </div>
+      </div>
+      <div v-if="companyServiceTags.length" class="pt-3 border-t border-gray-100">
+        <p class="text-xs uppercase tracking-wide text-gray-500 mb-2">Focus areas</p>
+        <div class="flex flex-wrap gap-2">
+          <span
+            v-for="service in companyServiceTags"
+            :key="service"
+            class="px-3 py-1 rounded-full bg-gray-100 text-gray-700 text-xs font-medium"
+          >
+            {{ service }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
 
       <!-- Overall Rating Card -->
     <div class="w-full bg-white rounded-lg border border-darkgray border-solid box-border p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -342,11 +410,11 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, watchEffect } from 'vue'
-import { Trash2, Star, ChevronDown, Loader2, Calendar, MessageSquare } from 'lucide-vue-next'
+import { Trash2, Star, ChevronDown, Loader2, Calendar, MessageSquare, MapPin, Globe, Mail, Phone } from 'lucide-vue-next'
 import Pagination from '~/components/common/pagination.vue'
 import { useStubClient } from '~/services/stubClient'
 import { useStubResource } from '~/composables/useStubResource'
-import { slugifyTitle } from '@/services/directoryMapper'
+import type { AgencyCompanyStub } from '@/services/directoryMapper'
 
 const reviews = ref([])
 const selectedRating = ref('')
@@ -360,17 +428,59 @@ const stubClient = useStubClient()
 
 // Load reviews from stub json
 const { data: reviewsData, pending, error: reviewsError, refresh } = await useStubResource('agencyReviews')
-const { data: companyDetailData } = await useStubResource('agencyCompany')
-const defaultCompanyName = 'Tech Solutions Inc'
-const fallbackSlug = slugifyTitle(defaultCompanyName)
-const companyName = computed(() => {
+const { data: companyDetailData } = await useStubResource<AgencyCompanyStub>('agencyCompany')
+
+const defaultCompanyName = 'Tech Solutions Inc.'
+const fallbackEmail = 'support@example.com'
+const fallbackPhone = '+1 (555) 000-0000'
+
+const companyDetail = computed<AgencyCompanyStub | null>(() => {
   const detail = companyDetailData.value
-  if (detail && typeof detail === 'object' && detail.name) {
-    return detail.name
+  if (detail && typeof detail === 'object') {
+    return detail as AgencyCompanyStub
   }
-  return defaultCompanyName
+  return null
 })
-const companySlug = computed(() => slugifyTitle(companyName.value) || fallbackSlug)
+
+const companyName = computed(() => {
+  const name = companyDetail.value?.name?.trim()
+  return name && name.length ? name : defaultCompanyName
+})
+
+const contactFullName = computed(() => {
+  const detail = companyDetail.value
+  const first = typeof detail?.firstName === 'string' ? detail.firstName.trim() : ''
+  const last = typeof detail?.lastName === 'string' ? detail.lastName.trim() : ''
+  const combined = `${first} ${last}`.trim()
+  return combined || companyName.value
+})
+
+const contactFirstName = computed(() => contactFullName.value.split(' ')[0] || 'there')
+const contactTitle = computed(() => (companyDetail.value?.jobTitle?.trim() || 'Customer Success Lead'))
+
+const companyTagline = computed(
+  () =>
+    companyDetail.value?.tagline ||
+    `Keep ${companyName.value} customers delighted with thoughtful, timely replies.`,
+)
+
+const companyLocation = computed(() => companyDetail.value?.location || 'Worldwide')
+const companyIndustry = computed(() => companyDetail.value?.industry || companyDetail.value?.category || 'Professional Services')
+const companyEmployees = computed(() => companyDetail.value?.employees || '10-20')
+const companyRevenue = computed(() => companyDetail.value?.revenue || '$1M-$10M')
+const companyWebsite = computed(() => companyDetail.value?.website || '')
+const companyEmail = computed(() => companyDetail.value?.email || fallbackEmail)
+const companyPhone = computed(() => companyDetail.value?.phone || fallbackPhone)
+const companyServiceTags = computed(() => {
+  const raw = companyDetail.value?.services
+  if (typeof raw !== 'string') return []
+  return raw
+    .split(',')
+    .map(service => service.trim())
+    .filter(Boolean)
+    .slice(0, 4)
+})
+
 const isLoading = computed(() => pending.value)
 
 watchEffect(() => {
@@ -396,6 +506,11 @@ watch(reviewsError, (err) => {
 const formatDate = (date) => {
   if (!date) return ''
   return new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+}
+
+const formatWebsite = (url?: string | null) => {
+  if (!url) return ''
+  return url.replace(/^https?:\/\//i, '').replace(/\/$/, '')
 }
 
 // Format date for comparison (YYYY-MM-DD)
@@ -510,23 +625,7 @@ const deleteReview = async (id) => {
 
 const goToReviewDetail = (reviewId) => {
   if (!reviewId) return
-  const slug = companySlug.value
-  const title = companyName.value
-  const query: Record<string, string> = {
-    slug,
-    id: slug,
-    source: 'company-panel',
-  }
-  if (title) {
-    query.title = title
-  }
-  if (reviewId) {
-    query.reviewId = String(reviewId)
-  }
-  router.push({
-    path: '/agency',
-    query,
-  })
+  router.push(`/company/review/${reviewId}`)
 }
 
 // Watch for filter changes to reset pagination
