@@ -173,12 +173,15 @@
                         </div>
 
                         <!-- Review Column -->
-                        <div class="flex items-center justify-center p-num-10 gap-1 text-darkslategray">
+                        <div
+                          class="flex items-center justify-center p-num-10 gap-1 text-darkslategray cursor-pointer"
+                          role="button"
+                          tabindex="0"
+                          @click="goToReviewDetail(review.id)"
+                          @keyup.enter="goToReviewDetail(review.id)"
+                        >
                           <div class="relative leading-[160%] capitalize">"{{ truncateReview(review.content) }}"</div>
-                          <span
-                            @click="viewFullReview(review)"
-                            class="text-deepskyblue hover:text-blue-600 cursor-pointer"
-                          >
+                          <span class="text-deepskyblue hover:text-blue-600">
                             Full view
                           </span>
                         </div>
@@ -187,11 +190,11 @@
                         <div class="w-num-100 flex items-center justify-center p-num-10 box-border">
                           <div class="flex items-center gap-2">
                             <button 
-                              @click="approveReview(review.id)"
-                              class="p-2 text-green-600 hover:bg-green-50 rounded transition touch-manipulation border-0 outline-none"
-                              title="Approve review"
+                              @click="goToReviewDetail(review.id)"
+                              class="p-2 text-blue-600 hover:bg-blue-50 rounded transition touch-manipulation border-0 outline-none"
+                              title="Reply to review"
                             >
-                              <CheckCircle class="w-5 h-5" />
+                              <MessageSquare class="w-5 h-5" />
                             </button>
                             <button 
                               @click="deleteReview(review.id)"
@@ -262,25 +265,28 @@
                 <!-- Review Content -->
                 <div class="mb-4">
                   <p class="text-gray-700 text-sm leading-relaxed italic line-clamp-3">"{{ review.content }}"</p>
-                  <span
-                    @click="viewFullReview(review)"
-                    class="text-deepskyblue hover:text-blue-600 cursor-pointer"
+                  <button
+                    type="button"
+                    @click="goToReviewDetail(review.id)"
+                    class="text-deepskyblue hover:text-blue-600 cursor-pointer bg-transparent border-0 p-0 font-semibold"
                   >
                     Full view
-                  </span>
+                  </button>
                 </div>
 
                 <!-- Actions -->
                 <div class="flex justify-end gap-2 pt-2 border-t border-table-border">
                   <button 
-                    class="flex items-center justify-center gap-1 px-3 py-1.5 text-green-600 bg-green-50 rounded-lg text-sm hover:bg-green-100 transition w-1/2 min-h-[44px] touch-manipulation border-0 outline-none"
-                    @click="approveReview(review.id)"
-                    aria-label="Approve review"
+                    type="button"
+                    class="flex items-center justify-center gap-1 px-3 py-1.5 text-blue-600 bg-blue-50 rounded-lg text-sm hover:bg-blue-100 transition w-1/2 min-h-[44px] touch-manipulation border-0 outline-none"
+                    @click="goToReviewDetail(review.id)"
+                    aria-label="Reply to review"
                   >
-                    <CheckCircle class="w-4 h-4" />
-                    Approve
+                    <MessageSquare class="w-4 h-4" />
+                    Reply
                   </button>
                   <button 
+                    type="button"
                     class="flex items-center justify-center gap-1 px-3 py-1.5 text-red-600 bg-red-50 rounded-lg text-sm hover:bg-red-100 transition w-1/2 min-h-[44px] touch-manipulation border-0 outline-none"
                     @click="deleteReview(review.id)"
                     aria-label="Delete review"
@@ -331,49 +337,12 @@
       </div>
     </div>
 
-    <!-- Full Review Modal -->
-    <div v-if="selectedReview" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div class="bg-white rounded-lg p-6 max-w-2xl w-full mx-4">
-        <div class="flex justify-between items-center mb-4">
-          <h3 class="text-lg font-semibold">Review Details</h3>
-          <button @click="selectedReview = null" class="text-gray-500 hover:text-gray-700">
-            <X class="w-6 h-6" />
-          </button>
-        </div>
-        <div class="space-y-4">
-          <div class="flex items-center gap-3">
-            <div class="h-12 w-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-              <span class="text-white font-bold">{{ getInitials(selectedReview.reviewerName) }}</span>
-            </div>
-            <div>
-              <div class="font-semibold text-gray-900">{{ selectedReview.reviewerName }}</div>
-              <div class="text-sm text-gray-500">{{ selectedReview.agency }}</div>
-              <div class="text-sm text-gray-500">{{ formatDate(selectedReview.date) }} at {{ selectedReview.time }}</div>
-            </div>
-          </div>
-          <div class="flex items-center gap-2">
-            <div class="flex gap-1">
-              <Star
-                v-for="i in 5"
-                :key="i"
-                :class="i <= selectedReview.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'"
-                class="w-5 h-5"
-              />
-            </div>
-            <span class="text-gray-600">{{ selectedReview.rating }} Star{{ selectedReview.rating > 1 ? 's' : '' }}</span>
-          </div>
-          <div class="border-t pt-4">
-            <p class="text-gray-700 leading-relaxed italic">"{{ selectedReview.content }}"</p>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, watch, watchEffect } from 'vue'
-import { CheckCircle, Trash2, Star, ChevronDown, Loader2, Calendar, X } from 'lucide-vue-next'
+import { Trash2, Star, ChevronDown, Loader2, Calendar, MessageSquare } from 'lucide-vue-next'
 import Pagination from '~/components/common/pagination.vue'
 import { useStubClient } from '~/services/stubClient'
 import { useStubResource } from '~/composables/useStubResource'
@@ -384,8 +353,8 @@ const currentPage = ref(1)
 const reviewsPerPage = 10
 const dateFrom = ref('')
 const dateTo = ref('')
-const selectedReview = ref(null)
 const nuxtApp = useNuxtApp()
+const router = useRouter()
 const stubClient = useStubClient()
 
 // Load reviews from stub json
@@ -507,25 +476,6 @@ const resetFilters = () => {
   console.log('Filters reset')
 }
 
-const approveReview = async (id) => { 
-  try {
-    await stubClient.update('agencyReviews', id, { status: 'Approved' }, { delay: 140 })
-    await refresh()
-    if (import.meta.client) {
-      try {
-        nuxtApp.$awn?.success('Review approved')
-      } catch {}
-    }
-  } catch (error) {
-    console.error('Failed to approve review', error)
-    if (import.meta.client) {
-      try {
-        nuxtApp.$awn?.alert('Failed to approve review')
-      } catch {}
-    }
-  }
-}
-
 const deleteReview = async (id) => { 
   if (!confirm('Are you sure you want to delete this review?')) return
   try {
@@ -546,8 +496,9 @@ const deleteReview = async (id) => {
   }
 }
 
-const viewFullReview = (review) => {
-  selectedReview.value = review
+const goToReviewDetail = (reviewId) => {
+  if (!reviewId) return
+  router.push(`/company/review/${reviewId}`)
 }
 
 // Watch for filter changes to reset pagination
