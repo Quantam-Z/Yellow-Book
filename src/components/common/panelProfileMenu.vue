@@ -32,22 +32,27 @@
           <p class="text-xs text-gray-500">{{ roleHint }}</p>
         </div>
 
-        <button
-          v-if="showDashboardLink && dashboardTo"
-          class="w-full flex items-center gap-3 px-4 py-2 hover:bg-gray-50 rounded-lg transition-colors text-gray-700"
-          @click="goToDashboard"
-        >
-          <LayoutDashboard class="w-4 h-4" />
-          <span class="font-medium">Open dashboard</span>
-        </button>
+        <div class="flex items-center justify-center gap-2 px-3 py-1">
+  <button
+    v-if="showDashboardLink && dashboardTo"
+    class="flex items-center gap-2 px-2.5 py-1.5 text-sm hover:bg-gray-100 rounded-md transition-colors text-gray-700 
+           border-none outline-none focus:outline-none focus:ring-0"
+    @click="goToDashboard"
+  >
+    <LayoutDashboard class="w-3.5 h-3.5" />
+    <span class="font-medium">Dashboard</span>
+  </button>
 
-        <button
-          class="w-full flex items-center gap-3 px-4 py-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-          @click="handleLogout"
-        >
-          <LogOut class="w-4 h-4" />
-          <span class="font-medium">Logout</span>
-        </button>
+  <button
+    class="flex items-center gap-2 px-2.5 py-1.5 text-sm text-red-500 hover:bg-red-50 rounded-md transition-colors 
+           border-none outline-none focus:outline-none focus:ring-0"
+    @click="handleLogout"
+  >
+    <LogOut class="w-3.5 h-3.5" />
+    <span class="font-medium">Logout</span>
+  </button>
+</div>
+
       </div>
     </transition>
   </div>
