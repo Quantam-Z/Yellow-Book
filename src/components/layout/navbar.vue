@@ -72,12 +72,8 @@
                 <div class="relative leading-[160%] font-normal text-base">Login</div>
               </div>
             </template>
-            <div v-else class="relative" ref="userMenuRef">
-              <button
-                type="button"
-                class="flex items-center gap-3 rounded-full border border-[#dbe7ff] bg-white px-3 py-2 shadow-sm hover:shadow-lg transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#dbe7ff]"
-                @click="toggleUserMenu"
-              >
+            <div v-else class="flex items-center gap-3">
+              <div class="flex items-center gap-3 rounded-full border border-[#dbe7ff] bg-white px-3 py-2 shadow-sm">
                 <span class="w-9 h-9 rounded-full bg-[#212121] text-white flex items-center justify-center font-semibold text-sm uppercase">
                   {{ userInitials }}
                 </span>
@@ -87,45 +83,29 @@
                   </span>
                   <span class="text-[12px] text-[#616161]">Account</span>
                 </div>
-                <ChevronDown class="w-4 h-4 text-[#616161] hidden sm:block" :class="{ 'rotate-180': showUserMenu }" />
+              </div>
+              <button
+                type="button"
+                class="px-4 py-2 rounded-full bg-[#ffe48f] text-[#212121] font-semibold text-sm shadow hover:bg-[#ffd96a] transition"
+                @click="goToUserDashboard"
+              >
+                My Dashboard
               </button>
-              <transition name="fade">
-                <div
-                  v-if="showUserMenu"
-                  class="absolute right-0 mt-3 w-56 rounded-2xl border border-[#e4ecff] bg-white shadow-[0_18px_45px_rgba(33,33,33,0.15)] py-2 text-sm z-50"
-                  role="menu"
-                  aria-label="Account menu"
-                >
-                  <div class="px-4 pb-2 border-b border-[#f0f4ff] mb-2">
-                    <p class="text-xs uppercase tracking-wide text-[#9e9e9e]">Signed in as</p>
-                    <p class="text-sm font-semibold text-[#212121] truncate">
-                      {{ authUser?.name || authUser?.email }}
-                    </p>
-                  </div>
-                  <button
-                    class="w-full flex items-center gap-3 px-4 py-2 hover:bg-[#fff9e6] rounded-lg transition-colors"
-                    @click="goToUserDashboard"
-                  >
-                    <LayoutDashboard class="w-4 h-4 text-[#616161]" />
-                    <span class="font-medium text-[#212121]">My Dashboard</span>
-                  </button>
-                  <button
-                    class="w-full flex items-center gap-3 px-4 py-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                    @click="handleUserLogout"
-                  >
-                    <LogOut class="w-4 h-4" />
-                    <span class="font-medium">Logout</span>
-                  </button>
-                </div>
-              </transition>
+              <button
+                type="button"
+                class="px-4 py-2 rounded-full bg-[#fff9e6] text-red-500 font-semibold text-sm shadow hover:bg-red-50 transition"
+                @click="handleUserLogout"
+              >
+                Logout
+              </button>
             </div>
       <button
-  type="button"
-  class="relative rounded border-gray border-solid border-[1px] box-border h-12 flex items-center justify-center py-[18px] px-9 text-center text-base text-[#212121] font-plus-jakarta-sans bg-transparent"
-  @click="handleListYourAgencyClick"
->
-  <div class="relative leading-[130%] capitalize font-semibold">List Your Agency</div>
-</button>
+        type="button"
+        class="relative rounded-full bg-[#212121] text-white h-12 flex items-center justify-center py-[18px] px-9 text-center text-base font-plus-jakarta-sans shadow hover:bg-[#3a3a3a] transition-colors"
+        @click="handleListYourAgencyClick"
+      >
+        <div class="relative leading-[130%] capitalize font-semibold">List Your Agency</div>
+      </button>
 
         </div>
 
@@ -314,17 +294,17 @@
 
 <script>
 import { Menu, X, ChevronDown, LayoutDashboard, LogOut } from 'lucide-vue-next'
-import { useRequestFetch, useNuxtApp } from '#app'
+import { useNuxtApp } from '#app'
 import { useAuthStore } from '~/stores/auth'
 import { storeToRefs } from 'pinia'
 import { useLoginModal } from '~/composables/useLoginModal'
+import { searchStubResource } from '~/services/stubSearch'
 
 export default {
   name: 'ResponsiveLandingPage',
   components: { Menu, X, ChevronDown, LayoutDashboard, LogOut },
     emits: ['search'],
     setup() {
-      const requestFetch = useRequestFetch()
       const nuxtApp = useNuxtApp()
       const authStore = useAuthStore()
       const { openLoginModal: triggerOpenLoginModal } = useLoginModal()
@@ -334,7 +314,6 @@ export default {
       const { isAuthenticated, user } = storeToRefs(authStore)
 
       return {
-        requestFetch,
         nuxtApp,
         authStore,
         isAuthenticated,
@@ -350,7 +329,6 @@ export default {
         searchQuery: '',
         cachedSearchQuery: '',
         isMobileMenuOpen: false,
-          showUserMenu: false,
         defaultSearchPlaceholder,
         dropdownResultLimit: 12,
         popularSectionId: 'home-popular-listings',
@@ -408,13 +386,11 @@ export default {
       const query = searchText?.trim() || ''
       this.searchLoading = true
       try {
-        const response = await this.requestFetch('/api/search/listings', {
-          params: {
-            search: query || undefined,
-            limit: this.dropdownResultLimit,
-          },
+        const response = await searchStubResource('listings', {
+          search: query || undefined,
+          limit: this.dropdownResultLimit,
         })
-        this.searchResults = Array.isArray(response?.data) ? response.data : []
+        this.searchResults = Array.isArray(response?.items) ? response.items : []
         this.searchMeta = response?.meta ?? {}
         this.searchError = null
       } catch (error) {
@@ -432,16 +408,11 @@ export default {
         this.fetchSearchEntries(this.searchQuery)
       }, 200)
     },
-    toggleUserMenu() {
-      this.showUserMenu = !this.showUserMenu
-    },
     async handleUserLogout() {
       await this.authStore.logout()
-      this.showUserMenu = false
       this.closeMobileMenu()
     },
     goToUserDashboard() {
-      this.showUserMenu = false
       this.closeMobileMenu()
       if (this.$router) {
         this.$router.push('/user/my-profile')
@@ -531,11 +502,6 @@ export default {
           }
         }
       }
-      const userMenu = this.$refs.userMenuRef
-      const clickedInsideUserMenu = userMenu && userMenu.contains(e.target)
-      if (!clickedInsideUserMenu && this.showUserMenu) {
-        this.showUserMenu = false
-      }
       },
           handlePopularListingClick(event, shouldCloseMenu = false) {
             if (shouldCloseMenu) {
@@ -570,13 +536,11 @@ export default {
             if (event && typeof event.preventDefault === 'function') {
               event.preventDefault()
             }
-            this.showUserMenu = false
             this.notifyLoginRequired()
             this.openLoginModal()
             return
           }
 
-          this.showUserMenu = false
           const targetRoute = this.listYourAgencyLink
           if (targetRoute && this.$router) {
             this.$router.push(targetRoute)

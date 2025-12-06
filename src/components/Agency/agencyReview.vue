@@ -88,8 +88,12 @@
 
           <div
             v-for="(review, index) in filteredReviews"
-            :key="index"
-            class="bg-white rounded-lg shadow-md p-4 sm:p-5 md:p-6 space-y-4 sm:space-y-5"
+            :key="review.id ?? index"
+            :id="`agency-review-${review.id}`"
+            :class="[
+              'bg-white rounded-lg shadow-md p-4 sm:p-5 md:p-6 space-y-4 sm:space-y-5 transition-shadow',
+              { 'ring-2 ring-amber-400 ring-offset-2 shadow-lg': highlightedReviewId === review.id }
+            ]"
           >
             <div class="space-y-3">
               <div class="flex items-start gap-2 sm:gap-3">
@@ -313,7 +317,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, computed, watch, watchEffect } from 'vue';
+  import { ref, computed, watch, watchEffect, nextTick } from 'vue';
   import { MessageSquare, ChevronDown, ExternalLink, X, Star } from 'lucide-vue-next';
   import { Teleport } from 'vue';
   
@@ -343,6 +347,12 @@
     dislikes: number;
     companyResponse?: CompanyResponse
   }
+
+  const props = defineProps<{
+    highlightReviewId?: number | null;
+  }>();
+
+  const highlightedReviewId = ref<number | null>(null);
 
   const imageRatingBreakdown: Record<number, number> = {
     5: 120,
@@ -414,6 +424,39 @@
       dislikes: Number(r.dislikes ?? 0),
     }));
   });
+
+  const scrollToHighlightedReview = () => {
+    if (!import.meta.client) return;
+    const targetId = highlightedReviewId.value;
+    if (!targetId) return;
+    requestAnimationFrame(() => {
+      const element = document.getElementById(`agency-review-${targetId}`);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    });
+  };
+
+  watch(
+    () => props.highlightReviewId,
+    (next) => {
+      const numeric = Number(next);
+      highlightedReviewId.value = Number.isFinite(numeric) ? numeric : null;
+      if (highlightedReviewId.value) {
+        nextTick(scrollToHighlightedReview);
+      }
+    },
+    { immediate: true },
+  );
+
+  watch(
+    () => reviews.value.length,
+    () => {
+      if (highlightedReviewId.value) {
+        nextTick(scrollToHighlightedReview);
+      }
+    },
+  );
 
   watch(reviewsError, (err) => {
     if (err) {

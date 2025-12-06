@@ -72,6 +72,10 @@ const httpTransportState = {
   lastError: null,
 };
 
+const stubHttpEnabled =
+  (typeof process !== "undefined" && process?.env?.NUXT_PUBLIC_ENABLE_STUB_HTTP === "true") ||
+  (typeof import.meta !== "undefined" && import.meta?.env?.NUXT_PUBLIC_ENABLE_STUB_HTTP === "true");
+
 const HTTP_TRANSPORT_FALLBACK_REASONS = new Set(["invalid-json", "http-non-json", "html-response", "network-error"]);
 
 const summarizeTransportError = (error) => {
@@ -256,8 +260,8 @@ const loadStubFromDisk = async (file, type) => {
 
     const [{ readFile }, { join }] = await Promise.all([import("node:fs/promises"), import("node:path")]);
     const candidatePaths = [
-      join(process.cwd(), "public", "stubs", file),
       join(process.cwd(), "src", "public", "stubs", file),
+      join(process.cwd(), "public", "stubs", file),
     ];
 
     for (const filePath of candidatePaths) {
@@ -384,6 +388,14 @@ const shouldUseHttpTransport = (options = {}) => {
 
   const preference = resolveTransportPreference(options);
   if (preference === "local-only") return false;
+
+  if (!stubHttpEnabled && preference === "remote-only") {
+    return false;
+  }
+
+  if (!stubHttpEnabled) {
+    return false;
+  }
 
   if (httpTransportState.unavailable && preference !== "remote-only") {
     return false;

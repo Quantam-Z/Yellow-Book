@@ -8,6 +8,7 @@ import StarRatingBox from '@/components/common/starRatingBox.vue';
 import type { DirectoryListing } from '@/types/directory';
 import { useStubClient } from '~/services/stubClient';
 import { useStubResource } from '~/composables/useStubResource';
+import { useStubSearch } from '~/composables/useStubSearch';
 import { useAuthStore } from '~/stores/auth';
 
 type ListingCard = {
@@ -67,14 +68,11 @@ const {
   data: listingsPayload,
   pending,
   error: listingsError,
-} = await useFetch('/api/search/listings', {
-  query: searchQueryParams,
+} = await useStubSearch<DirectoryListing>('listings', {
+  key: 'popular-listings',
+  query: () => searchQueryParams.value,
   watch: [currentPage, searchTerm],
   default: () => ({ items: [], meta: FALLBACK_META }),
-  transform: (response) => ({
-    items: Array.isArray(response?.data) ? response.data : [],
-    meta: { ...FALLBACK_META, ...(response?.meta || {}) },
-  }),
 });
 
 if (import.meta.dev) {

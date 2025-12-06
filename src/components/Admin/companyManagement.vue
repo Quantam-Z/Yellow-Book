@@ -264,6 +264,14 @@
                     >
                       <button
                         type="button"
+                        class="text-blue-500 hover:text-blue-600 transition-colors flex items-center justify-center"
+                        @click.stop="openCompanyPublicPage(company)"
+                        title="Open public page"
+                      >
+                        <ExternalLinkIcon class="w-5 h-5" />
+                      </button>
+                      <button
+                        type="button"
                         class="text-amber-500 hover:text-amber-600 transition-colors flex items-center justify-center"
                         @click.stop="viewCompany(company)"
                         title="Quick view"
@@ -295,14 +303,23 @@
 
               <div class="flex justify-between items-center text-xs text-gray-500">
                 <span>{{ company.mobile || 'No contact number' }}</span>
-                <button
-                  type="button"
-                  @click.stop="viewCompany(company)"
-                  class="text-amber-500 hover:text-amber-600 font-medium text-sm cursor-pointer whitespace-nowrap bg-transparent border-0 p-0 focus:outline-none"
-                  :aria-expanded="expandedCompanyId === company.id ? 'true' : 'false'"
-                >
-                  {{ expandedCompanyId === company.id ? 'Hide Details' : 'View Details' }}
-                </button>
+                <div class="flex items-center gap-4">
+                  <button
+                    type="button"
+                    @click.stop="openCompanyPublicPage(company)"
+                    class="text-blue-500 hover:text-blue-600 font-semibold text-sm cursor-pointer whitespace-nowrap bg-transparent border-0 p-0 focus:outline-none"
+                  >
+                    Visit Page
+                  </button>
+                  <button
+                    type="button"
+                    @click.stop="viewCompany(company)"
+                    class="text-amber-500 hover:text-amber-600 font-medium text-sm cursor-pointer whitespace-nowrap bg-transparent border-0 p-0 focus:outline-none"
+                    :aria-expanded="expandedCompanyId === company.id ? 'true' : 'false'"
+                  >
+                    {{ expandedCompanyId === company.id ? 'Hide Details' : 'View Details' }}
+                  </button>
+                </div>
               </div>
 
               <Transition name="collapse">
@@ -408,6 +425,11 @@
                 </td>
                   <td class="px-4 py-3 whitespace-nowrap">
                     <div class="flex items-center gap-2">
+                      <ExternalLinkIcon
+                        @click="openCompanyPublicPage(company)"
+                        class="w-5 h-5 text-blue-500 cursor-pointer hover:text-blue-600 active:text-blue-700 transition touch-manipulation"
+                        title="Open public page"
+                      />
                       <EyeIcon 
                         @click="viewCompany(company)"
                         class="w-5 h-5 text-yellow-500 cursor-pointer hover:text-yellow-600 active:text-yellow-700 transition touch-manipulation" 
@@ -493,12 +515,13 @@
 <script setup>
 import { ref, computed, defineAsyncComponent, watchEffect, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { Search as SearchIcon, Eye as EyeIcon, CheckCircle as CheckCircleIcon, ChevronDown as ChevronDownIcon, ChevronLeft as ChevronLeftIcon, ChevronRight as ChevronRightIcon, Filter as FilterIcon, Phone as PhoneIcon, Globe as GlobeIcon, Trash2 as Trash2Icon, MoreHorizontal } from "lucide-vue-next";
+import { Search as SearchIcon, Eye as EyeIcon, CheckCircle as CheckCircleIcon, ChevronDown as ChevronDownIcon, ChevronLeft as ChevronLeftIcon, ChevronRight as ChevronRightIcon, Filter as FilterIcon, Phone as PhoneIcon, Globe as GlobeIcon, Trash2 as Trash2Icon, MoreHorizontal, ExternalLink as ExternalLinkIcon } from "lucide-vue-next";
 import { getStatusClass } from '~/composables/useStatusClass'
 import { useSelection } from '~/composables/useSelection'
 import { useStubClient } from '~/services/stubClient'
 import DetailModal from '~/components/common/DetailModal.vue'
 import { useClientEventListener } from '@/composables/useClientEventListener';
+import { useStubSearch } from '~/composables/useStubSearch';
 
 const AddCompany = defineAsyncComponent(() => import('~/components/modal/addCompany.vue'))
 
@@ -574,8 +597,9 @@ const queryParams = computed(() => ({
 }));
 
 // --- Data Fetching (SSR-friendly) ---
-const { data: companiesPayload, pending, error: companiesError, refresh } = await useFetch('/api/companies', {
-  query: queryParams,
+const { data: companiesPayload, pending, error: companiesError, refresh } = await useStubSearch('companies', {
+  key: 'admin-company-management',
+  query: () => queryParams.value,
   watch: [
     currentPage,
     searchQuery,
@@ -586,10 +610,6 @@ const { data: companiesPayload, pending, error: companiesError, refresh } = awai
     () => filters.value.timeRange,
   ],
   default: () => ({ items: [], meta: createDefaultMeta() }),
-  transform: (response) => ({
-    items: Array.isArray(response?.data) ? response.data : [],
-    meta: { ...createDefaultMeta(), ...(response?.meta || {}) },
-  }),
 });
 
 const isLoading = computed(() => pending.value)
@@ -704,6 +724,20 @@ const viewCompany = (company) => {
 
   selectedCompany.value = company;
   isDetailModalOpen.value = true;
+};
+
+const openCompanyPublicPage = (company) => {
+  if (!company?.name) return;
+  const target = {
+    path: '/agency',
+    query: { title: company.name },
+  };
+  if (import.meta.client) {
+    const href = router.resolve(target).href;
+    window.open(href, '_blank', 'noopener');
+    return;
+  }
+  router.push(target);
 };
 
 const closeCompanyDetails = () => {

@@ -4,6 +4,7 @@ import { useNuxtApp, navigateTo } from 'nuxt/app'
 import { useStubClient } from '~/services/stubClient'
 import { normalizeEmail, buildStubToken, parseStubToken } from '~/utils/authTokens'
 import { setToken as setAuthToken, removeToken as clearAuthToken, getUser as getSavedUser, getToken as getSavedToken } from '~/composables/useAuth'
+import { issueCode, verifyCode, getDefaultTtl } from '~/utils/emailCodeStore'
 
 const createAuthError = (status, message, code) => {
   const error = new Error(message)
@@ -21,6 +22,30 @@ const getNotifier = () => {
   } catch (_) {
     return null
   }
+}
+
+const ensureStubUserExists = async (email) => {
+  const stubClient = useStubClient()
+  const normalized = normalizeEmail(email)
+  const users = await stubClient.list('users', { delay: 0 })
+  let user = users.find((candidate) => normalizeEmail(candidate?.email) === normalized) ?? null
+
+  if (user) {
+    return user
+  }
+
+  const fallbackName = normalized.split('@')[0] || 'Guest'
+  const created = await stubClient.create('users', {
+    name: fallbackName.replace(/^\w/, (char) => char.toUpperCase()),
+    email: normalized,
+    signupMethod: 'Email',
+    signupDate: new Date().toISOString().slice(0, 10),
+    status: 'Pending',
+    verified: false,
+  })
+
+  user = created ?? { name: fallbackName, email: normalized }
+  return user
 }
 
 // Authentication store with token and derived auth state
@@ -110,28 +135,35 @@ export const useAuthStore = defineStore('auth', {
       this.user = { ...user }
       return this.user
     },
-      async requestEmailCode(payload = {}) {
+    async requestEmailCode(payload = {}) {
         const email = normalizeEmail(payload?.email)
         if (!email) {
           throw createAuthError(400, 'Email is required', 'EMAIL_REQUIRED')
         }
 
-        const result = await $fetch('/api/auth/email-code', {
-          method: 'POST',
-          body: { email },
-        })
+        await ensureStubUserExists(email)
 
-        const expiresInMs = Number(result?.meta?.expiresInMs) || 5 * 60 * 1000
+        const { code, expiresAt } = issueCode(email, getDefaultTtl())
+        const expiresInMs = Math.max(0, expiresAt - Date.now())
+
         this.pendingChallenge = {
           email,
           sentAt: Date.now(),
-          expiresAt: Date.now() + expiresInMs,
+          expiresAt,
         }
 
         const notifier = getNotifier()
         notifier?.success('Verification code sent')
 
-        return result
+        return {
+          ok: true,
+          message: 'Verification code generated',
+          meta: {
+            expiresAt,
+            expiresInMs,
+          },
+          debug: import.meta.dev ? { code } : undefined,
+        }
       },
       async verifyEmailCode(payload = {}) {
         const email = normalizeEmail(payload?.email)
@@ -143,29 +175,34 @@ export const useAuthStore = defineStore('auth', {
           throw createAuthError(400, 'Verification code is required', 'CODE_REQUIRED')
         }
 
-        const response = await $fetch('/api/auth/email-code/verify', {
-          method: 'POST',
-          body: { email, code },
-        })
-
-        const token = response?.token
-        const user = response?.user
-
-        if (!token || !user) {
-          throw createAuthError(500, 'Invalid server response', 'INVALID_RESPONSE')
+        const isValid = verifyCode(email, code)
+        if (!isValid) {
+          throw createAuthError(400, 'Invalid or expired verification code', 'INVALID_CODE')
         }
 
+        const stubClient = useStubClient()
+        const users = await stubClient.list('users', { delay: 0 })
+        const user =
+          users.find((candidate) => normalizeEmail(candidate?.email) === email) ??
+          (await ensureStubUserExists(email))
+
+        if (!user) {
+          throw createAuthError(404, 'User record not found', 'USER_NOT_FOUND')
+        }
+
+        const token = buildStubToken(user.id ?? email)
+
         this.token = token
-        this.user = user
+        this.user = { ...user }
         this.pendingChallenge = null
-        setAuthToken(token, user)
+        setAuthToken(token, this.user)
 
         const notifier = getNotifier()
         notifier?.success('Logged in successfully')
 
         return {
           token,
-          user,
+          user: this.user,
         }
       },
       clearEmailChallenge() {

@@ -327,7 +327,22 @@
 
             <div class="flex justify-between items-center text-xs text-gray-500">
               <span>{{ formatDate(review.date) }} • {{ review.time }}</span>
-              <span @click="openViewReview(review)" class="text-amber-500 hover:text-amber-600 font-medium cursor-pointer">View Details</span>
+                <div class="flex items-center gap-3">
+                  <button
+                    type="button"
+                    @click="goToAdminReply(review)"
+                    class="text-amber-500 hover:text-amber-600 font-semibold cursor-pointer border-0 bg-transparent p-0"
+                  >
+                    Reply
+                  </button>
+                  <button
+                    type="button"
+                    @click="openPublicReview(review)"
+                    class="text-blue-500 hover:text-blue-600 font-semibold cursor-pointer border-0 bg-transparent p-0"
+                  >
+                    Public
+                  </button>
+                </div>
             </div>
           </div>
         </div>
@@ -387,6 +402,16 @@
                 </td>
                 <td class="px-4 py-3 whitespace-nowrap">
                   <div class="flex items-center gap-2">
+                    <MessageCircleIcon 
+                      @click="goToAdminReply(review)"
+                      class="w-5 h-5 text-indigo-600 cursor-pointer hover:text-indigo-700 active:text-indigo-800 transition touch-manipulation" 
+                      title="Reply to review"
+                    />
+                    <ExternalLinkIcon
+                      @click="openPublicReview(review)"
+                      class="w-5 h-5 text-blue-500 cursor-pointer hover:text-blue-600 active:text-blue-700 transition touch-manipulation"
+                      title="Open on public page"
+                    />
                     <EyeIcon 
                       @click="openViewReview(review)"
                       class="w-5 h-5 text-yellow-500 cursor-pointer hover:text-yellow-600 active:text-yellow-700 transition touch-manipulation" 
@@ -475,6 +500,7 @@
 
 <script setup>
 import { ref, computed, watch, defineAsyncComponent } from 'vue'
+import { useRouter } from 'vue-router'
 import { 
   Search as SearchIcon, 
   Filter as FilterIcon,
@@ -490,11 +516,14 @@ import {
   AlertCircle as AlertCircleIcon,
   UserX as UserXIcon,
   Eye as EyeIcon,
-  MoreHorizontal
+  MoreHorizontal,
+  MessageCircle as MessageCircleIcon,
+  ExternalLink as ExternalLinkIcon
 } from 'lucide-vue-next'
 import RatingStars from '~/components/common/RatingStars.vue'
 import { getStatusClass } from '~/composables/useStatusClass'
 import { useStubClient } from '~/services/stubClient'
+import { useStubSearch } from '~/composables/useStubSearch'
 
 const ViewReview = defineAsyncComponent(() => import('~/components/modal/viewReview.vue'))
 
@@ -520,6 +549,7 @@ const filters = ref({
 // --- Services ---
 const stubClient = useStubClient()
 const nuxtApp = useNuxtApp()
+const router = useRouter()
 
 const toast = (type, message) => {
   if (!import.meta.client) return
@@ -553,8 +583,9 @@ const {
   pending,
   error: reviewsError,
   refresh: refreshReviews,
-} = await useFetch('/api/search/reviews', {
-  query: reviewQueryParams,
+} = await useStubSearch('reviews', {
+  key: 'admin-review-management',
+  query: () => reviewQueryParams.value,
   watch: [
     currentPage,
     searchQuery,
@@ -565,10 +596,6 @@ const {
     () => filters.value.timeRange,
   ],
   default: () => ({ items: [], meta: fallbackMeta }),
-  transform: (response) => ({
-    items: Array.isArray(response?.data) ? response.data : [],
-    meta: { ...fallbackMeta, ...(response?.meta || {}) },
-  }),
 });
 
 const isLoading = computed(() => pending.value)
@@ -702,6 +729,21 @@ const resetFilters = () => {
 const openViewReview = (review) => {
   selectedReview.value = review
   isViewOpen.value = true
+}
+
+const goToAdminReply = (review) => {
+  if (!review?.id) return
+  router.push(`/company/review/${review.id}`)
+}
+
+const openPublicReview = (review) => {
+  if (!review?.id) return
+  if (import.meta.client) {
+    const href = router.resolve({ path: '/agency', query: { reviewId: review.id } }).href
+    window.open(href, '_blank', 'noopener')
+    return
+  }
+  router.push({ path: '/agency', query: { reviewId: review.id } })
 }
 
 const closeViewModal = () => {

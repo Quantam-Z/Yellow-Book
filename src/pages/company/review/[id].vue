@@ -9,6 +9,14 @@
         <ArrowLeft class="w-4 h-4" />
         Back to reviews
       </button>
+    <button
+      type="button"
+      class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-blue-200 text-blue-700 hover:bg-blue-50 transition-colors"
+      @click="openPublicReview"
+    >
+      <ExternalLink class="w-4 h-4" />
+      View public page
+    </button>
       <h1 class="text-2xl font-semibold text-gray-900">Review Details</h1>
       <span v-if="reviewId" class="text-sm text-gray-500">#{{ reviewId }}</span>
     </div>
@@ -159,7 +167,7 @@
 
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue'
-import { ArrowLeft, Loader2, MessageSquare, Star } from 'lucide-vue-next'
+import { ArrowLeft, Loader2, MessageSquare, Star, ExternalLink } from 'lucide-vue-next'
 
 import { useStubClient } from '~/services/stubClient'
 
@@ -287,5 +295,17 @@ const resetReplyForm = () => {
 
 const goBack = () => {
   router.push('/company/review')
+}
+
+const openPublicReview = () => {
+  const id = review.value?.id
+  if (!id) return
+  const target = { path: '/agency', query: { reviewId: id } }
+  if (import.meta.client) {
+    const href = router.resolve(target).href
+    window.open(href, '_blank', 'noopener')
+    return
+  }
+  router.push(target)
 }
 </script>
