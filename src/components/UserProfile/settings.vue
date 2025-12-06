@@ -1,46 +1,47 @@
 <template>
-  <section class="space-y-6">
-    <header
-      class="rounded-2xl border border-whitesmoke bg-white p-6 sm:p-8 shadow-[0px_0px_15px_rgba(0,0,0,0.04)] flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between"
-    >
-      <div>
-        <h1 class="text-2xl font-extrabold text-gray-900">Settings</h1>
-        <p class="text-sm text-gray-600 mt-1">
-          Control notifications, privacy, and connected apps. Every change is synced across devices.
-        </p>
+  <div class="panel-stack w-full">
+    <section class="rounded-lg border border-gray-200 bg-white shadow-sm p-5 sm:p-6">
+      <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <div>
+          <p class="text-xs uppercase tracking-wide text-gray-500">Account</p>
+          <h1 class="text-2xl font-semibold text-gray-900">Settings</h1>
+          <p class="text-sm text-gray-500">
+            Control notifications, privacy, and the devices connected to your account.
+          </p>
+        </div>
+        <div class="flex flex-wrap gap-3">
+          <button
+            type="button"
+            class="rounded-md border border-gray-300 px-4 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-50 disabled:opacity-60"
+            @click="restoreDefaults"
+            :disabled="isSaving"
+          >
+            Reset to defaults
+          </button>
+          <button
+            type="button"
+            class="rounded-md bg-amber-400 px-5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm transition hover:bg-amber-300 disabled:opacity-60"
+            @click="saveSettings"
+            :disabled="isSaving || !hasChanges"
+          >
+            {{ isSaving ? 'Saving…' : 'Save changes' }}
+          </button>
+        </div>
       </div>
-      <div class="flex flex-wrap gap-3">
-        <button
-          type="button"
-          class="rounded-xl border border-gray-300 px-5 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition"
-          @click="restoreDefaults"
-          :disabled="isSaving"
-        >
-          Reset to defaults
-        </button>
-        <button
-          type="button"
-          class="rounded-xl bg-gold px-6 py-3 text-sm font-semibold text-gray-900 shadow-md"
-          @click="saveSettings"
-          :disabled="isSaving || !hasChanges"
-        >
-          {{ isSaving ? 'Saving…' : 'Save changes' }}
-        </button>
-      </div>
-    </header>
+    </section>
 
     <div class="grid gap-6 xl:grid-cols-[2fr,1fr]">
       <form class="flex flex-col gap-6" @submit.prevent="saveSettings">
-        <section class="rounded-2xl border border-whitesmoke bg-white p-6 sm:p-8 shadow-[0px_0px_15px_rgba(0,0,0,0.04)] space-y-6">
+        <section class="rounded-lg border border-gray-200 bg-white shadow-sm p-5 sm:p-6 space-y-5">
           <div>
             <h2 class="text-xl font-semibold text-gray-900">Notifications</h2>
             <p class="text-sm text-gray-500">Choose how you prefer to stay informed.</p>
           </div>
-          <div class="space-y-5">
+          <div class="space-y-4">
             <div
               v-for="item in notificationList"
               :key="item.key"
-              class="flex flex-col gap-3 border-b border-gray-100 pb-5 last:border-none last:pb-0 sm:flex-row sm:items-center sm:justify-between"
+              class="flex flex-col gap-3 border-b border-gray-100 pb-4 last:border-none last:pb-0 sm:flex-row sm:items-center sm:justify-between"
             >
               <div>
                 <p class="font-semibold text-gray-900">{{ item.title }}</p>
@@ -49,7 +50,7 @@
               <button
                 type="button"
                 class="relative inline-flex h-7 w-12 items-center rounded-full transition"
-                :class="notificationSettings[item.key] ? 'bg-gold' : 'bg-gray-200'"
+                :class="notificationSettings[item.key] ? 'bg-amber-400' : 'bg-gray-200'"
                 role="switch"
                 :aria-checked="notificationSettings[item.key]"
                 @click="toggleNotification(item.key)"
@@ -63,18 +64,20 @@
           </div>
         </section>
 
-        <section
-          class="rounded-2xl border border-whitesmoke bg-white p-6 sm:p-8 shadow-[0px_0px_15px_rgba(0,0,0,0.04)] grid gap-6 lg:grid-cols-2"
-        >
+        <section class="rounded-lg border border-gray-200 bg-white shadow-sm p-5 sm:p-6 grid gap-6 lg:grid-cols-2">
           <div class="space-y-4">
             <h2 class="text-xl font-semibold text-gray-900">Appearance</h2>
-            <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
               <button
                 v-for="option in themeOptions"
                 :key="option.value"
                 type="button"
-                class="rounded-2xl border px-4 py-4 text-left transition"
-                :class="theme === option.value ? 'border-gray-900 shadow-lg' : 'border-gray-200 hover:border-gray-400'"
+                class="rounded-lg border px-4 py-4 text-left transition"
+                :class="
+                  theme === option.value
+                    ? 'border-gray-900 bg-gray-900/5 shadow-sm'
+                    : 'border-gray-200 hover:border-gray-300'
+                "
                 @click="selectTheme(option.value)"
               >
                 <p class="font-semibold text-gray-900">{{ option.title }}</p>
@@ -83,34 +86,32 @@
             </div>
           </div>
 
-          <div class="space-y-4">
+          <div class="space-y-3">
             <h2 class="text-xl font-semibold text-gray-900">Time zone</h2>
-            <div>
-              <label class="text-sm font-medium text-gray-600">Default time zone</label>
-              <select
-                v-model="timezone"
-                class="mt-2 w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-gray-200/80 focus:border-gray-900"
-                @change="markDirty"
-              >
-                <option v-for="option in timezoneOptions" :key="option" :value="option">
-                  {{ option }}
-                </option>
-              </select>
-              <p class="text-xs text-gray-500 mt-2">Used for reminders, availability, and schedule blocks.</p>
-            </div>
+            <label class="text-sm font-medium text-gray-600">Default time zone</label>
+            <select
+              v-model="timezone"
+              class="mt-2 w-full rounded-md border border-gray-300 px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-gray-900"
+              @change="markDirty"
+            >
+              <option v-for="option in timezoneOptions" :key="option" :value="option">
+                {{ option }}
+              </option>
+            </select>
+            <p class="text-xs text-gray-500">Used for reminders, availability, and schedule blocks.</p>
           </div>
         </section>
 
-        <section class="rounded-2xl border border-whitesmoke bg-white p-6 sm:p-8 shadow-[0px_0px_15px_rgba(0,0,0,0.04)] space-y-6">
+        <section class="rounded-lg border border-gray-200 bg-white shadow-sm p-5 sm:p-6 space-y-5">
           <div>
             <h2 class="text-xl font-semibold text-gray-900">Privacy</h2>
             <p class="text-sm text-gray-500">Control what others see across the marketplace.</p>
           </div>
-          <div class="space-y-5">
+          <div class="space-y-4">
             <div
               v-for="item in privacyList"
               :key="item.key"
-              class="flex flex-col gap-3 border-b border-gray-100 pb-5 last:border-none last:pb-0 sm:flex-row sm:items-center sm:justify-between"
+              class="flex flex-col gap-3 border-b border-gray-100 pb-4 last:border-none last:pb-0 sm:flex-row sm:items-center sm:justify-between"
             >
               <div>
                 <p class="font-semibold text-gray-900">{{ item.title }}</p>
@@ -133,9 +134,7 @@
           </div>
         </section>
 
-        <div
-          class="rounded-2xl border border-whitesmoke bg-white p-6 shadow-[0px_0px_15px_rgba(0,0,0,0.04)] flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
-        >
+        <div class="rounded-lg border border-gray-200 bg-white shadow-sm p-5 sm:p-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p class="text-sm text-gray-500">Last saved {{ formattedLastSaved }}</p>
             <p class="text-xs text-gray-400">Changes apply everywhere the account is used.</p>
@@ -143,7 +142,7 @@
           <div class="flex gap-3">
             <button
               type="button"
-              class="rounded-xl border border-gray-300 px-5 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition"
+              class="rounded-md border border-gray-300 px-5 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-50 disabled:opacity-60"
               @click="restoreDefaults"
               :disabled="isSaving"
             >
@@ -151,7 +150,7 @@
             </button>
             <button
               type="submit"
-              class="rounded-xl bg-gray-900 px-6 py-3 text-sm font-semibold text-white shadow-md disabled:opacity-60"
+              class="rounded-md bg-gray-900 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-gray-800 disabled:opacity-60"
               :disabled="isSaving || !hasChanges"
             >
               {{ isSaving ? 'Saving…' : 'Save settings' }}
@@ -161,19 +160,19 @@
       </form>
 
       <div class="flex flex-col gap-6">
-        <section class="rounded-2xl border border-whitesmoke bg-white p-6 sm:p-8 shadow-[0px_0px_15px_rgba(0,0,0,0.04)] space-y-5">
-          <div class="flex flex-col gap-2">
-            <div class="flex items-center justify-between">
+        <section class="rounded-lg border border-gray-200 bg-white shadow-sm p-5 sm:p-6 space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
               <h2 class="text-lg font-semibold text-gray-900">Connected apps</h2>
-              <button
-                type="button"
-                class="text-sm font-semibold text-gray-900 hover:underline"
-                @click="triggerToast('info', 'App marketplace coming soon.')"
-              >
-                Explore
-              </button>
+              <p class="text-sm text-gray-500">Manage integrations and revoke access if needed.</p>
             </div>
-            <p class="text-sm text-gray-500">Manage integrations and revoke access if needed.</p>
+            <button
+              type="button"
+              class="text-sm font-semibold text-gray-900 hover:underline"
+              @click="triggerToast('info', 'App marketplace coming soon.')"
+            >
+              Explore
+            </button>
           </div>
           <ul class="divide-y divide-gray-100">
             <li
@@ -189,14 +188,14 @@
               <div class="flex items-center gap-3 text-sm">
                 <span
                   class="rounded-full px-3 py-1 text-xs font-semibold"
-                  :class="app.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'"
+                  :class="app.status === 'Active' ? 'bg-green-100 text-green-700' : app.status === 'Paused' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-600'"
                 >
                   {{ app.status }}
                 </span>
                 <button
                   v-if="app.status !== 'Disconnected'"
                   type="button"
-                  class="font-semibold text-red-600"
+                  class="font-semibold text-red-600 hover:underline"
                   @click="disconnectApp(app.id)"
                 >
                   Disconnect
@@ -204,13 +203,13 @@
                 <span v-else class="text-xs text-gray-400">Disconnected</span>
               </div>
             </li>
-            <li v-if="!connectedApps.length" class="py-8 text-center text-sm text-gray-500">
+            <li v-if="!connectedApps.length" class="py-6 text-center text-sm text-gray-500">
               No active integrations.
             </li>
           </ul>
         </section>
 
-        <section class="rounded-2xl border border-whitesmoke bg-white p-6 sm:p-8 shadow-[0px_0px_15px_rgba(0,0,0,0.04)] space-y-5">
+        <section class="rounded-lg border border-gray-200 bg-white shadow-sm p-5 sm:p-6 space-y-4">
           <div>
             <h2 class="text-lg font-semibold text-gray-900">Login security</h2>
             <p class="text-sm text-gray-500">End sessions you no longer recognize.</p>
@@ -219,7 +218,7 @@
             <li
               v-for="session in sessions"
               :key="session.id"
-              class="flex flex-col gap-2 rounded-xl border border-gray-100 p-4 sm:flex-row sm:items-center sm:justify-between"
+              class="flex flex-col gap-2 rounded-md border border-gray-100 p-4 sm:flex-row sm:items-center sm:justify-between"
             >
               <div>
                 <p class="font-semibold text-gray-900">{{ session.device }}</p>
@@ -236,7 +235,7 @@
                 <button
                   v-else
                   type="button"
-                  class="text-sm font-semibold text-red-600"
+                  class="text-sm font-semibold text-red-600 hover:underline"
                   @click="signOutSession(session.id)"
                 >
                   Sign out
@@ -246,14 +245,14 @@
           </ul>
           <button
             type="button"
-            class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm font-semibold text-gray-900 hover:bg-gray-50 transition"
+            class="w-full rounded-md border border-gray-300 px-4 py-2.5 text-sm font-semibold text-gray-900 transition hover:bg-gray-50"
             @click="triggerToast('success', 'Backup codes sent to your inbox.')"
           >
             Generate backup codes
           </button>
         </section>
 
-        <section class="rounded-2xl border border-red-100 bg-red-50 p-6 sm:p-8 space-y-4">
+        <section class="rounded-lg border border-red-200 bg-red-50 p-5 sm:p-6 space-y-4">
           <div>
             <h2 class="text-lg font-semibold text-red-900">Danger zone</h2>
             <p class="text-sm text-red-700">Transfer ownership or delete your account permanently.</p>
@@ -261,14 +260,14 @@
           <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
             <button
               type="button"
-              class="rounded-xl border border-red-200 px-4 py-3 text-sm font-semibold text-red-700 hover:bg-red-100 transition"
+              class="rounded-md border border-red-200 px-4 py-2.5 text-sm font-semibold text-red-700 transition hover:bg-red-100"
               @click="triggerToast('info', 'Export link sent to curtis.weaver@example.com')"
             >
               Export data
             </button>
             <button
               type="button"
-              class="rounded-xl bg-red-600 px-5 py-3 text-sm font-semibold text-white shadow-md"
+              class="rounded-md bg-red-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-red-500"
               @click="deleteAccount"
             >
               Delete account
@@ -281,13 +280,19 @@
     <transition name="fade">
       <div
         v-if="toast.show"
-        class="fixed bottom-6 right-6 z-50 rounded-xl px-4 py-3 text-sm font-semibold text-white shadow-lg"
-        :class="toast.type === 'success' ? 'bg-green-600' : toast.type === 'info' ? 'bg-gray-900' : 'bg-red-600'"
+        class="fixed bottom-6 right-6 z-50 w-full max-w-xs rounded-lg border p-4 text-sm font-semibold shadow-lg"
+        :class="
+          toast.type === 'success'
+            ? 'border-green-200 bg-green-50 text-green-900'
+            : toast.type === 'info'
+              ? 'border-gray-200 bg-white text-gray-900'
+              : 'border-red-200 bg-red-50 text-red-900'
+        "
       >
         {{ toast.message }}
       </div>
     </transition>
-  </section>
+  </div>
 </template>
 
 <script setup>
@@ -509,14 +514,6 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-.border-whitesmoke {
-  border-color: #f5f5f5;
-}
-
-.bg-gold {
-  background-color: #ffd700;
-}
-
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.2s ease;
