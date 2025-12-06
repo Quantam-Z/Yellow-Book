@@ -5,12 +5,12 @@
         <div>
           <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900">Welcome John</h1>
         </div>
-        <button
+        <!-- <button
           class="bg-white/90 hover:bg-white text-gray-800 font-semibold px-4 py-2.5 transition shadow-md whitespace-nowrap text-sm w-full sm:w-auto text-center rounded-none border-none"
           aria-label="List Company"
         >
           List Company
-        </button>
+        </button> -->
       </div>
     </div>
 

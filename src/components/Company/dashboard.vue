@@ -3,12 +3,12 @@
     <div class="w-full rounded-lg bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 p-3 sm:p-4 md:p-6 mb-4 sm:mb-6">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <h1 class="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">My Assigned Tasks</h1>
-        <NuxtLink
+        <!-- <NuxtLink
             to="/company/my-company"
           class="bg-white hover:bg-gray-50 text-gray-800 font-semibold px-4 py-2.5 transition whitespace-nowrap text-sm w-full sm:w-auto text-center no-underline rounded-none border border-gray-300"
         >
           List Company
-        </NuxtLink>
+        </NuxtLink> -->
       </div>
     </div>
 
