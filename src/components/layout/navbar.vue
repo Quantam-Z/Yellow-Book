@@ -72,64 +72,18 @@
                 <div class="relative leading-[160%] font-normal text-base">Login</div>
               </div>
             </template>
-            <div v-else class="relative" ref="userMenuRef">
-              <button
-                type="button"
-                class="flex items-center gap-3 rounded-full border border-[#dbe7ff] bg-white px-3 py-2 shadow-sm hover:shadow-lg transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#dbe7ff]"
-                @click="toggleUserMenu"
-              >
-                <span class="w-9 h-9 rounded-full bg-[#212121] text-white flex items-center justify-center font-semibold text-sm uppercase">
-                  {{ userInitials }}
-                </span>
-                <div class="hidden sm:flex flex-col text-left leading-tight">
-                  <span class="text-sm font-semibold text-[#212121] truncate">
-                    {{ authUser?.name || authUser?.email }}
-                  </span>
-                  <span class="text-[12px] text-[#616161]">Account</span>
-                </div>
-                <ChevronDown class="w-4 h-4 text-[#616161] hidden sm:block" :class="{ 'rotate-180': showUserMenu }" />
-              </button>
-              <transition name="fade">
-                <div
-                  v-if="showUserMenu"
-                  class="absolute right-0 mt-3 w-56 rounded-2xl border border-[#e4ecff] bg-white shadow-[0_18px_45px_rgba(33,33,33,0.15)] py-2 text-sm z-50"
-                  role="menu"
-                  aria-label="Account menu"
-                >
-                  <div class="px-4 pb-2 border-b border-[#f0f4ff] mb-2">
-                    <p class="text-xs uppercase tracking-wide text-[#9e9e9e]">Signed in as</p>
-                    <p class="text-sm font-semibold text-[#212121] truncate">
-                      {{ authUser?.name || authUser?.email }}
-                    </p>
-                  </div>
-                  <div class="flex items-center justify-center gap-2 px-3 py-1">
-  <button
-    class="flex items-center gap-2 px-2.5 py-1.5 text-sm hover:bg-[#fff9e6] rounded-md transition-colors border-none focus:outline-none focus:ring-0"
-    @click="goToUserDashboard"
-  >
-    <LayoutDashboard class="w-3.5 h-3.5 text-[#616161]" />
-    <span class="font-medium text-[#212121]">Dashboard</span>
-  </button>
-
-  <button
-    class="flex items-center gap-2 px-2.5 py-1.5 text-sm text-red-500 hover:bg-red-50 rounded-md transition-colors border-none focus:outline-none focus:ring-0"
-    @click="handleUserLogout"
-  >
-    <LogOut class="w-3.5 h-3.5" />
-    <span class="font-medium">Logout</span>
-  </button>
-</div>
-
-                </div>
-              </transition>
-            </div>
-      <button
-  type="button"
-  class="relative rounded border-gray border-solid border-[1px] box-border h-12 flex items-center justify-center py-[18px] px-9 text-center text-base text-[#212121] font-plus-jakarta-sans bg-transparent"
-  @click="handleListYourAgencyClick"
->
-  <div class="relative leading-[130%] capitalize font-semibold">List Your Agency</div>
-</button>
+            <PanelProfileMenu
+              v-else
+              role-label="Account"
+              dashboard-to="/user/my-profile"
+            />
+            <button
+              type="button"
+              class="relative rounded border-gray border-solid border-[1px] box-border h-12 flex items-center justify-center py-[18px] px-9 text-center text-base text-[#212121] font-plus-jakarta-sans bg-transparent"
+              @click="handleListYourAgencyClick"
+            >
+              <div class="relative leading-[130%] capitalize font-semibold">List Your Agency</div>
+            </button>
 
         </div>
 
@@ -317,15 +271,16 @@
 </template>
 
 <script>
-import { Menu, X, ChevronDown, LayoutDashboard, LogOut } from 'lucide-vue-next'
+import { Menu, X } from 'lucide-vue-next'
 import { useRequestFetch, useNuxtApp } from '#app'
 import { useAuthStore } from '~/stores/auth'
 import { storeToRefs } from 'pinia'
 import { useLoginModal } from '~/composables/useLoginModal'
+import PanelProfileMenu from '~/components/common/panelProfileMenu.vue'
 
 export default {
   name: 'ResponsiveLandingPage',
-  components: { Menu, X, ChevronDown, LayoutDashboard, LogOut },
+  components: { Menu, X, PanelProfileMenu },
     emits: ['search'],
     setup() {
       const requestFetch = useRequestFetch()
@@ -354,7 +309,6 @@ export default {
         searchQuery: '',
         cachedSearchQuery: '',
         isMobileMenuOpen: false,
-          showUserMenu: false,
         defaultSearchPlaceholder,
         dropdownResultLimit: 12,
         popularSectionId: 'home-popular-listings',
@@ -382,15 +336,6 @@ export default {
           listYourAgencyLink() {
             return this.isAuthenticated ? '/popular-list' : '/auth/register'
             },
-          userInitials() {
-            const source = (this.authUser && (this.authUser.name || this.authUser.email)) || ''
-            const parts = source.trim().split(/\s+/).filter(Boolean)
-            if (!parts.length) return 'U'
-            if (parts.length === 1) {
-              return parts[0].slice(0, 2).toUpperCase()
-            }
-            return `${parts[0][0]}${parts[1][0]}`.toUpperCase()
-          },
             activePath() {
               return this.$route?.path || ''
             },
@@ -436,16 +381,11 @@ export default {
         this.fetchSearchEntries(this.searchQuery)
       }, 200)
     },
-    toggleUserMenu() {
-      this.showUserMenu = !this.showUserMenu
-    },
     async handleUserLogout() {
       await this.authStore.logout()
-      this.showUserMenu = false
       this.closeMobileMenu()
     },
     goToUserDashboard() {
-      this.showUserMenu = false
       this.closeMobileMenu()
       if (this.$router) {
         this.$router.push('/user/my-profile')
@@ -535,11 +475,6 @@ export default {
           }
         }
       }
-      const userMenu = this.$refs.userMenuRef
-      const clickedInsideUserMenu = userMenu && userMenu.contains(e.target)
-      if (!clickedInsideUserMenu && this.showUserMenu) {
-        this.showUserMenu = false
-      }
       },
           handlePopularListingClick(event, shouldCloseMenu = false) {
             if (shouldCloseMenu) {
@@ -574,13 +509,11 @@ export default {
             if (event && typeof event.preventDefault === 'function') {
               event.preventDefault()
             }
-            this.showUserMenu = false
             this.notifyLoginRequired()
             this.openLoginModal()
             return
           }
 
-          this.showUserMenu = false
           const targetRoute = this.listYourAgencyLink
           if (targetRoute && this.$router) {
             this.$router.push(targetRoute)
