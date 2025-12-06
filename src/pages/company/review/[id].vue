@@ -1,25 +1,14 @@
 <template>
   <div class="w-full min-h-screen bg-white p-4 sm:p-6 lg:p-8 space-y-6">
     <div class="flex flex-wrap items-center gap-3">
-      <div class="flex flex-wrap items-center gap-2">
-        <button
-          type="button"
-          class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition-colors"
-          @click="goBack"
-        >
-          <ArrowLeft class="w-4 h-4" />
-          Back to reviews
-        </button>
-        <button
-          type="button"
-          class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-blue-200 text-blue-700 hover:bg-blue-50 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
-          @click="goToPublicReview"
-          :disabled="!reviewId"
-        >
-          <ExternalLink class="w-4 h-4" />
-          View public review
-        </button>
-      </div>
+      <button
+        type="button"
+        class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition-colors"
+        @click="goBack"
+      >
+        <ArrowLeft class="w-4 h-4" />
+        Back to reviews
+      </button>
       <h1 class="text-2xl font-semibold text-gray-900">Review Details</h1>
       <span v-if="reviewId" class="text-sm text-gray-500">#{{ reviewId }}</span>
     </div>
@@ -170,11 +159,9 @@
 
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue'
-import { ArrowLeft, ExternalLink, Loader2, MessageSquare, Star } from 'lucide-vue-next'
+import { ArrowLeft, Loader2, MessageSquare, Star } from 'lucide-vue-next'
 
 import { useStubClient } from '~/services/stubClient'
-import { useStubResource } from '~/composables/useStubResource'
-import { slugifyTitle } from '@/services/directoryMapper'
 
 definePageMeta({
   layout: 'company',
@@ -184,17 +171,6 @@ const route = useRoute()
 const router = useRouter()
 const nuxtApp = useNuxtApp()
 const stubClient = useStubClient()
-const companyName = computed(() => {
-  const detail = companyDetailData.value
-  if (detail && typeof detail === 'object' && detail.name) {
-    return detail.name as string
-  }
-  return defaultCompanyName
-})
-const companySlug = computed(() => slugifyTitle(companyName.value) || fallbackSlug)
-const { data: companyDetailData } = await useStubResource('agencyCompany')
-const defaultCompanyName = 'Tech Solutions Inc'
-const fallbackSlug = slugifyTitle(defaultCompanyName)
 
 const reviewId = computed(() => {
   const raw = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id
@@ -307,25 +283,6 @@ const resetReplyForm = () => {
   replyForm.name = review.value?.companyResponse?.name || defaultName
   replyForm.title = review.value?.companyResponse?.title || defaultTitle
   replyForm.text = review.value?.companyResponse?.text || ''
-}
-
-const goToPublicReview = () => {
-  const slug = companySlug.value
-  const query: Record<string, string> = {
-    slug,
-    id: slug,
-    source: 'company-review-detail',
-  }
-  if (companyName.value) {
-    query.title = companyName.value
-  }
-  if (reviewId.value) {
-    query.reviewId = String(reviewId.value)
-  }
-  router.push({
-    path: '/agency',
-    query,
-  })
 }
 
 const goBack = () => {

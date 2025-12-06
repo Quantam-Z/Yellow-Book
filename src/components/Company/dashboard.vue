@@ -127,24 +127,13 @@
 
                     <div class="flex-1 flex items-center justify-between p-2 gap-2 min-w-0">
                       <div class="text-gray-600 text-sm text-left line-clamp-2 pr-2">"{{ review.comment }}"</div>
-                      <div class="flex items-center gap-2 flex-shrink-0">
-                        <button
-                          type="button"
-                          class="text-deepskyblue font-semibold text-sm hover:text-blue-600 transition-colors cursor-pointer whitespace-nowrap bg-transparent border-0 p-0"
-                          @click="viewPublicReview(review)"
-                        >
-                          Public view
-                        </button>
-                        <button
-                          type="button"
-                          class="text-gray-400 hover:text-gray-700 transition-colors bg-transparent border-0 p-0"
-                          title="Reply inside company panel"
-                          @click="viewReviewDetail(review)"
-                        >
-                          <MessageSquare class="h-4 w-4" />
-                          <span class="sr-only">Reply</span>
-                        </button>
-                      </div>
+                      <button
+                        type="button"
+                        class="text-deepskyblue font-semibold text-sm hover:text-blue-600 transition-colors cursor-pointer whitespace-nowrap flex-shrink-0 bg-transparent border-0 p-0"
+                        @click="viewFullReview(review)"
+                      >
+                        Full view
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -186,22 +175,13 @@
                 </div>
               </div>
               <p class="text-gray-600 text-sm line-clamp-2 mb-2 text-left">"{{ review.comment }}"</p>
-              <div class="flex items-center gap-3">
-                <button
-                  type="button"
-                  class="text-deepskyblue font-semibold text-sm hover:text-blue-600 transition-colors cursor-pointer whitespace-nowrap text-left bg-transparent border-0 p-0"
-                  @click="viewPublicReview(review)"
-                >
-                  Public view
-                </button>
-                <button
-                  type="button"
-                  class="text-gray-500 hover:text-gray-800 text-sm font-semibold cursor-pointer bg-transparent border border-gray-200 rounded px-3 py-1"
-                  @click="viewReviewDetail(review)"
-                >
-                  Reply
-                </button>
-              </div>
+              <button
+                type="button"
+                class="text-deepskyblue font-semibold text-sm hover:text-blue-600 transition-colors cursor-pointer whitespace-nowrap text-left block w-full bg-transparent border-0 p-0"
+                @click="viewFullReview(review)"
+              >
+                Full view
+              </button>
             </div>
           </div>
         </div>
@@ -233,22 +213,15 @@
                 </div>
               </div>
               <p class="text-gray-600 text-xs line-clamp-2 mb-2 text-left">"{{ review.comment }}"</p>
-              <div class="flex flex-wrap items-center text-xs text-gray-500 gap-2">
+              <div class="flex justify-start items-center text-xs text-gray-500 gap-3">
                 <span>{{ review.likes || '0' }} likes</span>
                 <span>{{ review.shares || '0' }} shares</span>
                 <button
                   type="button"
-                  class="text-deepskyblue font-semibold cursor-pointer bg-transparent border-0 p-0"
-                  @click="viewPublicReview(review)"
+                  class="text-deepskyblue font-semibold cursor-pointer text-right ml-auto bg-transparent border-0 p-0"
+                  @click="viewFullReview(review)"
                 >
-                  Public view
-                </button>
-                <button
-                  type="button"
-                  class="ml-auto text-gray-600 border border-gray-200 rounded px-2 py-1 font-semibold"
-                  @click="viewReviewDetail(review)"
-                >
-                  Reply
+                  Full view
                 </button>
               </div>
             </div>
@@ -256,11 +229,84 @@
         </div>
       </div>
 
+      <Teleport to="body">
+        <transition name="fade">
+          <div
+            v-if="isModalOpen"
+            class="fixed inset-0 z-50 flex items-center justify-center px-4 py-6 sm:px-6"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="full-review-title"
+            aria-describedby="full-review-content"
+          >
+            <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" @click="closeModal"></div>
+
+            <div
+              class="relative z-10 w-full max-w-lg bg-white rounded-xl shadow-2xl overflow-hidden focus:outline-none"
+              tabindex="-1"
+              role="document"
+            >
+              <button
+                type="button"
+                class="absolute right-4 top-4 text-gray-400 hover:text-gray-600 transition"
+                @click="closeModal"
+                aria-label="Close"
+              >
+                <X class="h-5 w-5" />
+              </button>
+              <div v-if="selectedReview" class="p-6 sm:p-8 space-y-4">
+                <div class="flex items-center gap-4">
+                  <div class="h-12 w-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                    <span class="text-white font-bold text-sm">{{ getInitials(selectedReview.reviewer) }}</span>
+                  </div>
+                  <div>
+                    <h2 id="full-review-title" class="text-lg font-semibold text-gray-900 text-left">
+                      {{ selectedReview.reviewer }}
+                    </h2>
+                    <p class="text-sm text-gray-500 text-left">{{ formatDate(selectedReview.date) }}</p>
+                  </div>
+                </div>
+
+                <div class="flex items-center gap-2 text-left">
+                  <div class="flex items-center gap-1">
+                    <Star
+                      v-for="i in 5"
+                      :key="i"
+                      class="h-4 w-4"
+                      :class="i <= selectedReview.rating ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300'"
+                    />
+                  </div>
+                  <span class="text-sm text-gray-600">{{ selectedReview.rating }} / 5</span>
+                </div>
+
+                <p id="full-review-content" class="text-gray-700 text-sm sm:text-base leading-relaxed text-left">
+                  "{{ selectedReview.comment }}"
+                </p>
+
+                <div class="flex flex-wrap gap-4 text-sm text-gray-500 text-left">
+                  <span>{{ selectedReview.likes || '0' }} likes</span>
+                  <span>{{ selectedReview.shares || '0' }} shares</span>
+                </div>
+
+                <div class="flex justify-end pt-2">
+                  <button
+                    type="button"
+                    class="inline-flex items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-800 transition"
+                    @click="closeModal"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </transition>
+      </Teleport>
     </div>
   </template>
 
 <script setup>
-import { ShieldCheck, MessageSquare, UserCheck, Star } from "lucide-vue-next";
+import { ShieldCheck, MessageSquare, UserCheck, Star, X } from "lucide-vue-next";
 import {
   Chart as ChartJS,
   Title,
@@ -272,9 +318,8 @@ import {
   CategoryScale,
 } from "chart.js";
 import { Line } from "vue-chartjs";
-import { computed, watchEffect } from 'vue';
+import { computed, watchEffect, ref, onMounted, onBeforeUnmount } from 'vue';
 import { useStubResource } from '~/composables/useStubResource';
-import { slugifyTitle } from '@/services/directoryMapper';
 
 // Register Chart.js modules
 ChartJS.register(Title, Tooltip, Legend, LineElement, PointElement, LinearScale, CategoryScale);
@@ -286,7 +331,6 @@ ChartJS.register(Title, Tooltip, Legend, LineElement, PointElement, LinearScale,
 // Use stub resources to load data with error handling
 const { data: latestReviewsData, error: reviewsError } = await useStubResource('agencyReviews');
 const { data: dashboardData, error: dashboardError } = await useStubResource('agencyDashboard');
-const { data: companyDetailData } = await useStubResource('agencyCompany');
 
 watchEffect(() => {
   if (reviewsError.value) {
@@ -299,14 +343,14 @@ watchEffect(() => {
 
 
 const reviews = computed(() => {
-    const data = latestReviewsData.value || [];
+    const data = latestReviewsData.value || []; // Use this line in Nuxt environment
     
     return data.slice(0, 4).map(r => ({
-        id: Number(r.id) || null,
         reviewer: r.reviewerName,
         rating: r.rating,
         comment: r.content,
         date: r.date,
+        // Generate random engagement stats since they aren't in the stub
         likes: Math.floor(Math.random() * 100),
         shares: Math.floor(Math.random() * 50)
     }));
@@ -337,46 +381,37 @@ const formatDate = (date) => {
   return new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) 
 }
 
-const router = useRouter()
-const defaultCompanyName = 'Tech Solutions Inc'
-const fallbackSlug = slugifyTitle(defaultCompanyName)
+const isModalOpen = ref(false)
+const selectedReview = ref(null)
 
-const companyName = computed(() => {
-  const detail = companyDetailData.value
-  if (detail && typeof detail === 'object' && detail.name) {
-    return detail.name
+const closeModal = () => {
+  isModalOpen.value = false
+  selectedReview.value = null
+}
+
+const viewFullReview = (review) => {
+  selectedReview.value = review
+  isModalOpen.value = true
+}
+
+const handleKeydown = (event) => {
+  if (event.key === 'Escape') {
+    closeModal()
   }
-  return defaultCompanyName
+}
+
+onMounted(() => {
+  if (typeof window !== 'undefined') {
+    window.addEventListener('keydown', handleKeydown)
+  }
 })
 
-const companySlug = computed(() => slugifyTitle(companyName.value) || fallbackSlug)
-
-const viewReviewDetail = (review) => {
-  if (!review?.id) return
-  router.push(`/company/review/${review.id}`)
-}
-
-const viewPublicReview = (review) => {
-  const slug = companySlug.value
-  const query: Record<string, string> = {
-    slug,
-    id: slug,
-    source: 'company-dashboard'
+onBeforeUnmount(() => {
+  if (typeof window !== 'undefined') {
+    window.removeEventListener('keydown', handleKeydown)
   }
+})
 
-  if (companyName.value) {
-    query.title = companyName.value
-  }
-
-  if (review?.id) {
-    query.reviewId = String(review.id)
-  }
-
-  router.push({
-    path: '/agency',
-    query
-  })
-}
 
 
 const chartData = {

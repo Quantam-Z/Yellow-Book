@@ -89,11 +89,7 @@
           <div
             v-for="(review, index) in filteredReviews"
             :key="index"
-            :data-review-id="review.id"
-            :class="[
-              'bg-white rounded-lg shadow-md p-4 sm:p-5 md:p-6 space-y-4 sm:space-y-5',
-              isHighlighted(review.id) ? 'ring-2 ring-blue-400 ring-offset-2' : ''
-            ]"
+            class="bg-white rounded-lg shadow-md p-4 sm:p-5 md:p-6 space-y-4 sm:space-y-5"
           >
             <div class="space-y-3">
               <div class="flex items-start gap-2 sm:gap-3">
@@ -317,7 +313,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, computed, watch, watchEffect, nextTick } from 'vue';
+  import { ref, computed, watch, watchEffect } from 'vue';
   import { MessageSquare, ChevronDown, ExternalLink, X, Star } from 'lucide-vue-next';
   import { Teleport } from 'vue';
   
@@ -399,7 +395,6 @@
   const { data: reviewsData, error: reviewsError, pending, refresh } = await useStubResource('agencyReviews');
   const loading = computed(() => pending.value);
   const error = ref<string | null>(null);
-  const route = useRoute();
 
   const isDesktop = ref(false);
   const isMobile = ref(false);
@@ -469,14 +464,6 @@
     return breakdown;
   });
 
-  const highlightedReviewId = computed<number | null>(() => {
-    const raw = route.query.reviewId;
-    if (!raw) return null;
-    const value = Array.isArray(raw) ? raw[0] : raw;
-    const parsed = Number(value);
-    return Number.isFinite(parsed) ? parsed : null;
-  });
-
   const filteredReviews = computed(() => {
     let filtered = reviews.value;
 
@@ -503,27 +490,6 @@
 
     return filtered;
   });
-
-  const isHighlighted = (reviewId?: number | string | null) => {
-    if (reviewId === null || reviewId === undefined) return false;
-    return highlightedReviewId.value === Number(reviewId);
-  };
-
-  const scrollReviewIntoView = () => {
-    if (!import.meta.client) return;
-    const targetId = highlightedReviewId.value;
-    if (!targetId) return;
-    nextTick(() => {
-      const el = document.querySelector<HTMLElement>(`[data-review-id="${targetId}"]`);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
-      }
-    });
-  };
-
-  watch([filteredReviews, highlightedReviewId], () => {
-    scrollReviewIntoView();
-  }, { flush: 'post' });
 
   function handleNewReview(reviewData: { rating: number, text: string }) {
     const payload = {

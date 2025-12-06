@@ -174,17 +174,15 @@
 
                         <!-- Review Column -->
                         <div
-                          class="flex items-center justify-center p-num-10 gap-1 text-darkslategray"
+                          class="flex items-center justify-center p-num-10 gap-1 text-darkslategray cursor-pointer"
+                          role="button"
+                          tabindex="0"
+                          @click="goToReviewDetail(review.id)"
+                          @keyup.enter="goToReviewDetail(review.id)"
                         >
                           <div class="relative leading-[160%] capitalize">"{{ truncateReview(review.content) }}"</div>
                           <span class="text-deepskyblue hover:text-blue-600">
-                            <button
-                              type="button"
-                              class="bg-transparent border-0 text-deepskyblue hover:text-blue-600 font-semibold cursor-pointer p-0"
-                              @click="goToPublicReview(review.id)"
-                            >
-                              Public view
-                            </button>
+                            Full view
                           </span>
                         </div>
 
@@ -269,10 +267,10 @@
                   <p class="text-gray-700 text-sm leading-relaxed italic line-clamp-3">"{{ review.content }}"</p>
                   <button
                     type="button"
-                    @click="goToPublicReview(review.id)"
+                    @click="goToReviewDetail(review.id)"
                     class="text-deepskyblue hover:text-blue-600 cursor-pointer bg-transparent border-0 p-0 font-semibold"
                   >
-                    Public view
+                    Full view
                   </button>
                 </div>
 
@@ -510,12 +508,7 @@ const deleteReview = async (id) => {
   }
 }
 
-const goToReviewDetail = (reviewId: number | string | null | undefined) => {
-  if (!reviewId) return
-  router.push(`/company/review/${reviewId}`)
-}
-
-const goToPublicReview = (reviewId: number | string | null | undefined) => {
+const goToReviewDetail = (reviewId) => {
   if (!reviewId) return
   const slug = companySlug.value
   const title = companyName.value
@@ -527,7 +520,9 @@ const goToPublicReview = (reviewId: number | string | null | undefined) => {
   if (title) {
     query.title = title
   }
-  query.reviewId = String(reviewId)
+  if (reviewId) {
+    query.reviewId = String(reviewId)
+  }
   router.push({
     path: '/agency',
     query,
