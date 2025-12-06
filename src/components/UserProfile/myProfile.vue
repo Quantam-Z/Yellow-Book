@@ -1,70 +1,66 @@
 <template>
-  <div class="min-h-screen bg-white-50 p-4">
-    <div
-      class="w-full rounded-xl border border-gray-200 bg-gradient-to-br from-indigo-500/10 to-pink-500/10 p-4 sm:p-6 shadow-lg mb-4 sm:mb-6"
-    >
-      <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+  <div class="panel-stack w-full">
+    <section class="rounded-lg border border-gray-200 bg-white shadow-sm p-5 sm:p-6">
+      <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900">My Profile</h1>
-          <p class="text-sm text-gray-600 mt-1">
-            Manage your personal information, contact details, and account security from one place.
+          <p class="text-xs uppercase tracking-wide text-gray-500">Account</p>
+          <h1 class="text-2xl font-semibold text-gray-900">My profile</h1>
+          <p class="text-sm text-gray-500">
+            Manage your personal information, contact details, and notification settings.
           </p>
         </div>
-        <div class="flex items-center gap-2 text-sm text-gray-600">
-          <span class="inline-flex h-2.5 w-2.5 rounded-full bg-green-500"></span>
+        <div class="flex items-center gap-2 text-sm text-gray-500">
+          <span class="inline-flex h-2 w-2 rounded-full bg-green-500"></span>
           Profile completeness 82%
         </div>
       </div>
-    </div>
-
-    <div class="flex flex-wrap gap-2 sm:gap-4 mb-6">
-      <button
-        type="button"
-        @click="activeSection = 'profile'"
-        class="px-3 py-2 sm:px-6 sm:py-3 rounded-lg text-xs sm:text-sm font-medium transition-all duration-300 whitespace-nowrap border"
-        :class="
-          activeSection === 'profile'
-            ? 'bg-gold text-gray-900 border-gold shadow-md'
-            : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50 shadow-sm'
-        "
-      >
-        Profile Info
-      </button>
-      <button
-        type="button"
-        @click="activeSection = 'password'"
-        class="px-3 py-2 sm:px-6 sm:py-3 rounded-lg text-xs sm:text-sm font-medium transition-all duration-300 whitespace-nowrap border"
-        :class="
-          activeSection === 'password'
-            ? 'bg-gold text-gray-900 border-gold shadow-md'
-            : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50 shadow-sm'
-        "
-      >
-        Security
-      </button>
-    </div>
+      <div class="mt-4 flex flex-wrap gap-3">
+        <button
+          type="button"
+          class="rounded-md border px-4 py-2 text-sm font-medium transition"
+          :class="
+            activeSection === 'profile'
+              ? 'border-gray-900 bg-gray-900 text-white shadow-sm'
+              : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
+          "
+          @click="activeSection = 'profile'"
+        >
+          Profile info
+        </button>
+        <button
+          type="button"
+          class="rounded-md border px-4 py-2 text-sm font-medium transition"
+          :class="
+            activeSection === 'password'
+              ? 'border-amber-400 bg-amber-400 text-gray-900 shadow-sm'
+              : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
+          "
+          @click="activeSection = 'password'"
+        >
+          Security
+        </button>
+      </div>
+    </section>
 
     <div v-if="activeSection === 'profile'" class="space-y-6">
       <div class="grid gap-6 lg:grid-cols-[minmax(0,320px),1fr]">
-        <section
-          class="rounded-2xl border border-whitesmoke bg-white p-6 shadow-[0px_0px_15px_rgba(0,0,0,0.04)] flex flex-col gap-6"
-        >
+        <section class="rounded-lg border border-gray-200 bg-white shadow-sm p-5 sm:p-6 flex flex-col gap-5">
           <div class="flex flex-col items-center text-center gap-4">
             <div class="relative">
               <img
                 :src="profileForm.avatar"
                 alt="Profile avatar"
-                class="h-28 w-28 rounded-2xl object-cover shadow-lg"
+                class="h-28 w-28 rounded-xl border border-gray-200 object-cover"
               />
               <label
-                class="absolute -bottom-2 -right-2 flex cursor-pointer items-center rounded-full bg-gold px-3 py-1 text-xs font-semibold text-gray-900 shadow-lg"
+                class="absolute -bottom-2 right-0 inline-flex cursor-pointer items-center rounded-md border border-gray-200 bg-white px-3 py-1 text-xs font-semibold text-gray-700 shadow-sm"
               >
                 Change
                 <input type="file" class="hidden" accept="image/*" @change="onAvatarChange" />
               </label>
             </div>
             <div>
-              <h2 class="text-xl font-semibold text-gray-900">{{ fullName || 'Your name' }}</h2>
+              <h2 class="text-lg font-semibold text-gray-900">{{ fullName || 'Your name' }}</h2>
               <p class="text-sm text-gray-500">
                 {{ profileForm.jobTitle }}<span v-if="profileForm.company"> • {{ profileForm.company }}</span>
               </p>
@@ -86,129 +82,151 @@
             </div>
           </dl>
 
-          <div class="rounded-2xl bg-gray-50 p-4 text-sm text-gray-600">
-            <p class="font-semibold text-gray-900 mb-1">Account status</p>
+          <div class="rounded-lg bg-gray-50 p-4 text-sm text-gray-600">
+            <p class="mb-1 font-semibold text-gray-900">Account status</p>
             <p>Professional plan • Active since 2019</p>
           </div>
         </section>
 
         <form
-          class="rounded-2xl border border-whitesmoke bg-white p-6 sm:p-8 shadow-[0px_0px_15px_rgba(0,0,0,0.04)] space-y-6"
+          class="rounded-lg border border-gray-200 bg-white shadow-sm p-5 sm:p-6 space-y-6"
           @submit.prevent="updateProfile"
         >
-          <div class="space-y-6">
-            <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
-              <label class="flex flex-col gap-2 text-sm font-medium text-gray-600">
-                First name
-                <div>
-                  <input
-                    v-model="profileForm.firstName"
-                    type="text"
-                    class="w-full rounded-xl border px-4 py-3 text-sm bg-white transition focus:outline-none focus:ring-2"
-                    :class="profileErrors.firstName ? 'border-red-400 focus:ring-red-200' : 'border-gray-200 focus:ring-gray-200/80 focus:border-gray-900'"
-                    placeholder="Jane"
-                    autocomplete="given-name"
-                  />
-                  <p v-if="profileErrors.firstName" class="mt-1 text-xs text-red-500">{{ profileErrors.firstName }}</p>
-                </div>
-              </label>
-              <label class="flex flex-col gap-2 text-sm font-medium text-gray-600">
-                Last name
-                <div>
-                  <input
-                    v-model="profileForm.lastName"
-                    type="text"
-                    class="w-full rounded-xl border px-4 py-3 text-sm bg-white transition focus:outline-none focus:ring-2"
-                    :class="profileErrors.lastName ? 'border-red-400 focus:ring-red-200' : 'border-gray-200 focus:ring-gray-200/80 focus:border-gray-900'"
-                    placeholder="Cooper"
-                    autocomplete="family-name"
-                  />
-                  <p v-if="profileErrors.lastName" class="mt-1 text-xs text-red-500">{{ profileErrors.lastName }}</p>
-                </div>
-              </label>
-              <label class="flex flex-col gap-2 text-sm font-medium text-gray-600">
-                Email
-                <div>
-                  <input
-                    v-model="profileForm.email"
-                    type="email"
-                    class="w-full rounded-xl border px-4 py-3 text-sm bg-white transition focus:outline-none focus:ring-2"
-                    :class="profileErrors.email ? 'border-red-400 focus:ring-red-200' : 'border-gray-200 focus:ring-gray-200/80 focus:border-gray-900'"
-                    placeholder="you@example.com"
-                    autocomplete="email"
-                  />
-                  <p v-if="profileErrors.email" class="mt-1 text-xs text-red-500">{{ profileErrors.email }}</p>
-                </div>
-              </label>
-              <label class="flex flex-col gap-2 text-sm font-medium text-gray-600">
-                Phone
-                <div>
-                  <input
-                    v-model="profileForm.phone"
-                    type="tel"
-                    class="w-full rounded-xl border px-4 py-3 text-sm bg-white transition focus:outline-none focus:ring-2"
-                    :class="profileErrors.phone ? 'border-red-400 focus:ring-red-200' : 'border-gray-200 focus:ring-gray-200/80 focus:border-gray-900'"
-                    placeholder="+1 (555) 000-0000"
-                    autocomplete="tel"
-                  />
-                  <p v-if="profileErrors.phone" class="mt-1 text-xs text-red-500">{{ profileErrors.phone }}</p>
-                </div>
-              </label>
-              <label class="flex flex-col gap-2 text-sm font-medium text-gray-600">
-                Job title
-                <input
-                  v-model="profileForm.jobTitle"
-                  type="text"
-                  class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm bg-white transition focus:outline-none focus:ring-2 focus:ring-gray-200/80 focus:border-gray-900"
-                  placeholder="Product Designer"
-                />
-              </label>
-              <label class="flex flex-col gap-2 text-sm font-medium text-gray-600">
-                Company
-                <input
-                  v-model="profileForm.company"
-                  type="text"
-                  class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm bg-white transition focus:outline-none focus:ring-2 focus:ring-gray-200/80 focus:border-gray-900"
-                  placeholder="Acme Inc"
-                />
-              </label>
-              <label class="flex flex-col gap-2 text-sm font-medium text-gray-600">
-                Location
-                <input
-                  v-model="profileForm.location"
-                  type="text"
-                  class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm bg-white transition focus:outline-none focus:ring-2 focus:ring-gray-200/80 focus:border-gray-900"
-                  placeholder="Los Angeles, USA"
-                />
-              </label>
-              <label class="flex flex-col gap-2 text-sm font-medium text-gray-600">
-                Time zone
-                <input
-                  v-model="profileForm.timeZone"
-                  type="text"
-                  class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm bg-white transition focus:outline-none focus:ring-2 focus:ring-gray-200/80 focus:border-gray-900"
-                  placeholder="GMT-7"
-                />
-              </label>
-            </div>
-
+          <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
             <label class="flex flex-col gap-2 text-sm font-medium text-gray-600">
-              Bio
-              <textarea
-                v-model="profileForm.bio"
-                rows="4"
-                class="w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm resize-y bg-white transition focus:outline-none focus:ring-2 focus:ring-gray-200/80 focus:border-gray-900"
-                placeholder="Tell others a little about yourself"
-              ></textarea>
+              First name
+              <div>
+                <input
+                  v-model="profileForm.firstName"
+                  type="text"
+                  class="w-full rounded-md border px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2"
+                  :class="
+                    profileErrors.firstName
+                      ? 'border-red-400 focus:ring-red-200 focus:border-red-400'
+                      : 'border-gray-300 focus:ring-gray-200 focus:border-gray-900'
+                  "
+                  placeholder="Jane"
+                  autocomplete="given-name"
+                />
+                <p v-if="profileErrors.firstName" class="mt-1 text-xs text-red-500">
+                  {{ profileErrors.firstName }}
+                </p>
+              </div>
+            </label>
+            <label class="flex flex-col gap-2 text-sm font-medium text-gray-600">
+              Last name
+              <div>
+                <input
+                  v-model="profileForm.lastName"
+                  type="text"
+                  class="w-full rounded-md border px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2"
+                  :class="
+                    profileErrors.lastName
+                      ? 'border-red-400 focus:ring-red-200 focus:border-red-400'
+                      : 'border-gray-300 focus:ring-gray-200 focus:border-gray-900'
+                  "
+                  placeholder="Cooper"
+                  autocomplete="family-name"
+                />
+                <p v-if="profileErrors.lastName" class="mt-1 text-xs text-red-500">
+                  {{ profileErrors.lastName }}
+                </p>
+              </div>
+            </label>
+            <label class="flex flex-col gap-2 text-sm font-medium text-gray-600">
+              Email
+              <div>
+                <input
+                  v-model="profileForm.email"
+                  type="email"
+                  class="w-full rounded-md border px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2"
+                  :class="
+                    profileErrors.email
+                      ? 'border-red-400 focus:ring-red-200 focus:border-red-400'
+                      : 'border-gray-300 focus:ring-gray-200 focus:border-gray-900'
+                  "
+                  placeholder="you@example.com"
+                  autocomplete="email"
+                />
+                <p v-if="profileErrors.email" class="mt-1 text-xs text-red-500">
+                  {{ profileErrors.email }}
+                </p>
+              </div>
+            </label>
+            <label class="flex flex-col gap-2 text-sm font-medium text-gray-600">
+              Phone
+              <div>
+                <input
+                  v-model="profileForm.phone"
+                  type="tel"
+                  class="w-full rounded-md border px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2"
+                  :class="
+                    profileErrors.phone
+                      ? 'border-red-400 focus:ring-red-200 focus:border-red-400'
+                      : 'border-gray-300 focus:ring-gray-200 focus:border-gray-900'
+                  "
+                  placeholder="+1 (555) 000-0000"
+                  autocomplete="tel"
+                />
+                <p v-if="profileErrors.phone" class="mt-1 text-xs text-red-500">
+                  {{ profileErrors.phone }}
+                </p>
+              </div>
+            </label>
+            <label class="flex flex-col gap-2 text-sm font-medium text-gray-600">
+              Job title
+              <input
+                v-model="profileForm.jobTitle"
+                type="text"
+                class="w-full rounded-md border border-gray-300 px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-gray-900"
+                placeholder="Product Designer"
+              />
+            </label>
+            <label class="flex flex-col gap-2 text-sm font-medium text-gray-600">
+              Company
+              <input
+                v-model="profileForm.company"
+                type="text"
+                class="w-full rounded-md border border-gray-300 px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-gray-900"
+                placeholder="Acme Inc"
+              />
+            </label>
+            <label class="flex flex-col gap-2 text-sm font-medium text-gray-600">
+              Location
+              <input
+                v-model="profileForm.location"
+                type="text"
+                class="w-full rounded-md border border-gray-300 px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-gray-900"
+                placeholder="Los Angeles, USA"
+              />
+            </label>
+            <label class="flex flex-col gap-2 text-sm font-medium text-gray-600">
+              Time zone
+              <input
+                v-model="profileForm.timeZone"
+                type="text"
+                class="w-full rounded-md border border-gray-300 px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-gray-900"
+                placeholder="GMT-7"
+              />
             </label>
           </div>
+
+          <label class="flex flex-col gap-2 text-sm font-medium text-gray-600">
+            Bio
+            <textarea
+              v-model="profileForm.bio"
+              rows="4"
+              class="w-full rounded-md border border-gray-300 px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-gray-900"
+              placeholder="Tell others a little about yourself"
+            ></textarea>
+          </label>
 
           <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p class="text-sm text-gray-500">Last updated {{ formattedProfileSavedAt }}</p>
             <div class="flex items-center gap-3">
               <button
                 type="button"
-                class="rounded-xl border border-gray-300 px-5 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition"
+                class="rounded-md border border-gray-300 px-5 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-50 disabled:opacity-60"
                 @click="resetProfileForm"
                 :disabled="profileSaving"
               >
@@ -216,7 +234,7 @@
               </button>
               <button
                 type="submit"
-                class="rounded-xl bg-gold px-6 py-3 text-sm font-semibold text-gray-900 shadow-md flex items-center gap-2 disabled:opacity-70"
+                class="rounded-md bg-amber-400 px-6 py-2.5 text-sm font-semibold text-gray-900 shadow-sm transition hover:bg-amber-300 disabled:opacity-60 flex items-center gap-2"
                 :disabled="profileSaving"
               >
                 <svg v-if="profileSaving" class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
@@ -235,14 +253,14 @@
       </div>
 
       <form
-        class="rounded-2xl border border-whitesmoke bg-white p-6 sm:p-8 shadow-[0px_0px_15px_rgba(0,0,0,0.04)] space-y-6"
+        class="rounded-lg border border-gray-200 bg-white shadow-sm p-5 sm:p-6 space-y-5"
         @submit.prevent="savePreferences"
       >
-        <div class="flex flex-col gap-5">
+        <div class="space-y-5">
           <div
             v-for="item in preferenceList"
             :key="item.key"
-            class="flex flex-col gap-4 border-b border-gray-100 pb-5 last:border-none last:pb-0 md:flex-row md:items-center md:justify-between"
+            class="flex flex-col gap-3 border-b border-gray-100 pb-5 last:border-none last:pb-0 sm:flex-row sm:items-center sm:justify-between"
           >
             <div>
               <p class="font-semibold text-gray-900">{{ item.title }}</p>
@@ -251,7 +269,7 @@
             <button
               type="button"
               class="relative inline-flex h-7 w-12 items-center rounded-full transition"
-              :class="preferenceForm[item.key] ? 'bg-gold' : 'bg-gray-200'"
+              :class="preferenceForm[item.key] ? 'bg-amber-400' : 'bg-gray-200'"
               role="switch"
               :aria-checked="preferenceForm[item.key]"
               @click="togglePreference(item.key)"
@@ -271,7 +289,7 @@
           <div class="flex gap-3">
             <button
               type="button"
-              class="rounded-xl border border-gray-300 px-5 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition"
+              class="rounded-md border border-gray-300 px-5 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-50 disabled:opacity-60"
               @click="resetPreferences"
               :disabled="preferenceSaving"
             >
@@ -279,7 +297,7 @@
             </button>
             <button
               type="submit"
-              class="rounded-xl bg-gray-900 px-6 py-3 text-sm font-semibold text-white shadow-md disabled:opacity-60"
+              class="rounded-md bg-gray-900 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-gray-800 disabled:opacity-60"
               :disabled="preferenceSaving || !preferenceTouched"
             >
               {{ preferenceSaving ? 'Saving…' : 'Save preferences' }}
@@ -291,78 +309,76 @@
 
     <div v-else class="space-y-6">
       <form
-        class="rounded-2xl border border-whitesmoke bg-white p-6 sm:p-8 shadow-[0px_0px_15px_rgba(0,0,0,0.04)] space-y-6"
+        class="rounded-lg border border-gray-200 bg-white shadow-sm p-5 sm:p-6 space-y-6"
         @submit.prevent="updatePassword"
       >
-        <div class="space-y-5">
-          <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
-            <label class="flex flex-col gap-2 text-sm font-medium text-gray-600 md:col-span-2">
-              Current password
-              <div class="relative">
-                <input
-                  v-model="passwordForm.current"
-                  :type="passwordVisibility.current ? 'text' : 'password'"
-                  class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm bg-white transition focus:outline-none focus:ring-2 focus:ring-gray-200/80 focus:border-gray-900 pr-16"
-                  autocomplete="current-password"
-                />
-                <button
-                  type="button"
-                  class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-gray-500"
-                  @click="passwordVisibility.current = !passwordVisibility.current"
-                >
-                  {{ passwordVisibility.current ? 'Hide' : 'Show' }}
-                </button>
-              </div>
-            </label>
-            <label class="flex flex-col gap-2 text-sm font-medium text-gray-600">
-              New password
-              <div class="relative">
-                <input
-                  v-model="passwordForm.next"
-                  :type="passwordVisibility.next ? 'text' : 'password'"
-                  class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm bg-white transition focus:outline-none focus:ring-2 focus:ring-gray-200/80 focus:border-gray-900 pr-16"
-                  autocomplete="new-password"
-                  minlength="8"
-                />
-                <button
-                  type="button"
-                  class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-gray-500"
-                  @click="passwordVisibility.next = !passwordVisibility.next"
-                >
-                  {{ passwordVisibility.next ? 'Hide' : 'Show' }}
-                </button>
-              </div>
-            </label>
-            <label class="flex flex-col gap-2 text-sm font-medium text-gray-600">
-              Confirm new password
-              <div class="relative">
-                <input
-                  v-model="passwordForm.confirm"
-                  :type="passwordVisibility.confirm ? 'text' : 'password'"
-                  class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm bg-white transition focus:outline-none focus:ring-2 focus:ring-gray-200/80 focus:border-gray-900 pr-16"
-                  autocomplete="new-password"
-                />
-                <button
-                  type="button"
-                  class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-gray-500"
-                  @click="passwordVisibility.confirm = !passwordVisibility.confirm"
-                >
-                  {{ passwordVisibility.confirm ? 'Hide' : 'Show' }}
-                </button>
-              </div>
-            </label>
-          </div>
+        <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+          <label class="flex flex-col gap-2 text-sm font-medium text-gray-600 md:col-span-2">
+            Current password
+            <div class="relative">
+              <input
+                v-model="passwordForm.current"
+                :type="passwordVisibility.current ? 'text' : 'password'"
+                class="w-full rounded-md border border-gray-300 px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-gray-900 pr-16"
+                autocomplete="current-password"
+              />
+              <button
+                type="button"
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-gray-500"
+                @click="passwordVisibility.current = !passwordVisibility.current"
+              >
+                {{ passwordVisibility.current ? 'Hide' : 'Show' }}
+              </button>
+            </div>
+          </label>
+          <label class="flex flex-col gap-2 text-sm font-medium text-gray-600">
+            New password
+            <div class="relative">
+              <input
+                v-model="passwordForm.next"
+                :type="passwordVisibility.next ? 'text' : 'password'"
+                class="w-full rounded-md border border-gray-300 px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-gray-900 pr-16"
+                autocomplete="new-password"
+                minlength="8"
+              />
+              <button
+                type="button"
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-gray-500"
+                @click="passwordVisibility.next = !passwordVisibility.next"
+              >
+                {{ passwordVisibility.next ? 'Hide' : 'Show' }}
+              </button>
+            </div>
+          </label>
+          <label class="flex flex-col gap-2 text-sm font-medium text-gray-600">
+            Confirm new password
+            <div class="relative">
+              <input
+                v-model="passwordForm.confirm"
+                :type="passwordVisibility.confirm ? 'text' : 'password'"
+                class="w-full rounded-md border border-gray-300 px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-gray-900 pr-16"
+                autocomplete="new-password"
+              />
+              <button
+                type="button"
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-gray-500"
+                @click="passwordVisibility.confirm = !passwordVisibility.confirm"
+              >
+                {{ passwordVisibility.confirm ? 'Hide' : 'Show' }}
+              </button>
+            </div>
+          </label>
+        </div>
 
-          <div v-if="passwordError" class="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-600">
-            {{ passwordError }}
-          </div>
+        <div v-if="passwordError" class="rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+          {{ passwordError }}
         </div>
 
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <p class="text-sm text-gray-500">Passwords must be at least 8 characters long.</p>
           <button
             type="submit"
-            class="rounded-xl bg-gold px-6 py-3 text-sm font-semibold text-gray-900 shadow-md disabled:opacity-70"
+            class="rounded-md bg-amber-400 px-6 py-2.5 text-sm font-semibold text-gray-900 shadow-sm transition hover:bg-amber-300 disabled:opacity-60"
             :disabled="passwordSaving"
           >
             {{ passwordSaving ? 'Updating…' : 'Update password' }}
@@ -370,12 +386,10 @@
         </div>
       </form>
 
-      <section
-        class="rounded-2xl border border-whitesmoke bg-white p-6 sm:p-8 shadow-[0px_0px_15px_rgba(0,0,0,0.04)]"
-      >
+      <section class="rounded-lg border border-gray-200 bg-white shadow-sm p-5 sm:p-6">
         <h3 class="text-lg font-semibold text-gray-900">Security checklist</h3>
-        <p class="text-sm text-gray-500 mt-1">Higher scores keep your account safe.</p>
-        <ul class="mt-4 space-y-3 text-sm text-gray-700">
+        <p class="mt-1 text-sm text-gray-500">Higher scores keep your account safe.</p>
+        <ul class="mt-4 space-y-2 text-sm text-gray-700">
           <li v-for="(tip, index) in passwordChecklist" :key="index" class="flex items-start gap-3">
             <span class="mt-1 inline-flex h-2 w-2 rounded-full bg-green-500"></span>
             <span>{{ tip }}</span>
@@ -387,26 +401,10 @@
     <transition name="fade">
       <div
         v-if="showMessage"
-        class="fixed top-4 right-4 rounded-lg p-4 text-white transition-all duration-300 z-50 shadow-xl"
-        :class="messageType === 'success' ? 'bg-green-500' : 'bg-red-500'"
+        class="fixed bottom-6 right-6 z-50 w-full max-w-xs rounded-lg border p-4 text-sm font-semibold shadow-lg"
+        :class="messageType === 'success' ? 'border-green-200 bg-green-50 text-green-900' : 'border-red-200 bg-red-50 text-red-900'"
       >
-        <div class="flex items-center gap-3">
-          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-            <path
-              v-if="messageType === 'success'"
-              fill-rule="evenodd"
-              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-              clip-rule="evenodd"
-            ></path>
-            <path
-              v-else
-              fill-rule="evenodd"
-              d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-              clip-rule="evenodd"
-            ></path>
-          </svg>
-          <span>{{ messageText }}</span>
-        </div>
+        {{ messageText }}
       </div>
     </transition>
   </div>
@@ -622,34 +620,6 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-.font-plus-jakarta-sans {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-}
-
-.border-whitesmoke {
-  border-color: #f5f5f5;
-}
-
-.border-silver {
-  border-color: #c0c0c0;
-}
-
-.text-darkgray {
-  color: #a9a9a9;
-}
-
-.text-darkslategray {
-  color: #2f4f4f;
-}
-
-.bg-gold {
-  background-color: #ffd700;
-}
-
-.bg-whitesmoke {
-  background-color: #f5f5f5;
-}
-
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.2s ease;
