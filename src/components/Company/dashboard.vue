@@ -246,14 +246,14 @@
               tabindex="-1"
               role="document"
             >
-              <button
+              <!-- <button
                 type="button"
                 class="absolute right-4 top-4 text-gray-400 hover:text-gray-600 transition"
                 @click="closeModal"
                 aria-label="Close"
               >
                 <X class="h-5 w-5" />
-              </button>
+              </button> -->
               <div v-if="selectedReview" class="p-6 sm:p-8 space-y-4">
                 <div class="flex items-center gap-4">
                   <div class="h-12 w-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
