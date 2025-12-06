@@ -2,12 +2,7 @@
   <div class="w-full min-h-screen bg-white p-4 sm:p-6">
     <div class="rounded-xl border border-gray-200 shadow-sm bg-gradient-to-r from-indigo-500/15 via-pink-500/15 to-amber-400/15 px-4 sm:px-6 py-3 sm:py-4 mb-6 flex items-center justify-between">
       <h1 class="text-lg sm:text-xl font-semibold text-gray-900">My Reviews</h1>
-      <button
-        type="button"
-        class="bg-amber-400 hover:bg-amber-500 text-gray-900 font-semibold text-sm px-4 py-2 rounded shadow border-0 focus:outline-none focus:ring-0"
-      >
-        List Your Company
-      </button>
+     
     </div>
 
     <div class="space-y-4 sm:space-y-6">

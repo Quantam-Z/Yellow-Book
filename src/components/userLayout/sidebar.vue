@@ -65,7 +65,6 @@ const mainMenu = [
   { label: "my reviews", icon: ClipboardList, to: "/user/my-reviews" },
   { label: "favourite companies", icon: Briefcase, to: "/user/favourite-companies" },
   { label: "my profile", icon: User, to: "/user/my-profile" },
-  { label: "Settings", icon: Settings, to: "/user/settings" },
 ];
 
 // Scroll Logic

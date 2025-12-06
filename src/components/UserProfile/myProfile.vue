@@ -234,59 +234,7 @@
         </form>
       </div>
 
-      <form
-        class="rounded-2xl border border-whitesmoke bg-white p-6 sm:p-8 shadow-[0px_0px_15px_rgba(0,0,0,0.04)] space-y-6"
-        @submit.prevent="savePreferences"
-      >
-        <div class="flex flex-col gap-5">
-          <div
-            v-for="item in preferenceList"
-            :key="item.key"
-            class="flex flex-col gap-4 border-b border-gray-100 pb-5 last:border-none last:pb-0 md:flex-row md:items-center md:justify-between"
-          >
-            <div>
-              <p class="font-semibold text-gray-900">{{ item.title }}</p>
-              <p class="text-sm text-gray-500">{{ item.description }}</p>
-            </div>
-            <button
-              type="button"
-              class="relative inline-flex h-7 w-12 items-center rounded-full transition"
-              :class="preferenceForm[item.key] ? 'bg-gold' : 'bg-gray-200'"
-              role="switch"
-              :aria-checked="preferenceForm[item.key]"
-              @click="togglePreference(item.key)"
-            >
-              <span
-                class="inline-block h-5 w-5 transform rounded-full bg-white shadow transition"
-                :class="preferenceForm[item.key] ? 'translate-x-5' : 'translate-x-1'"
-              ></span>
-            </button>
-          </div>
-        </div>
-
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <p class="text-sm text-gray-500">
-            {{ preferenceTouched ? 'Unsaved changes' : 'Preferences synced' }}
-          </p>
-          <div class="flex gap-3">
-            <button
-              type="button"
-              class="rounded-xl border border-gray-300 px-5 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition"
-              @click="resetPreferences"
-              :disabled="preferenceSaving"
-            >
-              Reset
-            </button>
-            <button
-              type="submit"
-              class="rounded-xl bg-gray-900 px-6 py-3 text-sm font-semibold text-white shadow-md disabled:opacity-60"
-              :disabled="preferenceSaving || !preferenceTouched"
-            >
-              {{ preferenceSaving ? 'Saving…' : 'Save preferences' }}
-            </button>
-          </div>
-        </div>
-      </form>
+   
     </div>
 
     <div v-else class="space-y-6">
@@ -470,28 +418,7 @@ const passwordChecklist = [
   'Enable two-factor authentication from account settings',
 ]
 
-const preferenceList = [
-  {
-    key: 'productEmails',
-    title: 'Product updates via email',
-    description: 'Be notified when we ship new features and templates.',
-  },
-  {
-    key: 'smsReminders',
-    title: 'SMS reminders',
-    description: 'Receive reminders about upcoming calls or demos.',
-  },
-  {
-    key: 'loginAlerts',
-    title: 'Login alerts',
-    description: 'Get a notification when we detect a new device login.',
-  },
-  {
-    key: 'weeklyDigest',
-    title: 'Weekly insights digest',
-    description: 'A curated summary with metrics, leads, and best practices.',
-  },
-]
+
 
 const createPreferenceState = () => ({
   productEmails: true,
