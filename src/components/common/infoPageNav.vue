@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { Menu, X } from 'lucide-vue-next';
 import { storeToRefs } from 'pinia';
 
 import { useAuthStore } from '~/stores/auth';
 import { useLoginModal } from '@/composables/useLoginModal';
+import PanelProfileMenu from '~/components/common/panelProfileMenu.vue';
 
 type NavItem = {
   label: string;
@@ -45,10 +46,7 @@ if (import.meta.client) {
   authStore.hydrateFromStorage();
 }
 
-const { isAuthenticated, user } = storeToRefs(authStore);
-
-const showUserMenu = ref(false);
-const userMenuRef = ref<HTMLElement | null>(null);
+const { isAuthenticated } = storeToRefs(authStore);
 const listYourAgencyLink = computed(() =>
   isAuthenticated.value ? '/popular-list' : '/auth/register',
 );
@@ -78,7 +76,6 @@ watch(
   () => route.path,
   () => {
     isMenuOpen.value = false;
-    showUserMenu.value = false;
   },
 );
 
@@ -129,28 +126,11 @@ watch(isMenuOpen, (open) => {
 
 const hasHeroContent = computed(() => Boolean(props.eyebrow || props.title || props.description));
 
-const authUserDisplay = computed(() => user.value?.name || user.value?.email || '');
-
-const userInitials = computed(() => {
-  const source = authUserDisplay.value?.trim() ?? '';
-  if (!source) return 'U';
-  const parts = source.split(/\s+/).filter(Boolean);
-  if (!parts.length) return 'U';
-  if (parts.length === 1) {
-    return parts[0].slice(0, 2).toUpperCase();
-  }
-  return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
-});
-
 const { openLoginModal: triggerOpenLoginModal } = useLoginModal();
 
 const openLoginModal = () => {
   triggerOpenLoginModal('info-nav');
   isMenuOpen.value = false;
-};
-
-const toggleUserMenu = () => {
-  showUserMenu.value = !showUserMenu.value;
 };
 
 const isRouteActive = (target: string) => activePath.value === target;
@@ -162,30 +142,19 @@ const mobileNavItemClasses = (target: string) =>
     : 'text-[#616161] hover:bg-[#fff9e6]';
 
 const goToUserDashboard = () => {
-  showUserMenu.value = false;
   isMenuOpen.value = false;
   router.push('/user/my-profile');
 };
 
 const handleUserLogout = async () => {
   await authStore.logout();
-  showUserMenu.value = false;
   isMenuOpen.value = false;
-};
-
-const handleDocumentClick = (event: MouseEvent) => {
-  if (!showUserMenu.value) return;
-  const target = event.target as Node | null;
-  if (userMenuRef.value && target && !userMenuRef.value.contains(target)) {
-    showUserMenu.value = false;
-  }
 };
 
 const handleListYourAgencyClick = (event?: MouseEvent) => {
   if (event?.preventDefault) {
     event.preventDefault();
   }
-  showUserMenu.value = false;
   closeMenu();
   if (!isAuthenticated.value) {
     notifyLoginRequired();
@@ -195,12 +164,7 @@ const handleListYourAgencyClick = (event?: MouseEvent) => {
   router.push(listYourAgencyLink.value);
 };
 
-onMounted(() => {
-  document.addEventListener('click', handleDocumentClick);
-});
-
 onBeforeUnmount(() => {
-  document.removeEventListener('click', handleDocumentClick);
   toggleScrollLock(false);
 });
 </script>
@@ -271,43 +235,23 @@ onBeforeUnmount(() => {
             </div>
 
           <div class="hidden lg:flex items-center gap-6 text-[#212121]">
-            <div
-  v-if="!isAuthenticated"
-  class="flex items-center justify-center cursor-pointer relative leading-[160%] font-normal text-base"
-  @click="openLoginModal"
->
-  Login
-</div>
-
-            <div v-else ref="userMenuRef" class="relative">
-              <button
-                type="button"
-                class="flex items-center gap-3 rounded-full border border-[#dbe7ff] bg-white px-3 py-2 shadow-sm hover:shadow-md transition"
-                @click="toggleUserMenu"
-              >
-                <span class="w-8 h-8 rounded-full bg-[#212121] text-white flex items-center justify-center font-semibold text-sm">
-                  {{ userInitials }}
-                </span>
-                <span class="hidden sm:block text-sm font-medium">{{ authUserDisplay }}</span>
-              </button>
-              <Transition name="fade">
-                <div
-                  v-if="showUserMenu"
-                  class="absolute right-0 mt-3 w-48 rounded-xl border border-[#dbe7ff] bg-white shadow-lg py-2 text-sm z-50"
-                >
-                  <button class="w-full text-left px-4 py-2 hover:bg-[#fff9e6] transition-colors" @click="goToUserDashboard">
-                    My Dashboard
-                  </button>
-                  <button class="w-full text-left px-4 py-2 text-red-500 hover:bg-red-50 transition-colors" @click="handleUserLogout">
-                    Logout
-                  </button>
-                </div>
-              </Transition>
-            </div>
-              <NuxtLink
-                :to="listYourAgencyLink"
+            <button
+              v-if="!isAuthenticated"
+              type="button"
+              class="flex items-center justify-center cursor-pointer relative leading-[160%] font-normal text-base bg-transparent border-none p-0"
+              @click="openLoginModal"
+            >
+              Login
+            </button>
+            <PanelProfileMenu
+              v-else
+              role-label="Account"
+              dashboard-to="/user/my-profile"
+            />
+            <NuxtLink
+              :to="listYourAgencyLink"
               class="relative rounded border-gray border-solid border-[1px] box-border h-12 flex items-center justify-center py-[18px] px-9 text-center text-base text-[#212121] font-plus-jakarta-sans no-underline"
-                @click.prevent="handleListYourAgencyClick"
+              @click.prevent="handleListYourAgencyClick"
             >
               <div class="relative leading-[130%] capitalize font-semibold">List Your Agency</div>
             </NuxtLink>
@@ -340,40 +284,20 @@ onBeforeUnmount(() => {
             <button
               v-if="!isAuthenticated"
               type="button"
-              class="text-[#4a4a4a] transition-colors hover:text-[#212121]"
+              class="text-[#4a4a4a] transition-colors hover:text-[#212121] bg-transparent border-none p-0"
               @click="openLoginModal"
             >
               Login
             </button>
-            <div v-else ref="userMenuRef" class="relative">
-              <button
-                type="button"
-                class="flex items-center gap-3 rounded-full border border-[#dbe7ff] bg-white px-3 py-2 shadow-sm hover:shadow-md transition"
-                @click="toggleUserMenu"
-              >
-                <span class="w-8 h-8 rounded-full bg-[#212121] text-white flex items-center justify-center font-semibold text-sm">
-                  {{ userInitials }}
-                </span>
-                <span class="text-sm font-medium text-[#212121]">{{ authUserDisplay }}</span>
-              </button>
-              <Transition name="fade">
-                <div
-                  v-if="showUserMenu"
-                  class="absolute right-0 mt-3 w-48 rounded-xl border border-[#dbe7ff] bg-white shadow-lg py-2 text-sm z-50"
-                >
-                  <button class="w-full text-left px-4 py-2 hover:bg-[#fff9e6] transition-colors" @click="goToUserDashboard">
-                    My Dashboard
-                  </button>
-                  <button class="w-full text-left px-4 py-2 text-red-500 hover:bg-red-50 transition-colors" @click="handleUserLogout">
-                    Logout
-                  </button>
-                </div>
-              </Transition>
-            </div>
-              <NuxtLink
-                :to="listYourAgencyLink"
+            <PanelProfileMenu
+              v-else
+              role-label="Account"
+              dashboard-to="/user/my-profile"
+            />
+            <NuxtLink
+              :to="listYourAgencyLink"
               class="rounded-full border border-[#212121] px-5 py-2 text-xs uppercase tracking-[0.2em] text-[#212121] transition-all hover:bg-[#212121] hover:text-white no-underline"
-                @click.prevent="handleListYourAgencyClick"
+              @click.prevent="handleListYourAgencyClick"
             >
               List Your Agency
             </NuxtLink>
