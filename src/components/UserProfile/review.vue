@@ -81,11 +81,95 @@
       </div>
     </div>
   </div>
+
+  <Teleport to="body">
+    <Transition
+      enter-active-class="duration-200 ease-out"
+      enter-from-class="opacity-0"
+      enter-to-class="opacity-100"
+      leave-active-class="duration-150 ease-in"
+      leave-from-class="opacity-100"
+      leave-to-class="opacity-0"
+    >
+      <div
+        v-if="isEditModalOpen"
+        class="fixed inset-0 z-50 flex items-center justify-center px-4"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="edit-review-title"
+      >
+        <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" @click="closeEditModal" aria-hidden="true"></div>
+        <div class="relative z-10 w-full max-w-xl rounded-2xl bg-white shadow-2xl">
+          <div class="flex items-center justify-between border-b border-gray-100 px-6 py-4">
+            <div>
+              <p class="text-xs uppercase tracking-wide text-gray-500">Editing review for</p>
+              <h2 id="edit-review-title" class="text-lg font-semibold text-gray-900">
+                {{ editingReview?.company || 'Selected Listing' }}
+              </h2>
+              <p v-if="editingReview?.date" class="text-xs text-gray-500">Reviewed on {{ editingReview.date }}</p>
+            </div>
+            <button
+              type="button"
+              class="inline-flex h-9 w-9 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
+              @click="closeEditModal"
+            >
+              <X class="h-5 w-5" />
+            </button>
+          </div>
+
+          <form class="space-y-5 px-6 py-6" @submit.prevent="submitReviewUpdate">
+            <div>
+              <label for="rating" class="block text-sm font-medium text-gray-700">Rating</label>
+              <div class="mt-2 flex items-center gap-3">
+                <select
+                  id="rating"
+                  v-model.number="editForm.rating"
+                  class="block w-32 rounded-lg border border-gray-200 px-3 py-2 text-base text-gray-900 focus:border-amber-400 focus:ring-amber-400"
+                >
+                  <option v-for="star in 5" :key="star" :value="star">{{ star }} Star{{ star > 1 ? 's' : '' }}</option>
+                </select>
+                <span class="text-sm text-gray-500">Select a value between 1 &amp; 5</span>
+              </div>
+            </div>
+
+            <div>
+              <label for="comment" class="block text-sm font-medium text-gray-700">Your review</label>
+              <textarea
+                id="comment"
+                v-model="editForm.comment"
+                rows="4"
+                class="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:border-amber-400 focus:ring-amber-400"
+                placeholder="Tell us a bit more about your experience..."
+              ></textarea>
+              <p class="mt-2 text-xs text-gray-500">Keep it helpful and constructive for other directory users.</p>
+            </div>
+
+            <div class="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-end">
+              <button
+                type="button"
+                class="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-semibold text-gray-600 transition hover:bg-gray-50 sm:w-auto"
+                @click="closeEditModal"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                class="w-full rounded-xl bg-amber-400 px-4 py-2.5 text-sm font-semibold text-gray-900 transition hover:bg-amber-500 disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto"
+                :disabled="isSavingReview"
+              >
+                {{ isSavingReview ? 'Updating...' : 'Update Review' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </Transition>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
-import { Star, Edit3, Trash2 } from 'lucide-vue-next'
-import { computed, watch } from 'vue'
+import { Star, Edit3, Trash2, X } from 'lucide-vue-next'
+import { computed, reactive, ref, watch } from 'vue'
 import type { Ref } from 'vue'
 import { useStubClient } from '~/services/stubClient'
 import { useStubResource } from '~/composables/useStubResource'
@@ -108,40 +192,73 @@ const reviews = computed(() => {
   }))
 })
 
-const promptValue = (message: string, defaultValue: string) => {
-  if (!import.meta.client) return defaultValue
-  return window.prompt(message, defaultValue) ?? defaultValue
+const editingReviewId = ref<number | null>(null)
+const editForm = reactive({
+  comment: '',
+  rating: 1,
+})
+const isSavingReview = ref(false)
+
+const editingReview = computed(() => {
+  if (editingReviewId.value === null) return null
+  return reviews.value.find((r) => r.id === editingReviewId.value) ?? null
+})
+
+const isEditModalOpen = computed(() => editingReviewId.value !== null)
+
+const notify = (type: 'success' | 'alert', message: string) => {
+  if (!import.meta.client) return
+  try {
+    nuxtApp.$awn?.[type](message)
+  } catch {}
 }
 
-// Action handlers
-const editReview = async (id: number) => {
+const resetEditForm = () => {
+  editForm.comment = ''
+  editForm.rating = 1
+}
+
+const editReview = (id: number) => {
   const current = reviews.value.find((r) => r.id === id)
   if (!current) return
 
-  const updatedComment = promptValue('Update your review comment:', current.comment)
-  const updatedRating = promptValue('Update rating (1-5):', String(current.rating))
-  const ratingNumber = Number(updatedRating)
+  editingReviewId.value = id
+  editForm.comment = current.comment
+  editForm.rating = current.rating
+}
 
+const closeEditModal = () => {
+  editingReviewId.value = null
+  resetEditForm()
+}
+
+const clampRating = (value: number) => {
+  if (!Number.isFinite(value)) return 1
+  return Math.min(Math.max(Math.round(value), 1), 5)
+}
+
+const submitReviewUpdate = async () => {
+  if (editingReviewId.value === null || isSavingReview.value) return
+  const current = reviews.value.find((r) => r.id === editingReviewId.value)
+  if (!current) return
+
+  const trimmedComment = editForm.comment.trim()
   const payload: Record<string, any> = {
-    review: updatedComment,
-    rating: Number.isFinite(ratingNumber) ? Math.min(Math.max(ratingNumber, 1), 5) : current.rating,
+    review: trimmedComment || current.comment,
+    rating: clampRating(editForm.rating),
   }
 
   try {
-    await stubClient.update('recentReviews', id, payload, { delay: 160 })
+    isSavingReview.value = true
+    await stubClient.update('recentReviews', editingReviewId.value, payload, { delay: 160 })
     await refresh()
-    if (import.meta.client) {
-      try {
-        nuxtApp.$awn?.success('Review updated')
-      } catch {}
-    }
+    notify('success', 'Review updated')
+    closeEditModal()
   } catch (error) {
     console.error('Failed to update review', error)
-    if (import.meta.client) {
-      try {
-        nuxtApp.$awn?.alert('Failed to update review')
-      } catch {}
-    }
+    notify('alert', 'Failed to update review')
+  } finally {
+    isSavingReview.value = false
   }
 }
 
