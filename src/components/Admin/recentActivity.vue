@@ -1,8 +1,8 @@
 <template>
-  <div class="w-full rounded-lg flex flex-col items-start p-5 gap-4 text-left text-lg text-gray-900 font-plus-jakarta-sans" style="background: linear-gradient(135deg, #bbdefb 0%, #ffffff 100%);">
-    <h2 class="w-full relative leading-[130%] capitalize font-bold">Recent Activity</h2>
+  <div class="w-full rounded-lg bg-white border border-whitesmoke border-solid flex flex-col items-start p-4 sm:p-5 lg:p-6 gap-4 text-left text-base text-gray-900 font-plus-jakarta-sans">
+    <h2 class="w-full relative leading-[130%] capitalize font-semibold text-lg">Recent Activity</h2>
     
-    <div class="w-full flex flex-col items-start gap-3 text-sm">
+    <div class="w-full flex flex-col items-start gap-3 text-sm text-gray-600">
       <!-- Activity Items -->
       <div 
         v-for="(activity, index) in activities" 
@@ -12,7 +12,7 @@
         <div class="w-full flex items-start gap-3">
           <component 
             :is="activity.icon" 
-            class="w-5 h-5 relative flex-shrink-0 text-black stroke-[2]" 
+            class="w-5 h-5 relative flex-shrink-0 text-gray-500 stroke-[2]" 
           />
           <div class="flex-1 flex flex-col items-start gap-1">
             <div class="w-full relative leading-[130%] font-medium text-gray-900">
@@ -26,7 +26,7 @@
         
         <div 
   v-if="index < activities.length - 1" 
-  class="w-full relative border-t border-solid border-white mt-3" 
+  class="w-full relative border-t border-solid border-gray-100 mt-3" 
 />
 
       </div>

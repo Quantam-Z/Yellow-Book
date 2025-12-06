@@ -81,7 +81,7 @@
       <div 
         v-for="(review, index) in displayedReviews" 
         :key="review.id"
-        class="w-full rounded-xl border border-gray-200 p-3 sm:p-4 bg-white shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.01] cursor-pointer hover:bg-indigo-50"
+        class="w-full rounded-lg border border-gray-200 p-3 sm:p-4 bg-white cursor-pointer transition-colors hover:bg-gray-50"
         @click="openReviewDetail(review)"
       >
         <div class="flex justify-between items-start mb-3">
