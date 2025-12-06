@@ -28,7 +28,12 @@
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-200">
-          <tr v-for="(review, index) in displayedReviews" :key="review.id" class="hover:bg-gray-50 active:bg-gray-100 transition">
+<tr
+  v-for="(review, index) in displayedReviews"
+  :key="review.id"
+  class="hover:bg-gray-50 active:bg-gray-100 transition cursor-pointer"
+  @click="openReviewDetail(review)"
+>
             <td class="px-4 py-3 text-gray-900 font-medium text-sm truncate">{{ review.reviewer }}</td>
             <td class="px-4 py-3 text-gray-700 text-sm whitespace-nowrap">
               <div class="flex items-center gap-1">
@@ -44,7 +49,7 @@
               <span 
                 class="inline-flex items-center gap-1 px-3 py-1.5 rounded-md font-medium text-sm cursor-pointer hover:opacity-80 transition-opacity" 
                 :class="getStatusClass(review.status, 'soft')"
-                @click="toggleStatus(review)"
+                @click.stop="toggleStatus(review)"
               >
                 {{ review.status }}
               </span>
@@ -53,7 +58,7 @@
             <td class="px-4 py-3 whitespace-nowrap relative">
               <span
                 v-if="editingIndex === index"
-                @click="simulateDelete(review)"
+                @click.stop="simulateDelete(review)"
                 title="Delete Review"
                 class="w-5 h-5 text-red-600 cursor-pointer hover:text-red-700 active:text-red-800 transition touch-manipulation flex items-center justify-center"
               >
@@ -77,6 +82,7 @@
         v-for="(review, index) in displayedReviews" 
         :key="review.id"
         class="w-full rounded-xl border border-gray-200 p-3 sm:p-4 bg-white shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.01] cursor-pointer hover:bg-indigo-50"
+        @click="openReviewDetail(review)"
       >
         <div class="flex justify-between items-start mb-3">
           <div class="flex flex-col">
@@ -90,14 +96,14 @@
             <span 
                 class="text-xs font-medium px-2 py-1 rounded-full cursor-pointer hover:opacity-80 transition-opacity" 
                 :class="getStatusClass(review.status, 'soft') + ' bg-opacity-10'"
-                @click="toggleStatus(review)"
+                @click.stop="toggleStatus(review)"
             >
               {{ review.status }}
             </span>
             
             <span
               v-if="editingIndex === index"
-              @click="simulateDelete(review)"
+              @click.stop="simulateDelete(review)"
               title="Delete Review"
               class="text-red-500 hover:text-red-700 transition-colors cursor-pointer flex items-center"
             >
@@ -122,7 +128,7 @@
           <div class="flex justify-between items-center text-xs text-gray-500">
           <span>{{ review.date }}</span>
           <span
-              @click="toggleReviewDetails(review.id)"
+              @click.stop="toggleReviewDetails(review.id)"
             class="text-amber-500 hover:text-amber-600 font-medium cursor-pointer"
           >
             {{ review.id === expandedReviewId ? 'Show Less' : 'View Details' }}
@@ -169,7 +175,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, nextTick } from 'vue';
+import { ref, onMounted, computed } from 'vue';
+import { useRouter } from 'vue-router';
 import { MoreHorizontal, ChevronLeft, ChevronRight, Trash2 } from 'lucide-vue-next'; 
 import RatingStars from '~/components/common/RatingStars.vue'
 import { getStatusClass } from '~/composables/useStatusClass'
@@ -185,6 +192,7 @@ const expandedReviewId = ref(null);
 const allReviews = ref([]); 
 const stubClient = useStubClient();
 const nuxtApp = useNuxtApp();
+const router = useRouter();
 
 let nextId = 1; 
 const REVIEW_STATUSES = ['Pending', 'Approved', 'Rejected'];
@@ -229,6 +237,11 @@ const goToPage = (page) => {
 
 const toggleReviewDetails = (reviewId) => {
   expandedReviewId.value = expandedReviewId.value === reviewId ? null : reviewId;
+};
+
+const openReviewDetail = (review) => {
+  if (!review?.id) return;
+  router.push(`/company/review/${review.id}`);
 };
 
 const toggleActions = (index) => {
