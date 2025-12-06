@@ -388,7 +388,7 @@
                   <div class="text-xs text-gray-500">{{ review.time }}</div>
                 </td>
                 <td class="px-4 py-3 text-gray-700 text-sm">
-                  <span class="truncate block max-w-[420px]">"{{ review.content }}"</span>
+                  <span class="block max-w-[420px] whitespace-pre-line break-words">"{{ review.content }}"</span>
                 </td>
                 <td class="px-4 py-3 whitespace-nowrap">
                   <div 
