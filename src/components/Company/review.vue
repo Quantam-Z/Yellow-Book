@@ -340,7 +340,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed, watch, watchEffect } from 'vue'
 import { Trash2, Star, ChevronDown, Loader2, Calendar, MessageSquare } from 'lucide-vue-next'
 import Pagination from '~/components/common/pagination.vue'
