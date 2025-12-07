@@ -10,6 +10,8 @@
     "postinstall": "nuxt prepare && node ./scripts/sync-stub-data.mjs"
   },
   "devDependencies": {
+    "@babel/parser": "^7.26.3",
+    "@babel/traverse": "^7.26.3",
     "@kevinmarrec/nuxt-pwa": "^0.17.0",
     "@nuxtjs/tailwindcss": "^6.12.1",
     "nuxt": "^3.14.0",
