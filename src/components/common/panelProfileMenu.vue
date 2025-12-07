@@ -2,19 +2,19 @@
   <div class="relative" ref="menuRoot">
     <button
       type="button"
-      class="flex items-center gap-3 rounded-full border border-gray-200 bg-white px-3 py-2 shadow-sm hover:shadow-lg transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-300"
+      class="relative flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-900 shadow-sm transition hover:border-gray-300 hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-300"
+      :aria-expanded="isOpen"
+      aria-haspopup="menu"
       @click="toggleMenu"
     >
-      <span class="w-9 h-9 rounded-full bg-[#212121] text-white flex items-center justify-center font-semibold text-sm uppercase">
+      <span class="sr-only">Open profile menu</span>
+      <span class="flex h-10 w-10 items-center justify-center rounded-full bg-[#212121] text-xs font-semibold uppercase text-white">
         {{ initials }}
       </span>
-      <div class="hidden min-[420px]:flex flex-col text-left leading-tight">
-        <span class="text-sm font-semibold text-gray-900 truncate">
-          {{ displayName }}
-        </span>
-        <span class="text-[12px] text-gray-500">{{ roleHint }}</span>
-      </div>
-      <ChevronDown class="w-4 h-4 text-gray-500" :class="{ 'rotate-180': isOpen }" />
+      <span
+        class="pointer-events-none absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-[#22c55e]"
+        aria-hidden="true"
+      ></span>
     </button>
 
     <transition name="menu-fade">
@@ -33,25 +33,23 @@
         </div>
 
         <div class="flex items-center justify-center gap-2 px-3 py-1">
-  <button
-    v-if="showDashboardLink && dashboardTo"
-    class="flex items-center gap-2 px-2.5 py-1.5 text-sm hover:bg-gray-100 rounded-md transition-colors text-gray-700 
-           border-none outline-none focus:outline-none focus:ring-0"
-    @click="goToDashboard"
-  >
-    <LayoutDashboard class="w-3.5 h-3.5" />
-    <span class="font-medium">Dashboard</span>
-  </button>
+          <button
+            v-if="showDashboardLink && dashboardTo"
+            class="flex items-center gap-2 px-2.5 py-1.5 text-sm hover:bg-gray-100 rounded-md transition-colors text-gray-700 border-none outline-none focus:outline-none focus:ring-0"
+            @click="goToDashboard"
+          >
+            <LayoutDashboard class="w-3.5 h-3.5" />
+            <span class="font-medium">Dashboard</span>
+          </button>
 
-  <button
-    class="flex items-center gap-2 px-2.5 py-1.5 text-sm text-red-500 hover:bg-red-50 rounded-md transition-colors 
-           border-none outline-none focus:outline-none focus:ring-0"
-    @click="handleLogout"
-  >
-    <LogOut class="w-3.5 h-3.5" />
-    <span class="font-medium">Logout</span>
-  </button>
-</div>
+          <button
+            class="flex items-center gap-2 px-2.5 py-1.5 text-sm text-red-500 hover:bg-red-50 rounded-md transition-colors border-none outline-none focus:outline-none focus:ring-0"
+            @click="handleLogout"
+          >
+            <LogOut class="w-3.5 h-3.5" />
+            <span class="font-medium">Logout</span>
+          </button>
+        </div>
 
       </div>
     </transition>
@@ -62,7 +60,7 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
-import { ChevronDown, LayoutDashboard, LogOut } from 'lucide-vue-next'
+import { LayoutDashboard, LogOut } from 'lucide-vue-next'
 import { useAuthStore } from '~/stores/auth'
 
 const props = defineProps({
