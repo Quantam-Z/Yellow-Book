@@ -141,26 +141,13 @@
 <script setup>
 import { X } from 'lucide-vue-next';
 import { computed, ref, watch, onMounted, onUnmounted } from 'vue';
-
-// Define props
-const defaultCompany = {
-  id: null,
-  name: 'Innovate Solutions',
-  category: 'Travel',
-  industry: 'Travel Tour Operator',
-  email: 'contact@innovate.com',
-  phone: '+123456789',
-  mobile: '+123456789',
-  website: 'www.innovatesolution.com',
-  assignedDate: '',
-  address: ''
-};
+import { defaultCompany, createDefaultCompany } from '../../constants/companyDefaults';
 
 const props = defineProps({
   company: {
       type: Object,
       required: true,
-      default: () => ({ ...defaultCompany })
+      default: createDefaultCompany
   }
 });
 
@@ -184,7 +171,7 @@ const resetVerification = () => {
 
 const hydrateCompanyDetails = (companyData) => {
   if (!companyData) {
-    return { ...defaultCompany };
+    return createDefaultCompany();
   }
 
   const normalizedPhone = companyData.phone ?? companyData.mobile ?? defaultCompany.phone;
