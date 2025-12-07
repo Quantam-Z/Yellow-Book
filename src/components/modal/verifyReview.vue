@@ -68,34 +68,42 @@
               </div>
               
               <div class="self-stretch rounded-lg border-whitesmoke border-solid border-[1px] flex flex-col items-start p-4 gap-4">
-                  <div class="self-stretch relative leading-[130%] capitalize font-semibold text-sm">Verification Checklist</div>
-                  <div class="self-stretch flex flex-col items-start justify-center gap-4 text-center text-darkslategray">
-                      
-                      <div class="flex items-center gap-2">
-                          <input
-                              type="checkbox"
-                              v-model="verification.phoneVerified"
-                              class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                          />
-                          <div class="relative leading-[130%] capitalize text-sm">Verified Via Phone Call</div>
-                      </div>
-                      
-                      <div class="flex items-center gap-2">
-                          <input
-                              type="checkbox"
-                              v-model="verification.emailVerified"
-                              class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                          />
-                          <div class="relative leading-[130%] capitalize text-sm">Verified Via Email</div>
-                      </div>
+                  <div class="self-stretch flex flex-col gap-4">
+                      <div class="self-stretch relative leading-[130%] capitalize font-semibold text-sm">Verification Checklist</div>
+                      <p class="text-xs text-gray-500 leading-snug">
+                          Select every step below before approving a company.
+                      </p>
+                      <div class="self-stretch flex flex-col items-start justify-center gap-4 text-center text-darkslategray">
+                          
+                          <label class="flex items-center gap-2 cursor-pointer select-none w-full">
+                              <input
+                                  :id="`phone-verified-${company.id}`"
+                                  type="checkbox"
+                                  v-model="verification.phoneVerified"
+                                  class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer"
+                              />
+                              <span class="relative leading-[130%] capitalize text-sm">Verified Via Phone Call</span>
+                          </label>
+                          
+                          <label class="flex items-center gap-2 cursor-pointer select-none w-full">
+                              <input
+                                  :id="`email-verified-${company.id}`"
+                                  type="checkbox"
+                                  v-model="verification.emailVerified"
+                                  class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer"
+                              />
+                              <span class="relative leading-[130%] capitalize text-sm">Verified Via Email</span>
+                          </label>
 
-                      <div class="flex items-center gap-2">
-                          <input
-                              type="checkbox"
-                              v-model="verification.websiteVerified"
-                              class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                          />
-                          <div class="relative leading-[130%] capitalize text-sm">Website Verified</div>
+                          <label class="flex items-center gap-2 cursor-pointer select-none w-full">
+                              <input
+                                  :id="`website-verified-${company.id}`"
+                                  type="checkbox"
+                                  v-model="verification.websiteVerified"
+                                  class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer"
+                              />
+                              <span class="relative leading-[130%] capitalize text-sm">Website Verified</span>
+                          </label>
                       </div>
                   </div>
               </div>
@@ -123,7 +131,7 @@
 
 <script setup>
 import { X } from 'lucide-vue-next';
-import { computed, ref, onMounted, onUnmounted } from 'vue';
+import { computed, ref, watch, onMounted, onUnmounted } from 'vue';
 
 // Define props
 const props = defineProps({
@@ -146,11 +154,31 @@ const props = defineProps({
 const emit = defineEmits(['close', 'approve', 'reject']);
 
 // Verification state
-const verification = ref({
+const createVerificationState = () => ({
   phoneVerified: false,
   emailVerified: false,
   websiteVerified: false
 });
+
+const verification = ref(createVerificationState());
+
+const resetVerification = () => {
+  verification.value = createVerificationState();
+};
+
+watch(
+  () => props.company?.id,
+  (newId, oldId) => {
+    if (!newId) {
+      resetVerification();
+      return;
+    }
+    if (newId !== oldId) {
+      resetVerification();
+    }
+  },
+  { immediate: true }
+);
 
 // Computed properties for button states
 const canApprove = computed(() => {
