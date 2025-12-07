@@ -1,4 +1,6 @@
-import { executeStubRequest } from '~/services/stubClient';
+import { executeStubRequest, useStubClient } from '~/services/stubClient';
+
+const stubClient = useStubClient();
 
 type NormalizedQuery = {
   page: number;
@@ -42,6 +44,14 @@ interface SearchResourceConfig<RecordType = any, PayloadType = any> {
 const DEFAULT_LIMIT = 20;
 const MAX_LIMIT = 100;
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
+
+type StubSearchOptions = {
+  /**
+   * When set to 'refresh', the stub data is reloaded from the public stubs
+   * directory before filtering so the browser always fetches from disk/network.
+   */
+  cache?: 'default' | 'refresh';
+};
 
 const sortByStringField =
   (field: string): SortFn<Record<string, any>> =>
@@ -455,12 +465,20 @@ export type StubSearchResult<T = any> = {
 export const searchStubResource = async <T = any>(
   resource: string,
   query: Record<string, any> = {},
+  options: StubSearchOptions = {},
 ): Promise<StubSearchResult<T>> => {
   const config = resolveConfig(resource);
   const normalizedQuery = normalizeQuery(query, config);
 
-  const response = await executeStubRequest({ resource: config.stub, method: 'GET' });
-  const rawRecords = config.pick ? config.pick(response.data) : toRecordArray(response.data);
+  let payload: any = null;
+  if (options.cache === 'refresh') {
+    payload = await stubClient.reset(config.stub);
+  } else {
+    const response = await executeStubRequest({ resource: config.stub, method: 'GET' });
+    payload = response?.data ?? null;
+  }
+
+  const rawRecords = config.pick ? config.pick(payload) : toRecordArray(payload);
   const preparedRecords = config.normalize ? rawRecords.map((entry) => config.normalize!(entry)) : rawRecords.slice();
 
   const filteredRecords = preparedRecords.filter((record) => {
