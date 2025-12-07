@@ -242,18 +242,32 @@
                     Loading search options...
                   </div>
                   <template v-else>
-                      <div
-                        v-for="(entry, index) in filteredSearchEntries"
-                        :key="entry.slug || entry.title || index"
-                        @click="selectSearch(entry)"
-                        :class="[
-                          'w-full h-[40px] sm:h-[44px] flex items-center px-3 sm:px-4 cursor-pointer transition-all text-xs sm:text-sm md:text-[14px] active:scale-[0.98]',
-                          'bg-white hover:bg-[#f0f0f0]',
-                          index !== filteredSearchEntries.length - 1 ? 'border-b border-[#e0e0e0]' : ''
-                        ]"
+                  <div
+                    v-for="(entry, index) in filteredSearchEntries"
+                    :key="entry.company?.slug || entry.company?.id || entry.title || index"
+                    @click="selectSearch(entry)"
+                    :class="[
+                      'w-full flex flex-col gap-1 px-3 sm:px-4 py-2 cursor-pointer transition-all text-xs sm:text-sm md:text-[14px] active:scale-[0.98]',
+                      'bg-white hover:bg-[#f0f0f0]',
+                      index !== filteredSearchEntries.length - 1 ? 'border-b border-[#e0e0e0]' : ''
+                    ]"
+                  >
+                    <div class="flex flex-col gap-0.5 text-left">
+                      <span class="leading-[170%] capitalize font-medium text-[#212121]">{{ entry.company?.name || entry.title }}</span>
+                      <span v-if="entry.summary" class="text-[11px] sm:text-xs text-[#616161]">
+                        {{ entry.summary }}
+                      </span>
+                    </div>
+                    <div v-if="entry.tags?.length" class="flex flex-wrap gap-1">
+                      <span
+                        v-for="tag in entry.tags"
+                        :key="tag"
+                        class="inline-flex items-center rounded-full bg-[#fff5d6] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[#a16207]"
                       >
-                        <div class="leading-[170%] capitalize">{{ entry.title }}</div>
-                      </div>
+                        {{ tag }}
+                      </span>
+                    </div>
+                  </div>
                     <div
                       v-if="!filteredSearchEntries.length"
                       class="w-full py-4 px-4 text-center text-xs sm:text-sm text-[#9e9e9e] bg-white"
@@ -366,8 +380,12 @@ export default {
             cache: 'refresh',
           },
         )
-        this.searchResults = Array.isArray(items) ? items : []
-        this.searchMeta = meta ?? {}
+        const structuredResults = this.buildStructuredResults(items, query)
+        this.searchResults = structuredResults
+        this.searchMeta = {
+          ...(meta ?? {}),
+          filtered: structuredResults.length,
+        }
         this.searchError = null
       } catch (error) {
         this.searchError = error
@@ -383,6 +401,82 @@ export default {
       this.searchDebounceId = setTimeout(() => {
         this.fetchSearchEntries(this.searchQuery)
       }, 200)
+    },
+    buildStructuredResults(items = [], query = '') {
+      const candidates = Array.isArray(items) ? items.slice(0, this.dropdownResultLimit) : []
+      if (!candidates.length) {
+        return []
+      }
+      const normalizedQuery = this.normalizeTitle(query)
+      if (normalizedQuery) {
+        const exactListing = candidates.find((entry) =>
+          this.normalizeTitle(entry?.title || entry?.name) === normalizedQuery,
+        )
+        if (exactListing) {
+          return [this.mapListingToSearchResult(exactListing)].filter(Boolean)
+        }
+      }
+      return candidates.map((entry) => this.mapListingToSearchResult(entry)).filter(Boolean)
+    },
+    mapListingToSearchResult(listing) {
+      if (!listing || typeof listing !== 'object') {
+        return null
+      }
+      const title = listing.title || listing.name || 'Unnamed agency'
+      const slug = listing.slug
+      const id =
+        listing.id != null
+          ? String(listing.id)
+          : slug || this.normalizeTitle(title) || `${Date.now()}-${Math.random().toString(36).slice(2)}`
+      const location = listing.location || 'Location coming soon'
+      const rating = Number(listing.rating ?? 0)
+      const ratingCount = Number(listing.ratingCount ?? listing.reviews ?? 0)
+      const category = listing.category || 'General Services'
+      const serviceType = listing.serviceType || 'Full service'
+      return {
+        id,
+        title,
+        slug,
+        summary: this.buildResultSummary({ category, serviceType, location }),
+        tags: this.buildResultTags(listing),
+        company: {
+          id,
+          slug,
+          name: title,
+          location,
+          rating,
+          ratingCount,
+          website: listing.website,
+        },
+        related: {
+          category,
+          serviceType,
+          specialization: listing.specialization,
+          website: listing.website,
+          price: listing.price,
+          revenue: listing.revenue,
+          emergencyService: Boolean(listing.emergencyService),
+        },
+      }
+    },
+    buildResultSummary(parts = {}) {
+      return [parts.category, parts.serviceType, parts.location].filter(Boolean).join(' • ')
+    },
+    buildResultTags(listing = {}) {
+      const tags = []
+      if (listing.revenue) {
+        tags.push(listing.revenue)
+      }
+      if (listing.specialization) {
+        tags.push(listing.specialization)
+      }
+      if (listing.price != null) {
+        tags.push(`Avg. $${listing.price}`)
+      }
+      if (listing.emergencyService) {
+        tags.push('24/7 support')
+      }
+      return tags.slice(0, 3)
     },
     async handleUserLogout() {
       await this.authStore.logout()
@@ -441,9 +535,10 @@ export default {
     },
     selectSearch(entry) {
       if (!entry) return
-      this.selectedSearch = entry.title
-      this.searchQuery = entry.title
-      this.cachedSearchQuery = entry.title
+      const label = entry?.company?.name || entry.title
+      this.selectedSearch = label
+      this.searchQuery = label
+      this.cachedSearchQuery = label
       this.showDropdown = false
     },
     openLoginModal() {
@@ -543,20 +638,23 @@ export default {
           return this.searchResults[0] || null
         }
         const exact = this.searchResults.find(
-          (entry) => this.normalizeTitle(entry.title || entry.name) === normalized,
+          (entry) => this.normalizeTitle(entry?.company?.name || entry?.title) === normalized,
         )
         return exact || this.searchResults[0] || null
       },
       buildAgencyQuery(record) {
         if (!record) return null
         const query = {}
-        if (record.slug) {
-          query.slug = record.slug
+        const slug = record?.company?.slug || record?.slug
+        const id = record?.company?.id ?? record?.id
+        const title = record?.company?.name || record?.title
+        if (slug) {
+          query.slug = slug
         }
-        if (record.id != null) {
-          query.id = String(record.id)
-        } else if (!record.slug && record.title) {
-          query.title = record.title
+        if (id != null) {
+          query.id = String(id)
+        } else if (!slug && title) {
+          query.title = title
         }
         return Object.keys(query).length ? query : null
       },
