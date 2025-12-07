@@ -1,6 +1,12 @@
-import { executeStubRequest, useStubClient } from '~/services/stubClient';
+import {
+  executeStubRequest,
+  useStubClient,
+  isStubHttpTransportEnabled,
+  StubApiError,
+} from '~/services/stubClient';
 
 const stubClient = useStubClient();
+const isClientRuntime = typeof globalThis !== 'undefined' && typeof globalThis.window !== 'undefined';
 
 type NormalizedQuery = {
   page: number;
@@ -51,6 +57,104 @@ type StubSearchOptions = {
    * directory before filtering so the browser always fetches from disk/network.
    */
   cache?: 'default' | 'refresh';
+  transport?: 'auto' | 'remote-only' | 'local-only';
+};
+
+const toIterable = (value: unknown) => (Array.isArray(value) ? value : [value]);
+
+const buildSearchParams = (query: Record<string, any> = {}, options: StubSearchOptions = {}) => {
+  const params = new URLSearchParams();
+  for (const [key, rawValue] of Object.entries(query)) {
+    if (rawValue === undefined || rawValue === null) continue;
+    const values = toIterable(rawValue);
+    for (const entry of values) {
+      if (entry === undefined || entry === null || entry === '') continue;
+      params.append(key, String(entry));
+    }
+  }
+  if (options.cache && !params.has('cache')) {
+    params.set('cache', options.cache);
+  }
+  return params;
+};
+
+const buildSearchUrl = (resource: string, query: Record<string, any> = {}, options: StubSearchOptions = {}) => {
+  const params = buildSearchParams(query, options);
+  const queryString = params.toString();
+  const base = `/api/stub-search/${encodeURIComponent(resource)}`;
+  return queryString ? `${base}?${queryString}` : base;
+};
+
+const getTransportPreference = (options: StubSearchOptions = {}) => {
+  const value = options.transport;
+  return typeof value === 'string' ? value : 'auto';
+};
+
+const shouldUseRemoteSearch = (options: StubSearchOptions = {}) => {
+  if (!isClientRuntime) return false;
+  const preference = getTransportPreference(options);
+  if (preference === 'local-only') return false;
+  if (!isStubHttpTransportEnabled() && preference !== 'remote-only') {
+    return false;
+  }
+  return isStubHttpTransportEnabled();
+};
+
+const fetchSearchOverHttp = async <T = any>(
+  resource: string,
+  query: Record<string, any>,
+  options: StubSearchOptions,
+): Promise<StubSearchResult<T>> => {
+  const url = buildSearchUrl(resource, query, options);
+
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      credentials: 'same-origin',
+    });
+    const status = response.status;
+    const statusText = response.statusText;
+
+    const rawText = await response.text();
+    const parsed = rawText ? JSON.parse(rawText) : null;
+
+    if (!response.ok) {
+      throw new StubApiError(status || 500, parsed?.error || statusText || 'Stub search failed', {
+        ...(parsed?.details || {}),
+        reason: parsed?.reason || 'http-error',
+        status,
+        statusText,
+        url,
+        resource,
+      });
+    }
+
+    return (parsed?.data as StubSearchResult<T>) ?? { items: [], meta: {} };
+  } catch (error) {
+    if (error instanceof StubApiError) {
+      throw error;
+    }
+    if (error instanceof SyntaxError) {
+      throw new StubApiError(500, 'Stub search response was not valid JSON', {
+        reason: 'invalid-json',
+        resource,
+        url,
+      });
+    }
+    if (error?.name === 'TypeError') {
+      throw new StubApiError(503, 'Stub search HTTP request failed', {
+        reason: 'network-error',
+        resource,
+        url,
+      });
+    }
+    throw new StubApiError(500, 'Stub search request failed', {
+      reason: 'unknown-http-error',
+      resource,
+      url,
+      cause: error,
+    });
+  }
 };
 
 const sortByStringField =
@@ -462,7 +566,7 @@ export type StubSearchResult<T = any> = {
   meta: Record<string, any>;
 };
 
-export const searchStubResource = async <T = any>(
+const performLocalStubSearch = async <T = any>(
   resource: string,
   query: Record<string, any> = {},
   options: StubSearchOptions = {},
@@ -519,4 +623,27 @@ export const searchStubResource = async <T = any>(
     items: data as T[],
     meta,
   };
+};
+
+export const searchStubResource = async <T = any>(
+  resource: string,
+  query: Record<string, any> = {},
+  options: StubSearchOptions = {},
+): Promise<StubSearchResult<T>> => {
+  const preference = getTransportPreference(options);
+
+  if (shouldUseRemoteSearch(options)) {
+    try {
+      return await fetchSearchOverHttp<T>(resource, query, options);
+    } catch (error) {
+      if (typeof import.meta !== 'undefined' && import.meta.dev) {
+        console.warn('[stub-search] Falling back to local stub search', error);
+      }
+      if (preference === 'remote-only') {
+        throw error;
+      }
+    }
+  }
+
+  return performLocalStubSearch<T>(resource, query, options);
 };

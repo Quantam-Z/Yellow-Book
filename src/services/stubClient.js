@@ -72,9 +72,39 @@ const httpTransportState = {
   lastError: null,
 };
 
-const stubHttpEnabled =
-  (typeof process !== "undefined" && process?.env?.NUXT_PUBLIC_ENABLE_STUB_HTTP === "true") ||
-  (typeof import.meta !== "undefined" && import.meta?.env?.NUXT_PUBLIC_ENABLE_STUB_HTTP === "true");
+const coerceBooleanEnv = (value) => {
+  if (value === undefined || value === null) {
+    return undefined;
+  }
+  const normalized = String(value).trim().toLowerCase();
+  if (!normalized) return undefined;
+  if (["false", "0", "off", "no", "disabled"].includes(normalized)) {
+    return false;
+  }
+  if (["true", "1", "on", "yes", "enabled"].includes(normalized)) {
+    return true;
+  }
+  return undefined;
+};
+
+const resolveStubHttpFlag = () => {
+  const candidates = [];
+  if (typeof process !== "undefined" && process?.env) {
+    candidates.push(process.env.NUXT_PUBLIC_ENABLE_STUB_HTTP);
+  }
+  if (typeof import.meta !== "undefined" && import.meta?.env) {
+    candidates.push(import.meta.env.NUXT_PUBLIC_ENABLE_STUB_HTTP);
+  }
+  for (const candidate of candidates) {
+    const interpreted = coerceBooleanEnv(candidate);
+    if (interpreted !== undefined) {
+      return interpreted;
+    }
+  }
+  return true;
+};
+
+const stubHttpEnabled = resolveStubHttpFlag();
 
 const HTTP_TRANSPORT_FALLBACK_REASONS = new Set(["invalid-json", "http-non-json", "html-response", "network-error"]);
 
@@ -718,5 +748,7 @@ const stubClient = {
 export const useStubClient = () => stubClient;
 
 export const executeStubRequest = (options) => processStubRequest(options);
+
+export const isStubHttpTransportEnabled = () => stubHttpEnabled && !httpTransportState.unavailable;
 
 export { StubApiError };
