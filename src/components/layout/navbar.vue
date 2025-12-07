@@ -272,18 +272,18 @@
 
 <script>
 import { Menu, X } from 'lucide-vue-next'
-import { useRequestFetch, useNuxtApp } from '#app'
+import { useNuxtApp } from '#app'
 import { useAuthStore } from '~/stores/auth'
 import { storeToRefs } from 'pinia'
 import { useLoginModal } from '~/composables/useLoginModal'
 import PanelProfileMenu from '~/components/common/panelProfileMenu.vue'
+import { searchStubResource } from '~/services/stubSearch'
 
 export default {
   name: 'ResponsiveLandingPage',
   components: { Menu, X, PanelProfileMenu },
     emits: ['search'],
     setup() {
-      const requestFetch = useRequestFetch()
       const nuxtApp = useNuxtApp()
       const authStore = useAuthStore()
       const { openLoginModal: triggerOpenLoginModal } = useLoginModal()
@@ -293,7 +293,6 @@ export default {
       const { isAuthenticated, user } = storeToRefs(authStore)
 
       return {
-        requestFetch,
         nuxtApp,
         authStore,
         isAuthenticated,
@@ -357,14 +356,12 @@ export default {
       const query = searchText?.trim() || ''
       this.searchLoading = true
       try {
-        const response = await this.requestFetch('/api/search/listings', {
-          params: {
-            search: query || undefined,
-            limit: this.dropdownResultLimit,
-          },
+        const { items, meta } = await searchStubResource('listings', {
+          search: query || undefined,
+          limit: this.dropdownResultLimit,
         })
-        this.searchResults = Array.isArray(response?.data) ? response.data : []
-        this.searchMeta = response?.meta ?? {}
+        this.searchResults = Array.isArray(items) ? items : []
+        this.searchMeta = meta ?? {}
         this.searchError = null
       } catch (error) {
         this.searchError = error
