@@ -356,10 +356,16 @@ export default {
       const query = searchText?.trim() || ''
       this.searchLoading = true
       try {
-        const { items, meta } = await searchStubResource('listings', {
-          search: query || undefined,
-          limit: this.dropdownResultLimit,
-        })
+        const { items, meta } = await searchStubResource(
+          'listings',
+          {
+            search: query || undefined,
+            limit: this.dropdownResultLimit,
+          },
+          {
+            cache: 'refresh',
+          },
+        )
         this.searchResults = Array.isArray(items) ? items : []
         this.searchMeta = meta ?? {}
         this.searchError = null
