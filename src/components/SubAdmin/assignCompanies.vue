@@ -118,7 +118,7 @@
                 <span 
                   class="text-xs font-medium px-2 py-1 rounded-full whitespace-nowrap cursor-pointer" 
                   :class="getStatusClass(company.status)" 
-                  @click="changeStatus(company)"
+                  @click="promptStatusChange(company)"
                 >
                   {{ company.status }}
                 </span>
@@ -210,7 +210,7 @@
                 <div 
                   class="inline-flex items-center gap-1 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md font-medium text-[9px] sm:text-xs cursor-pointer touch-manipulation"
                   :class="getStatusClass(company.status)"
-                  @click="changeStatus(company)"
+                  @click="promptStatusChange(company)"
                 >
                   <span>{{ company.status }}</span>
                   <ChevronDown class="w-2.5 h-2.5 sm:w-3 sm:h-3 flex-shrink-0" />
@@ -295,11 +295,52 @@
       :items="detailModalItems"
       @close="closeDetailModal"
     />
+
+    <div 
+      v-if="pendingStatusChange" 
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div class="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl space-y-4">
+        <div class="space-y-2">
+          <h3 class="text-lg font-semibold text-gray-900">Update status?</h3>
+          <p class="text-sm text-gray-600 leading-relaxed">
+            You're about to change 
+            <span class="font-semibold text-gray-900">{{ pendingStatusChange.companyName }}</span>
+            from 
+            <span class="font-semibold">{{ pendingStatusChange.currentStatus }}</span>
+            to 
+            <span class="font-semibold text-amber-600">{{ pendingStatusChange.nextStatus }}</span>.
+            Would you like to continue?
+          </p>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-3 pt-2">
+          <button 
+            type="button"
+            class="w-full sm:flex-1 rounded-xl border border-gray-300 bg-white py-3 px-4 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition"
+            @click="cancelStatusChange"
+            :disabled="statusChangeLoading"
+          >
+            Cancel
+          </button>
+          <button 
+            type="button"
+            class="w-full sm:flex-1 rounded-xl bg-amber-500 py-3 px-4 text-sm font-semibold text-white hover:bg-amber-600 disabled:bg-amber-300 disabled:cursor-not-allowed transition"
+            @click="confirmStatusChange"
+            :disabled="statusChangeLoading"
+          >
+            {{ statusChangeLoading ? 'Updating…' : 'Confirm change' }}
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue';
+import { ref, computed, watch, watchEffect } from 'vue';
 import { Search, CheckCircle, ChevronDown, ChevronLeft, ChevronRight, Filter as FilterIcon, X } from "lucide-vue-next";
 import DetailModal from '@/components/common/DetailModal.vue'
 
@@ -314,6 +355,8 @@ const currentPage = ref(1);
 const itemsPerPage = 8; 
 const showMobileFilters = ref(false);
 const expandedCompanyId = ref(null); 
+const pendingStatusChange = ref(null);
+const statusChangeLoading = ref(false);
 
 // MODAL STATE
 const showDetailModal = ref(false);
@@ -441,34 +484,83 @@ const goToPage = (page) => {
 
 const STATUS_VALUES = ['Pending', 'Verified', 'Rejected'];
 
-const changeStatus = async (company) => {
+const normalizeStatus = (status) => {
+  if (!status) {
+    return STATUS_VALUES[0];
+  }
+  const match = STATUS_VALUES.find(
+    (candidate) => candidate.toLowerCase() === String(status).toLowerCase(),
+  );
+  return match ?? STATUS_VALUES[0];
+};
+
+const getNextStatus = (status) => {
+  const normalized = normalizeStatus(status);
+  const currentIndex = STATUS_VALUES.indexOf(normalized);
+  return STATUS_VALUES[(currentIndex + 1) % STATUS_VALUES.length];
+};
+
+const promptStatusChange = (company) => {
   if (!company?.id || !stubClient) {
     return;
   }
 
-  const companyIndex = companies.value.findIndex(c => c.id === company.id);
+  pendingStatusChange.value = {
+    companyId: company.id,
+    companyName: company.name,
+    currentStatus: normalizeStatus(company.status),
+    nextStatus: getNextStatus(company.status),
+  };
+};
+
+const cancelStatusChange = () => {
+  pendingStatusChange.value = null;
+};
+
+const applyStatusChange = async (companyId, newStatus) => {
+  if (!companyId || !stubClient) {
+    return;
+  }
+
+  const companyIndex = companies.value.findIndex((c) => c.id === companyId);
   if (companyIndex === -1) {
     return;
   }
 
-  const currentStatus = companies.value[companyIndex].status || 'Pending';
-  const currentIndex = Math.max(0, STATUS_VALUES.indexOf(currentStatus));
-  const newStatus = STATUS_VALUES[(currentIndex + 1) % STATUS_VALUES.length];
   const previousStatus = companies.value[companyIndex].status;
-
+  const companyName = companies.value[companyIndex].name;
   companies.value[companyIndex].status = newStatus;
 
   try {
-    await stubClient.update('subadminAssignedCompanies', company.id, { status: newStatus }, { delay: 140 });
+    await stubClient.update('subadminAssignedCompanies', companyId, { status: newStatus }, { delay: 140 });
     if (nuxtApp.$awn) {
-      nuxtApp.$awn.success(`Status for ${company.name} updated to ${newStatus}.`);
+      nuxtApp.$awn.success(`Status for ${companyName} updated to ${newStatus}.`);
     }
   } catch (error) {
     console.error('Failed to update company status:', error);
     companies.value[companyIndex].status = previousStatus;
     if (nuxtApp.$awn) {
-      nuxtApp.$awn.alert(`Unable to update status for ${company.name}.`);
+      nuxtApp.$awn.alert(`Unable to update status for ${companyName}.`);
     }
+    throw error;
+  }
+};
+
+const confirmStatusChange = async () => {
+  if (!pendingStatusChange.value || statusChangeLoading.value) {
+    return;
+  }
+
+  statusChangeLoading.value = true;
+  const { companyId, nextStatus } = pendingStatusChange.value;
+
+  try {
+    await applyStatusChange(companyId, nextStatus);
+  } catch (error) {
+    // Error already handled inside applyStatusChange
+  } finally {
+    statusChangeLoading.value = false;
+    pendingStatusChange.value = null;
   }
 };
 
