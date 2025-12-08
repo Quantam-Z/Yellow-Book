@@ -480,12 +480,20 @@ const companyQueryParams = computed(() => ({
 
 const {
   data: companiesPayload,
+  refresh: refreshAssignedCompanies,
 } = await useStubSearch('subadminAssignedCompanies', {
   key: 'subadmin-assigned-companies',
   query: () => companyQueryParams.value,
-  watch: [currentPage, searchQuery, () => filters.value.status],
   default: () => ({ items: [], meta: fallbackMeta }),
 });
+
+watch(
+  companyQueryParams,
+  () => {
+    refreshAssignedCompanies();
+  },
+  { deep: true },
+);
 
 const paginationMeta = computed(() => companiesPayload.value?.meta ?? fallbackMeta);
 const totalPages = computed(() => paginationMeta.value.totalPages || 1);

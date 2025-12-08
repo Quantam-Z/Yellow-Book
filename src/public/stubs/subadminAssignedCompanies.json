@@ -86,5 +86,181 @@
     "verified": true, 
     "email": "build@conpros.com", 
     "address": "707 Heavy Equipment Way, Builder City" 
+  },
+  { 
+    "id": 9, 
+    "name": "Urban Eats Collective", 
+    "category": "Food & Beverage", 
+    "assignedDate": "2024-10-14", 
+    "status": "Verified", 
+    "mobile": "333-888-1212", 
+    "verified": true, 
+    "email": "hello@urbaneats.co", 
+    "address": "808 Culinary Row, Flavor Town" 
+  },
+  { 
+    "id": 10, 
+    "name": "EcoSmart Manufacturing", 
+    "category": "Manufacturing", 
+    "assignedDate": "2024-10-13", 
+    "status": "Pending", 
+    "mobile": "202-555-0110", 
+    "verified": false, 
+    "email": "contact@ecosmartmfg.com", 
+    "address": "909 Industrial Loop, Green District" 
+  },
+  { 
+    "id": 11, 
+    "name": "Nova Talent Agency", 
+    "category": "Staffing", 
+    "assignedDate": "2024-10-12", 
+    "status": "Verified", 
+    "mobile": "404-555-2299", 
+    "verified": true, 
+    "email": "talent@novatagency.com", 
+    "address": "101 Talent Park, Midtown" 
+  },
+  { 
+    "id": 12, 
+    "name": "Harbor Freight Lines", 
+    "category": "Logistics", 
+    "assignedDate": "2024-10-11", 
+    "status": "Rejected", 
+    "mobile": "888-111-2222", 
+    "verified": false, 
+    "email": "support@harborfreightlines.com", 
+    "address": "202 Dockside Blvd, Portville" 
+  },
+  { 
+    "id": 13, 
+    "name": "BrightPath Education", 
+    "category": "Education", 
+    "assignedDate": "2024-10-10", 
+    "status": "Pending", 
+    "mobile": "919-555-9191", 
+    "verified": true, 
+    "email": "learn@brightpathedu.org", 
+    "address": "303 Campus Drive, Scholar City" 
+  },
+  { 
+    "id": 14, 
+    "name": "Summit Outdoor Gear", 
+    "category": "Retail", 
+    "assignedDate": "2024-10-09", 
+    "status": "Verified", 
+    "mobile": "555-777-1414", 
+    "verified": true, 
+    "email": "service@summitgear.com", 
+    "address": "404 Alpine Trail, Adventure Ridge" 
+  },
+  { 
+    "id": 15, 
+    "name": "Blue Horizon Travel", 
+    "category": "Hospitality", 
+    "assignedDate": "2024-10-08", 
+    "status": "Pending", 
+    "mobile": "321-654-0987", 
+    "verified": false, 
+    "email": "bookings@bluehorizontravel.com", 
+    "address": "505 Sunset Pier, Coastal View" 
+  },
+  { 
+    "id": 16, 
+    "name": "Vertex Health Labs", 
+    "category": "Health", 
+    "assignedDate": "2024-10-07", 
+    "status": "Verified", 
+    "mobile": "555-212-3434", 
+    "verified": true, 
+    "email": "care@vertexlabs.health", 
+    "address": "606 Wellness Plaza, MedCity" 
+  },
+  { 
+    "id": 17, 
+    "name": "Sierra Financial Planners", 
+    "category": "Finance", 
+    "assignedDate": "2024-10-06", 
+    "status": "Rejected", 
+    "mobile": "222-101-7878", 
+    "verified": false, 
+    "email": "team@sierrafp.com", 
+    "address": "707 Ledger Street, Uptown" 
+  },
+  { 
+    "id": 18, 
+    "name": "PixelSmith Studios", 
+    "category": "Design", 
+    "assignedDate": "2024-10-05", 
+    "status": "Pending", 
+    "mobile": "616-555-0002", 
+    "verified": true, 
+    "email": "create@pixelsmith.io", 
+    "address": "808 Creative Avenue, Arts District" 
+  },
+  { 
+    "id": 19, 
+    "name": "Atlas Cyber Defense", 
+    "category": "Security", 
+    "assignedDate": "2024-10-04", 
+    "status": "Verified", 
+    "mobile": "505-333-1313", 
+    "verified": true, 
+    "email": "ops@atlascd.com", 
+    "address": "909 Sentinel Road, Secure City" 
+  },
+  { 
+    "id": 20, 
+    "name": "Gardenia Landscaping", 
+    "category": "Services", 
+    "assignedDate": "2024-10-03", 
+    "status": "Pending", 
+    "mobile": "212-565-6677", 
+    "verified": false, 
+    "email": "hello@gardenialawns.com", 
+    "address": "1010 Greenbelt Lane, Bloomfield" 
+  },
+  { 
+    "id": 21, 
+    "name": "Beacon Legal Group", 
+    "category": "Legal", 
+    "assignedDate": "2024-10-02", 
+    "status": "Verified", 
+    "mobile": "415-333-5757", 
+    "verified": true, 
+    "email": "counsel@beaconlegal.com", 
+    "address": "111 Justice Center, Civic Plaza" 
+  },
+  { 
+    "id": 22, 
+    "name": "NextGen Robotics", 
+    "category": "Technology", 
+    "assignedDate": "2024-10-01", 
+    "status": "Pending", 
+    "mobile": "646-555-8080", 
+    "verified": true, 
+    "email": "info@nextgenrobotics.ai", 
+    "address": "1212 Innovation Loop, Maker City" 
+  },
+  { 
+    "id": 23, 
+    "name": "PureWave Energy", 
+    "category": "Energy", 
+    "assignedDate": "2024-09-30", 
+    "status": "Verified", 
+    "mobile": "303-909-1212", 
+    "verified": true, 
+    "email": "support@purewaveenergy.com", 
+    "address": "1313 Solar Park, Grid City" 
+  },
+  { 
+    "id": 24, 
+    "name": "Metro Sync Media", 
+    "category": "Media", 
+    "assignedDate": "2024-09-29", 
+    "status": "Rejected", 
+    "mobile": "818-123-4747", 
+    "verified": false, 
+    "email": "studio@metrosyncmedia.com", 
+    "address": "1414 Broadcast Lane, Storyville" 
   }
 ]
