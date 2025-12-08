@@ -18,14 +18,13 @@
 
     <div class="mb-4 flex sm:hidden items-center justify-between px-1">
       <h2 class="text-base font-bold text-gray-900">All Company List</h2>
-      <button 
-        @click="showMobileFilters = !showMobileFilters"
+      <button
+        @click="toggleMobileFilters"
         class="h-9 
                bg-gray-100 rounded-lg px-3 py-1.5 border-0
                text-gray-700 text-sm outline-none cursor-pointer whitespace-nowrap 
                touch-manipulation flex items-center gap-2 
-               hover:bg-gray-50 active:bg-gray-100 transition
-               "
+               hover:bg-gray-50 active:bg-gray-100 transition"
         aria-controls="mobile-filters-panel"
         :aria-expanded="showMobileFilters ? 'true' : 'false'"
       >
@@ -34,39 +33,76 @@
       </button>
     </div>
 
-    <div 
-      v-if="showMobileFilters" 
-      id="mobile-filters-panel" 
-      class="mt-3 p-3 bg-white rounded-lg shadow-lg border border-gray-200 sm:hidden 
-             relative z-10 space-y-4 mb-4" 
-    >
-      <div class="flex flex-col gap-2">
-          <label class="text-sm text-gray-700 font-medium">Status</label>
-          <div class="relative">
-            <select
-              v-model="filters.status"
-              class="h-10 w-full rounded-lg bg-gray-100 border border-gray-300 appearance-none py-0 pl-4 pr-10 text-left text-sm text-gray-600 cursor-pointer focus:outline-none focus:ring-0"
+    <transition name="mobile-filter-panel">
+      <div
+        v-if="showMobileFilters"
+        class="fixed inset-0 z-[60] sm:hidden flex flex-col"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="mobile-filters-heading"
+      >
+        <div
+          class="absolute inset-0 bg-black/40"
+          aria-hidden="true"
+          @click="closeMobileFilters"
+        ></div>
+
+        <div
+          id="mobile-filters-panel"
+          class="relative mt-auto bg-white rounded-t-3xl shadow-[0_18px_40px_rgba(15,23,42,0.25)] border border-gray-200 border-b-0 p-4 pb-6 space-y-5 max-h-[85vh] overflow-y-auto"
+        >
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-wide text-gray-400">Filters</p>
+              <h3 class="text-base font-semibold text-gray-900" id="mobile-filters-heading">
+                Assigned companies
+              </h3>
+            </div>
+            <button
+              type="button"
+              class="w-9 h-9 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center border border-gray-200"
+              @click="closeMobileFilters"
+              aria-label="Close filters panel"
             >
-              <option value="">All Statuses</option>
-              <option value="pending">Pending</option>
-              <option value="verified">Verified</option>
-              <option value="rejected">Rejected</option>
-            </select>
-            <ChevronDown class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" aria-hidden="true" />
+              <X class="w-4 h-4" aria-hidden="true" />
+            </button>
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <label class="text-sm text-gray-700 font-medium">Status</label>
+            <div class="relative">
+              <select
+                v-model="filters.status"
+                class="h-12 w-full rounded-2xl bg-gray-100 border border-gray-300 appearance-none py-0 pl-4 pr-10 text-left text-sm text-gray-600 cursor-pointer focus:outline-none focus:ring-1 focus:ring-yellow-400"
+              >
+                <option value="">All Statuses</option>
+                <option value="pending">Pending</option>
+                <option value="verified">Verified</option>
+                <option value="rejected">Rejected</option>
+              </select>
+              <ChevronDown class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" aria-hidden="true" />
+            </div>
+          </div>
+
+          <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end sm:items-center pt-2">
+            <button 
+              type="button"
+              @click="resetFilters"
+              class="px-4 py-2 text-sm text-gray-600 bg-gray-100 rounded-lg border border-gray-200 hover:bg-gray-50 active:bg-gray-100 transition"
+            >
+              Reset
+            </button>
+            <button 
+              type="button"
+              @click="closeMobileFilters"
+              class="px-4 py-2 text-sm text-gray-900 bg-yellow-400 rounded-lg border-0 hover:bg-yellow-500 active:bg-yellow-600 transition"
+            >
+              Apply Filters
+            </button>
           </div>
         </div>
-
-   
-        <div class="flex justify-end pt-2">
-          <button 
-            @click="showMobileFilters = false" 
-            class="px-4 py-2 text-sm text-gray-900 bg-yellow-400 rounded-lg border-0 
-                   hover:bg-yellow-500 active:bg-yellow-600 transition"
-          >
-            Close Filters
-          </button>
-        </div>
-    </div>
+      </div>
+    </transition>
 
     <div class="hidden sm:flex items-center justify-between gap-3 sm:gap-4 mb-4">
       <h2 class="text-base sm:text-lg font-semibold text-gray-900 whitespace-nowrap flex-shrink-0">All List</h2>
@@ -194,7 +230,7 @@
                 />
               </td>
               <td class="px-2 sm:px-3 md:px-4 py-2.5 sm:py-3 text-gray-700 text-[10px] sm:text-xs whitespace-nowrap border-r border-gray-100">
-                {{ String((currentPage - 1) * itemsPerPage + index + 1).padStart(2, '0') }}
+                {{ String(pageOffset + index + 1).padStart(2, '0') }}
               </td>
               <td class="px-2 sm:px-3 md:px-4 py-2.5 sm:py-3 text-gray-900 font-medium text-[10px] sm:text-xs border-r border-gray-100">
                 <div class="flex items-center gap-1.5 max-w-full">
@@ -340,7 +376,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, watchEffect } from 'vue';
+import { ref, computed, watch, watchEffect, onBeforeUnmount } from 'vue';
 import { Search, CheckCircle, ChevronDown, ChevronLeft, ChevronRight, Filter as FilterIcon, X } from "lucide-vue-next";
 import DetailModal from '@/components/common/DetailModal.vue'
 
@@ -357,6 +393,10 @@ const showMobileFilters = ref(false);
 const expandedCompanyId = ref(null); 
 const pendingStatusChange = ref(null);
 const statusChangeLoading = ref(false);
+
+let bodyScrollLocks = 0;
+let previousBodyOverflow = '';
+let previousHtmlOverflow = '';
 
 // MODAL STATE
 const showDetailModal = ref(false);
@@ -387,11 +427,48 @@ const filters = ref({
   category: ''
 });
 
+const toggleMobileFilters = () => {
+  showMobileFilters.value = !showMobileFilters.value;
+};
+
+const closeMobileFilters = () => {
+  showMobileFilters.value = false;
+};
+
+const resetFilters = () => {
+  filters.value.status = '';
+  filters.value.category = '';
+};
+
 const fallbackMeta = {
   page: 1,
   totalPages: 1,
   total: 0,
   limit: itemsPerPage,
+};
+
+const lockBodyScroll = () => {
+  if (!import.meta.client) return;
+  bodyScrollLocks += 1;
+  if (bodyScrollLocks > 1) {
+    return;
+  }
+  previousBodyOverflow = document.body.style.overflow;
+  previousHtmlOverflow = document.documentElement.style.overflow;
+  document.body.style.overflow = 'hidden';
+  document.documentElement.style.overflow = 'hidden';
+};
+
+const unlockBodyScroll = () => {
+  if (!import.meta.client || bodyScrollLocks === 0) return;
+  bodyScrollLocks -= 1;
+  if (bodyScrollLocks > 0) {
+    return;
+  }
+  document.body.style.overflow = previousBodyOverflow;
+  document.documentElement.style.overflow = previousHtmlOverflow;
+  previousBodyOverflow = '';
+  previousHtmlOverflow = '';
 };
 
 const companyQueryParams = computed(() => ({
@@ -415,6 +492,21 @@ const totalPages = computed(() => paginationMeta.value.totalPages || 1);
 const totalResults = computed(() => paginationMeta.value.total ?? 0);
 
 watch(
+  () => showMobileFilters.value,
+  (isOpen) => {
+    if (isOpen) {
+      lockBodyScroll();
+    } else {
+      unlockBodyScroll();
+    }
+  },
+);
+
+onBeforeUnmount(() => {
+  unlockBodyScroll();
+});
+
+watch(
   () => paginationMeta.value.totalPages,
   (nextTotal) => {
     const maxPages = nextTotal || 1;
@@ -435,13 +527,19 @@ watchEffect(() => {
 });
 
 const paginatedCompanies = computed(() => companies.value);
+const resolvedPage = computed(() => Math.max(1, paginationMeta.value.page || currentPage.value));
+const pageSize = computed(() => paginationMeta.value.pageSize || paginationMeta.value.limit || itemsPerPage);
+const pageOffset = computed(() => {
+  if (!totalResults.value) return 0;
+  return (resolvedPage.value - 1) * pageSize.value;
+});
 const rangeStart = computed(() => {
   if (!totalResults.value) return 0;
-  return (currentPage.value - 1) * itemsPerPage + 1;
+  return pageOffset.value + 1;
 });
 const rangeEnd = computed(() => {
   if (!totalResults.value) return 0;
-  return Math.min(currentPage.value * itemsPerPage, totalResults.value);
+  return Math.min(pageOffset.value + paginatedCompanies.value.length, totalResults.value);
 });
 
 // --- METHODS ---
@@ -587,6 +685,17 @@ watch([searchQuery, filters], () => {
 </script>
 
 <style scoped>
+.mobile-filter-panel-enter-active,
+.mobile-filter-panel-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.mobile-filter-panel-enter-from,
+.mobile-filter-panel-leave-to {
+  opacity: 0;
+  transform: translateY(12px);
+}
+
 .font-plus-jakarta-sans {
   font-family: 'Plus Jakarta Sans', sans-serif;
 }
