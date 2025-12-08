@@ -174,8 +174,8 @@ onBeforeUnmount(() => {
     class="info-nav-shell relative isolate w-full text-[#212121]"
     :class="
       isMinimalNavRoute
-        ? 'bg-transparent shadow-none'
-        : 'info-nav-shell--rounded overflow-hidden bg-[#fff9e6] shadow-[0_35px_70px_rgba(15,23,42,0.08)]'
+        ? 'bg-transparent shadow-none z-40'
+        : 'info-nav-shell--rounded overflow-hidden bg-[#fff9e6] shadow-[0_35px_70px_rgba(15,23,42,0.08)] z-20'
     "
   >
     <div v-if="!isMinimalNavRoute" class="info-nav-accent" aria-hidden="true"></div>
