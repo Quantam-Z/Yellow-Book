@@ -4,10 +4,13 @@ export function getStatusClass(status, variant = 'badge') {
   const map = {
     approved: { badge: 'bg-green-100 text-green-700', soft: 'text-green-500 bg-green-50' },
     active: { badge: 'bg-green-100 text-green-700', soft: 'text-green-500 bg-green-50' },
+    verified: { badge: 'bg-green-100 text-green-700', soft: 'text-green-500 bg-green-50' },
     pending: { badge: 'bg-amber-100 text-amber-700', soft: 'text-amber-500 bg-amber-50' },
     inactive: { badge: 'bg-gray-100 text-gray-700', soft: 'text-gray-500 bg-gray-50' },
     rejected: { badge: 'bg-red-100 text-red-700', soft: 'text-red-500 bg-red-50' },
     suspended: { badge: 'bg-red-100 text-red-700', soft: 'text-red-500 bg-red-50' },
+    banned: { badge: 'bg-red-100 text-red-700', soft: 'text-red-500 bg-red-50' },
+    'on hold': { badge: 'bg-gray-100 text-gray-700', soft: 'text-gray-600 bg-gray-50' },
     default: { badge: 'bg-gray-100 text-gray-700', soft: 'text-gray-500 bg-gray-50' },
   };
   const key = String(status || '').toLowerCase();
@@ -23,6 +26,8 @@ export function getStatusShort(status) {
     active: 'Act',
     inactive: 'Ina',
     suspended: 'Sus',
+    verified: 'Ver',
+    banned: 'Ban',
   };
   const key = String(status || '').toLowerCase();
   return map[key] || status || '';
