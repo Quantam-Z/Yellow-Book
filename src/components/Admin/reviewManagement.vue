@@ -313,9 +313,12 @@
                 </div>
               </div>
               <div class="flex items-center gap-2 shrink-0 ml-4">
-                <span class="text-xs font-medium px-2 py-1 rounded-full whitespace-nowrap" :class="getStatusClass(review.status, 'soft') + ' bg-opacity-10'" @click="changeStatus(review)">
-                  {{ review.status || 'Pending' }}
-                </span>
+                <StatusDropdown
+                  :model-value="review.status || 'Pending'"
+                  :options="statusOptions"
+                  variant="soft"
+                  @change="(value) => updateStatus(review, value)"
+                />
                 <MoreHorizontal class="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer" />
               </div>
             </div>
@@ -391,14 +394,11 @@
                   <span class="block max-w-[420px] whitespace-pre-line break-words">"{{ review.content }}"</span>
                 </td>
                 <td class="px-4 py-3 whitespace-nowrap">
-                  <div 
-                    class="inline-flex items-center gap-1 px-3 py-1.5 rounded-md font-medium text-sm cursor-pointer touch-manipulation"
-                    :class="getStatusClass(review.status)"
-                    @click="changeStatus(review)"
-                  >
-                    <span>{{ review.status || 'Pending' }}</span>
-                    <ChevronDownIcon class="w-3 h-3 flex-shrink-0" aria-hidden="true" />
-                  </div>
+                  <StatusDropdown
+                    :model-value="review.status || 'Pending'"
+                    :options="statusOptions"
+                    @change="(value) => updateStatus(review, value)"
+                  />
                 </td>
                 <td class="px-4 py-3 whitespace-nowrap">
                   <div class="flex items-center gap-2">
@@ -521,6 +521,7 @@ import {
   ExternalLink as ExternalLinkIcon
 } from 'lucide-vue-next'
 import RatingStars from '~/components/common/RatingStars.vue'
+import StatusDropdown from '~/components/common/StatusDropdown.vue'
 import { getStatusClass } from '~/composables/useStatusClass'
 import { useStubClient } from '~/services/stubClient'
 import { useStubSearch } from '~/composables/useStubSearch'
@@ -550,6 +551,8 @@ const filters = ref({
 const stubClient = useStubClient()
 const nuxtApp = useNuxtApp()
 const router = useRouter()
+
+const statusOptions = ['Pending', 'Approved', 'Rejected', 'On Hold']
 
 const toast = (type, message) => {
   if (!import.meta.client) return
@@ -648,13 +651,8 @@ const getDisplayIndex = (indexInPage) => {
   return String(trueIndex).padStart(2, '0')
 }
 
-const changeStatus = async (review) => {
-  // Cycle through statuses to demo behavior
-  const statuses = ['Pending', 'Approved', 'Rejected', 'On Hold']
-  const currentIndex = statuses.indexOf(review.status || 'Pending')
-  const nextIndex = (currentIndex + 1) % statuses.length
-  const nextStatus = statuses[nextIndex]
-
+const updateStatus = async (review, nextStatus) => {
+  if (!review?.id || !nextStatus || (review.status || 'Pending') === nextStatus) return
   try {
     await stubClient.update('agencyReviews', review.id, { status: nextStatus }, { delay: 160 })
     await refreshReviews()

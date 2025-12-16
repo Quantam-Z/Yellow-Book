@@ -303,13 +303,12 @@
                   </div>
                 </div>
                 <div class="flex items-center gap-2 shrink-0 relative">
-                  <span 
-                    class="text-xs font-medium px-2 py-1 rounded-full whitespace-nowrap cursor-pointer transition-opacity" 
-                    :class="getStatusClass(admin.status, 'soft') + ' bg-opacity-10'" 
-                    @click.stop="changeStatus(admin)"
-                  >
-                    {{ admin.status }}
-                  </span>
+                  <StatusDropdown
+                    :model-value="admin.status"
+                    :options="statusOptions"
+                    variant="soft"
+                    @change="(value) => updateStatus(admin, value)"
+                  />
                   <div
                     v-if="mobileActionsIndex === index"
                     class="flex items-center gap-2"
@@ -451,14 +450,11 @@
                   </div>
                 </td>
                 <td class="px-4 py-3 whitespace-nowrap">
-                  <div 
-                    class="inline-flex items-center gap-1 px-3 py-1.5 rounded-md font-medium text-sm cursor-pointer touch-manipulation"
-                    :class="getStatusClass(admin.status)"
-                    @click="changeStatus(admin)"
-                  >
-                    <span>{{ admin.status }}</span>
-                    <ChevronDownIcon class="w-3 h-3 flex-shrink-0" aria-hidden="true" />
-                  </div>
+                  <StatusDropdown
+                    :model-value="admin.status"
+                    :options="statusOptions"
+                    @change="(value) => updateStatus(admin, value)"
+                  />
                 </td>
                 <td class="px-4 py-3 text-gray-700 text-sm whitespace-nowrap">{{ formatDate(admin.createdOn) }}</td>
                 <td class="px-4 py-3 text-gray-700 text-sm whitespace-nowrap">{{ formatDate(admin.lastLogin) }}</td>
@@ -580,6 +576,7 @@ import { useSelection } from '~/composables/useSelection'
 import { useStubClient } from '~/services/stubClient'
 import { useStubSearch } from '~/composables/useStubSearch'
 import DetailModal from '~/components/common/DetailModal.vue'
+import StatusDropdown from '~/components/common/StatusDropdown.vue'
 import EditAdminModal from '~/components/Admin/EditAdminModal.vue'
 import { useClientEventListener } from '@/composables/useClientEventListener';
 
@@ -780,12 +777,8 @@ const deleteAdmin = async (admin) => {
   }
 };
 
-const changeStatus = async (admin) => {
-  if (!statusOptions.length) return;
-  const currentIndex = statusOptions.indexOf(admin.status);
-  const nextIndex = (currentIndex + 1) % statusOptions.length;
-  const nextStatus = statusOptions[nextIndex];
-
+const updateStatus = async (admin, nextStatus) => {
+  if (!admin?.id || !nextStatus || admin.status === nextStatus) return;
   try {
     await stubClient.update('admins', admin.id, { status: nextStatus }, { delay: 160 });
     await refreshAdmins();

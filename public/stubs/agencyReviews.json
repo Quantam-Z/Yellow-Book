@@ -1,10 +1,112 @@
 [
-  { "id": 1, "reviewerName": "Alice Johnson", "rating": 5, "date": "2024-11-15", "time": "2:30 PM", "content": "Amazing service, highly recommend! The team was professional and delivered beyond expectations." },
-  { "id": 2, "reviewerName": "Bob Smith", "rating": 4, "date": "2024-11-14", "time": "10:15 AM", "content": "Good experience, will use again. Quick response time and quality work." },
-  { "id": 3, "reviewerName": "Charlie Davis", "rating": 3, "date": "2024-11-13", "time": "1:45 PM", "content": "It was okay, not great, not bad. Average service for the price paid." },
-  { "id": 4, "reviewerName": "Diana Prince", "rating": 5, "date": "2024-11-12", "time": "11:00 AM", "content": "Absolutely loved it, exceeded expectations! Will definitely come back." },
-  { "id": 5, "reviewerName": "Ethan Clark", "rating": 2, "date": "2024-11-11", "time": "4:10 PM", "content": "Service was slow and not very helpful. Expected better communication." },
-  { "id": 6, "reviewerName": "Fiona Lee", "rating": 1, "date": "2024-11-10", "time": "9:00 AM", "content": "Very disappointed, would not recommend. Poor quality and unprofessional." },
-  { "id": 7, "reviewerName": "George Wilson", "rating": 5, "date": "2024-11-09", "time": "3:20 PM", "content": "Outstanding service! Went above and beyond to help us achieve our goals." },
-  { "id": 8, "reviewerName": "Hannah Brown", "rating": 4, "date": "2024-11-08", "time": "2:00 PM", "content": "Great experience overall. Minor issues but quickly resolved by support." }
+  {
+    "id": 1,
+    "reviewerName": "Alice Johnson",
+    "rating": 5,
+    "date": "2024-11-15",
+    "time": "2:30 PM",
+    "content": "Amazing service, highly recommend! The team was professional and delivered beyond expectations.",
+    "likes": 58,
+    "dislikes": 1,
+    "companyResponse": {
+      "name": "BrightWave Agency Support",
+      "avatar": "/profile.png",
+      "text": "Thanks so much, Alice! We loved partnering with you and already have a few more optimizations queued up for next week.",
+      "date": "2024-11-16"
+    }
+  },
+  {
+    "id": 2,
+    "reviewerName": "Bob Smith",
+    "rating": 4,
+    "date": "2024-11-14",
+    "time": "10:15 AM",
+    "content": "Good experience, will use again. Quick response time and quality work.",
+    "likes": 34,
+    "dislikes": 2,
+    "companyResponse": {
+      "name": "Creative Pulse Director",
+      "avatar": "https://i.pravatar.cc/150?img=15",
+      "text": "Appreciate the positive feedback, Bob! We'll follow up about the campaign tweaks you mentioned so we can earn that last star.",
+      "date": "2024-11-15"
+    }
+  },
+  {
+    "id": 3,
+    "reviewerName": "Charlie Davis",
+    "rating": 3,
+    "date": "2024-11-13",
+    "time": "1:45 PM",
+    "content": "It was okay, not great, not bad. Average service for the price paid.",
+    "likes": 12,
+    "dislikes": 3
+  },
+  {
+    "id": 4,
+    "reviewerName": "Diana Prince",
+    "rating": 5,
+    "date": "2024-11-12",
+    "time": "11:00 AM",
+    "content": "Absolutely loved it, exceeded expectations! Will definitely come back.",
+    "likes": 46,
+    "dislikes": 0,
+    "companyResponse": {
+      "name": "Client Success Lead",
+      "avatar": "https://i.pravatar.cc/150?img=11",
+      "text": "Hearing this made our week, Diana. Thanks for trusting us with the product launch—our design team is already brainstorming phase two ideas.",
+      "date": "2024-11-13"
+    }
+  },
+  {
+    "id": 5,
+    "reviewerName": "Ethan Clark",
+    "rating": 2,
+    "date": "2024-11-11",
+    "time": "4:10 PM",
+    "content": "Service was slow and not very helpful. Expected better communication.",
+    "likes": 5,
+    "dislikes": 7,
+    "companyResponse": {
+      "name": "Operations Coordinator",
+      "avatar": "https://i.pravatar.cc/150?img=18",
+      "text": "Sorry for the delay here, Ethan. We found a scheduling gap on our side and have already put a new SLA in place. I'll reach out with a status update today.",
+      "date": "2024-11-12"
+    }
+  },
+  {
+    "id": 6,
+    "reviewerName": "Fiona Lee",
+    "rating": 1,
+    "date": "2024-11-10",
+    "time": "9:00 AM",
+    "content": "Very disappointed, would not recommend. Poor quality and unprofessional.",
+    "likes": 3,
+    "dislikes": 15
+  },
+  {
+    "id": 7,
+    "reviewerName": "George Wilson",
+    "rating": 5,
+    "date": "2024-11-09",
+    "time": "3:20 PM",
+    "content": "Outstanding service! Went above and beyond to help us achieve our goals.",
+    "likes": 27,
+    "dislikes": 0,
+    "companyResponse": {
+      "name": "Agency Founder",
+      "avatar": "https://i.pravatar.cc/150?img=7",
+      "text": "Helping your team hit those milestones was a blast, George. Excited to keep building on the momentum next quarter.",
+      "date": "2024-11-10"
+    }
+  },
+  {
+    "id": 8,
+    "reviewerName": "Hannah Brown",
+    "rating": 4,
+    "date": "2024-11-08",
+    "time": "2:00 PM",
+    "content": "Great experience overall. Minor issues but quickly resolved by support.",
+    "likes": 19,
+    "dislikes": 1
+  }
 ]
