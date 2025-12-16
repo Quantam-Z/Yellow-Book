@@ -49,13 +49,14 @@
             <td class="px-4 py-3 text-gray-700 text-sm whitespace-nowrap">{{ row.category }}</td>
             
             <td class="px-4 py-3 whitespace-nowrap">
-              <span 
-                class="inline-flex items-center gap-1 px-3 py-1.5 rounded-md font-medium text-sm cursor-pointer hover:opacity-80 transition-opacity" 
-                :class="getStatusClass(row.status, 'soft')"
-                @click.stop="toggleStatus(row)"
-              >
-                {{ row.status }}
-              </span>
+              <div @click.stop>
+                <StatusDropdown
+                  :model-value="row.status"
+                  :options="statusOptions"
+                  variant="soft"
+                  @change="(value) => updateStatus(row, value)"
+                />
+              </div>
             </td>
             
             <td class="px-4 py-3 whitespace-nowrap relative">
@@ -94,13 +95,14 @@
           </div>
           <div class="flex items-center gap-2 shrink-0 ml-4">
             
-            <span 
-                class="text-xs font-medium px-2 py-1 rounded-full whitespace-nowrap cursor-pointer hover:opacity-80 transition-opacity" 
-                :class="getStatusClass(row.status, 'soft') + ' bg-opacity-10'"
-                @click.stop="toggleStatus(row)"
-            >
-              {{ row.status }}
-            </span>
+            <div @click.stop>
+              <StatusDropdown
+                :model-value="row.status"
+                :options="statusOptions"
+                variant="soft"
+                @change="(value) => updateStatus(row, value)"
+              />
+            </div>
             
             <span 
                 v-if="editingIndex === index" 
@@ -200,8 +202,7 @@ import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 // import Swal from 'sweetalert2'; // REMOVED Swal
 import { MoreHorizontal, Trash2, ChevronLeft, ChevronRight } from 'lucide-vue-next'; 
-// Assuming these are locally defined:
-import { getStatusClass } from '~/composables/useStatusClass' 
+import StatusDropdown from '~/components/common/StatusDropdown.vue'
 import { useStubClient } from '~/services/stubClient'
 
 const editingIndex = ref(null); 
@@ -217,7 +218,7 @@ const nuxtApp = useNuxtApp();
 const router = useRouter();
 
 let nextId = 1;
-const STATUS_SEQUENCE = ['Pending', 'Approved', 'Rejected'];
+const statusOptions = ['Pending', 'Approved', 'Rejected'];
 
 const fetchData = async () => {
   try {
@@ -280,7 +281,7 @@ const findRowIndexById = (rowId) => {
   return allRows.value.findIndex(row => row.id === rowId);
 };
 
-const toggleStatus = async (row) => {
+const updateStatus = async (row, nextStatus) => {
     if (!row?.id) {
         editingIndex.value = null;
         return;
@@ -293,8 +294,10 @@ const toggleStatus = async (row) => {
     }
 
     const currentStatus = allRows.value[actualIndex].status || 'Pending';
-    const currentIndex = Math.max(0, STATUS_SEQUENCE.indexOf(currentStatus));
-    const nextStatus = STATUS_SEQUENCE[(currentIndex + 1) % STATUS_SEQUENCE.length];
+    if (!nextStatus || currentStatus === nextStatus) {
+      editingIndex.value = null;
+      return;
+    }
 
     allRows.value[actualIndex].status = nextStatus;
 

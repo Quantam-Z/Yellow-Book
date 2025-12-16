@@ -67,6 +67,21 @@
               "{{ review.reviewText }}"
             </div>
           </div>
+
+          <div class="self-stretch flex items-start gap-4">
+            <div class="w-[140px] flex items-center gap-2 flex-shrink-0">
+              <div class="flex-1 relative leading-[130%] capitalize font-semibold text-xs text-gray-900">Status</div>
+              <b class="relative text-[14px] leading-[160%] capitalize text-center text-gray-600">:</b>
+            </div>
+            <div class="flex-1 flex items-center">
+              <StatusDropdown
+                :model-value="review.status || 'Pending'"
+                :options="statusOptions"
+                variant="soft"
+                @change="updateStatus"
+              />
+            </div>
+          </div>
         </div>
       </div>
       
@@ -111,6 +126,7 @@
 <script setup>
 import { Star, X } from "lucide-vue-next";
 import { onMounted, onUnmounted } from 'vue';
+import StatusDropdown from '~/components/common/StatusDropdown.vue'
 
 const props = defineProps({
   review: {
@@ -128,6 +144,8 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['close', 'update-status', 'ban-reviewer']);
+
+const statusOptions = ['Pending', 'Approved', 'Rejected', 'On Hold']
 
 const updateStatus = (status) => {
   emit('update-status', { reviewId: props.review.id, status });

@@ -251,13 +251,12 @@
                   <span class="text-sm text-gray-600 mt-1 truncate">{{ company.category }}</span>
                 </div>
                   <div class="flex items-center gap-2 shrink-0 relative">
-                  <span 
-                    class="text-xs font-medium px-2 py-1 rounded-full whitespace-nowrap cursor-pointer transition-opacity" 
-                    :class="getStatusClass(company.status, 'soft') + ' bg-opacity-10'"
-                    @click.stop="changeStatus(company)"
-                  >
-                    {{ company.status }}
-                  </span>
+                  <StatusDropdown
+                    :model-value="company.status"
+                    :options="statusOptions"
+                    variant="soft"
+                    @change="(value) => updateStatus(company, value)"
+                  />
                     <div
                       v-if="mobileActionsIndex === index"
                       class="flex items-center gap-2"
@@ -414,14 +413,11 @@
                   <span class="truncate block">{{ company.category }}</span>
                 </td>
                 <td class="px-4 py-3 whitespace-nowrap">
-                  <div 
-                    class="inline-flex items-center gap-1 px-3 py-1.5 rounded-md font-medium text-sm cursor-pointer touch-manipulation"
-                    :class="getStatusClass(company.status)"
-                    @click="changeStatus(company)"
-                  >
-                    <span>{{ company.status }}</span>
-                    <ChevronDownIcon class="w-3 h-3 flex-shrink-0" aria-hidden="true" />
-                  </div>
+                  <StatusDropdown
+                    :model-value="company.status"
+                    :options="statusOptions"
+                    @change="(value) => updateStatus(company, value)"
+                  />
                 </td>
                   <td class="px-4 py-3 whitespace-nowrap">
                     <div class="flex items-center gap-2">
@@ -520,6 +516,7 @@ import { getStatusClass } from '~/composables/useStatusClass'
 import { useSelection } from '~/composables/useSelection'
 import { useStubClient } from '~/services/stubClient'
 import DetailModal from '~/components/common/DetailModal.vue'
+import StatusDropdown from '~/components/common/StatusDropdown.vue'
 import { useClientEventListener } from '@/composables/useClientEventListener';
 import { useStubSearch } from '~/composables/useStubSearch';
 
@@ -779,11 +776,8 @@ const toggleMobileActions = (index) => {
   mobileActionsIndex.value = mobileActionsIndex.value === index ? null : index;
 };
 
-const changeStatus = async (company) => {
-  const statuses = ['Approved', 'Pending', 'Rejected'];
-  const currentIndex = statuses.indexOf(company.status);
-  const nextIndex = (currentIndex + 1) % statuses.length;
-  const nextStatus = statuses[nextIndex];
+const updateStatus = async (company, nextStatus) => {
+  if (!company?.id || !nextStatus || company.status === nextStatus) return;
   try {
     await stubClient.update('companies', company.id, { status: nextStatus }, { delay: 150 });
     await refresh();

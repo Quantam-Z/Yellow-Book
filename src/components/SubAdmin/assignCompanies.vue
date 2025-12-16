@@ -151,13 +151,12 @@
               </div>
 
               <div class="flex items-center gap-2 shrink-0 ml-4">
-                <span 
-                  class="text-xs font-medium px-2 py-1 rounded-full whitespace-nowrap cursor-pointer" 
-                  :class="getStatusClass(company.status)" 
-                  @click="promptStatusChange(company)"
-                >
-                  {{ company.status }}
-                </span>
+                <StatusDropdown
+                  :model-value="company.status"
+                  :options="STATUS_VALUES"
+                  variant="soft"
+                  @change="(value) => updateStatus(company, value)"
+                />
               </div>
             </div>
 
@@ -243,14 +242,11 @@
                 <span class="truncate max-w-full block">{{ company.category }}</span>
               </td>
               <td class="px-2 sm:px-3 md:px-4 py-2.5 sm:py-3 whitespace-nowrap border-r border-gray-100">
-                <div 
-                  class="inline-flex items-center gap-1 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md font-medium text-[9px] sm:text-xs cursor-pointer touch-manipulation"
-                  :class="getStatusClass(company.status)"
-                  @click="promptStatusChange(company)"
-                >
-                  <span>{{ company.status }}</span>
-                  <ChevronDown class="w-2.5 h-2.5 sm:w-3 sm:h-3 flex-shrink-0" />
-                </div>
+                <StatusDropdown
+                  :model-value="company.status"
+                  :options="STATUS_VALUES"
+                  @change="(value) => updateStatus(company, value)"
+                />
               </td>
 
               <td class="px-2 sm:px-3 md:px-4 py-2.5 sm:py-3 text-center">
@@ -379,6 +375,7 @@
 import { ref, computed, watch, watchEffect, onBeforeUnmount } from 'vue';
 import { Search, CheckCircle, ChevronDown, ChevronLeft, ChevronRight, Filter as FilterIcon, X } from "lucide-vue-next";
 import DetailModal from '@/components/common/DetailModal.vue'
+import StatusDropdown from '@/components/common/StatusDropdown.vue'
 
 import { getStatusClass } from '~/composables/useStatusClass' 
 import { useStubClient } from '~/services/stubClient'
@@ -651,6 +648,17 @@ const applyStatusChange = async (companyId, newStatus) => {
     throw error;
   }
 };
+
+const updateStatus = async (company, nextStatus) => {
+  if (!company?.id || !nextStatus) return
+  const current = normalizeStatus(company.status)
+  if (current === nextStatus) return
+  try {
+    await applyStatusChange(company.id, nextStatus)
+  } catch {
+    // error handled in applyStatusChange
+  }
+}
 
 const confirmStatusChange = async () => {
   if (!pendingStatusChange.value || statusChangeLoading.value) {

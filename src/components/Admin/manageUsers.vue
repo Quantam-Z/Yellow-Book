@@ -292,13 +292,12 @@
                   </div>
                 </div>
                   <div class="flex items-center gap-2 shrink-0 relative">
-                  <span 
-                    class="text-xs font-medium px-2 py-1 rounded-full whitespace-nowrap cursor-pointer transition-opacity" 
-                    :class="getStatusClass(user.status, 'soft') + ' bg-opacity-10'" 
-                    @click.stop="changeStatus(user)"
-                  >
-                    {{ user.status }}
-                  </span>
+                  <StatusDropdown
+                    :model-value="user.status"
+                    :options="statusOptions"
+                    variant="soft"
+                    @change="(value) => updateStatus(user, value)"
+                  />
                     <div
                       v-if="mobileActionsIndex === index"
                       class="flex items-center gap-2"
@@ -443,14 +442,11 @@
                 </td>
                 <td class="px-4 py-3 text-gray-700 text-sm whitespace-nowrap">{{ formatDate(user.signupDate) }}</td>
                 <td class="px-4 py-3 whitespace-nowrap">
-                  <div 
-                    class="inline-flex items-center gap-1 px-3 py-1.5 rounded-md font-medium text-sm cursor-pointer touch-manipulation"
-                    :class="getStatusClass(user.status)"
-                    @click="changeStatus(user)"
-                  >
-                    <span>{{ user.status }}</span>
-                    <ChevronDownIcon class="w-3 h-3 flex-shrink-0" aria-hidden="true" />
-                  </div>
+                  <StatusDropdown
+                    :model-value="user.status"
+                    :options="statusOptions"
+                    @change="(value) => updateStatus(user, value)"
+                  />
                 </td>
                   <td class="px-4 py-3 whitespace-nowrap">
                     <div class="flex items-center gap-2">
@@ -556,6 +552,7 @@ import { useSelection } from '~/composables/useSelection'
 import { useStubClient } from '~/services/stubClient'
 import { useStubSearch } from '~/composables/useStubSearch'
 import DetailModal from '~/components/common/DetailModal.vue'
+import StatusDropdown from '~/components/common/StatusDropdown.vue'
 import { useClientEventListener } from '@/composables/useClientEventListener';
 
 // --- State ---
@@ -567,6 +564,8 @@ const mobileActionsIndex = ref(null);
 const selectedUser = ref(null);
 const isDetailModalOpen = ref(false);
 const isMobileView = ref(false);
+
+const statusOptions = ['Active', 'Inactive', 'Suspended', 'Pending']
 
 // Pagination State
 const currentPage = ref(1);
@@ -757,13 +756,8 @@ const deleteUser = async (user) => {
   }
 };
 
-const changeStatus = async (user) => {
-  // Cycle through common statuses to demo behavior
-  const statuses = ['Active', 'Inactive', 'Suspended', 'Pending'];
-  const currentIndex = statuses.indexOf(user.status);
-  const nextIndex = (currentIndex + 1) % statuses.length;
-  const nextStatus = statuses[nextIndex];
-
+const updateStatus = async (user, nextStatus) => {
+  if (!user?.id || !nextStatus || user.status === nextStatus) return;
   try {
     await stubClient.update('users', user.id, { status: nextStatus }, { delay: 150 });
     await refreshUsers();

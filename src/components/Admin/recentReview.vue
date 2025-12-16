@@ -46,13 +46,14 @@
             </td>
             
             <td class="px-4 py-3 whitespace-nowrap">
-              <span 
-                class="inline-flex items-center gap-1 px-3 py-1.5 rounded-md font-medium text-sm cursor-pointer hover:opacity-80 transition-opacity" 
-                :class="getStatusClass(review.status, 'soft')"
-                @click.stop="toggleStatus(review)"
-              >
-                {{ review.status }}
-              </span>
+              <div @click.stop>
+                <StatusDropdown
+                  :model-value="review.status"
+                  :options="statusOptions"
+                  variant="soft"
+                  @change="(value) => updateStatus(review, value)"
+                />
+              </div>
             </td>
             
             <td class="px-4 py-3 whitespace-nowrap relative">
@@ -93,13 +94,14 @@
           </div>
           
           <div class="flex items-center gap-2 shrink-0 relative">
-            <span 
-                class="text-xs font-medium px-2 py-1 rounded-full cursor-pointer hover:opacity-80 transition-opacity" 
-                :class="getStatusClass(review.status, 'soft') + ' bg-opacity-10'"
-                @click.stop="toggleStatus(review)"
-            >
-              {{ review.status }}
-            </span>
+            <div @click.stop>
+              <StatusDropdown
+                :model-value="review.status"
+                :options="statusOptions"
+                variant="soft"
+                @change="(value) => updateStatus(review, value)"
+              />
+            </div>
             
             <span
               v-if="editingIndex === index"
@@ -179,6 +181,7 @@ import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { MoreHorizontal, ChevronLeft, ChevronRight, Trash2 } from 'lucide-vue-next'; 
 import RatingStars from '~/components/common/RatingStars.vue'
+import StatusDropdown from '~/components/common/StatusDropdown.vue'
 import { getStatusClass } from '~/composables/useStatusClass'
 import { useStubClient } from '~/services/stubClient'
 
@@ -195,7 +198,7 @@ const nuxtApp = useNuxtApp();
 const router = useRouter();
 
 let nextId = 1; 
-const REVIEW_STATUSES = ['Pending', 'Approved', 'Rejected'];
+const statusOptions = ['Pending', 'Approved', 'Rejected'];
 
 const fetchData = async () => {
   try {
@@ -250,7 +253,7 @@ const toggleActions = (index) => {
 
 const findReviewIndexById = (reviewId) => allReviews.value.findIndex(review => review.id === reviewId);
 
-const toggleStatus = async (row) => {
+const updateStatus = async (row, nextStatus) => {
   if (!row?.id) {
     editingIndex.value = null;
     return;
@@ -263,8 +266,10 @@ const toggleStatus = async (row) => {
   }
 
   const currentStatus = allReviews.value[actualIndex].status || 'Pending';
-  const currentIndex = Math.max(0, REVIEW_STATUSES.indexOf(currentStatus));
-  const nextStatus = REVIEW_STATUSES[(currentIndex + 1) % REVIEW_STATUSES.length];
+  if (!nextStatus || currentStatus === nextStatus) {
+    editingIndex.value = null;
+    return;
+  }
 
   allReviews.value[actualIndex].status = nextStatus;
 
