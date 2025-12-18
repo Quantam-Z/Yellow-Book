@@ -57,20 +57,14 @@
             </td>
             
             <td class="px-4 py-3 whitespace-nowrap relative">
-              <span
-                v-if="editingIndex === index"
+              <button
+                type="button"
                 @click.stop="simulateDelete(review)"
                 title="Delete Review"
                 class="w-5 h-5 text-red-600 cursor-pointer hover:text-red-700 active:text-red-800 transition touch-manipulation flex items-center justify-center"
               >
                 <Trash2 class="w-5 h-5" />
-              </span>
-              
-              <MoreHorizontal 
-                v-else
-                class="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer"
-                @click.stop="toggleActions(index)"
-              />
+              </button>
             </td>
           </tr>
         </tbody>
@@ -103,21 +97,14 @@
               />
             </div>
             
-            <span
-              v-if="editingIndex === index"
+            <button
+              type="button"
               @click.stop="simulateDelete(review)"
               title="Delete Review"
               class="text-red-500 hover:text-red-700 transition-colors cursor-pointer flex items-center"
             >
               <Trash2 class="w-5 h-5" />
-            </span>
-
-
-            <MoreHorizontal 
-                v-else
-                class="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer" 
-                @click.stop="toggleActions(index)"
-            />
+            </button>
           </div>
         </div>
 
@@ -145,13 +132,12 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
-import { MoreHorizontal, Trash2 } from 'lucide-vue-next'; 
+import { Trash2 } from 'lucide-vue-next'; 
 import RatingStars from '~/components/common/RatingStars.vue'
 import StatusDropdown from '~/components/common/StatusDropdown.vue'
 import { getStatusClass } from '~/composables/useStatusClass'
 import { useStubClient } from '~/services/stubClient'
 
-const editingIndex = ref(null); 
 const RECENT_REVIEWS_LIMIT = 5; 
 const expandedReviewId = ref(null); 
 
@@ -195,27 +181,20 @@ const openReviewDetail = (review) => {
   router.push(`/company/review/${review.id}`);
 };
 
-const toggleActions = (index) => {
-  editingIndex.value = editingIndex.value === index ? null : index;
-};
-
 const findReviewIndexById = (reviewId) => allReviews.value.findIndex(review => review.id === reviewId);
 
 const updateStatus = async (row, nextStatus) => {
   if (!row?.id) {
-    editingIndex.value = null;
     return;
   }
 
   const actualIndex = findReviewIndexById(row.id);
   if (actualIndex === -1) {
-    editingIndex.value = null;
     return;
   }
 
   const currentStatus = allReviews.value[actualIndex].status || 'Pending';
   if (!nextStatus || currentStatus === nextStatus) {
-    editingIndex.value = null;
     return;
   }
 
@@ -233,30 +212,22 @@ const updateStatus = async (row, nextStatus) => {
       nuxtApp.$awn?.alert(`Failed to update the status for ${row.reviewer}.`);
     }
   } finally {
-    editingIndex.value = null;
   }
 };
 
 const simulateDelete = async (review) => {
   if (!review?.id) {
-    editingIndex.value = null;
     return;
   }
 
   const confirmed = confirm(`Are you sure you want to delete the review by ${review.reviewer}?`);
   if (!confirmed) {
-    editingIndex.value = null;
     return;
   }
 
     try {
       await stubClient.remove('recentReviews', review.id, { delay: 160 });
       allReviews.value = allReviews.value.filter(r => r.id !== review.id);
-
-      const newTotalPages = Math.max(1, Math.ceil(allReviews.value.length / pageSize.value));
-      if (currentPage.value > newTotalPages) {
-        currentPage.value = newTotalPages;
-      }
 
       if (import.meta.client) {
         nuxtApp.$awn?.success(`Review by ${review.reviewer} has been permanently deleted.`);
@@ -267,7 +238,6 @@ const simulateDelete = async (review) => {
       nuxtApp.$awn?.alert(`Failed to delete the review by ${review.reviewer}.`);
     }
   } finally {
-    editingIndex.value = null;
   }
 };
 

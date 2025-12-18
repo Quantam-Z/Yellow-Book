@@ -60,20 +60,14 @@
             </td>
             
             <td class="px-4 py-3 whitespace-nowrap relative">
-              <span 
-                v-if="editingIndex === index" 
-                @click.stop="simulateDelete(row)" 
-                title="Delete Company" 
+              <button
+                type="button"
+                @click.stop="simulateDelete(row)"
+                title="Delete Company"
                 class="text-red-500 hover:text-red-700 transition-colors cursor-pointer inline-flex items-center"
               >
                 <Trash2 class="w-5 h-5" />
-              </span>
-              
-              <MoreHorizontal 
-                v-else
-                class="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer" 
-                @click.stop="toggleActions(index)"
-              />
+              </button>
             </td>
           </tr>
         </tbody>
@@ -104,20 +98,14 @@
               />
             </div>
             
-            <span 
-                v-if="editingIndex === index" 
-                @click.stop="simulateDelete(row)" 
-                title="Delete Company" 
-                class="text-red-500 hover:text-red-700 transition-colors cursor-pointer inline-flex items-center"
+            <button
+              type="button"
+              @click.stop="simulateDelete(row)"
+              title="Delete Company"
+              class="text-red-500 hover:text-red-700 transition-colors cursor-pointer inline-flex items-center"
             >
               <Trash2 class="w-5 h-5" />
-            </span>
-            
-            <MoreHorizontal 
-                v-else
-                class="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer"
-                @click.stop="toggleActions(index)" 
-            />
+            </button>
           </div>
         </div>
 
@@ -167,11 +155,10 @@
 import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 // import Swal from 'sweetalert2'; // REMOVED Swal
-import { MoreHorizontal, Trash2 } from 'lucide-vue-next'; 
+import { Trash2 } from 'lucide-vue-next'; 
 import StatusDropdown from '~/components/common/StatusDropdown.vue'
 import { useStubClient } from '~/services/stubClient'
 
-const editingIndex = ref(null); 
 const RECENT_COMPANIES_LIMIT = 5; 
 const expandedRowId = ref(null); 
 
@@ -211,10 +198,6 @@ const goToCompanyManagement = () => {
   router.push('/admin/manage-companies');
 };
 
-const toggleActions = (index) => {
-  editingIndex.value = editingIndex.value === index ? null : index;
-};
-
 const toggleDetails = (rowId) => {
     expandedRowId.value = expandedRowId.value === rowId ? null : rowId;
 };
@@ -225,19 +208,16 @@ const findRowIndexById = (rowId) => {
 
 const updateStatus = async (row, nextStatus) => {
     if (!row?.id) {
-        editingIndex.value = null;
         return;
     }
 
     const actualIndex = findRowIndexById(row.id);
     if (actualIndex === -1) {
-        editingIndex.value = null;
         return;
     }
 
     const currentStatus = allRows.value[actualIndex].status || 'Pending';
     if (!nextStatus || currentStatus === nextStatus) {
-      editingIndex.value = null;
       return;
     }
 
@@ -255,31 +235,23 @@ const updateStatus = async (row, nextStatus) => {
             nuxtApp.$awn?.alert(`Failed to update status for ${row.name}. Please try again.`);
         }
     } finally {
-        editingIndex.value = null;
     }
 };
 
 
 const simulateDelete = async (row) => {
   if (!row?.id) {
-    editingIndex.value = null;
     return;
   }
 
   const confirmed = confirm(`Are you sure you want to delete ${row.name}?`);
   if (!confirmed) {
-    editingIndex.value = null;
     return;
   }
 
   try {
     await stubClient.remove('recentCompanies', row.id, { delay: 160 });
     allRows.value = allRows.value.filter(r => r.id !== row.id);
-
-    const newTotalPages = Math.max(1, Math.ceil(allRows.value.length / pageSize.value));
-    if (currentPage.value > newTotalPages) {
-      currentPage.value = newTotalPages;
-    }
 
     if (import.meta.client) {
       nuxtApp.$awn?.success(`The company ${row.name} has been successfully deleted.`);
@@ -290,7 +262,6 @@ const simulateDelete = async (row) => {
       nuxtApp.$awn?.alert(`Failed to delete ${row.name}. Please try again.`);
     }
   } finally {
-    editingIndex.value = null;
   }
 };
 
