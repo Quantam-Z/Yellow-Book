@@ -42,8 +42,10 @@ const HTTP_STATUS_TEXT = {
 
 const DEFAULT_COLLECTION_PRIMARY_KEY = "id";
 const STUB_STATE_KEY = "__NUXT_STUB_STATE__";
-const isClientRuntime = typeof globalThis !== "undefined" && typeof globalThis.window !== "undefined";
-const isServerRuntime = !isClientRuntime;
+// Nuxt/Vite build runs in Node, so "window" checks lie during client builds.
+// Use Nuxt-provided compile-time flags.
+const isClientRuntime = import.meta.client;
+const isServerRuntime = import.meta.server;
 
 const globalState = (() => {
   if (!globalThis[STUB_STATE_KEY]) {
@@ -257,37 +259,6 @@ const loadStubFromDisk = async (file, type) => {
   };
 
   if (isServerRuntime) {
-    let rawFromStorage;
-
-    try {
-      const runtime = await import("nitropack/runtime");
-      const storageFactory = runtime?.useStorage;
-      const storage = typeof storageFactory === "function" ? storageFactory("assets:public") : null;
-      if (storage && typeof storage.getItem === "function") {
-        const stored = await storage.getItem(`stubs/${file}`);
-        if (stored !== null && stored !== undefined) {
-          if (typeof stored === "string") {
-            rawFromStorage = stored;
-          } else if (stored instanceof Uint8Array) {
-            rawFromStorage = Buffer.from(stored).toString("utf-8");
-          } else if (typeof stored === "object" && typeof stored.toString === "function") {
-            rawFromStorage = stored.toString();
-          }
-        }
-      }
-    } catch (error) {
-      // Ignore storage lookup errors, we'll fall back to filesystem access
-      if (typeof process !== "undefined" && process?.dev) {
-        console.warn(`[stub] Failed to read "${file}" from assets storage`, error);
-      }
-    }
-
-    if (rawFromStorage !== undefined) {
-      const json = await parseJson(rawFromStorage);
-      validateType(json, type, file);
-      return json;
-    }
-
     const [{ readFile }, { join }] = await Promise.all([import("node:fs/promises"), import("node:path")]);
     const candidatePaths = [
       join(process.cwd(), "src", "public", "stubs", file),

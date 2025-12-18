@@ -537,6 +537,70 @@ const SEARCH_RESOURCES: Record<string, SearchResourceConfig> = {
     },
     sort: sortByStringField('name'),
   },
+  subadminReviews: {
+    key: 'subadminReviews',
+    stub: 'subadminReviews',
+    alias: ['agentreviews', 'agent-reviews', 'reviewapproval', 'review-approval'],
+    fields: ['reviewerName', 'text', 'content', 'companyName', 'company', 'email'],
+    normalize: (entry: any) => ({
+      ...entry,
+      // normalize content field names used across the app
+      content: entry.content ?? entry.text ?? '',
+      status: entry.status ?? 'Pending',
+    }),
+    filter: (review, query) => {
+      if (query.statusLc && getReviewStatus(review.status) !== query.statusLc) return false;
+      if (query.rating != null && Number(review.rating) !== query.rating) return false;
+      if (query.dateFrom && !dateIsOnOrAfter(review.date, query.dateFrom)) return false;
+      if (query.dateTo && !dateIsOnOrBefore(review.date, query.dateTo)) return false;
+      if (query.timeRange && !matchesTimeRange(review.date, query.timeRange)) return false;
+      return true;
+    },
+    stats: (records) => {
+      let pending = 0;
+      let approved = 0;
+      let rejected = 0;
+      let onHold = 0;
+      let banned = 0;
+
+      for (const entry of records) {
+        const status = getReviewStatus(entry.status);
+        switch (status) {
+          case 'approved':
+            approved += 1;
+            break;
+          case 'rejected':
+            rejected += 1;
+            break;
+          case 'on hold':
+          case 'onhold':
+            onHold += 1;
+            break;
+          case 'banned':
+            banned += 1;
+            break;
+          default:
+            pending += 1;
+        }
+      }
+
+      const lowRatingFallback = records.filter((r: any) => Number(r.rating) <= 2).length;
+
+      return {
+        totalReviews: records.length,
+        pending,
+        approved,
+        rejected,
+        onHold,
+        bannedUsers: banned || lowRatingFallback,
+      };
+    },
+    sort: (a, b) => {
+      const dateA = parseDateOnly(a.date)?.getTime() ?? 0;
+      const dateB = parseDateOnly(b.date)?.getTime() ?? 0;
+      return dateB - dateA;
+    },
+  },
 };
 
 const resourceRegistry = new Map<string, SearchResourceConfig>();

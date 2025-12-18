@@ -72,6 +72,7 @@ import {
   User,
   Menu,
   LayoutDashboard,
+  Star,
 } from "lucide-vue-next";
 import { ref } from "vue";
 import { useClientEventListener } from '@/composables/useClientEventListener';
@@ -83,6 +84,7 @@ const isScrolled = ref(false);
 const mainMenu = [
   { label: "dashboard", icon: LayoutDashboard, to: "/agent/dashboard" },
   { label: "my assign task", icon: ClipboardList, to: "/agent/assign-companies" },
+  { label: "review approval", icon: Star, to: "/agent/review-approval" },
   { label: "my profile", icon: User, to: "/agent/my-profile" },
 ];
 
