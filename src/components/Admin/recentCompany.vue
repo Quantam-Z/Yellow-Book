@@ -2,13 +2,13 @@
   <div class="w-full rounded-lg bg-white border-whitesmoke border-solid border-[1px] flex flex-col items-start p-3 sm:p-4 lg:p-6 gap-4 text-left text-xl text-gray-900 font-plus-jakarta-sans">
     
     <div class="w-full flex items-center justify-between">
-      <h2 class="relative leading-[130%] capitalize font-bold text-lg lg:text-xl">{{ isExpanded ? 'All Companies' : 'Recent Companies' }}</h2>
+      <h2 class="relative leading-[130%] capitalize font-bold text-lg lg:text-xl">Recent Companies</h2>
       
       <div 
         class="relative text-sm lg:text-base leading-[130%] capitalize font-semibold text-amber-500 cursor-pointer hover:text-amber-600 transition-colors"
-        @click="handleSeeAllClick"
+        @click="goToCompanyManagement"
       >
-        {{ isExpanded ? 'Show Recent' : 'See All' }}
+        SHOW ALL
       </div>
     </div>
 
@@ -160,40 +160,6 @@
       </div>
     </div>
     
-    <div v-if="isExpanded && totalPages > 1" class="w-full flex justify-end items-center pt-2 border-t border-gray-200 mt-2">
-      <div class="flex items-center gap-3 text-sm text-gray-700">
-        
-        <span class="font-medium whitespace-nowrap">
-          Page {{ currentPage }} of {{ totalPages }}
-        </span>
-
-        <button 
-          @click="goToPage(currentPage - 1)" 
-          :disabled="currentPage === 1"
-          class="p-1 rounded-full transition-colors border"
-          :class="{
-            'text-amber-500 border-amber-500 hover:bg-amber-50': currentPage !== 1, 
-            'text-gray-400 border-gray-200 cursor-not-allowed': currentPage === 1
-          }"
-        >
-          <ChevronLeft class="w-5 h-5" />
-        </button>
-
-        <button 
-          @click="goToPage(currentPage + 1)" 
-          :disabled="currentPage === totalPages"
-          class="p-1 rounded-full transition-colors border"
-          :class="{
-            'text-amber-500 border-amber-500 hover:bg-amber-50': currentPage !== totalPages, 
-            'text-gray-400 border-gray-200 cursor-not-allowed': currentPage === totalPages
-          }"
-        >
-          <ChevronRight class="w-5 h-5" />
-        </button>
-
-      </div>
-    </div>
-
   </div>
 </template>
 
@@ -201,14 +167,11 @@
 import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 // import Swal from 'sweetalert2'; // REMOVED Swal
-import { MoreHorizontal, Trash2, ChevronLeft, ChevronRight } from 'lucide-vue-next'; 
+import { MoreHorizontal, Trash2 } from 'lucide-vue-next'; 
 import StatusDropdown from '~/components/common/StatusDropdown.vue'
 import { useStubClient } from '~/services/stubClient'
 
 const editingIndex = ref(null); 
-const isExpanded = ref(false); 
-const currentPage = ref(1);
-const pageSize = ref(10);
 const RECENT_COMPANIES_LIMIT = 5; 
 const expandedRowId = ref(null); 
 
@@ -240,33 +203,12 @@ const fetchData = async () => {
   }
 };
 
-const totalPages = computed(() => {
-  if (!isExpanded.value || allRows.value.length === 0) return 1;
-  return Math.ceil(allRows.value.length / pageSize.value);
-});
-
 const paginatedRows = computed(() => {
-    if (!isExpanded.value) {
-        return allRows.value.slice(0, RECENT_COMPANIES_LIMIT);
-    }
-    const start = (currentPage.value - 1) * pageSize.value;
-    const end = start + pageSize.value;
-    return allRows.value.slice(start, end);
+    return allRows.value.slice(0, RECENT_COMPANIES_LIMIT);
 });
 
-const handleSeeAllClick = () => {
-    isExpanded.value = !isExpanded.value;
-    currentPage.value = 1; 
-    editingIndex.value = null; 
-    expandedRowId.value = null; 
-};
-
-const goToPage = (page) => {
-  if (page >= 1 && page <= totalPages.value) {
-    currentPage.value = page;
-    editingIndex.value = null; 
-    expandedRowId.value = null; 
-  }
+const goToCompanyManagement = () => {
+  router.push('/admin/manage-companies');
 };
 
 const toggleActions = (index) => {
