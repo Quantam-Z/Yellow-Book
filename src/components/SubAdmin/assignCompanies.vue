@@ -297,14 +297,14 @@
           v-for="page in getVisiblePages()" 
           :key="page"
           @click="goToPage(page)"
-          class="px-2.5 sm:px-3 py-1.5 rounded-lg text-[10px] sm:text-xs font-medium transition touch-manipulation hidden xs:block"
+          class="px-2.5 sm:px-3 py-1.5 rounded-lg text-[10px] sm:text-xs font-medium transition touch-manipulation hidden sm:inline-flex"
           :class="page === currentPage ? 'bg-yellow-400 text-gray-900' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'"
         >
           {{ page }}
         </button>
 
         <button 
-          class="px-2.5 sm:px-3 py-1.5 bg-yellow-400 text-gray-900 rounded-lg text-[10px] sm:text-xs font-medium xs:hidden"
+          class="px-2.5 sm:px-3 py-1.5 bg-yellow-400 text-gray-900 rounded-lg text-[10px] sm:text-xs font-medium sm:hidden"
         >
           {{ currentPage }}
         </button>
@@ -741,14 +741,10 @@ watch([searchQuery, filters], () => {
 }
 
 @media (max-width: 480px) {
-  .xs\:hidden {
-    display: none !important;
-  }
+  /* intentionally left blank (legacy xs helpers removed) */
 }
 
 @media (min-width: 481px) {
-  .xs\:block {
-    display: block !important;
-  }
+  /* intentionally left blank (legacy xs helpers removed) */
 }
 </style>
