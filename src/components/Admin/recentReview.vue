@@ -58,13 +58,14 @@
             
             <td class="px-4 py-3 whitespace-nowrap relative">
               <button
-                type="button"
-                @click.stop="simulateDelete(review)"
-                title="Delete Review"
-                class="w-5 h-5 text-red-600 cursor-pointer hover:text-red-700 active:text-red-800 transition touch-manipulation flex items-center justify-center"
-              >
-                <Trash2 class="w-5 h-5" />
-              </button>
+  type="button"
+  @click.stop="simulateDelete(row)"
+  title="Delete Company"
+  class="bg-transparent border-0 p-0 text-red-500 hover:text-red-700 focus:outline-none transition-colors inline-flex items-center cursor-pointer"
+>
+  <Trash2 class="w-5 h-5" />
+</button>
+
             </td>
           </tr>
         </tbody>
