@@ -108,7 +108,15 @@ const resolveStubHttpFlag = () => {
 
 const stubHttpEnabled = resolveStubHttpFlag();
 
-const HTTP_TRANSPORT_FALLBACK_REASONS = new Set(["invalid-json", "http-non-json", "html-response", "network-error"]);
+// Reasons that should permanently disable the HTTP transport and fall back to local stubs.
+// Note: "http-error" is handled separately because it can represent legitimate validation errors.
+const HTTP_TRANSPORT_FALLBACK_REASONS = new Set([
+  "invalid-json",
+  "http-non-json",
+  "http-empty",
+  "html-response",
+  "network-error",
+]);
 
 const summarizeTransportError = (error) => {
   if (!error || typeof error !== "object") return "";
@@ -149,10 +157,23 @@ const markHttpTransportUnavailable = (error) => {
 
 const isTransportFailureLikelyPermanent = (error) => {
   if (!error || typeof error !== "object") return false;
-  const reason = error?.details?.reason;
-  if (reason && HTTP_TRANSPORT_FALLBACK_REASONS.has(String(reason))) {
+
+  const reason = error?.details?.reason ? String(error.details.reason) : "";
+  if (reason && HTTP_TRANSPORT_FALLBACK_REASONS.has(reason)) {
     return true;
   }
+
+  // If the stub HTTP API is unavailable/misconfigured (common in preview/serverless),
+  // it often returns JSON error payloads with "http-error". For these cases we want
+  // to fall back to local stub files so the UI still works.
+  if (reason === "http-error") {
+    const status = Number(error?.status);
+    // Fallback only for "unavailable" classes of failures (NOT for 4xx validation).
+    if (status === 404 || status === 405 || status >= 500) {
+      return true;
+    }
+  }
+
   return false;
 };
 
