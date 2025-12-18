@@ -8,7 +8,7 @@
       <div class="relative w-full max-w-md rounded-2xl bg-white shadow-xl p-6 font-plus-jakarta-sans">
         <button
           type="button"
-          class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 rounded-full"
+          class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 focus:outline-none border-0 outline-none bg-transparent"
           @click="handleClose"
           aria-label="Close details dialog"
         >

@@ -60,7 +60,7 @@
             </div>
             <button
               type="button"
-              class="w-9 h-9 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center border border-gray-200"
+              class="w-9 h-9 bg-transparent text-gray-600 flex items-center justify-center border-0 outline-none"
               @click="closeMobileFilters"
               aria-label="Close filters panel"
             >
