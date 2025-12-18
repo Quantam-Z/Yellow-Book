@@ -3,13 +3,13 @@
     
     <div class="w-full flex items-center justify-between">
       
-      <h2 class="relative leading-[130%] capitalize font-bold text-lg lg:text-xl">{{ isExpanded ? 'All Reviews' : 'Recent Reviews' }}</h2>
+      <h2 class="relative leading-[130%] capitalize font-bold text-lg lg:text-xl">Recent Reviews</h2>
       
       <div 
         class="relative text-sm lg:text-base leading-[130%] capitalize font-semibold text-amber-500 cursor-pointer hover:text-amber-600 transition-colors"
-        @click="handleSeeAllClick"
+        @click="goToReviewManagement"
       >
-        {{ isExpanded ? 'Show Recent' : 'See All' }} 
+        SHOW ALL
       </div>
       
     </div>
@@ -138,40 +138,6 @@
         </div>
       </div>
     </div>
-
-    <div v-if="isExpanded && totalPages > 1" class="w-full flex justify-end items-center pt-2 border-t border-gray-200 mt-2">
-      <div class="flex items-center gap-3 text-sm text-gray-700">
-        
-        <span class="font-medium whitespace-nowrap">
-          Page {{ currentPage }} of {{ totalPages }}
-        </span>
-
-        <button 
-          @click="goToPage(currentPage - 1)" 
-          :disabled="currentPage === 1"
-          class="p-1 rounded-full transition-colors border"
-          :class="{
-            'text-amber-500 border-amber-500 hover:bg-amber-50': currentPage !== 1, 
-            'text-gray-400 border-gray-200 cursor-not-allowed': currentPage === 1
-          }"
-        >
-          <ChevronLeft class="w-5 h-5" />
-        </button>
-
-        <button 
-          @click="goToPage(currentPage + 1)" 
-          :disabled="currentPage === totalPages"
-          class="p-1 rounded-full transition-colors border"
-          :class="{
-            'text-amber-500 border-amber-500 hover:bg-amber-50': currentPage !== totalPages, 
-            'text-gray-400 border-gray-200 cursor-not-allowed': currentPage === totalPages
-          }"
-        >
-          <ChevronRight class="w-5 h-5" />
-        </button>
-
-      </div>
-    </div>
     
   </div>
 </template>
@@ -179,16 +145,13 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
-import { MoreHorizontal, ChevronLeft, ChevronRight, Trash2 } from 'lucide-vue-next'; 
+import { MoreHorizontal, Trash2 } from 'lucide-vue-next'; 
 import RatingStars from '~/components/common/RatingStars.vue'
 import StatusDropdown from '~/components/common/StatusDropdown.vue'
 import { getStatusClass } from '~/composables/useStatusClass'
 import { useStubClient } from '~/services/stubClient'
 
 const editingIndex = ref(null); 
-const isExpanded = ref(false); 
-const currentPage = ref(1);
-const pageSize = ref(5);
 const RECENT_REVIEWS_LIMIT = 5; 
 const expandedReviewId = ref(null); 
 
@@ -215,27 +178,12 @@ const fetchData = async () => {
   }
 };
 
-const totalPages = computed(() => allReviews.value.length === 0 ? 0 : Math.ceil(allReviews.value.length / pageSize.value));
-
 const displayedReviews = computed(() => {
-  if (!isExpanded.value) return allReviews.value.slice(0, RECENT_REVIEWS_LIMIT);
-  const start = (currentPage.value - 1) * pageSize.value;
-  return allReviews.value.slice(start, start + pageSize.value);
+  return allReviews.value.slice(0, RECENT_REVIEWS_LIMIT);
 });
 
-const handleSeeAllClick = () => {
-  isExpanded.value = !isExpanded.value;
-  currentPage.value = 1; 
-  editingIndex.value = null; 
-  expandedReviewId.value = null;
-};
-
-const goToPage = (page) => {
-  if (page >= 1 && page <= totalPages.value) {
-    currentPage.value = page;
-    editingIndex.value = null; 
-    expandedReviewId.value = null;
-  }
+const goToReviewManagement = () => {
+  router.push('/admin/manage-review');
 };
 
 const toggleReviewDetails = (reviewId) => {
