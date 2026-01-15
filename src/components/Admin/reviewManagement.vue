@@ -325,7 +325,7 @@
 
             <!-- Card body -->
             <div class="mb-3">
-              <p class="text-sm text-gray-700 line-clamp-2">{{ review.content }}</p>
+              <p class="text-sm text-gray-700 line-clamp-2">{{ truncateReviewContent(review.content) }}</p>
             </div>
 
             <div class="flex justify-between items-center text-xs text-gray-500">
@@ -391,7 +391,7 @@
                   <div class="text-xs text-gray-500">{{ review.time }}</div>
                 </td>
                 <td class="px-4 py-3 text-gray-700 text-sm">
-                  <span class="block max-w-[420px] whitespace-pre-line break-words">"{{ review.content }}"</span>
+                  <span class="block max-w-[420px] whitespace-pre-line break-words">"{{ truncateReviewContent(review.content) }}"</span>
                 </td>
                 <td class="px-4 py-3 whitespace-nowrap">
                   <StatusDropdown
@@ -639,6 +639,14 @@ const getInitials = (name) => {
     .map(n => n[0])
     .join('')
     .toUpperCase()
+}
+
+const truncateReviewContent = (content, maxWords = 3) => {
+  const text = String(content || '').trim()
+  if (!text) return ''
+  const words = text.split(/\s+/)
+  if (words.length <= maxWords) return text
+  return `${words.slice(0, maxWords).join(' ')}...`
 }
 
 // --- Computed ---

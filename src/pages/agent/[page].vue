@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineAsyncComponent, computed } from 'vue';
+import { defineAsyncComponent, computed, ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 
 definePageMeta({
@@ -44,12 +44,19 @@ const SelectedComponent = computed(() => {
   }
   return null;
 });
+
+const isHydrated = ref(false);
+onMounted(() => {
+  isHydrated.value = true;
+});
+
+const showNotFound = computed(() => isHydrated.value && !SelectedComponent.value);
 </script>
 
 <template>
   <div class="panel-stack w-full">
     <component v-if="SelectedComponent" :is="SelectedComponent" />
-    <div v-else class="p-6">
+    <div v-else-if="showNotFound" class="p-6">
       <h1 class="text-2xl font-semibold">Page not found</h1>
         <p class="text-gray-600">No matching agent component for this route.</p>
     </div>
