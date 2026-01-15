@@ -86,10 +86,18 @@
       
       <div class="lg:col-span-2 space-y-4 sm:space-y-6 order-last lg:order-first">
         <div class="w-full relative flex flex-col items-start gap-6 text-left text-[24px] text-gray-900 font-plus-jakarta-sans">
-          <b class="self-stretch relative leading-[130%] capitalize text-xl sm:text-2xl">Companies Awaiting Your Verification</b>
+          <div class="flex w-full items-center justify-between gap-3">
+            <b class="relative leading-[130%] capitalize text-xl sm:text-2xl">Companies Awaiting Your Verification</b>
+            <NuxtLink
+              to="/agent/review-approval"
+              class="text-sm font-semibold text-blue-600 hover:text-blue-700"
+            >
+              Show all
+            </NuxtLink>
+          </div>
           <div class="self-stretch flex flex-col items-start gap-2 text-base">
             <div 
-              v-for="(company, index) in companies" 
+              v-for="company in previewCompanies" 
               :key="company.id"
               class="self-stretch rounded-lg border border-[#E5E5E5] border-solid flex flex-col sm:flex-row sm:items-center justify-between p-4 gap-4 sm:gap-5 hover:border-blue-400 transition-colors"
             >
@@ -119,10 +127,18 @@
         </div>
         
         <div class="w-full relative flex flex-col items-start gap-6 text-left text-[24px] text-gray-900 font-plus-jakarta-sans">
-          <b class="self-stretch relative leading-[130%] capitalize text-xl sm:text-2xl">New Reviews for Your Companies</b>
+          <div class="flex w-full items-center justify-between gap-3">
+            <b class="relative leading-[130%] capitalize text-xl sm:text-2xl">New Reviews for Your Companies</b>
+            <NuxtLink
+              to="/agent/review-approval"
+              class="text-sm font-semibold text-blue-600 hover:text-blue-700"
+            >
+              Show all
+            </NuxtLink>
+          </div>
           <div class="self-stretch flex flex-col items-start gap-2">
             <div 
-              v-for="(review, index) in reviews" 
+              v-for="review in previewReviews" 
               :key="review.id"
               class="w-full relative rounded-lg border border-[#E5E5E5] border-solid box-border flex flex-col sm:flex-row sm:items-center justify-between p-4 gap-4 sm:gap-5 text-left text-base text-gray-700 font-plus-jakarta-sans hover:border-blue-400 transition-colors"
             >
@@ -260,6 +276,9 @@ const companiesLen = computed(() => companies.value.length);
 const reviewsLen = computed(() => reviews.value.length);
 const totalTasks = computed(() => companiesLen.value + reviewsLen.value);
 const circumference = 2 * Math.PI * 45;
+const previewLimit = 4;
+const previewCompanies = computed(() => companies.value.slice(0, previewLimit));
+const previewReviews = computed(() => reviews.value.slice(0, previewLimit));
 
 // Company Verification Methods
 const openCompanyVerification = (company) => {

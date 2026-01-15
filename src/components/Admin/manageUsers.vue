@@ -726,13 +726,29 @@ const closeUserDetails = () => {
   selectedUser.value = null;
 };
 
+const confirmDelete = (message: string) => {
+  if (!import.meta.client) {
+    return Promise.resolve(true);
+  }
+  if (nuxtApp.$awn?.confirm) {
+    return new Promise((resolve) => {
+      nuxtApp.$awn.confirm(
+        message,
+        () => resolve(true),
+        () => resolve(false),
+      );
+    });
+  }
+  return Promise.resolve(window.confirm(message));
+};
+
 const deleteUser = async (user) => {
   if (!user?.id) {
     mobileActionsIndex.value = null;
     return;
   }
 
-  const confirmed = confirm(`Are you sure you want to delete ${user.name}?`);
+  const confirmed = await confirmDelete(`Are you sure you want to delete ${user.name}?`);
   if (!confirmed) {
     mobileActionsIndex.value = null;
     return;
