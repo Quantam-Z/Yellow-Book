@@ -196,13 +196,6 @@
                             >
                               <MessageSquare class="w-5 h-5" />
                             </button>
-                            <button 
-                              @click="deleteReview(review.id)"
-                              class="p-2 text-red-600 hover:bg-red-50 rounded transition touch-manipulation border-0 outline-none"
-                              title="Delete review"
-                            >
-                              <Trash2 class="w-5 h-5" />
-                            </button>
                           </div>
                         </div>
                       </div>
@@ -278,21 +271,12 @@
                 <div class="flex justify-end gap-2 pt-2 border-t border-table-border">
                   <button 
                     type="button"
-                    class="flex items-center justify-center gap-1 px-3 py-1.5 text-blue-600 bg-blue-50 rounded-lg text-sm hover:bg-blue-100 transition w-1/2 min-h-[44px] touch-manipulation border-0 outline-none"
+                    class="flex items-center justify-center gap-1 px-3 py-1.5 text-blue-600 bg-blue-50 rounded-lg text-sm hover:bg-blue-100 transition w-full min-h-[44px] touch-manipulation border-0 outline-none"
                     @click="goToReviewDetail(review.id)"
                     aria-label="Reply to review"
                   >
                     <MessageSquare class="w-4 h-4" />
                     Reply
-                  </button>
-                  <button 
-                    type="button"
-                    class="flex items-center justify-center gap-1 px-3 py-1.5 text-red-600 bg-red-50 rounded-lg text-sm hover:bg-red-100 transition w-1/2 min-h-[44px] touch-manipulation border-0 outline-none"
-                    @click="deleteReview(review.id)"
-                    aria-label="Delete review"
-                  >
-                    <Trash2 class="w-4 h-4" />
-                    Delete
                   </button>
                 </div>
               </div>
@@ -342,9 +326,8 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, watchEffect } from 'vue'
-import { Trash2, Star, ChevronDown, Loader2, Calendar, MessageSquare } from 'lucide-vue-next'
+import { Star, ChevronDown, Loader2, Calendar, MessageSquare } from 'lucide-vue-next'
 import Pagination from '~/components/common/pagination.vue'
-import { useStubClient } from '~/services/stubClient'
 import { useStubResource } from '~/composables/useStubResource'
 import { slugifyTitle } from '@/services/directoryMapper'
 
@@ -356,7 +339,6 @@ const dateFrom = ref('')
 const dateTo = ref('')
 const nuxtApp = useNuxtApp()
 const router = useRouter()
-const stubClient = useStubClient()
 
 // Load reviews from stub json
 const { data: reviewsData, pending, error: reviewsError, refresh } = await useStubResource('agencyReviews')
@@ -488,34 +470,12 @@ const resetFilters = () => {
   console.log('Filters reset')
 }
 
-const deleteReview = async (id) => { 
-  if (!confirm('Are you sure you want to delete this review?')) return
-  try {
-    await stubClient.remove('agencyReviews', id, { delay: 140 })
-    await refresh()
-    if (import.meta.client) {
-      try {
-        nuxtApp.$awn?.success('Review removed')
-      } catch {}
-    }
-  } catch (error) {
-    console.error('Failed to delete review', error)
-    if (import.meta.client) {
-      try {
-        nuxtApp.$awn?.alert('Failed to delete review')
-      } catch {}
-    }
-  }
-}
-
 const goToReviewDetail = (reviewId) => {
   if (!reviewId) return
   const slug = companySlug.value
   const title = companyName.value
   const query: Record<string, string> = {
     slug,
-    id: slug,
-    source: 'company-panel',
   }
   if (title) {
     query.title = title
