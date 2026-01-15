@@ -50,7 +50,15 @@ onMounted(() => {
   isHydrated.value = true;
 });
 
-const showNotFound = computed(() => isHydrated.value && !SelectedComponent.value);
+const hasPageParam = computed(() => {
+  const raw = route.params.page;
+  if (Array.isArray(raw)) {
+    return raw.length > 0 && Boolean(raw[0]);
+  }
+  return typeof raw === 'string' && raw.length > 0;
+});
+
+const showNotFound = computed(() => isHydrated.value && hasPageParam.value && !SelectedComponent.value);
 </script>
 
 <template>
